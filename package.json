@@ -5,8 +5,8 @@
   "type": "module",
   "description": "Evidence-backed UX audits. v0 slice 1: capture -> heuristics -> annotated results page.",
   "scripts": {
-    "audit": "tsx src/index.ts",
-    "smoke": "tsx src/smoke.ts",
+    "audit": "node --env-file-if-exists=.env --import tsx src/index.ts",
+    "smoke": "node --env-file-if-exists=.env --import tsx src/smoke.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

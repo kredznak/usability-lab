@@ -52,6 +52,16 @@ async function main(): Promise<void> {
     process.exit(2);
   }
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error(
+      "\nNo ANTHROPIC_API_KEY found.\n\n" +
+        "  cp .env.example .env      then paste your key into .env\n" +
+        "  (get one at https://platform.claude.com/settings/keys)\n\n" +
+        ".env is gitignored and loaded automatically by `npm run audit`.\n",
+    );
+    process.exit(2);
+  }
+
   // UUIDv7 is the correlation key in §8; v4 is a stand-in until we add a v7
   // generator. Either way it is the single ID threaded through every artifact.
   const auditId = randomUUID();
