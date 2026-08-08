@@ -58,13 +58,28 @@ export type Capture = z.infer<typeof Capture>;
  * Severity is an enum, not a ranged int — JSON Schema numeric constraints
  * (minimum/maximum) are not supported by structured outputs, but enums are.
  */
+/** The 1–4 scale the pipeline guarantees. Only assembled Findings carry it. */
+export const Severity = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
+export type Severity = z.infer<typeof Severity>;
+
 export const RawFinding = z.object({
   heuristic: z
     .string()
     .describe("Nielsen heuristic or named UX principle this finding rests on."),
+  /**
+   * Declared as a plain number on purpose.
+   *
+   * Structured outputs cannot express a numeric `const`/range: a Zod union of
+   * literals is converted to {"type":"number","description":"{const: 1}"}, so
+   * the constraint survives only as prose and the API is free to return 0, 5 or
+   * 2.5 — which it did, failing a live run. Rather than pretend the schema
+   * enforces the scale, we accept a number and clamp it deterministically in
+   * normalizeSeverity(). Same principle as confidence: the pipeline owns the
+   * invariant, the model does not.
+   */
   severity: z
-    .union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)])
-    .describe("1 = cosmetic, 2 = minor, 3 = major, 4 = catastrophic."),
+    .number()
+    .describe("1 = cosmetic, 2 = minor, 3 = major, 4 = catastrophic. Use only 1, 2, 3 or 4."),
   element_ref: z
     .string()
     .nullable()
@@ -96,11 +111,29 @@ export const Citation = z.object({
 });
 export type Citation = z.infer<typeof Citation>;
 
+/**
+ * Rounds and clamps a model-supplied severity onto the 1–4 scale.
+ * Pure and total: every real number maps to a valid severity.
+ * `adjusted` is true when the model handed us something off-scale, so drift is
+ * visible in the run output instead of being silently corrected.
+ */
+export function normalizeSeverity(raw: number): { value: Severity; adjusted: boolean } {
+  const rounded = Math.round(raw);
+  // Non-finite input (NaN, Infinity) is garbage, not an opinion about severity.
+  // It falls back to 2 rather than clamping up to 4: a nonsense value must never
+  // become a severity-4 claim, which is the only level allowed to use words like
+  // "critical" or "broken" (§9.4).
+  const clamped = Number.isFinite(rounded) ? Math.min(4, Math.max(1, rounded)) : 2;
+  return { value: clamped as Severity, adjusted: clamped !== raw };
+}
+
 /** The assembled Finding. Only the pipeline constructs these. */
 export const Finding = RawFinding.extend({
   id: z.string(),
   agent: z.string(),
   screen_ref: z.string(),
+  // Narrowed from RawFinding's plain number — guaranteed by normalizeSeverity().
+  severity: Severity,
   confidence: z.enum(["high", "medium"]),
   citation: Citation,
   evidence: z.object({

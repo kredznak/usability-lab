@@ -7,7 +7,7 @@ import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
 import { CallLog } from "./db.js";
-import { Finding } from "./types.js";
+import { Finding, normalizeSeverity } from "./types.js";
 
 /**
  * v0 slice 1 — one URL end to end.
@@ -83,6 +83,7 @@ async function main(): Promise<void> {
     // Confidence gate. Pure, synchronous, and the only place confidence is set.
     const findings: Finding[] = [];
     const dropped: { reason: string; heuristic: string }[] = [];
+    let severityAdjusted = 0;
 
     for (const raw of heuristics.findings) {
       const verdict = deriveConfidence(raw, captured);
@@ -90,9 +91,13 @@ async function main(): Promise<void> {
         dropped.push({ reason: verdict.reason, heuristic: raw.heuristic });
         continue;
       }
+      const severity = normalizeSeverity(raw.severity);
+      if (severity.adjusted) severityAdjusted++;
+
       findings.push(
         Finding.parse({
           ...raw,
+          severity: severity.value,
           id: `${auditId}-f${findings.length + 1}`,
           agent: "heuristics",
           screen_ref: captured.screenshot_id,
@@ -132,6 +137,7 @@ async function main(): Promise<void> {
     console.error(
       `\n  ${heuristics.findings.length} findings from the model` +
         ` -> ${findings.length} survived the confidence gate (${high} high, ${dropped.length} dropped)` +
+        (severityAdjusted > 0 ? `\n  ${severityAdjusted} severity value(s) clamped onto the 1-4 scale` : "") +
         `\n  ${annotated.pinned} pinned on the screenshot` +
         `\n  total ${(total / 1000).toFixed(1)}s   $${costUsd.toFixed(4)}` +
         `\n\n  ${resultsPath}\n`,

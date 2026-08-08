@@ -22,7 +22,24 @@ const SELECTOR = [
   "h1", "h2", "h3", "nav", "header", "footer", "[role=button]", "[role=link]",
 ].join(",");
 
-const MAX_ELEMENTS = 220;
+/**
+ * Extraction budget handed to a sub-agent. At ~20 tokens per rendered element
+ * line this is roughly 8K input tokens — cheap against Sonnet 5's window, and
+ * measured runs came in at 5–9K total input at the old budget of 220.
+ */
+const MAX_ELEMENTS = 400;
+
+/** Hard ceiling on in-page collection, so a pathological DOM cannot exhaust memory. */
+const COLLECT_CEILING = 5000;
+
+/**
+ * When over budget we sample across this many horizontal bands of the page.
+ * Straight first-N truncation is ordered by the DOM, which on a long page means
+ * the entire lower half is invisible to the reviewer — it would report "no
+ * footer contact details" on a page whose footer we simply never sent.
+ */
+const SAMPLE_BANDS = 12;
+
 const TEXT_EXCERPT_LIMIT = 4000;
 /** §8 redaction: raw page text is kept to 200-char excerpts. */
 const ELEMENT_TEXT_LIMIT = 200;
@@ -87,22 +104,29 @@ async function extractElements(
   page: Page,
 ): Promise<{ elements: CapturedElement[]; total: number }> {
   return page.evaluate(
-    ({ selector, max, textLimit }) => {
-      const out: {
-        ref: string;
+    ({ selector, max, ceiling, bands, textLimit }) => {
+      interface Candidate {
         tag: string;
         role: string | null;
         text: string;
         bbox: { x: number; y: number; width: number; height: number };
         above_fold: boolean;
-      }[] = [];
+        priority: number;
+        order: number;
+      }
 
-      const nodes = Array.from(document.querySelectorAll(selector));
+      // Interactive elements are what findings are usually about, so they win a
+      // contested slot over a structural wrapper in the same band.
+      const INTERACTIVE = ["a", "button", "input", "select", "textarea", "label", "form"];
+      const HEADING = ["h1", "h2", "h3"];
+
+      const candidates: Candidate[] = [];
       const foldY = window.innerHeight;
-      let i = 0;
       let total = 0;
+      let order = 0;
 
-      for (const node of nodes) {
+      for (const node of Array.from(document.querySelectorAll(selector))) {
+        if (total >= ceiling) break;
         const el = node as HTMLElement;
 
         const style = window.getComputedStyle(el);
@@ -113,10 +137,7 @@ async function extractElements(
         const r = el.getBoundingClientRect();
         if (r.width < 1 || r.height < 1) continue;
 
-        // Count every visible candidate, then stop *storing* at the cap, so the
-        // caller can see how much was left out instead of guessing.
         total++;
-        if (out.length >= max) continue;
 
         // getBoundingClientRect is viewport-relative; scrollY converts it to
         // full-page document coordinates, which is the space the full-page
@@ -124,19 +145,97 @@ async function extractElements(
         // would be off by the scroll offset.
         const pageY = r.top + window.scrollY;
         const pageX = r.left + window.scrollX;
+        const tag = el.tagName.toLowerCase();
+        const text = (el.innerText ?? el.textContent ?? "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, textLimit);
 
-        out.push({
-          ref: `el_${i++}`,
-          tag: el.tagName.toLowerCase(),
+        let priority = 0;
+        if (INTERACTIVE.includes(tag) || el.getAttribute("role")) priority += 4;
+        if (HEADING.includes(tag)) priority += 3;
+        if (text.length > 0) priority += 1;
+        if (pageY < foldY) priority += 1;
+
+        candidates.push({
+          tag,
           role: el.getAttribute("role"),
-          text: (el.innerText ?? el.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, textLimit),
+          text,
           bbox: { x: pageX, y: pageY, width: r.width, height: r.height },
           above_fold: pageY < foldY,
+          priority,
+          order: order++,
         });
       }
-      return { elements: out, total };
+
+      let selected: Candidate[];
+
+      if (candidates.length <= max) {
+        selected = candidates;
+      } else {
+        // Band the page vertically and give each band a share of the budget, so
+        // coverage spans the whole page instead of stopping partway down.
+        const pageHeight = Math.max(1, document.body.scrollHeight);
+        const buckets: Candidate[][] = Array.from({ length: bands }, () => []);
+        for (const c of candidates) {
+          const idx = Math.min(bands - 1, Math.floor((c.bbox.y / pageHeight) * bands));
+          buckets[idx]!.push(c);
+        }
+
+        // Proportional share, but every non-empty band is guaranteed at least a
+        // few slots so a sparse footer still gets represented.
+        const nonEmpty = buckets.filter((b) => b.length > 0).length;
+        const floorPerBand = Math.max(1, Math.floor(max / (nonEmpty * 3)));
+
+        selected = [];
+        const leftovers: Candidate[] = [];
+        for (const bucket of buckets) {
+          if (bucket.length === 0) continue;
+          const share = Math.max(
+            floorPerBand,
+            Math.round((bucket.length / candidates.length) * max),
+          );
+          const ranked = bucket
+            .slice()
+            .sort((a, b) => b.priority - a.priority || a.order - b.order);
+          selected.push(...ranked.slice(0, share));
+          leftovers.push(...ranked.slice(share));
+        }
+
+        // Rounding can leave the budget under- or over-subscribed; settle up
+        // globally by priority so the budget is spent exactly.
+        if (selected.length > max) {
+          selected.sort((a, b) => b.priority - a.priority || a.order - b.order);
+          selected = selected.slice(0, max);
+        } else if (selected.length < max && leftovers.length > 0) {
+          leftovers.sort((a, b) => b.priority - a.priority || a.order - b.order);
+          selected.push(...leftovers.slice(0, max - selected.length));
+        }
+      }
+
+      // Refs are assigned last, in document order, so they read top-to-bottom
+      // and stay contiguous regardless of how selection happened.
+      selected.sort((a, b) => a.order - b.order);
+
+      return {
+        elements: selected.map((c, i) => ({
+          ref: `el_${i}`,
+          tag: c.tag,
+          role: c.role,
+          text: c.text,
+          bbox: c.bbox,
+          above_fold: c.above_fold,
+        })),
+        total,
+      };
     },
-    { selector: SELECTOR, max: MAX_ELEMENTS, textLimit: ELEMENT_TEXT_LIMIT },
+    {
+      selector: SELECTOR,
+      max: MAX_ELEMENTS,
+      ceiling: COLLECT_CEILING,
+      bands: SAMPLE_BANDS,
+      textLimit: ELEMENT_TEXT_LIMIT,
+    },
   );
 }
 
