@@ -1,0 +1,25 @@
+{
+  "name": "usability-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-backed UX audits. v0 slice 1: capture -> heuristics -> annotated results page.",
+  "scripts": {
+    "audit": "tsx src/index.ts",
+    "smoke": "tsx src/smoke.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0",
+    "better-sqlite3": "^12.2.0",
+    "playwright": "^1.55.0",
+    "sharp": "^0.35.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
