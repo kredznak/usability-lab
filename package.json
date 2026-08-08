@@ -7,7 +7,9 @@
   "scripts": {
     "audit": "node --env-file-if-exists=.env --import tsx src/index.ts",
     "smoke": "node --env-file-if-exists=.env --import tsx src/smoke.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "git config core.hooksPath .githooks",
+    "test:hooks": "sh src/hooks.test.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

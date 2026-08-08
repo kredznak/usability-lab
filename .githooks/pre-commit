@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# Blocks commits that contain credentials or a real .env file.
+#
+# Written after an API key reached a commit via `git add -A` picking up
+# .env.example while an editor had the real key in it. docs/design.md §9.5 says
+# one-way doors get a gate; publishing a secret to history is a one-way door.
+#
+# Enabled automatically by `npm install` (the "prepare" script sets
+# core.hooksPath). To bypass for a single commit you must be explicit:
+#   git commit --no-verify
+#
+# NOTE: the pattern loop reads from a here-doc, NOT a pipe. Piping into `while`
+# runs the loop in a subshell, where `exit 1` kills only the subshell and the
+# hook goes on to exit 0 — a guard that looks present and blocks nothing.
+# src/hooks.test.sh covers exactly that regression.
+
+fail() {
+  echo ""
+  echo "  COMMIT BLOCKED — $1"
+  echo ""
+  shift
+  for line in "$@"; do echo "  $line"; done
+  echo ""
+  echo "  Secrets belong in .env (gitignored), never in a tracked file."
+  echo "  If this is a false positive: git commit --no-verify"
+  echo ""
+  exit 1
+}
+
+# 1. Never allow a .env file itself to be staged, whatever it contains.
+staged_env=$(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '(^|/)\.env($|\.)' \
+  | grep -v '\.env\.example$' || true)
+
+if [ -n "$staged_env" ]; then
+  fail "an environment file is staged" \
+    "$staged_env" \
+    "" \
+    "Unstage it:  git restore --staged $staged_env"
+fi
+
+# 2. Scan staged *content* for credential patterns.
+#    --diff-filter=ACM skips deletions (a removed secret should not block).
+#
+#    Two portability traps, both learned the hard way:
+#      * `git diff -I` is --ignore-matching-lines and TAKES A REGEX, so a bare
+#        `-I` silently swallows the next flag. Don't use it here.
+#      * `\+` is not portable across grep implementations (ugrep rejects
+#        `^\+\+\+` as invalid syntax). Bracket form `[+]` means a literal plus
+#        in BRE, ERE, GNU grep, BSD grep and ugrep alike.
+added=$(git diff --cached --diff-filter=ACM -U0 | grep -E '^[+]' | grep -v -E '^[+][+][+]' || true)
+[ -z "$added" ] && exit 0
+
+# The Anthropic pattern requires 20+ key characters, so the literal placeholder
+# "sk-ant-..." in .env.example does not trip it.
+while IFS='|' read -r label regex; do
+  [ -z "$label" ] && continue
+
+  if printf '%s\n' "$added" | grep -q -E -- "$regex"; then
+    # Name the offending files so the fix is obvious.
+    files=$(git diff --cached --diff-filter=ACM --name-only | while IFS= read -r f; do
+      if git diff --cached -U0 -- "$f" | grep -E '^[+]' | grep -v -E '^[+][+][+]' | grep -q -E -- "$regex"; then
+        echo "    $f"
+      fi
+    done)
+    fail "staged content looks like a $label" "$files"
+  fi
+done <<'PATTERNS'
+Anthropic API key|sk-ant-[A-Za-z0-9_-]{20,}
+Anthropic OAuth token|sk-ant-oat[0-9]{2}-[A-Za-z0-9_-]{10,}
+OpenAI API key|sk-[A-Za-z0-9]{32,}
+AWS access key id|AKIA[0-9A-Z]{16}
+GitHub token|gh[pousr]_[A-Za-z0-9]{30,}
+Google API key|AIza[0-9A-Za-z_-]{35}
+Slack token|xox[baprs]-[0-9A-Za-z-]{10,}
+Stripe secret key|sk_live_[0-9a-zA-Z]{20,}
+Private key block|-----BEGIN [A-Z ]*PRIVATE KEY-----
+PATTERNS
+
+exit 0
