@@ -84,11 +84,13 @@ Version 0.4 · Owner: Kelly · Status: pre-build design, review before scaffoldi
 | Copy | Clarity and comprehension of the words | Sonnet | Captured pages only |
 | Conversion-CTA | CTAs, persuasion, trust, conversion friction — does the page move a visitor toward the goal action | Sonnet | Captured pages only |
 | Visual Hierarchy | How the page guides the eye — hierarchy, layout, typography, nothing else | Sonnet | Captured pages only |
-| Synthesizer | Dedupe, rank, assign confidence | Frontier | Sub-agent findings only; cannot add findings |
+| Synthesizer | Dedupe, rank ~~assign confidence~~ | Frontier | Sub-agent findings only; cannot add findings |
 | Research | Attach citations + competitor examples; `none` is legal | Sonnet | Findings + external sources; may raise confidence, never edit findings |
 | Content | Results copy, top-3 selection, kind-curiosity voice | Frontier | Cited findings only; each sentence needs an evidence pointer |
 | Retention | Classify subscriber signals, draft new-finding nudges and win-backs | Haiku/Sonnet | This customer's audits + thread; send gated |
 | Growth | Event log → versioned priors | Sonnet | Event log + priors tables only; nothing customer-facing |
+
+**Correction (v0 build).** The Synthesizer does **not** assign confidence — §9.1 wins over this table. Confidence is derived by a pure function from evidence, before and after synthesis, and no agent has a field to write it into. Implemented that way in `src/confidence.ts`; the Synthesizer returns finding *ids*, not findings, so "cannot add findings" is a property of its schema rather than an instruction in its prompt.
 
 Non-agents by design: `page-inspector`, `annotation-renderer`, lint gate, email gate, event tracking — deterministic code, zero tokens.
 
@@ -269,7 +271,18 @@ Prompts drift; structure holds. Everything below is code/config, not instruction
 
 ## 11. Cost model
 
-Rates below are **illustrative placeholders** — verify current per-MTok pricing at docs.claude.com before quoting; the structure, not the constants, is the design. Assumed: Haiku $1/$5 in/out per MTok, Sonnet $3/$15, Frontier $15/$75.
+**Measured, v0 slice 2 (2026-08-09).** Five live audits through `capture → profile → orchestrate → 3–4 sub-agents → synthesize`, logged in `model_calls`:
+
+| | Cost | Wall clock |
+|---|---|---|
+| 4 sub-agents (linear.app, allbirds.com) | $0.44–$0.58 | 156–231s |
+| 3 sub-agents (gov.uk) | $0.34–$0.47 | 119–174s |
+
+Per-agent average: Synthesizer (Opus 5) **$0.137**, sub-agents (Sonnet 5) $0.074–$0.111 each, Orchestrator $0.008, Context Profiler (Haiku) $0.0015. Research, Content and lint are not in this slice, so a complete audit will land higher — but the two frontier-tier calls are still the concentration to watch.
+
+Real per-MTok rates (verified 2026-08-09, and the basis of `src/db.ts`): Haiku 4.5 $1/$5, Sonnet 5 $3/$15, **Opus 5 $5/$25**. The $15/$75 frontier figure assumed below is ~3× too high, which made the original ≈$1.40 estimate conservative rather than optimistic. We bill Sonnet 5 at the standard $3/$15 rather than its introductory $2/$10 (expires 2026-08-31) so the model does not silently regress when the intro window closes.
+
+The projection below is kept for its structure. Its constants are superseded by the measurements above.
 
 **Per audit (UC-1 typical: heuristics + forms + conversion-CTA), no caching:**
 

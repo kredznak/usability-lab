@@ -13,7 +13,8 @@
     "snapshot": "node --import tsx src/snapshot.ts",
     "fixtures": "node --import tsx src/fixtures.ts",
     "signals": "node --import tsx src/signals-report.ts",
-    "test": "node --import tsx --test \"src/**/*.test.ts\" && sh src/hooks.test.sh"
+    "test": "node --import tsx --test \"src/**/*.test.ts\" && sh src/hooks.test.sh",
+    "check": "npm run typecheck && npm test && npm run snapshot -- check"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",
