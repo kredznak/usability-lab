@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit",
     "prepare": "git config core.hooksPath .githooks",
     "test:hooks": "sh src/hooks.test.sh",
-    "snapshot": "node --import tsx src/snapshot.ts"
+    "snapshot": "node --import tsx src/snapshot.ts",
+    "fixtures": "node --import tsx src/fixtures.ts",
+    "signals": "node --import tsx src/signals-report.ts",
+    "test": "node --import tsx --test \"src/**/*.test.ts\" && sh src/hooks.test.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

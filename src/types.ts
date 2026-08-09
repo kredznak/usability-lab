@@ -28,6 +28,30 @@ export const CapturedElement = z.object({
   text: z.string().describe("Visible text, truncated to 200 chars per §8 redaction."),
   bbox: BBox,
   above_fold: z.boolean(),
+  /**
+   * The `type` attribute of an <input>, null for everything else.
+   * Without it a search box and an email field are the same row, and spawn rule
+   * R1 ("capture contains form") fires on every site on the web.
+   */
+  input_type: z.string().nullable(),
+  /**
+   * Accessible name from aria-label, aria-labelledby, an associated <label>,
+   * title, or alt. Null means the element has no programmatic name — which for
+   * an interactive element with no visible text is itself the a11y signal R3
+   * reads.
+   */
+  accessible_name: z.string().nullable(),
+  /**
+   * Where accessible_name came from. Provenance matters more than presence: a
+   * field named only by its placeholder is the classic "looks labelled, isn't"
+   * defect — the name vanishes the moment the visitor types. Without this, that
+   * page scores identically to a properly labelled one.
+   */
+  name_source: z
+    .enum(["aria-label", "aria-labelledby", "label", "title", "alt", "placeholder"])
+    .nullable(),
+  /** Computed font-size in px. Hierarchy is a claim about relative size (R5). */
+  font_size: z.number(),
 });
 export type CapturedElement = z.infer<typeof CapturedElement>;
 
@@ -49,6 +73,13 @@ export const Capture = z.object({
         "say so rather than papering over it.",
     ),
   text_excerpt: z.string().describe("First 4000 chars of visible page text. Untrusted input."),
+  text_total_chars: z
+    .number()
+    .describe(
+      "Length of the page's full visible text before the excerpt cap. " +
+        "text_excerpt saturates at 4000 chars, so copy density measured from it " +
+        "would read every long page as identical.",
+    ),
   captured_at: z.string(),
 });
 export type Capture = z.infer<typeof Capture>;

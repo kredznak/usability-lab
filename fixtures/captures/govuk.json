@@ -1,10 +1,10 @@
 {
-  "audit_id": "0235352e-c672-4418-8347-ca4f0abd92dd",
+  "audit_id": "fixture-govuk",
   "url": "https://www.gov.uk",
   "final_url": "https://www.gov.uk/",
   "title": "Welcome to GOV.UK",
-  "screenshot_id": "0235352e-c672-4418-8347-ca4f0abd92dd-page",
-  "screenshot_path": "out/0235352e-c672-4418-8347-ca4f0abd92dd/0235352e-c672-4418-8347-ca4f0abd92dd-page.png",
+  "screenshot_id": "fixture-govuk-page",
+  "screenshot_path": "out/fixture-govuk/fixture-govuk-page.png",
   "viewport": {
     "width": 1440,
     "height": 900
@@ -22,7 +22,11 @@
         "width": 630,
         "height": 30
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 24
     },
     {
       "ref": "el_1",
@@ -35,7 +39,11 @@
         "width": 234.953125,
         "height": 38
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_2",
@@ -48,7 +56,11 @@
         "width": 229.1875,
         "height": 38
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_3",
@@ -61,7 +73,11 @@
         "width": 106.625,
         "height": 19
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_4",
@@ -74,7 +90,11 @@
         "width": 1,
         "height": 1
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_5",
@@ -87,7 +107,11 @@
         "width": 1440,
         "height": 62
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_6",
@@ -100,7 +124,11 @@
         "width": 960,
         "height": 61
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": "Navigation menu",
+      "name_source": "aria-labelledby",
+      "font_size": 16
     },
     {
       "ref": "el_7",
@@ -113,7 +141,11 @@
         "width": 162,
         "height": 37
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": "Go to the GOV.UK homepage",
+      "name_source": "aria-label",
+      "font_size": 30
     },
     {
       "ref": "el_8",
@@ -126,7 +158,11 @@
         "width": 1,
         "height": 1
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 24
     },
     {
       "ref": "el_9",
@@ -139,7 +175,11 @@
         "width": 103.359375,
         "height": 61
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": "Show navigation menu",
+      "name_source": "aria-label",
+      "font_size": 16
     },
     {
       "ref": "el_10",
@@ -152,7 +192,11 @@
         "width": 61,
         "height": 61
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": "Show search menu",
+      "name_source": "aria-label",
+      "font_size": 19
     },
     {
       "ref": "el_11",
@@ -165,7 +209,11 @@
         "width": 1440,
         "height": 425.40625
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_12",
@@ -178,7 +226,11 @@
         "width": 768,
         "height": 205.40625
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 64
     },
     {
       "ref": "el_13",
@@ -191,7 +243,11 @@
         "width": 630,
         "height": 90
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_14",
@@ -204,7 +260,11 @@
         "width": 630,
         "height": 25
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_15",
@@ -217,7 +277,11 @@
         "width": 580,
         "height": 50
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": "search",
+      "accessible_name": "Search",
+      "name_source": "label",
+      "font_size": 19
     },
     {
       "ref": "el_16",
@@ -230,7 +294,11 @@
         "width": 50,
         "height": 50
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_17",
@@ -243,7 +311,11 @@
         "width": 960,
         "height": 40
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 36
     },
     {
       "ref": "el_18",
@@ -256,7 +328,11 @@
         "width": 214.203125,
         "height": 47.6875
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_19",
@@ -269,7 +345,11 @@
         "width": 232.484375,
         "height": 47.6875
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_20",
@@ -282,7 +362,11 @@
         "width": 217.609375,
         "height": 47.6875
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_21",
@@ -295,7 +379,11 @@
         "width": 242.625,
         "height": 47.6875
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_22",
@@ -308,7 +396,11 @@
         "width": 220.109375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_23",
@@ -321,7 +413,11 @@
         "width": 218.078125,
         "height": 47.6875
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_24",
@@ -334,7 +430,11 @@
         "width": 610,
         "height": 40
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 36
     },
     {
       "ref": "el_25",
@@ -347,7 +447,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_26",
@@ -360,7 +464,11 @@
         "width": 72.875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_27",
@@ -373,7 +481,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_28",
@@ -386,7 +498,11 @@
         "width": 290.421875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_29",
@@ -399,7 +515,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_30",
@@ -412,7 +532,11 @@
         "width": 237.265625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_31",
@@ -425,7 +549,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_32",
@@ -438,7 +566,11 @@
         "width": 204.71875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_33",
@@ -451,7 +583,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_34",
@@ -464,7 +600,11 @@
         "width": 261.453125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_35",
@@ -477,7 +617,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_36",
@@ -490,7 +634,11 @@
         "width": 218.875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_37",
@@ -503,7 +651,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_38",
@@ -516,7 +668,11 @@
         "width": 138.78125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_39",
@@ -529,7 +685,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_40",
@@ -542,7 +702,11 @@
         "width": 181.234375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_41",
@@ -555,7 +719,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_42",
@@ -568,7 +736,11 @@
         "width": 195.53125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_43",
@@ -581,7 +753,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_44",
@@ -594,7 +770,11 @@
         "width": 154.375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_45",
@@ -607,7 +787,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_46",
@@ -620,7 +804,11 @@
         "width": 251.640625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_47",
@@ -633,7 +821,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_48",
@@ -646,7 +838,11 @@
         "width": 225.5,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_49",
@@ -659,7 +855,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_50",
@@ -672,7 +872,11 @@
         "width": 122.859375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_51",
@@ -685,7 +889,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_52",
@@ -698,7 +906,11 @@
         "width": 292.578125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_53",
@@ -711,7 +923,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_54",
@@ -724,7 +940,11 @@
         "width": 187.03125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_55",
@@ -737,7 +957,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_56",
@@ -750,7 +974,11 @@
         "width": 231.65625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_57",
@@ -763,7 +991,11 @@
         "width": 300,
         "height": 40
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 36
     },
     {
       "ref": "el_58",
@@ -776,7 +1008,11 @@
         "width": 205,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_59",
@@ -789,7 +1025,11 @@
         "width": 81.03125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_60",
@@ -802,7 +1042,11 @@
         "width": 205,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_61",
@@ -815,7 +1059,11 @@
         "width": 160.875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_62",
@@ -828,7 +1076,11 @@
         "width": 205,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_63",
@@ -841,7 +1093,11 @@
         "width": 183.328125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_64",
@@ -854,7 +1110,11 @@
         "width": 205,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_65",
@@ -867,7 +1127,11 @@
         "width": 172.9375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_66",
@@ -880,7 +1144,11 @@
         "width": 610,
         "height": 40
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 36
     },
     {
       "ref": "el_67",
@@ -893,7 +1161,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_68",
@@ -906,7 +1178,11 @@
         "width": 114.53125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_69",
@@ -919,7 +1195,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_70",
@@ -932,7 +1212,11 @@
         "width": 48.609375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_71",
@@ -945,7 +1229,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_72",
@@ -958,7 +1246,11 @@
         "width": 208.34375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_73",
@@ -971,7 +1263,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_74",
@@ -984,7 +1280,11 @@
         "width": 198.46875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_75",
@@ -997,7 +1297,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_76",
@@ -1010,7 +1314,11 @@
         "width": 270.328125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_77",
@@ -1023,7 +1331,11 @@
         "width": 580,
         "height": 25
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_78",
@@ -1036,7 +1348,11 @@
         "width": 215.859375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_79",
@@ -1049,7 +1365,11 @@
         "width": 300,
         "height": 40
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 36
     },
     {
       "ref": "el_80",
@@ -1062,7 +1382,11 @@
         "width": 193.3125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_81",
@@ -1075,7 +1399,11 @@
         "width": 260.734375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_82",
@@ -1088,7 +1416,11 @@
         "width": 134.703125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_83",
@@ -1101,7 +1433,11 @@
         "width": 138,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_84",
@@ -1114,7 +1450,11 @@
         "width": 178.34375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_85",
@@ -1127,7 +1467,11 @@
         "width": 252.609375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_86",
@@ -1140,7 +1484,11 @@
         "width": 220.109375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_87",
@@ -1153,7 +1501,11 @@
         "width": 200.921875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_88",
@@ -1166,7 +1518,11 @@
         "width": 239.71875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_89",
@@ -1179,7 +1535,11 @@
         "width": 170.28125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_90",
@@ -1192,7 +1552,11 @@
         "width": 136.375,
         "height": 20
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_91",
@@ -1205,7 +1569,11 @@
         "width": 100,
         "height": 37
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_92",
@@ -1218,7 +1586,11 @@
         "width": 100,
         "height": 37
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_93",
@@ -1231,7 +1603,11 @@
         "width": 240.109375,
         "height": 37
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
     },
     {
       "ref": "el_94",
@@ -1244,7 +1620,11 @@
         "width": 1440,
         "height": 843
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_95",
@@ -1257,7 +1637,11 @@
         "width": 630,
         "height": 51
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 24
     },
     {
       "ref": "el_96",
@@ -1270,7 +1654,11 @@
         "width": 68.8125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_97",
@@ -1283,7 +1671,11 @@
         "width": 269.9375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_98",
@@ -1296,7 +1688,11 @@
         "width": 226.4375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_99",
@@ -1309,7 +1705,11 @@
         "width": 195.765625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_100",
@@ -1322,7 +1722,11 @@
         "width": 251.09375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_101",
@@ -1335,7 +1739,11 @@
         "width": 209.5625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_102",
@@ -1348,7 +1756,11 @@
         "width": 132.671875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_103",
@@ -1361,7 +1773,11 @@
         "width": 173.09375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_104",
@@ -1374,7 +1790,11 @@
         "width": 187.875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_105",
@@ -1387,7 +1807,11 @@
         "width": 146.875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_106",
@@ -1400,7 +1824,11 @@
         "width": 239.375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_107",
@@ -1413,7 +1841,11 @@
         "width": 216.40625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_108",
@@ -1426,7 +1858,11 @@
         "width": 118.03125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_109",
@@ -1439,7 +1875,11 @@
         "width": 279.40625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_110",
@@ -1452,7 +1892,11 @@
         "width": 179.421875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_111",
@@ -1465,7 +1909,11 @@
         "width": 223.328125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_112",
@@ -1478,7 +1926,11 @@
         "width": 300,
         "height": 51
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 24
     },
     {
       "ref": "el_113",
@@ -1491,7 +1943,11 @@
         "width": 108.625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_114",
@@ -1504,7 +1960,11 @@
         "width": 46.578125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_115",
@@ -1517,7 +1977,11 @@
         "width": 199.875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_116",
@@ -1530,7 +1994,11 @@
         "width": 189.625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_117",
@@ -1543,7 +2011,11 @@
         "width": 258.984375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_118",
@@ -1556,7 +2028,11 @@
         "width": 109.1875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_119",
@@ -1569,7 +2045,11 @@
         "width": 193.109375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_120",
@@ -1582,7 +2062,11 @@
         "width": 102.203125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_121",
@@ -1595,7 +2079,11 @@
         "width": 1,
         "height": 1
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 29
     },
     {
       "ref": "el_122",
@@ -1608,7 +2096,11 @@
         "width": 39.359375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_123",
@@ -1621,7 +2113,11 @@
         "width": 59.234375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_124",
@@ -1634,7 +2130,11 @@
         "width": 66.53125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_125",
@@ -1647,7 +2147,11 @@
         "width": 191.421875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_126",
@@ -1660,7 +2164,11 @@
         "width": 66.671875,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_127",
@@ -1673,7 +2181,11 @@
         "width": 173.640625,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_128",
@@ -1686,7 +2198,11 @@
         "width": 260.234375,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_129",
@@ -1699,7 +2215,11 @@
         "width": 224.125,
         "height": 23
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_130",
@@ -1712,7 +2232,11 @@
         "width": 418.984375,
         "height": 48
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     },
     {
       "ref": "el_131",
@@ -1725,10 +2249,15 @@
         "width": 155.40625,
         "height": 136
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
     }
   ],
   "elements_total": 132,
   "text_excerpt": "Cookies on GOV.UK We use some essential cookies to make this website work. We’d like to set additional cookies to understand how you use GOV.UK, remember your settings and improve government services. We also use cookies set by other sites to help us deliver content from their services. Accept additional cookies Reject additional cookies View cookies Skip to main content Navigation menu Menu Search GOV.UK The best place to find government services and information Search Search GOV.UK Popular on GOV.UK HMRC account: sign in or set up eVisas: access and use your online immigration status Universal Credit account: sign in Personal tax account: sign in or set up Childcare account: sign in Check your State Pension forecast Services and information Benefits Includes eligibility, appeals, tax credits and Universal Credit Births, deaths, marriages and care Parenting, civil partnerships, divorce and Lasting Power of Attorney Business and self-employed Tools and guidance for businesses Childcare and parenting Includes giving birth, fostering, adopting, benefits for children, childcare and schools Citizenship and living in the UK Voting, community participation, life in the UK, international projects Crime, justice and the law Legal processes, courts and the police Disabled people Includes carers, your rights, benefits and the Equality Act Driving and transport Includes vehicle tax, MOT and driving licences Education and learning Includes student loans, admissions and apprenticeships Employing people Includes pay, contracts, hiring and redundancies Environment and countryside Includes flooding, recycling, farming and wildlife Housing and local services Owning or renting and council services Money and tax Includes debt and Self Assessment Passports, travel and living abroad Includes renewing passports and travel advice by country Visas and immigration Apply to visit, work, study, settle or seek asylum in the UK Working, jobs and pensions Includes holidays, finding a job and redundancy Featured Find a job Search and apply for jobs in England, Scotland and Wales. National Insurance Check your record to see if you can add more contributions. Cost of living support Find out what support is available to help with the cost of living. Get the GOV.UK app Your government services and information, on the go. Government activity Find out what the government is doing Departments Departments, agencies and public bodies News News stories, speeches, letters and notices Guidance and regulation Detailed guidance, regulations and rules Research and statistics Reports, analysis and official statistics Policy papers and consultations Consultations and strategy Transparency documents Data, Freedom of Information releases and corporate reports More on GOV.UK HMRC services: sign in Check MOT history of a vehicle Tax your vehicle Universal Credit Foreign travel advice Check your State Pension age Childcare account: sign in Student finance: sign in Self Assessment tax returns Apply for a passport Is this page useful? Yes this page is useful No this page is not useful Report a problem with this page Services and information Benefits Births, death, marriages and care Business and self-employed Childcare and parenting Citizenship and living in the UK Crime, justice and the law Disabled people Driving and transport Education and learning Employing people Environment and countryside Housing and local services Money and tax Passports, travel and living abroad Visas and immigration Working, jobs and pensions Government activity Departments News Guidance and regulation Research and statistics Policy papers and consultations Transparency How government works Get involved Support links Help Privacy Cookies Accessibility statement Contact Terms and conditions Rhestr o Wasanaethau Cymraeg Government Digital Service All content is available under the Open Government Licence v3.0, except where otherwise stated © Crown copyright",
-  "captured_at": "2026-08-08T20:11:37.190Z"
+  "text_total_chars": 3950,
+  "captured_at": "frozen"
 }

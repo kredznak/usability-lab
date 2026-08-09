@@ -1,10 +1,10 @@
 {
-  "audit_id": "205b2f83-eec7-42b0-844e-e2ac272e2d77",
+  "audit_id": "fixture-hn",
   "url": "https://news.ycombinator.com",
   "final_url": "https://news.ycombinator.com/",
   "title": "Hacker News",
-  "screenshot_id": "205b2f83-eec7-42b0-844e-e2ac272e2d77-page",
-  "screenshot_path": "out/205b2f83-eec7-42b0-844e-e2ac272e2d77/205b2f83-eec7-42b0-844e-e2ac272e2d77-page.png",
+  "screenshot_id": "fixture-hn-page",
+  "screenshot_path": "out/fixture-hn/fixture-hn-page.png",
   "viewport": {
     "width": 1440,
     "height": 900
@@ -22,7 +22,11 @@
         "width": 20,
         "height": 20
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_1",
@@ -35,7 +39,11 @@
         "width": 98,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_2",
@@ -48,7 +56,11 @@
         "width": 27.296875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_3",
@@ -61,7 +73,11 @@
         "width": 28.515625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_4",
@@ -74,7 +90,11 @@
         "width": 69.546875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_5",
@@ -87,7 +107,11 @@
         "width": 22.84375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_6",
@@ -100,7 +124,11 @@
         "width": 34.390625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_7",
@@ -113,7 +141,11 @@
         "width": 27.9375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_8",
@@ -126,7 +158,11 @@
         "width": 45.5625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_9",
@@ -139,7 +175,11 @@
         "width": 32.15625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_10",
@@ -152,59 +192,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_11",
       "tag": "a",
       "role": null,
-      "text": "Denmark Requires Oral Defenses for Students' Written Work to Counter AI Cheating",
+      "text": "Mea Culpa – Dark Hours",
       "bbox": {
         "x": 150.609375,
         "y": 43.5,
-        "width": 564.828125,
+        "width": 163.15625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_12",
       "tag": "a",
       "role": null,
-      "text": "mezha.net",
+      "text": "terrygodier.com",
       "bbox": {
-        "x": 724.03125,
+        "x": 322.359375,
         "y": 45.5,
-        "width": 56.65625,
+        "width": 84.25,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_13",
       "tag": "a",
       "role": null,
-      "text": "theanonymousone",
+      "text": "satvikpendem",
       "bbox": {
         "x": 218.046875,
         "y": 61,
-        "width": 86.28125,
+        "width": 65.46875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_14",
       "tag": "a",
       "role": null,
-      "text": "4 hours ago",
+      "text": "2 hours ago",
       "bbox": {
-        "x": 307.609375,
+        "x": 286.796875,
         "y": 61,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_15",
@@ -212,25 +272,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 374.3125,
+        "x": 353.5,
         "y": 61,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_16",
       "tag": "a",
       "role": null,
-      "text": "192 comments",
+      "text": "110 comments",
       "bbox": {
-        "x": 404.96875,
+        "x": 384.15625,
         "y": 61,
         "width": 69.75,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_17",
@@ -243,59 +311,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_18",
       "tag": "a",
       "role": null,
-      "text": "\"Code was never the hard part\" is an insult to all programmers",
+      "text": "Tech sucks: You have to vote with your wallet, or nothing will change",
       "bbox": {
         "x": 150.609375,
         "y": 78.5,
-        "width": 422.703125,
+        "width": 464.609375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_19",
       "tag": "a",
       "role": null,
-      "text": "senko.net",
+      "text": "82mhz.net",
       "bbox": {
-        "x": 581.90625,
+        "x": 623.8125,
         "y": 80.5,
-        "width": 52.40625,
+        "width": 57.453125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_20",
       "tag": "a",
       "role": null,
-      "text": "senko",
+      "text": "reallydontask",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 96,
-        "width": 27.421875,
+        "width": 62.796875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_21",
       "tag": "a",
       "role": null,
-      "text": "7 hours ago",
+      "text": "23 minutes ago",
       "bbox": {
-        "x": 248.75,
+        "x": 278.1875,
         "y": 96,
-        "width": 55.890625,
+        "width": 73.046875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_22",
@@ -303,25 +391,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 315.453125,
+        "x": 362.046875,
         "y": 96,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_23",
       "tag": "a",
       "role": null,
-      "text": "309 comments",
+      "text": "10 comments",
       "bbox": {
-        "x": 346.109375,
+        "x": 392.703125,
         "y": 96,
-        "width": 69.75,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_24",
@@ -334,59 +430,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_25",
       "tag": "a",
       "role": null,
-      "text": "Fastmail offers EU data region",
+      "text": "Show HN: A Project Oberon System version running on RISC-V instead of RISC-5",
       "bbox": {
         "x": 150.609375,
         "y": 113.5,
-        "width": 202.171875,
+        "width": 546.4375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_26",
       "tag": "a",
       "role": null,
-      "text": "fastmail.com",
+      "text": "github.com/rochus-keller",
       "bbox": {
-        "x": 361.375,
+        "x": 705.640625,
         "y": 115.5,
-        "width": 68.796875,
+        "width": 134.671875,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_27",
       "tag": "a",
       "role": null,
-      "text": "groomlake",
+      "text": "Rochus",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 131,
-        "width": 49.359375,
+        "width": 33.453125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_28",
       "tag": "a",
       "role": null,
-      "text": "6 hours ago",
+      "text": "3 hours ago",
       "bbox": {
-        "x": 270.6875,
+        "x": 248.84375,
         "y": 131,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_29",
@@ -394,25 +510,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 337.390625,
+        "x": 315.546875,
         "y": 131,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_30",
       "tag": "a",
       "role": null,
-      "text": "121 comments",
+      "text": "15 comments",
       "bbox": {
-        "x": 368.046875,
+        "x": 346.203125,
         "y": 131,
-        "width": 69.75,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_31",
@@ -425,46 +549,62 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_32",
       "tag": "a",
       "role": null,
-      "text": "Maryland Closes More of Cunningham Falls State Park After Second Beaver Attack",
+      "text": "Silicon Valley misreads science fiction and undermines democracy",
       "bbox": {
         "x": 150.609375,
         "y": 148.5,
-        "width": 550.171875,
+        "width": 442,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_33",
       "tag": "a",
       "role": null,
-      "text": "maryland.gov",
+      "text": "techcrunch.com",
       "bbox": {
-        "x": 709.375,
+        "x": 601.203125,
         "y": 150.5,
-        "width": 73.578125,
+        "width": 85.015625,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_34",
       "tag": "a",
       "role": null,
-      "text": "bookofjoe",
+      "text": "evo_9",
       "bbox": {
         "x": 212.109375,
         "y": 166,
-        "width": 45.953125,
+        "width": 28.53125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_35",
@@ -472,12 +612,16 @@
       "role": null,
       "text": "1 hour ago",
       "bbox": {
-        "x": 261.34375,
+        "x": 243.921875,
         "y": 166,
         "width": 51.03125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_36",
@@ -485,25 +629,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 323.1875,
+        "x": 305.765625,
         "y": 166,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_37",
       "tag": "a",
       "role": null,
-      "text": "12 comments",
+      "text": "20 comments",
       "bbox": {
-        "x": 353.84375,
+        "x": 336.421875,
         "y": 166,
         "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_38",
@@ -516,59 +668,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_39",
       "tag": "a",
       "role": null,
-      "text": "A domain can now say it is for sale, in DNS",
+      "text": "John C. Lilly on solid state intelligence and the elimination of man (1978)",
       "bbox": {
         "x": 150.609375,
         "y": 183.5,
-        "width": 289.828125,
+        "width": 492.421875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_40",
       "tag": "a",
       "role": null,
-      "text": "specification.website",
+      "text": "kibotronics.net",
       "bbox": {
-        "x": 449.03125,
+        "x": 651.625,
         "y": 185.5,
-        "width": 110.625,
+        "width": 79.53125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_41",
       "tag": "a",
       "role": null,
-      "text": "shaunpud",
+      "text": "Kiboneu",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 201,
-        "width": 45.71875,
+        "width": 37.875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_42",
       "tag": "a",
       "role": null,
-      "text": "9 hours ago",
+      "text": "2 hours ago",
       "bbox": {
-        "x": 267.046875,
+        "x": 253.265625,
         "y": 201,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_43",
@@ -576,25 +748,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 333.75,
+        "x": 319.96875,
         "y": 201,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_44",
       "tag": "a",
       "role": null,
-      "text": "123 comments",
+      "text": "10 comments",
       "bbox": {
-        "x": 364.40625,
+        "x": 350.625,
         "y": 201,
-        "width": 69.75,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_45",
@@ -607,59 +787,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_46",
       "tag": "a",
       "role": null,
-      "text": "LinkedIn Feed Blocker",
+      "text": "Honey, I shrunk the embeddings: Matryoshka vs. PCA",
       "bbox": {
         "x": 150.609375,
         "y": 218.5,
-        "width": 147.6875,
+        "width": 362.484375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_47",
       "tag": "a",
       "role": null,
-      "text": "github.com/andrewpollack",
+      "text": "dylancastillo.co",
       "bbox": {
-        "x": 306.890625,
+        "x": 521.6875,
         "y": 220.5,
-        "width": 141.546875,
+        "width": 81.78125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_48",
       "tag": "a",
       "role": null,
-      "text": "andrewpollack",
+      "text": "dcastm",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 236,
-        "width": 67.078125,
+        "width": 33.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_49",
       "tag": "a",
       "role": null,
-      "text": "5 hours ago",
+      "text": "4 hours ago",
       "bbox": {
-        "x": 288.40625,
+        "x": 249.28125,
         "y": 236,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_50",
@@ -667,25 +867,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 355.109375,
+        "x": 315.984375,
         "y": 236,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_51",
       "tag": "a",
       "role": null,
-      "text": "87 comments",
+      "text": "5 comments",
       "bbox": {
-        "x": 385.765625,
+        "x": 346.640625,
         "y": 236,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_52",
@@ -698,59 +906,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_53",
       "tag": "a",
       "role": null,
-      "text": "Open-source interactive map for the Aug 12 total solar eclipse",
+      "text": "There Are Magic Hexagons of Every Order",
       "bbox": {
         "x": 150.609375,
         "y": 253.5,
-        "width": 417.921875,
+        "width": 281.46875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_54",
       "tag": "a",
       "role": null,
-      "text": "eclipsefan.org",
+      "text": "gukov.dev",
       "bbox": {
-        "x": 577.125,
+        "x": 440.671875,
         "y": 255.5,
-        "width": 74.75,
+        "width": 54.546875,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_55",
       "tag": "a",
       "role": null,
-      "text": "MarcoDewey",
+      "text": "gukoff",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 271,
-        "width": 59.4375,
+        "width": 29.375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_56",
       "tag": "a",
       "role": null,
-      "text": "2 hours ago",
+      "text": "8 hours ago",
       "bbox": {
-        "x": 274.828125,
+        "x": 250.703125,
         "y": 271,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_57",
@@ -758,25 +986,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 341.53125,
+        "x": 317.40625,
         "y": 271,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_58",
       "tag": "a",
       "role": null,
-      "text": "8 comments",
+      "text": "19 comments",
       "bbox": {
-        "x": 372.1875,
+        "x": 348.0625,
         "y": 271,
-        "width": 57.890625,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_59",
@@ -789,59 +1025,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_60",
       "tag": "a",
       "role": null,
-      "text": "Can Intel finally beat ARM on performance per Watt?",
+      "text": "Every fast write moves work somewhere else",
       "bbox": {
         "x": 150.609375,
         "y": 288.5,
-        "width": 354.71875,
+        "width": 303.71875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_61",
       "tag": "a",
       "role": null,
-      "text": "hackaday.com",
+      "text": "shayon.dev",
       "bbox": {
-        "x": 513.921875,
+        "x": 462.921875,
         "y": 290.5,
-        "width": 75.96875,
+        "width": 61.234375,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_62",
       "tag": "a",
       "role": null,
-      "text": "gumby",
+      "text": "shayonj",
       "bbox": {
-        "x": 218.046875,
+        "x": 206.1875,
         "y": 306,
-        "width": 32.109375,
+        "width": 36.515625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_63",
       "tag": "a",
       "role": null,
-      "text": "6 hours ago",
+      "text": "42 minutes ago",
       "bbox": {
-        "x": 253.4375,
+        "x": 245.984375,
         "y": 306,
-        "width": 55.890625,
+        "width": 73.046875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_64",
@@ -849,25 +1105,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 320.140625,
+        "x": 329.84375,
         "y": 306,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_65",
       "tag": "a",
       "role": null,
-      "text": "46 comments",
+      "text": "discuss",
       "bbox": {
-        "x": 350.796875,
+        "x": 360.5,
         "y": 306,
-        "width": 63.828125,
+        "width": 33.734375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_66",
@@ -880,59 +1144,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_67",
       "tag": "a",
       "role": null,
-      "text": "Making difficulty curves in games",
+      "text": "Show HN: Vibez – Open-Source Rust Based Digital Audio Workstation (DAW)",
       "bbox": {
         "x": 150.609375,
         "y": 323.5,
-        "width": 223.375,
+        "width": 515.890625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_68",
       "tag": "a",
       "role": null,
-      "text": "davetech.co.uk",
+      "text": "alexanderwanyoike.github.io",
       "bbox": {
-        "x": 382.578125,
+        "x": 675.09375,
         "y": 325.5,
-        "width": 81.109375,
+        "width": 153.453125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_69",
       "tag": "a",
       "role": null,
-      "text": "hakkikonu",
+      "text": "mercutio93",
       "bbox": {
-        "x": 212.109375,
+        "x": 206.1875,
         "y": 341,
-        "width": 48.015625,
+        "width": 53.15625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_70",
       "tag": "a",
       "role": null,
-      "text": "1 hour ago",
+      "text": "47 minutes ago",
       "bbox": {
-        "x": 263.40625,
+        "x": 262.625,
         "y": 341,
-        "width": 51.03125,
+        "width": 73.046875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_71",
@@ -940,25 +1224,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 325.25,
+        "x": 346.484375,
         "y": 341,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_72",
       "tag": "a",
       "role": null,
-      "text": "2 comments",
+      "text": "discuss",
       "bbox": {
-        "x": 355.90625,
+        "x": 377.140625,
         "y": 341,
-        "width": 57.890625,
+        "width": 33.734375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_73",
@@ -971,59 +1263,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_74",
       "tag": "a",
       "role": null,
-      "text": "DeepMind's WeatherNext model achieves breakthrough forecasting cyclones",
+      "text": "My server is a phone now",
       "bbox": {
         "x": 150.609375,
         "y": 358.5,
-        "width": 511.34375,
+        "width": 171.78125,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_75",
       "tag": "a",
       "role": null,
-      "text": "deepmind.google",
+      "text": "seg6.space",
       "bbox": {
-        "x": 670.546875,
+        "x": 330.984375,
         "y": 360.5,
-        "width": 92.046875,
+        "width": 59.703125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_76",
       "tag": "a",
       "role": null,
-      "text": "bhavansig",
+      "text": "seg6",
       "bbox": {
         "x": 218.046875,
         "y": 376,
-        "width": 47.34375,
+        "width": 22.171875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_77",
       "tag": "a",
       "role": null,
-      "text": "13 hours ago",
+      "text": "17 hours ago",
       "bbox": {
-        "x": 268.671875,
+        "x": 243.5,
         "y": 376,
         "width": 61.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_78",
@@ -1031,25 +1343,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 341.3125,
+        "x": 316.140625,
         "y": 376,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_79",
       "tag": "a",
       "role": null,
-      "text": "107 comments",
+      "text": "200 comments",
       "bbox": {
-        "x": 371.96875,
+        "x": 346.796875,
         "y": 376,
         "width": 69.75,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_80",
@@ -1062,59 +1382,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_81",
       "tag": "a",
       "role": null,
-      "text": "Preventing Misfolding by Preventing Folding",
+      "text": "The Alpha 21264 CPU: NT's Greatest RISC (1998)",
       "bbox": {
         "x": 150.609375,
         "y": 393.5,
-        "width": 292.609375,
+        "width": 335.828125,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_82",
       "tag": "a",
       "role": null,
-      "text": "science.org",
+      "text": "halfhill.com",
       "bbox": {
-        "x": 451.8125,
+        "x": 495.03125,
         "y": 395.5,
-        "width": 60.578125,
+        "width": 61.625,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_83",
       "tag": "a",
       "role": null,
-      "text": "surprisetalk",
+      "text": "Lammy",
       "bbox": {
         "x": 212.109375,
         "y": 411,
-        "width": 54.890625,
+        "width": 34.390625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_84",
       "tag": "a",
       "role": null,
-      "text": "3 hours ago",
+      "text": "6 hours ago",
       "bbox": {
-        "x": 270.28125,
+        "x": 249.78125,
         "y": 411,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_85",
@@ -1122,25 +1462,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 336.984375,
+        "x": 316.484375,
         "y": 411,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_86",
       "tag": "a",
       "role": null,
-      "text": "1 comment",
+      "text": "28 comments",
       "bbox": {
-        "x": 367.640625,
+        "x": 347.140625,
         "y": 411,
-        "width": 53.03125,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_87",
@@ -1153,59 +1501,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_88",
       "tag": "a",
       "role": null,
-      "text": "Timeline of the OpenAI accidental attack against Hugging Face",
+      "text": "Microsoft Word for Windows 1.1a, Native X64 Port",
       "bbox": {
         "x": 150.609375,
         "y": 428.5,
-        "width": 420.734375,
+        "width": 336.078125,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_89",
       "tag": "a",
       "role": null,
-      "text": "simonwillison.net",
+      "text": "github.com/jmarshall23",
       "bbox": {
-        "x": 579.9375,
+        "x": 495.28125,
         "y": 430.5,
-        "width": 92.390625,
+        "width": 128.015625,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_90",
       "tag": "a",
       "role": null,
-      "text": "882542F3884314B",
+      "text": "BruceEel",
       "bbox": {
         "x": 218.046875,
         "y": 446,
-        "width": 88.875,
+        "width": 40.71875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_91",
       "tag": "a",
       "role": null,
-      "text": "11 hours ago",
+      "text": "10 hours ago",
       "bbox": {
-        "x": 310.203125,
+        "x": 262.046875,
         "y": 446,
         "width": 61.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_92",
@@ -1213,25 +1581,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 382.84375,
+        "x": 334.6875,
         "y": 446,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_93",
       "tag": "a",
       "role": null,
-      "text": "295 comments",
+      "text": "53 comments",
       "bbox": {
-        "x": 413.5,
+        "x": 365.34375,
         "y": 446,
-        "width": 69.75,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_94",
@@ -1244,59 +1620,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_95",
       "tag": "a",
       "role": null,
-      "text": "Building a local positioning system to track runners using Ultra-Wideband",
+      "text": "Os8088: A powerful Mac-like OS for the IBM XT, 286, 386",
       "bbox": {
         "x": 150.609375,
         "y": 463.5,
-        "width": 493.140625,
+        "width": 387.890625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_96",
       "tag": "a",
       "role": null,
-      "text": "zeus.ugent.be",
+      "text": "os8088.com",
       "bbox": {
-        "x": 652.34375,
+        "x": 547.09375,
         "y": 465.5,
-        "width": 75.625,
+        "width": 65.40625,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_97",
       "tag": "a",
       "role": null,
-      "text": "robinpdev",
+      "text": "jggonz",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 481,
-        "width": 46.640625,
+        "width": 31.3125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_98",
       "tag": "a",
       "role": null,
-      "text": "3 hours ago",
+      "text": "16 hours ago",
       "bbox": {
-        "x": 262.03125,
+        "x": 252.640625,
         "y": 481,
-        "width": 55.890625,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_99",
@@ -1304,25 +1700,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 328.734375,
+        "x": 325.28125,
         "y": 481,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_100",
       "tag": "a",
       "role": null,
-      "text": "1 comment",
+      "text": "145 comments",
       "bbox": {
-        "x": 359.390625,
+        "x": 355.9375,
         "y": 481,
-        "width": 53.03125,
+        "width": 69.75,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_101",
@@ -1335,59 +1739,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_102",
       "tag": "a",
       "role": null,
-      "text": "TinySol, a tiny solitaire game for DOS",
+      "text": "The Grid That Doubles the Strength of the Ground",
       "bbox": {
         "x": 150.609375,
         "y": 498.5,
-        "width": 253.46875,
+        "width": 337.375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_103",
       "tag": "a",
       "role": null,
-      "text": "classicbits.net",
+      "text": "practical.engineering",
       "bbox": {
-        "x": 412.671875,
+        "x": 496.578125,
         "y": 500.5,
-        "width": 74.96875,
+        "width": 111.828125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_104",
       "tag": "a",
       "role": null,
-      "text": "skibz",
+      "text": "michaefe",
       "bbox": {
         "x": 212.109375,
         "y": 516,
-        "width": 23.671875,
+        "width": 42.40625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_105",
       "tag": "a",
       "role": null,
-      "text": "4 hours ago",
+      "text": "8 hours ago",
       "bbox": {
-        "x": 239.0625,
+        "x": 257.796875,
         "y": 516,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_106",
@@ -1395,25 +1819,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 305.765625,
+        "x": 324.5,
         "y": 516,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_107",
       "tag": "a",
       "role": null,
-      "text": "7 comments",
+      "text": "22 comments",
       "bbox": {
-        "x": 336.421875,
+        "x": 355.15625,
         "y": 516,
-        "width": 57.890625,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_108",
@@ -1426,59 +1858,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_109",
       "tag": "a",
       "role": null,
-      "text": "Triton: DirectX 11 Driver for QEMU",
+      "text": "Uber SubmitQueue: a high-performance speculative merge queue",
       "bbox": {
         "x": 150.609375,
         "y": 533.5,
-        "width": 232.765625,
+        "width": 443.1875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_110",
       "tag": "a",
       "role": null,
-      "text": "getutm.app",
+      "text": "github.com/uber",
       "bbox": {
-        "x": 391.96875,
+        "x": 602.390625,
         "y": 535.5,
-        "width": 62.078125,
+        "width": 89.203125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_111",
       "tag": "a",
       "role": null,
-      "text": "electricant",
+      "text": "handfuloflight",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 551,
-        "width": 48.8125,
+        "width": 64.4375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_112",
       "tag": "a",
       "role": null,
-      "text": "8 hours ago",
+      "text": "6 hours ago",
       "bbox": {
-        "x": 270.140625,
+        "x": 279.828125,
         "y": 551,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_113",
@@ -1486,25 +1938,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 336.84375,
+        "x": 346.53125,
         "y": 551,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_114",
       "tag": "a",
       "role": null,
-      "text": "22 comments",
+      "text": "43 comments",
       "bbox": {
-        "x": 367.5,
+        "x": 377.1875,
         "y": 551,
         "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_115",
@@ -1517,59 +1977,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_116",
       "tag": "a",
       "role": null,
-      "text": "Python string literals are kinda funny",
+      "text": "Fastmail offers EU data region",
       "bbox": {
         "x": 150.609375,
         "y": 568.5,
-        "width": 248.109375,
+        "width": 202.171875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_117",
       "tag": "a",
       "role": null,
-      "text": "sebsite.pw",
+      "text": "fastmail.com",
       "bbox": {
-        "x": 407.3125,
+        "x": 361.375,
         "y": 570.5,
-        "width": 56.828125,
+        "width": 68.796875,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_118",
       "tag": "a",
       "role": null,
-      "text": "jandeboevrie",
+      "text": "groomlake",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 586,
-        "width": 60.75,
+        "width": 49.359375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_119",
       "tag": "a",
       "role": null,
-      "text": "4 hours ago",
+      "text": "1 day ago",
       "bbox": {
-        "x": 276.140625,
+        "x": 270.6875,
         "y": 586,
-        "width": 55.890625,
+        "width": 46.4375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_120",
@@ -1577,25 +2057,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 342.84375,
+        "x": 327.9375,
         "y": 586,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_121",
       "tag": "a",
       "role": null,
-      "text": "38 comments",
+      "text": "274 comments",
       "bbox": {
-        "x": 373.5,
+        "x": 358.59375,
         "y": 586,
-        "width": 63.828125,
+        "width": 69.75,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_122",
@@ -1608,59 +2096,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_123",
       "tag": "a",
       "role": null,
-      "text": "Wikipedia's founder on his life's work: \"A propaganda tool\"",
+      "text": "Dithered QR Codes",
       "bbox": {
         "x": 150.609375,
         "y": 603.5,
-        "width": 394.765625,
+        "width": 127.21875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_124",
       "tag": "a",
       "role": null,
-      "text": "nordictimes.com",
+      "text": "andrewt.net",
       "bbox": {
-        "x": 553.96875,
+        "x": 286.421875,
         "y": 605.5,
-        "width": 88.5625,
+        "width": 64.796875,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_125",
       "tag": "a",
       "role": null,
-      "text": "thisislife2",
+      "text": "jmusall",
       "bbox": {
-        "x": 206.1875,
+        "x": 218.046875,
         "y": 621,
-        "width": 44.328125,
+        "width": 33.78125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_126",
       "tag": "a",
       "role": null,
-      "text": "53 minutes ago",
+      "text": "17 hours ago",
       "bbox": {
-        "x": 253.796875,
+        "x": 255.109375,
         "y": 621,
-        "width": 73.046875,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_127",
@@ -1668,25 +2176,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 337.65625,
+        "x": 327.75,
         "y": 621,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_128",
       "tag": "a",
       "role": null,
-      "text": "1 comment",
+      "text": "34 comments",
       "bbox": {
-        "x": 368.3125,
+        "x": 358.40625,
         "y": 621,
-        "width": 53.03125,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_129",
@@ -1699,59 +2215,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_130",
       "tag": "a",
       "role": null,
-      "text": "Gateway 2000's hilariously bad ads in the 90s (Part II)",
+      "text": "Taxi drivers rarely die of Alzheimer's",
       "bbox": {
         "x": 150.609375,
         "y": 638.5,
-        "width": 368.3125,
+        "width": 243.890625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_131",
       "tag": "a",
       "role": null,
-      "text": "buttondown.com/suchbadtechads",
+      "text": "theconversation.com",
       "bbox": {
-        "x": 527.515625,
+        "x": 403.09375,
         "y": 640.5,
-        "width": 180.4375,
+        "width": 111.65625,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_132",
       "tag": "a",
       "role": null,
-      "text": "rfarley04",
+      "text": "jader201",
       "bbox": {
         "x": 212.109375,
         "y": 656,
-        "width": 42.359375,
+        "width": 41.96875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_133",
       "tag": "a",
       "role": null,
-      "text": "9 hours ago",
+      "text": "57 minutes ago",
       "bbox": {
-        "x": 257.75,
+        "x": 257.359375,
         "y": 656,
-        "width": 55.890625,
+        "width": 73.046875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_134",
@@ -1759,25 +2295,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 324.453125,
+        "x": 341.21875,
         "y": 656,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_135",
       "tag": "a",
       "role": null,
-      "text": "69 comments",
+      "text": "7 comments",
       "bbox": {
-        "x": 355.109375,
+        "x": 371.875,
         "y": 656,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_136",
@@ -1790,59 +2334,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_137",
       "tag": "a",
       "role": null,
-      "text": "Amazon Is Creating the Biggest Pollution Source in the Country",
+      "text": "Tom Stanton's supersonic trebuchet breaks sound barrier with gravity alone",
       "bbox": {
         "x": 150.609375,
         "y": 673.5,
-        "width": 426.0625,
+        "width": 509.34375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_138",
       "tag": "a",
       "role": null,
-      "text": "newrepublic.com",
+      "text": "techeblog.com",
       "bbox": {
-        "x": 585.265625,
+        "x": 668.546875,
         "y": 675.5,
-        "width": 90.4375,
+        "width": 78.15625,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_139",
       "tag": "a",
       "role": null,
-      "text": "geox",
+      "text": "Thorondor",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 691,
-        "width": 22.46875,
+        "width": 48.328125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_140",
       "tag": "a",
       "role": null,
-      "text": "5 hours ago",
+      "text": "1 hour ago",
       "bbox": {
-        "x": 243.796875,
+        "x": 263.71875,
         "y": 691,
-        "width": 55.890625,
+        "width": 51.03125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_141",
@@ -1850,25 +2414,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 310.5,
+        "x": 325.5625,
         "y": 691,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_142",
       "tag": "a",
       "role": null,
-      "text": "77 comments",
+      "text": "5 comments",
       "bbox": {
-        "x": 341.15625,
+        "x": 356.21875,
         "y": 691,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_143",
@@ -1881,59 +2453,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_144",
       "tag": "a",
       "role": null,
-      "text": "US Military's cyber command unit grapples with cluster of deaths by suicide",
+      "text": "Improving Heuristics for A* Pathfinding",
       "bbox": {
         "x": 150.609375,
         "y": 708.5,
-        "width": 508,
+        "width": 264.03125,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_145",
       "tag": "a",
       "role": null,
-      "text": "bloomberg.com",
+      "text": "redblobgames.com",
       "bbox": {
-        "x": 667.203125,
+        "x": 423.234375,
         "y": 710.5,
-        "width": 83.328125,
+        "width": 101.8125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_146",
       "tag": "a",
       "role": null,
-      "text": "rbanffy",
+      "text": "bobbiechen",
       "bbox": {
         "x": 218.046875,
         "y": 726,
-        "width": 33.34375,
+        "width": 53.453125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_147",
       "tag": "a",
       "role": null,
-      "text": "12 hours ago",
+      "text": "17 hours ago",
       "bbox": {
-        "x": 254.671875,
+        "x": 274.78125,
         "y": 726,
         "width": 61.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_148",
@@ -1941,25 +2533,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 327.3125,
+        "x": 347.421875,
         "y": 726,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_149",
       "tag": "a",
       "role": null,
-      "text": "312 comments",
+      "text": "36 comments",
       "bbox": {
-        "x": 357.96875,
+        "x": 378.078125,
         "y": 726,
-        "width": 69.75,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_150",
@@ -1972,59 +2572,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_151",
       "tag": "a",
       "role": null,
-      "text": "A physicist rigged his pet hamster’s wheel to upload to Strava",
+      "text": "Willoughbyland: England's Forgotten South American Colony",
       "bbox": {
         "x": 150.609375,
         "y": 743.5,
-        "width": 415.84375,
+        "width": 407.390625,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_152",
       "tag": "a",
       "role": null,
-      "text": "runnersworld.com",
+      "text": "historytoday.com",
       "bbox": {
-        "x": 575.046875,
+        "x": 566.59375,
         "y": 745.5,
-        "width": 96.828125,
+        "width": 91.984375,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_153",
       "tag": "a",
       "role": null,
-      "text": "aanet",
+      "text": "benbreen",
       "bbox": {
-        "x": 218.046875,
+        "x": 206.1875,
         "y": 761,
-        "width": 26.359375,
+        "width": 44.09375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_154",
       "tag": "a",
       "role": null,
-      "text": "20 hours ago",
+      "text": "1 hour ago",
       "bbox": {
-        "x": 247.6875,
+        "x": 253.5625,
         "y": 761,
-        "width": 61.828125,
+        "width": 51.03125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_155",
@@ -2032,25 +2652,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 320.328125,
+        "x": 315.40625,
         "y": 761,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_156",
       "tag": "a",
       "role": null,
-      "text": "97 comments",
+      "text": "discuss",
       "bbox": {
-        "x": 350.984375,
+        "x": 346.0625,
         "y": 761,
-        "width": 63.828125,
+        "width": 33.734375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_157",
@@ -2063,46 +2691,62 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_158",
       "tag": "a",
       "role": null,
-      "text": "The Unreasonable Effectiveness of Mathematics in the Natural Sciences [pdf]",
+      "text": "Windows 11's built-in Weather app wastes more than 1 GB of RAM",
       "bbox": {
         "x": 150.609375,
         "y": 778.5,
-        "width": 517.453125,
+        "width": 447.1875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_159",
       "tag": "a",
       "role": null,
-      "text": "njit.edu",
+      "text": "notebookcheck.net",
       "bbox": {
-        "x": 676.65625,
+        "x": 606.390625,
         "y": 780.5,
-        "width": 41.171875,
+        "width": 101.34375,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_160",
       "tag": "a",
       "role": null,
-      "text": "pseudolus",
+      "text": "akyuu",
       "bbox": {
         "x": 212.109375,
         "y": 796,
-        "width": 46.9375,
+        "width": 28.46875,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_161",
@@ -2110,12 +2754,16 @@
       "role": null,
       "text": "1 hour ago",
       "bbox": {
-        "x": 262.328125,
+        "x": 243.859375,
         "y": 796,
         "width": 51.03125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_162",
@@ -2123,25 +2771,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 324.171875,
+        "x": 305.703125,
         "y": 796,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_163",
       "tag": "a",
       "role": null,
-      "text": "1 comment",
+      "text": "2 comments",
       "bbox": {
-        "x": 354.828125,
+        "x": 336.359375,
         "y": 796,
-        "width": 53.03125,
+        "width": 57.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_164",
@@ -2154,59 +2810,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_165",
       "tag": "a",
       "role": null,
-      "text": "Hardware backdoors in some x86 CPUs",
+      "text": "Reviving a four year old reMarkable 2",
       "bbox": {
         "x": 150.609375,
         "y": 813.5,
-        "width": 263.046875,
+        "width": 252.046875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_166",
       "tag": "a",
       "role": null,
-      "text": "github.com/xoreaxeaxeax",
+      "text": "oskrim.github.io",
       "bbox": {
-        "x": 422.25,
+        "x": 411.25,
         "y": 815.5,
-        "width": 139.046875,
+        "width": 87.125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_167",
       "tag": "a",
       "role": null,
-      "text": "epestr",
+      "text": "tremguy",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 831,
-        "width": 29.453125,
+        "width": 39.53125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_168",
       "tag": "a",
       "role": null,
-      "text": "15 hours ago",
+      "text": "4 hours ago",
       "bbox": {
-        "x": 250.78125,
+        "x": 254.921875,
         "y": 831,
-        "width": 61.828125,
+        "width": 55.890625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_169",
@@ -2214,25 +2890,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 323.421875,
+        "x": 321.625,
         "y": 831,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_170",
       "tag": "a",
       "role": null,
-      "text": "92 comments",
+      "text": "61 comments",
       "bbox": {
-        "x": 354.078125,
+        "x": 352.28125,
         "y": 831,
         "width": 63.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_171",
@@ -2245,59 +2929,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_172",
       "tag": "a",
       "role": null,
-      "text": "DeepSeek V4 Flash 0731",
+      "text": "Shopify replaced Redis with MySQL for inventory reservations–and it scaled",
       "bbox": {
         "x": 150.609375,
         "y": 848.5,
-        "width": 167.59375,
+        "width": 506.796875,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_173",
       "tag": "a",
       "role": null,
-      "text": "arcprize.org",
+      "text": "shopify.engineering",
       "bbox": {
-        "x": 326.796875,
+        "x": 666,
         "y": 850.5,
-        "width": 64.0625,
+        "width": 104.203125,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_174",
       "tag": "a",
       "role": null,
-      "text": "tosh",
+      "text": "adletbalzhanov",
       "bbox": {
         "x": 218.046875,
         "y": 866,
-        "width": 20.109375,
+        "width": 70.625,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_175",
       "tag": "a",
       "role": null,
-      "text": "1 day ago",
+      "text": "17 hours ago",
       "bbox": {
-        "x": 241.4375,
+        "x": 291.953125,
         "y": 866,
-        "width": 46.4375,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_176",
@@ -2305,25 +3009,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 298.6875,
+        "x": 364.59375,
         "y": 866,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_177",
       "tag": "a",
       "role": null,
-      "text": "449 comments",
+      "text": "196 comments",
       "bbox": {
-        "x": 329.34375,
+        "x": 395.25,
         "y": 866,
         "width": 69.75,
         "height": 11
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_178",
@@ -2336,59 +3048,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_179",
       "tag": "a",
       "role": null,
-      "text": "From your doorbell to your home network",
+      "text": "Show HN: Airy – Free, fast, and simple voice content creation",
       "bbox": {
         "x": 150.609375,
         "y": 883.5,
-        "width": 281.21875,
+        "width": 415.09375,
         "height": 16
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_180",
       "tag": "a",
       "role": null,
-      "text": "of0x.cc",
+      "text": "airy.so",
       "bbox": {
-        "x": 440.421875,
+        "x": 574.296875,
         "y": 885.5,
-        "width": 38.296875,
+        "width": 35.109375,
         "height": 13
       },
-      "above_fold": true
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_181",
       "tag": "a",
       "role": null,
-      "text": "mmoogle",
+      "text": "login588",
       "bbox": {
         "x": 212.109375,
         "y": 901,
-        "width": 43.421875,
+        "width": 40.296875,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_182",
       "tag": "a",
       "role": null,
-      "text": "8 hours ago",
+      "text": "6 hours ago",
       "bbox": {
-        "x": 258.8125,
+        "x": 255.6875,
         "y": 901,
         "width": 55.890625,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_183",
@@ -2396,25 +3128,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 325.515625,
+        "x": 322.390625,
         "y": 901,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_184",
       "tag": "a",
       "role": null,
-      "text": "8 comments",
+      "text": "12 comments",
       "bbox": {
-        "x": 356.171875,
+        "x": 353.046875,
         "y": 901,
-        "width": 57.890625,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_185",
@@ -2427,59 +3167,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_186",
       "tag": "a",
       "role": null,
-      "text": "What happens if an entire class of workers loses faith in their careers",
+      "text": "Stylized GGX Shading",
       "bbox": {
         "x": 150.609375,
         "y": 918.5,
-        "width": 465.328125,
+        "width": 146.109375,
         "height": 16
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_187",
       "tag": "a",
       "role": null,
-      "text": "noemamag.com",
+      "text": "alexandrelamure.github.io",
       "bbox": {
-        "x": 624.53125,
+        "x": 305.3125,
         "y": 920.5,
-        "width": 86.03125,
+        "width": 140.96875,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_188",
       "tag": "a",
       "role": null,
-      "text": "RickJWagner",
+      "text": "ibobev",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 936,
-        "width": 59.3125,
+        "width": 30.9375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_189",
       "tag": "a",
       "role": null,
-      "text": "1 day ago",
+      "text": "10 hours ago",
       "bbox": {
-        "x": 280.640625,
+        "x": 246.328125,
         "y": 936,
-        "width": 46.4375,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_190",
@@ -2487,25 +3247,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 337.890625,
+        "x": 318.96875,
         "y": 936,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_191",
       "tag": "a",
       "role": null,
-      "text": "1125 comments",
+      "text": "discuss",
       "bbox": {
-        "x": 368.546875,
+        "x": 349.625,
         "y": 936,
-        "width": 75.6875,
+        "width": 33.734375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_192",
@@ -2518,59 +3286,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_193",
       "tag": "a",
       "role": null,
-      "text": "Voyager 1 FDS Computer Emulator",
+      "text": "TheoremDB – A public workspace for machine mathematics",
       "bbox": {
         "x": 150.609375,
         "y": 953.5,
-        "width": 234.8125,
+        "width": 400.328125,
         "height": 16
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_194",
       "tag": "a",
       "role": null,
-      "text": "zaneham.github.io",
+      "text": "theoremdb.org",
       "bbox": {
-        "x": 394.015625,
+        "x": 559.53125,
         "y": 955.5,
-        "width": 99.578125,
+        "width": 79.765625,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_195",
       "tag": "a",
       "role": null,
-      "text": "rahen",
+      "text": "frozenseven",
       "bbox": {
         "x": 212.109375,
         "y": 971,
-        "width": 26.796875,
+        "width": 56.5625,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_196",
       "tag": "a",
       "role": null,
-      "text": "8 hours ago",
+      "text": "14 hours ago",
       "bbox": {
-        "x": 242.1875,
+        "x": 271.953125,
         "y": 971,
-        "width": 55.890625,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_197",
@@ -2578,25 +3366,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 308.890625,
+        "x": 344.59375,
         "y": 971,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_198",
       "tag": "a",
       "role": null,
-      "text": "12 comments",
+      "text": "9 comments",
       "bbox": {
-        "x": 339.546875,
+        "x": 375.25,
         "y": 971,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_199",
@@ -2609,59 +3405,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_200",
       "tag": "a",
       "role": null,
-      "text": "BYOC Is Not Just 'Deploy into Their Cloud'",
+      "text": "Making difficulty curves in games",
       "bbox": {
         "x": 150.609375,
         "y": 988.5,
-        "width": 282.765625,
+        "width": 223.375,
         "height": 16
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_201",
       "tag": "a",
       "role": null,
-      "text": "omnistrate.com",
+      "text": "davetech.co.uk",
       "bbox": {
-        "x": 441.96875,
+        "x": 382.578125,
         "y": 990.5,
-        "width": 83.859375,
+        "width": 81.109375,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_202",
       "tag": "a",
       "role": null,
-      "text": "kkgupta",
+      "text": "hakkikonu",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 1006,
-        "width": 37.859375,
+        "width": 48.015625,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_203",
       "tag": "a",
       "role": null,
-      "text": "9 hours ago",
+      "text": "19 hours ago",
       "bbox": {
-        "x": 253.25,
+        "x": 269.34375,
         "y": 1006,
-        "width": 55.890625,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_204",
@@ -2669,25 +3485,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 319.953125,
+        "x": 341.984375,
         "y": 1006,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_205",
       "tag": "a",
       "role": null,
-      "text": "10 comments",
+      "text": "72 comments",
       "bbox": {
-        "x": 350.609375,
+        "x": 372.640625,
         "y": 1006,
         "width": 63.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_206",
@@ -2700,59 +3524,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_207",
       "tag": "a",
       "role": null,
-      "text": "Message your other Claude Code sessions",
+      "text": "The original URL for this prediction will no longer be available in 11 years (2011)",
       "bbox": {
         "x": 150.609375,
         "y": 1023.5,
-        "width": 281.34375,
+        "width": 542.125,
         "height": 16
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_208",
       "tag": "a",
       "role": null,
-      "text": "claude.com",
+      "text": "longbets.org",
       "bbox": {
-        "x": 440.546875,
+        "x": 701.328125,
         "y": 1025.5,
-        "width": 60.890625,
+        "width": 67.078125,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_209",
       "tag": "a",
       "role": null,
-      "text": "mfiguiere",
+      "text": "doubletwoyou",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 1041,
-        "width": 44.296875,
+        "width": 65.234375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_210",
       "tag": "a",
       "role": null,
-      "text": "6 hours ago",
+      "text": "11 hours ago",
       "bbox": {
-        "x": 259.6875,
+        "x": 286.5625,
         "y": 1041,
-        "width": 55.890625,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_211",
@@ -2760,25 +3604,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 326.390625,
+        "x": 359.203125,
         "y": 1041,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_212",
       "tag": "a",
       "role": null,
-      "text": "14 comments",
+      "text": "87 comments",
       "bbox": {
-        "x": 357.046875,
+        "x": 389.859375,
         "y": 1041,
         "width": 63.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_213",
@@ -2791,59 +3643,79 @@
         "width": 14,
         "height": 10
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_214",
       "tag": "a",
       "role": null,
-      "text": "U.S. Department of Energy Launches the Genesis Open Models Initiative",
+      "text": "Unexpected events and prosocial behavior: the Batman effect (2025)",
       "bbox": {
         "x": 150.609375,
         "y": 1058.5,
-        "width": 487,
+        "width": 465.484375,
         "height": 16
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_215",
       "tag": "a",
       "role": null,
-      "text": "anl.gov",
+      "text": "nature.com",
       "bbox": {
-        "x": 646.203125,
+        "x": 624.6875,
         "y": 1060.5,
-        "width": 39.296875,
+        "width": 61.265625,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_216",
       "tag": "a",
       "role": null,
-      "text": "moelf",
+      "text": "davidbarker",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 1076,
-        "width": 26.140625,
+        "width": 55.609375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_217",
       "tag": "a",
       "role": null,
-      "text": "1 day ago",
+      "text": "14 hours ago",
       "bbox": {
-        "x": 247.46875,
+        "x": 271,
         "y": 1076,
-        "width": 46.4375,
+        "width": 61.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_218",
@@ -2851,25 +3723,33 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 304.71875,
+        "x": 343.640625,
         "y": 1076,
         "width": 19.84375,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_219",
       "tag": "a",
       "role": null,
-      "text": "141 comments",
+      "text": "25 comments",
       "bbox": {
-        "x": 335.375,
+        "x": 374.296875,
         "y": 1076,
-        "width": 69.75,
+        "width": 63.828125,
         "height": 11
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
     },
     {
       "ref": "el_220",
@@ -2882,7 +3762,11 @@
         "width": 32.96875,
         "height": 16
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_221",
@@ -2895,7 +3779,11 @@
         "width": 514.9375,
         "height": 16
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_222",
@@ -2908,7 +3796,11 @@
         "width": 55.4375,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_223",
@@ -2921,7 +3813,11 @@
         "width": 21.296875,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_224",
@@ -2934,7 +3830,11 @@
         "width": 24.171875,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_225",
@@ -2947,7 +3847,11 @@
         "width": 18.203125,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_226",
@@ -2960,7 +3864,11 @@
         "width": 43.875,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_227",
@@ -2973,7 +3881,11 @@
         "width": 28.265625,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_228",
@@ -2986,7 +3898,11 @@
         "width": 61.984375,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_229",
@@ -2999,7 +3915,11 @@
         "width": 41.03125,
         "height": 13
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
     },
     {
       "ref": "el_230",
@@ -3012,7 +3932,11 @@
         "width": 1210.390625,
         "height": 21
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     },
     {
       "ref": "el_231",
@@ -3025,10 +3949,15 @@
         "width": 148,
         "height": 21
       },
-      "above_fold": false
+      "above_fold": false,
+      "input_type": "text",
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
     }
   ],
   "elements_total": 232,
-  "text_excerpt": "Hacker Newsnew | past | comments | ask | show | jobs | submit login 1. Denmark Requires Oral Defenses for Students' Written Work to Counter AI Cheating (mezha.net) 408 points by theanonymousone 4 hours ago | hide | 192 comments 2. \"Code was never the hard part\" is an insult to all programmers (senko.net) 469 points by senko 7 hours ago | hide | 309 comments 3. Fastmail offers EU data region (fastmail.com) 274 points by groomlake 6 hours ago | hide | 121 comments 4. Maryland Closes More of Cunningham Falls State Park After Second Beaver Attack (maryland.gov) 34 points by bookofjoe 1 hour ago | hide | 12 comments 5. A domain can now say it is for sale, in DNS (specification.website) 306 points by shaunpud 9 hours ago | hide | 123 comments 6. LinkedIn Feed Blocker (github.com/andrewpollack) 148 points by andrewpollack 5 hours ago | hide | 87 comments 7. Open-source interactive map for the Aug 12 total solar eclipse (eclipsefan.org) 45 points by MarcoDewey 2 hours ago | hide | 8 comments 8. Can Intel finally beat ARM on performance per Watt? (hackaday.com) 125 points by gumby 6 hours ago | hide | 46 comments 9. Making difficulty curves in games (davetech.co.uk) 12 points by hakkikonu 1 hour ago | hide | 2 comments 10. DeepMind's WeatherNext model achieves breakthrough forecasting cyclones (deepmind.google) 347 points by bhavansig 13 hours ago | hide | 107 comments 11. Preventing Misfolding by Preventing Folding (science.org) 31 points by surprisetalk 3 hours ago | hide | 1 comment 12. Timeline of the OpenAI accidental attack against Hugging Face (simonwillison.net) 291 points by 882542F3884314B 11 hours ago | hide | 295 comments 13. Building a local positioning system to track runners using Ultra-Wideband (zeus.ugent.be) 23 points by robinpdev 3 hours ago | hide | 1 comment 14. TinySol, a tiny solitaire game for DOS (classicbits.net) 36 points by skibz 4 hours ago | hide | 7 comments 15. Triton: DirectX 11 Driver for QEMU (getutm.app) 118 points by electricant 8 hours ago | hide | 22 comments 16. Python string literals are kinda funny (sebsite.pw) 55 points by jandeboevrie 4 hours ago | hide | 38 comments 17. Wikipedia's founder on his life's work: \"A propaganda tool\" (nordictimes.com) 5 points by thisislife2 53 minutes ago | hide | 1 comment 18. Gateway 2000's hilariously bad ads in the 90s (Part II) (buttondown.com/suchbadtechads) 87 points by rfarley04 9 hours ago | hide | 69 comments 19. Amazon Is Creating the Biggest Pollution Source in the Country (newrepublic.com) 159 points by geox 5 hours ago | hide | 77 comments 20. US Military's cyber command unit grapples with cluster of deaths by suicide (bloomberg.com) 200 points by rbanffy 12 hours ago | hide | 312 comments 21. A physicist rigged his pet hamster’s wheel to upload to Strava (runnersworld.com) 410 points by aanet 20 hours ago | hide | 97 comments 22. The Unreasonable Effectiveness of Mathematics in the Natural Sciences [pdf] (njit.edu) 10 points by pseudolus 1 hour ago | hide | 1 comment 23. Hardware backdoors in some x86 CPUs (github.com/xoreaxeaxeax) 317 points by epestr 15 hours ago | hide | 92 comments 24. DeepSeek V4 Flash 0731 (arcprize.org) 751 points by tosh 1 day ago | hide | 449 comments 25. From your doorbell to your home network (of0x.cc) 67 points by mmoogle 8 hours ago | hide | 8 comments 26. What happens if an entire class of workers loses faith in their careers (noemamag.com) 952 points by RickJWagner 1 day ago | hide | 1125 comments 27. Voyager 1 FDS Computer Emulator (zaneham.github.io) 69 points by rahen 8 hours ago | hide | 12 comments 28. BYOC Is Not Just 'Deploy into Their Cloud' (omnistrate.com) 63 points by kkgupta 9 hours ago | hide | 10 comments 29. Message your other Claude Code sessions (claude.com) 32 points by mfiguiere 6 hours ago | hide | 14 comments 30. U.S. Department of Energy Launches the Genesis Open Models Initiative (anl.gov) 337 points by moelf 1 day ago | hide | 141 comments More Consider applying for YC's Fall 2026 batch! Appl",
-  "captured_at": "2026-08-08T22:28:32.095Z"
+  "text_excerpt": "Hacker Newsnew | past | comments | ask | show | jobs | submit login 1. Mea Culpa – Dark Hours (terrygodier.com) 248 points by satvikpendem 2 hours ago | hide | 110 comments 2. Tech sucks: You have to vote with your wallet, or nothing will change (82mhz.net) 27 points by reallydontask 23 minutes ago | hide | 10 comments 3. Show HN: A Project Oberon System version running on RISC-V instead of RISC-5 (github.com/rochus-keller) 52 points by Rochus 3 hours ago | hide | 15 comments 4. Silicon Valley misreads science fiction and undermines democracy (techcrunch.com) 51 points by evo_9 1 hour ago | hide | 20 comments 5. John C. Lilly on solid state intelligence and the elimination of man (1978) (kibotronics.net) 30 points by Kiboneu 2 hours ago | hide | 10 comments 6. Honey, I shrunk the embeddings: Matryoshka vs. PCA (dylancastillo.co) 42 points by dcastm 4 hours ago | hide | 5 comments 7. There Are Magic Hexagons of Every Order (gukov.dev) 138 points by gukoff 8 hours ago | hide | 19 comments 8. Every fast write moves work somewhere else (shayon.dev) 4 points by shayonj 42 minutes ago | hide | discuss 9. Show HN: Vibez – Open-Source Rust Based Digital Audio Workstation (DAW) (alexanderwanyoike.github.io) 4 points by mercutio93 47 minutes ago | hide | discuss 10. My server is a phone now (seg6.space) 438 points by seg6 17 hours ago | hide | 200 comments 11. The Alpha 21264 CPU: NT's Greatest RISC (1998) (halfhill.com) 52 points by Lammy 6 hours ago | hide | 28 comments 12. Microsoft Word for Windows 1.1a, Native X64 Port (github.com/jmarshall23) 125 points by BruceEel 10 hours ago | hide | 53 comments 13. Os8088: A powerful Mac-like OS for the IBM XT, 286, 386 (os8088.com) 222 points by jggonz 16 hours ago | hide | 145 comments 14. The Grid That Doubles the Strength of the Ground (practical.engineering) 97 points by michaefe 8 hours ago | hide | 22 comments 15. Uber SubmitQueue: a high-performance speculative merge queue (github.com/uber) 57 points by handfuloflight 6 hours ago | hide | 43 comments 16. Fastmail offers EU data region (fastmail.com) 480 points by groomlake 1 day ago | hide | 274 comments 17. Dithered QR Codes (andrewt.net) 322 points by jmusall 17 hours ago | hide | 34 comments 18. Taxi drivers rarely die of Alzheimer's (theconversation.com) 16 points by jader201 57 minutes ago | hide | 7 comments 19. Tom Stanton's supersonic trebuchet breaks sound barrier with gravity alone (techeblog.com) 28 points by Thorondor 1 hour ago | hide | 5 comments 20. Improving Heuristics for A* Pathfinding (redblobgames.com) 320 points by bobbiechen 17 hours ago | hide | 36 comments 21. Willoughbyland: England's Forgotten South American Colony (historytoday.com) 5 points by benbreen 1 hour ago | hide | discuss 22. Windows 11's built-in Weather app wastes more than 1 GB of RAM (notebookcheck.net) 13 points by akyuu 1 hour ago | hide | 2 comments 23. Reviving a four year old reMarkable 2 (oskrim.github.io) 80 points by tremguy 4 hours ago | hide | 61 comments 24. Shopify replaced Redis with MySQL for inventory reservations–and it scaled (shopify.engineering) 298 points by adletbalzhanov 17 hours ago | hide | 196 comments 25. Show HN: Airy – Free, fast, and simple voice content creation (airy.so) 22 points by login588 6 hours ago | hide | 12 comments 26. Stylized GGX Shading (alexandrelamure.github.io) 55 points by ibobev 10 hours ago | hide | discuss 27. TheoremDB – A public workspace for machine mathematics (theoremdb.org) 77 points by frozenseven 14 hours ago | hide | 9 comments 28. Making difficulty curves in games (davetech.co.uk) 150 points by hakkikonu 19 hours ago | hide | 72 comments 29. The original URL for this prediction will no longer be available in 11 years (2011) (longbets.org) 185 points by doubletwoyou 11 hours ago | hide | 87 comments 30. Unexpected events and prosocial behavior: the Batman effect (2025) (nature.com) 79 points by davidbarker 14 hours ago | hide | 25 comments More Consider applying for YC's Fall 2026 batch!",
+  "text_total_chars": 4118,
+  "captured_at": "frozen"
 }

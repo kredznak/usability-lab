@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+  Synthetic fixture — a SaaS trial signup page (UC-5 shape).
+
+  Deliberately constructed so specific signals fire: a substantive multi-field
+  form (R1), a named goal action (R4), and a genuine accessibility problem —
+  every field is placeholder-only with no <label>, and the two icon buttons have
+  no accessible name at all (R3). A real site would be a mix; a fixture that is
+  a mix cannot tell you which rule fired for which reason.
+
+  Paired with checkout.html, which is the same page shape done accessibly.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Start your free trial — Northwind Analytics</title>
+    <style>
+      body { font: 16px/1.5 system-ui, sans-serif; margin: 0; color: #101828; }
+      header { display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; border-bottom: 1px solid #eaecf0; }
+      nav a { margin-left: 24px; color: #475467; text-decoration: none; }
+      main { max-width: 480px; margin: 64px auto; padding: 0 24px; }
+      h1 { font-size: 34px; margin: 0 0 8px; }
+      .sub { font-size: 17px; color: #475467; margin: 0 0 32px; }
+      input, select { display: block; width: 100%; box-sizing: border-box; padding: 12px 14px; margin-bottom: 16px; font-size: 16px; border: 1px solid #d0d5dd; border-radius: 8px; }
+      button.primary { width: 100%; padding: 14px; font-size: 17px; background: #6941c6; color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
+      .icons { margin-top: 24px; display: flex; gap: 12px; justify-content: center; }
+      .icons button { width: 44px; height: 44px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; font-size: 18px; cursor: pointer; }
+      .fine { font-size: 13px; color: #667085; margin-top: 20px; }
+      footer { border-top: 1px solid #eaecf0; padding: 32px 48px; color: #667085; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Northwind Analytics</strong>
+      <nav>
+        <a href="/product">Product</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/docs">Docs</a>
+        <a href="/login">Log in</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Start your free trial</h1>
+      <p class="sub">Fourteen days. No credit card required.</p>
+
+      <form action="/signup" method="post">
+        <input type="email" name="email" placeholder="Work email" />
+        <input type="password" name="password" placeholder="Password" />
+        <input type="text" name="company" placeholder="Company name" />
+        <input type="text" name="teamsize" placeholder="How many people on your team?" />
+        <select name="plan">
+          <option>Choose a plan</option>
+          <option>Starter — $29/mo</option>
+          <option>Growth — $99/mo</option>
+          <option>Scale — $299/mo</option>
+        </select>
+        <button class="primary" type="submit">Create my account</button>
+      </form>
+
+      <div class="icons">
+        <button type="button">&#9679;</button>
+        <button type="button">&#9670;</button>
+      </div>
+
+      <p class="fine">
+        By creating an account you agree to our Terms of Service and Privacy
+        Policy. We will email you occasionally about product updates.
+      </p>
+    </main>
+
+    <footer>
+      <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> ·
+      <a href="/contact">Contact</a>
+      <p>&copy; 2026 Northwind Analytics, Inc.</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,529 @@
+{
+  "audit_id": "fixture-checkout",
+  "url": "file:///Users/kellyredznak/Desktop/The%20Usability%20Lab/fixtures/pages/checkout.html",
+  "final_url": "file:///Users/kellyredznak/Desktop/The%20Usability%20Lab/fixtures/pages/checkout.html",
+  "title": "Checkout — Fernbrook Supply Co.",
+  "screenshot_id": "fixture-checkout-page",
+  "screenshot_path": "out/fixture-checkout/fixture-checkout-page.png",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "full_height": 1339,
+  "elements": [
+    {
+      "ref": "el_0",
+      "tag": "header",
+      "role": null,
+      "text": "Fernbrook Supply Co. 🛒",
+      "bbox": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 69
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_1",
+      "tag": "button",
+      "role": null,
+      "text": "🛒",
+      "bbox": {
+        "x": 1359,
+        "y": 20,
+        "width": 33,
+        "height": 28
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": "View your cart",
+      "name_source": "aria-label",
+      "font_size": 13
+    },
+    {
+      "ref": "el_2",
+      "tag": "h1",
+      "role": null,
+      "text": "Checkout",
+      "bbox": {
+        "x": 410,
+        "y": 117,
+        "width": 620,
+        "height": 45
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 30
+    },
+    {
+      "ref": "el_3",
+      "tag": "form",
+      "role": null,
+      "text": "Contact Email address Shipping address Full name Street address City ZIP code Country United States Canada United Kingdom Payment Card number Expiry Security code Total $148.00 Pay $148.00",
+      "bbox": {
+        "x": 410,
+        "y": 219,
+        "width": 620,
+        "height": 901.5
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_4",
+      "tag": "h2",
+      "role": null,
+      "text": "Contact",
+      "bbox": {
+        "x": 410,
+        "y": 219,
+        "width": 620,
+        "height": 28.5
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_5",
+      "tag": "label",
+      "role": null,
+      "text": "Email address",
+      "bbox": {
+        "x": 410,
+        "y": 259.5,
+        "width": 620,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_6",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 410,
+        "y": 286.5,
+        "width": 620,
+        "height": 42
+      },
+      "above_fold": true,
+      "input_type": "email",
+      "accessible_name": "Email address",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_7",
+      "tag": "h2",
+      "role": null,
+      "text": "Shipping address",
+      "bbox": {
+        "x": 410,
+        "y": 360.5,
+        "width": 620,
+        "height": 28.5
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_8",
+      "tag": "label",
+      "role": null,
+      "text": "Full name",
+      "bbox": {
+        "x": 410,
+        "y": 401,
+        "width": 620,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_9",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 410,
+        "y": 428,
+        "width": 620,
+        "height": 42
+      },
+      "above_fold": true,
+      "input_type": "text",
+      "accessible_name": "Full name",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_10",
+      "tag": "label",
+      "role": null,
+      "text": "Street address",
+      "bbox": {
+        "x": 410,
+        "y": 488,
+        "width": 620,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_11",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 410,
+        "y": 515,
+        "width": 620,
+        "height": 42
+      },
+      "above_fold": true,
+      "input_type": "text",
+      "accessible_name": "Street address",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_12",
+      "tag": "label",
+      "role": null,
+      "text": "City",
+      "bbox": {
+        "x": 410,
+        "y": 575,
+        "width": 302,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_13",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 410,
+        "y": 602,
+        "width": 302,
+        "height": 42
+      },
+      "above_fold": true,
+      "input_type": "text",
+      "accessible_name": "City",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_14",
+      "tag": "label",
+      "role": null,
+      "text": "ZIP code",
+      "bbox": {
+        "x": 728,
+        "y": 575,
+        "width": 302,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_15",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 728,
+        "y": 602,
+        "width": 302,
+        "height": 42
+      },
+      "above_fold": true,
+      "input_type": "text",
+      "accessible_name": "ZIP code",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_16",
+      "tag": "label",
+      "role": null,
+      "text": "Country",
+      "bbox": {
+        "x": 410,
+        "y": 662,
+        "width": 620,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_17",
+      "tag": "select",
+      "role": null,
+      "text": "United States Canada United Kingdom",
+      "bbox": {
+        "x": 410,
+        "y": 689,
+        "width": 620,
+        "height": 43
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": "Country",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_18",
+      "tag": "h2",
+      "role": null,
+      "text": "Payment",
+      "bbox": {
+        "x": 410,
+        "y": 764,
+        "width": 620,
+        "height": 28.5
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_19",
+      "tag": "label",
+      "role": null,
+      "text": "Card number",
+      "bbox": {
+        "x": 410,
+        "y": 804.5,
+        "width": 620,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_20",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 410,
+        "y": 831.5,
+        "width": 620,
+        "height": 42
+      },
+      "above_fold": true,
+      "input_type": "text",
+      "accessible_name": "Card number",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_21",
+      "tag": "label",
+      "role": null,
+      "text": "Expiry",
+      "bbox": {
+        "x": 410,
+        "y": 891.5,
+        "width": 302,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_22",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 410,
+        "y": 918.5,
+        "width": 302,
+        "height": 42
+      },
+      "above_fold": false,
+      "input_type": "text",
+      "accessible_name": "Expiry",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_23",
+      "tag": "label",
+      "role": null,
+      "text": "Security code",
+      "bbox": {
+        "x": 728,
+        "y": 891.5,
+        "width": 302,
+        "height": 21
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_24",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 728,
+        "y": 918.5,
+        "width": 302,
+        "height": 42
+      },
+      "above_fold": false,
+      "input_type": "text",
+      "accessible_name": "Security code",
+      "name_source": "label",
+      "font_size": 16
+    },
+    {
+      "ref": "el_25",
+      "tag": "button",
+      "role": null,
+      "text": "Pay $148.00",
+      "bbox": {
+        "x": 410,
+        "y": 1070.5,
+        "width": 620,
+        "height": 50
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 17
+    },
+    {
+      "ref": "el_26",
+      "tag": "footer",
+      "role": null,
+      "text": "Shipping · Returns · Help © 2026 Fernbrook Supply Co.",
+      "bbox": {
+        "x": 0,
+        "y": 1204,
+        "width": 1440,
+        "height": 135
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_27",
+      "tag": "a",
+      "role": null,
+      "text": "Shipping",
+      "bbox": {
+        "x": 48,
+        "y": 1239,
+        "width": 56.671875,
+        "height": 17
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_28",
+      "tag": "a",
+      "role": null,
+      "text": "Returns",
+      "bbox": {
+        "x": 116.265625,
+        "y": 1239,
+        "width": 50.109375,
+        "height": 17
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    },
+    {
+      "ref": "el_29",
+      "tag": "a",
+      "role": null,
+      "text": "Help",
+      "bbox": {
+        "x": 177.96875,
+        "y": 1239,
+        "width": 29.875,
+        "height": 17
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 14
+    }
+  ],
+  "elements_total": 30,
+  "text_excerpt": "Fernbrook Supply Co. 🛒 Checkout Step 2 of 3 — Shipping and payment Contact Email address Shipping address Full name Street address City ZIP code Country United States Canada United Kingdom Payment Card number Expiry Security code Total $148.00 Pay $148.00 Secure checkout. Free returns within 30 days. Shipping · Returns · Help © 2026 Fernbrook Supply Co.",
+  "text_total_chars": 356,
+  "captured_at": "frozen"
+}

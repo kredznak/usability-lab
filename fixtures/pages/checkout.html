@@ -1,0 +1,95 @@
+<!doctype html>
+<!--
+  Synthetic fixture — an e-commerce checkout (UC-4 shape).
+
+  The accessibility control for signup.html: same page shape, every field
+  carries a real <label for=...>, and the icon button has an aria-label. R1 and
+  R4 fire here on form size and goal; R3 must NOT fire. A rule set that only
+  ever sees broken pages cannot prove it distinguishes broken from sound.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Checkout — Fernbrook Supply Co.</title>
+    <style>
+      body { font: 16px/1.5 system-ui, sans-serif; margin: 0; color: #101828; }
+      header { display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; border-bottom: 1px solid #eaecf0; }
+      main { max-width: 620px; margin: 48px auto; padding: 0 24px; }
+      h1 { font-size: 30px; margin: 0 0 4px; }
+      h2 { font-size: 19px; margin: 32px 0 12px; }
+      .step { color: #667085; font-size: 14px; margin: 0 0 24px; }
+      label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+      input, select { display: block; width: 100%; box-sizing: border-box; padding: 11px 14px; margin-bottom: 18px; font-size: 16px; border: 1px solid #d0d5dd; border-radius: 8px; }
+      .row { display: flex; gap: 16px; }
+      .row > div { flex: 1; }
+      button.pay { width: 100%; padding: 15px; font-size: 17px; background: #0b7a3b; color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
+      .total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; margin: 24px 0; padding-top: 16px; border-top: 1px solid #eaecf0; }
+      .trust { font-size: 13px; color: #667085; margin-top: 16px; text-align: center; }
+      footer { border-top: 1px solid #eaecf0; padding: 32px 48px; color: #667085; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Fernbrook Supply Co.</strong>
+      <button type="button" aria-label="View your cart">&#128722;</button>
+    </header>
+
+    <main>
+      <h1>Checkout</h1>
+      <p class="step">Step 2 of 3 — Shipping and payment</p>
+
+      <form action="/checkout" method="post">
+        <h2>Contact</h2>
+        <label for="email">Email address</label>
+        <input id="email" type="email" name="email" />
+
+        <h2>Shipping address</h2>
+        <label for="name">Full name</label>
+        <input id="name" type="text" name="name" />
+        <label for="address">Street address</label>
+        <input id="address" type="text" name="address" />
+        <div class="row">
+          <div>
+            <label for="city">City</label>
+            <input id="city" type="text" name="city" />
+          </div>
+          <div>
+            <label for="zip">ZIP code</label>
+            <input id="zip" type="text" name="zip" />
+          </div>
+        </div>
+        <label for="country">Country</label>
+        <select id="country" name="country">
+          <option>United States</option>
+          <option>Canada</option>
+          <option>United Kingdom</option>
+        </select>
+
+        <h2>Payment</h2>
+        <label for="card">Card number</label>
+        <input id="card" type="text" name="card" inputmode="numeric" />
+        <div class="row">
+          <div>
+            <label for="exp">Expiry</label>
+            <input id="exp" type="text" name="exp" />
+          </div>
+          <div>
+            <label for="cvc">Security code</label>
+            <input id="cvc" type="text" name="cvc" />
+          </div>
+        </div>
+
+        <div class="total"><span>Total</span><span>$148.00</span></div>
+        <button class="pay" type="submit">Pay $148.00</button>
+      </form>
+
+      <p class="trust">Secure checkout. Free returns within 30 days.</p>
+    </main>
+
+    <footer>
+      <a href="/shipping">Shipping</a> · <a href="/returns">Returns</a> ·
+      <a href="/help">Help</a>
+      <p>&copy; 2026 Fernbrook Supply Co.</p>
+    </footer>
+  </body>
+</html>

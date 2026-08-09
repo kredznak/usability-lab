@@ -111,9 +111,14 @@ async function extractElements(
         text: string;
         bbox: { x: number; y: number; width: number; height: number };
         above_fold: boolean;
+        input_type: string | null;
+        accessible_name: string | null;
+        name_source: "aria-label" | "aria-labelledby" | "label" | "title" | "alt" | "placeholder" | null;
+        font_size: number;
         priority: number;
         order: number;
       }
+
 
       // Interactive elements are what findings are usually about, so they win a
       // contested slot over a structural wrapper in the same band.
@@ -151,6 +156,62 @@ async function extractElements(
           .trim()
           .slice(0, textLimit);
 
+        // Accessible name, roughly in the order the accname spec resolves it.
+        // Deliberately partial — the common cases, not a spec implementation.
+        // Returning null when we genuinely cannot find a name is the useful
+        // answer; guessing one would hide the very signal R3 reads.
+        //
+        // Written inline rather than as a helper on purpose: tsx compiles named
+        // functions with an esbuild `__name(...)` wrapper, and that identifier
+        // does not exist inside page.evaluate's browser context. A named helper
+        // here throws "__name is not defined" at runtime while typechecking
+        // perfectly.
+        let accessibleName: string | null = null;
+        let nameSource: "aria-label" | "aria-labelledby" | "label" | "title" | "alt" | "placeholder" | null = null;
+
+        const ariaLabel = el.getAttribute("aria-label")?.trim();
+        if (ariaLabel) {
+          accessibleName = ariaLabel.slice(0, textLimit);
+          nameSource = "aria-label";
+        }
+        if (accessibleName === null) {
+          const labelledBy = el.getAttribute("aria-labelledby");
+          if (labelledBy) {
+            const named = labelledBy
+              .split(/\s+/)
+              .map((id) => document.getElementById(id)?.innerText?.trim() ?? "")
+              .filter(Boolean)
+              .join(" ");
+            if (named) {
+              accessibleName = named.slice(0, textLimit);
+              nameSource = "aria-labelledby";
+            }
+          }
+        }
+        if (accessibleName === null) {
+          const labels = (el as HTMLInputElement).labels;
+          if (labels && labels.length > 0) {
+            const named = Array.from(labels)
+              .map((l) => l.innerText?.trim() ?? "")
+              .filter(Boolean)
+              .join(" ");
+            if (named) {
+              accessibleName = named.slice(0, textLimit);
+              nameSource = "label";
+            }
+          }
+        }
+        if (accessibleName === null) {
+          for (const attr of ["title", "alt", "placeholder"] as const) {
+            const v = el.getAttribute(attr)?.trim();
+            if (v) {
+              accessibleName = v.slice(0, textLimit);
+              nameSource = attr;
+              break;
+            }
+          }
+        }
+
         let priority = 0;
         if (INTERACTIVE.includes(tag) || el.getAttribute("role")) priority += 4;
         if (HEADING.includes(tag)) priority += 3;
@@ -163,6 +224,10 @@ async function extractElements(
           text,
           bbox: { x: pageX, y: pageY, width: r.width, height: r.height },
           above_fold: pageY < foldY,
+          input_type: tag === "input" ? ((el as HTMLInputElement).type || "text") : null,
+          accessible_name: accessibleName,
+          name_source: nameSource,
+          font_size: Math.round(parseFloat(style.fontSize) || 0),
           priority,
           order: order++,
         });
@@ -178,7 +243,13 @@ async function extractElements(
         const pageHeight = Math.max(1, document.body.scrollHeight);
         const buckets: Candidate[][] = Array.from({ length: bands }, () => []);
         for (const c of candidates) {
-          const idx = Math.min(bands - 1, Math.floor((c.bbox.y / pageHeight) * bands));
+          // Clamped at both ends. A sticky or transformed element can sit at a
+          // negative document y, which floors to a negative band index and
+          // silently indexes past the start of the array — buckets[-1] is
+          // undefined, and the push throws. Only reachable on pages above the
+          // element cap, which is why it survived three sites undetected.
+          const raw = Math.floor((c.bbox.y / pageHeight) * bands);
+          const idx = Math.min(bands - 1, Math.max(0, raw));
           buckets[idx]!.push(c);
         }
 
@@ -225,6 +296,10 @@ async function extractElements(
           text: c.text,
           bbox: c.bbox,
           above_fold: c.above_fold,
+          input_type: c.input_type,
+          accessible_name: c.accessible_name,
+          name_source: c.name_source,
+          font_size: c.font_size,
         })),
         total,
       };
@@ -292,10 +367,10 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
     await page.screenshot({ path: screenshotPath, fullPage: true });
 
     const fullHeight = await page.evaluate(() => document.body.scrollHeight);
-    const textExcerpt = (await page.evaluate(() => document.body.innerText ?? ""))
+    const fullText = (await page.evaluate(() => document.body.innerText ?? ""))
       .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, TEXT_EXCERPT_LIMIT);
+      .trim();
+    const textExcerpt = fullText.slice(0, TEXT_EXCERPT_LIMIT);
     const title = await page.title();
     const finalUrl = page.url();
 
@@ -311,6 +386,7 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
       elements,
       elements_total: elementsTotal,
       text_excerpt: textExcerpt,
+      text_total_chars: fullText.length,
       captured_at: new Date().toISOString(),
     });
 
