@@ -204,6 +204,20 @@ describe("claims: calibration — the checker's own false alarms", () => {
     assert.equal(v.status, "verified", `false alarm: ${v.contradictions.join(" | ")}`);
   });
 
+  test("a negated tag names an element that is absent, not the cited one", () => {
+    // "the email field el_81 has no visible <label>" is a true sentence about
+    // an input. Reading the <label> as el_81's own tag inverts its meaning.
+    const v = checkClaim(
+      finding({
+        element_ref: "el_15",
+        observation:
+          'The email field el_15 has no visible <label>; its only identifying text is the placeholder "Search".',
+      }),
+      cap,
+    );
+    assert.equal(v.status, "verified", `false alarm: ${v.contradictions.join(" | ")}`);
+  });
+
   test("a naming claim in the impact note alone does not contradict", () => {
     // §9 makes the observation the literal claim; the note is interpretation.
     const v = checkClaim(
@@ -261,14 +275,22 @@ describe("claims: the frozen corpus stays honest", () => {
     }
   });
 
-  test("the corpus records the two known-false findings", { skip: !existsSync(CORPUS) }, () => {
+  test("the corpus still records the known-false findings", { skip: !existsSync(CORPUS) }, () => {
     const corpus = JSON.parse(readFileSync(CORPUS, "utf8")) as {
-      findings: { observation: string; auto: { status: string } }[];
+      findings: { observation: string; auto: { status: string; contradictions: string[] } }[];
     };
-    const wcag = corpus.findings.find((f) =>
-      f.observation.includes("no visible text and no accessible name"),
+
+    // Keyed on the contradiction, not on the observation text. A later audit
+    // added a *correct* finding phrased "no visible text and no accessible
+    // name" — about an element that genuinely has neither — and matching on
+    // wording alone picked up the true one and failed on it.
+    const named = corpus.findings.filter((f) =>
+      f.auto.contradictions.some((c) => /but it is named/.test(c)),
     );
-    assert.ok(wcag, "the gov.uk WCAG false positive is missing from the corpus");
-    assert.equal(wcag.auto.status, "contradicted");
+    assert.ok(
+      named.length >= 2,
+      `expected the known accessible-name false positives, found ${named.length}`,
+    );
+    for (const f of named) assert.equal(f.auto.status, "contradicted");
   });
 });

@@ -1,6 +1,6 @@
 # Review queue
 
-72 findings await a human label. Set `human` to "true", "false" or
+89 findings await a human label. Set `human` to "true", "false" or
 "unsure" in `fixtures/labelled/findings.json` (keyed by `key`); labels survive
 `npm run corpus`.
 
@@ -8,9 +8,213 @@ The machine has already checked what it can: cited elements exist, quotes appear
 on the page, measurements match. What it cannot judge is whether a true statement
 is worth a founder's attention — that is the question below.
 
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f1
+
+- **conversion-cta** · severity 3 · medium confidence · page-level
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> Near the top of the page, before any product content, the text reads "Due to increased demand, orders may take up to 30 days to ship."
+
+> Announcing a lengthy shipping delay before a visitor has seen any product or price sets a costly expectation early and may discourage continued browsing before any value has been demonstrated.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f2
+
+- **a11y+heuristics** · severity 4 · high confidence · el_0
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> Button at top of page is 24x24px with no visible text and no accessible name (also true of el_1 next to it).
+
+> A screen reader announces this control only as "button" with no purpose, making it unusable without sighted guessing.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f3
+
+- **conversion-cta** · severity 2 · high confidence · el_19
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The hero presents two equally weighted CTAs, "SHOP MEN" (el_19) and "SHOP WOMEN" (el_20), with no third option (e.g. "Shop All") given similar prominence.
+
+> A visitor who has not yet decided on a category, or wants to browse broadly, has no equally prominent path forward and may leave rather than choose a side.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f4
+
+- **forms** · severity 2 · high confidence · el_106
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> A `<select>` element (el_106) in the footer lists a long run of country codes ("AE AT AU BE CA CH CN...") as its visible text, with only an aria-label of "Select country" to explain its purpose; no visible label or currently-selected value is distinguishable in the capture.
+
+> A visitor scanning the page has no plain-language cue for what this control does or which country is currently selected, which can lead to accidental region/locale changes.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f6
+
+- **a11y** · severity 2 · high confidence · el_6
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> Nav buttons "Men" (30x16px) and "Sale" (31x16px, el_8) measure only 16px in height.
+
+> Targets below roughly 24x24px are harder to activate accurately for visitors with motor impairments or imprecise pointer control.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f7
+
+- **a11y** · severity 3 · high confidence · el_34
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> Product image link (390x390px) has no accessible name, and this pattern repeats across all twelve product tiles (el_37, el_40, el_43, el_46, el_49, el_52, el_55, el_58, el_61, el_64, el_67).
+
+> Screen reader users hit an unlabeled link before reaching the adjacent labelled product-name link, adding repeated noise across every product in the grid.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f8
+
+- **a11y+forms** · severity 2 · high confidence · el_81
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The email field el_81 has no visible <label>; its only identifying text is the placeholder "Email Address", which is not present in the element's visible text/label list, meaning it exists solely as placeholder content.
+
+> Once a visitor starts typing, the placeholder disappears and there is no persistent label to confirm what is being entered or to reference if the field is left blank on validation.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f10
+
+- **conversion-cta** · severity 2 · high confidence · el_8
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The main navigation includes a "Sale" item (el_8), but no discount amount, sale scope, or end date is visible anywhere in the captured page.
+
+> A sale link without any visible detail of the offer gives no reason to prioritize clicking it over other navigation items.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f11
+
+- **conversion-cta** · severity 2 · high confidence · el_79
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The footer newsletter form is labeled "Subscribe to our emails" with a "Sign Up" button (el_80) and an email input (el_81), but no incentive (discount, early access, etc.) is stated anywhere near it.
+
+> Asking for an email address with no stated benefit gives a visitor little reason to act, likely lowering signup rates.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f12
+
+- **a11y** · severity 2 · high confidence · el_36
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> Wishlist-style control is a <label> element with no visible text, deriving its name from a title attribute (e.g. "Women's Tree Runner NZ - Medium Grey (Blizzard Sole)"); the same pattern recurs on el_39 through el_69.
+
+> Title-sourced names are not consistently exposed by assistive technology, and a bare <label> with no associated control may not be announced as interactive at all.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f14
+
+- **heuristics** · severity 2 · high confidence · el_13
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The flyout menu items "Shop Womens", "Shop Mens", "Shop Socks", "Shop Women's Sale" and "Shop Men's Sale" (el_13-el_17) are implemented as <button> elements, while functionally identical category navigation elsewhere on the page, such as "Shop Men" (el_22) and "Shop Men" (el_71), are implemented as <a> elements.
+
+> Using two different control types for the same kind of destination navigation is inconsistent and can produce different behavior (e.g. open-in-new-tab, drag, bookmarking) for what visitors experience as the same action.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f15
+
+- **a11y** · severity 2 · high confidence · el_11
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> An <h2> reading "Cart (0)" appears in the element order before the page's only <h1>, "Wildly Comfortable. Super Natural." (el_18).
+
+> Screen reader users navigating by heading level encounter a level-2 heading before the top-level heading, which can misrepresent the page's structure when the cart panel is exposed to the accessibility tree.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f16
+
+- **conversion-cta** · severity 1 · high confidence · el_77
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The "Fresh Colors For Summer" section offers only a single "Shop Women" link (el_77), unlike the other promotional sections which pair a men's and women's link.
+
+> Breaking the established men's/women's pairing here may read as excluding male shoppers from that promotion, a small but avoidable drop-off point.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f17
+
+- **heuristics** · severity 2 · high confidence · el_31
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> Of four parallel section headings shown together ("New Arrivals" el_21, "Mens" el_24, "Womens" el_26, "Best Sellers" el_28), only "Best Sellers" is accompanied by an adjacent button element (el_31) with the same label.
+
+> One section behaving differently from its structural siblings, without a visible reason, breaks the pattern a visitor has just learned from the other three sections.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f5
+
+- **conversion-cta** · severity 1 · medium confidence · positive · page-level
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> Each product tile in the grids displays its price plainly next to the name, e.g. "Women's Tree Runner NZ Medium Grey $100" and "Women's Canvas Cruiser Slip On Warm White $75".
+
+> Showing price up front before a click lets visitors self-select by budget, reducing wasted clicks and building trust in the shopping experience.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f9
+
+- **heuristics** · severity 1 · high confidence · positive · el_12
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The cart panel includes an explicit "Close cart" button (el_12) alongside a specific status message, "Spend $100 more to earn free shipping!", consistent with the stated empty cart total.
+
+> A clear exit control paired with an accurate, actionable status message lets visitors dismiss the panel confidently and understand exactly what is needed to unlock free shipping.
+
+**Question:** is this true, and is it worth showing someone?
+
+## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f13
+
+- **forms** · severity 1 · high confidence · positive · el_13
+- https://www.allbirds.com/
+- mechanical: **verified**
+
+> The empty cart panel offers direct links back into shopping ("Shop Womens", "Shop Mens", "Shop Socks", "Shop Women's Sale", "Shop Men's Sale") rather than a dead end.
+
+> Giving an explicit next step when the cart is empty keeps the visitor moving toward a purchase instead of having to re-navigate from scratch.
+
+**Question:** is this true, and is it worth showing someone?
+
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f1
 
-- **Accessibility + Heuristics** · severity 3 · high confidence · el_10
+- **a11y+heuristics** · severity 3 · high confidence · el_10
 - https://www.gov.uk/
 - mechanical: **contradicted** — says el_10 has no accessible name, but it is named "Show search menu" via aria-label
 
@@ -22,7 +226,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f2
 
-- **Accessibility** · severity 2 · high confidence · el_22
+- **a11y** · severity 2 · high confidence · el_22
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -34,7 +238,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f3
 
-- **Accessibility** · severity 2 · high confidence · el_12
+- **a11y** · severity 2 · high confidence · el_12
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -46,7 +250,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f4
 
-- **Accessibility + Heuristics** · severity 1 · high confidence · el_96
+- **a11y+heuristics** · severity 1 · high confidence · el_96
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -58,7 +262,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f5
 
-- **Copy** · severity 2 · high confidence · el_18
+- **copy** · severity 2 · high confidence · el_18
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -70,7 +274,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f6
 
-- **Copy + Heuristics** · severity 1 · high confidence · el_97
+- **copy+heuristics** · severity 1 · high confidence · el_97
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -82,7 +286,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f7
 
-- **Heuristics** · severity 1 · high confidence · el_0
+- **heuristics** · severity 1 · high confidence · el_0
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -94,7 +298,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f8
 
-- **Copy** · severity 2 · high confidence · el_12
+- **copy** · severity 2 · high confidence · el_12
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -106,7 +310,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f9
 
-- **Accessibility** · severity 1 · high confidence · positive · el_14
+- **a11y** · severity 1 · high confidence · positive · el_14
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -118,7 +322,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f10
 
-- **Accessibility** · severity 1 · medium confidence · positive · page-level
+- **a11y** · severity 1 · medium confidence · positive · page-level
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -130,7 +334,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f11
 
-- **Heuristics** · severity 1 · high confidence · positive · el_17
+- **heuristics** · severity 1 · high confidence · positive · el_17
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -142,7 +346,7 @@ is worth a founder's attention — that is the question below.
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f12
 
-- **Copy** · severity 1 · medium confidence · positive · page-level
+- **copy** · severity 1 · medium confidence · positive · page-level
 - https://www.gov.uk/
 - mechanical: **contradicted** — quotes "Includes X, Y, Z", which is NOT on the page
 
@@ -154,7 +358,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f1
 
-- **Conversion & CTA** · severity 3 · medium confidence · page-level
+- **conversion-cta** · severity 3 · medium confidence · page-level
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -166,7 +370,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f2
 
-- **Conversion & CTA** · severity 2 · high confidence · el_82
+- **conversion-cta** · severity 2 · high confidence · el_82
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -178,7 +382,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f3
 
-- **Heuristics** · severity 2 · medium confidence · page-level
+- **heuristics** · severity 2 · medium confidence · page-level
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -190,7 +394,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f4
 
-- **Conversion & CTA** · severity 2 · high confidence · el_13
+- **conversion-cta** · severity 2 · high confidence · el_13
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -202,7 +406,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f5
 
-- **Accessibility + Forms & Flow** · severity 3 · high confidence · el_36
+- **a11y+forms** · severity 3 · high confidence · el_36
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -214,7 +418,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f6
 
-- **Accessibility** · severity 3 · high confidence · el_34
+- **a11y** · severity 3 · high confidence · el_34
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -226,7 +430,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f7
 
-- **Accessibility + Heuristics** · severity 3 · high confidence · el_0
+- **a11y+heuristics** · severity 3 · high confidence · el_0
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -238,7 +442,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f8
 
-- **Forms & Flow + Heuristics + Accessibility** · severity 2 · high confidence · el_106
+- **a11y+forms+heuristics** · severity 2 · high confidence · el_106
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -250,7 +454,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f9
 
-- **Forms & Flow + Accessibility** · severity 2 · high confidence · el_81
+- **a11y+forms** · severity 2 · high confidence · el_81
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -262,7 +466,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f10
 
-- **Conversion & CTA** · severity 2 · high confidence · el_80
+- **conversion-cta** · severity 2 · high confidence · el_80
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -274,7 +478,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f11
 
-- **Conversion & CTA** · severity 2 · high confidence · el_19
+- **conversion-cta** · severity 2 · high confidence · el_19
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -286,7 +490,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f12
 
-- **Accessibility + Heuristics** · severity 2 · high confidence · el_74
+- **a11y+heuristics** · severity 2 · high confidence · el_74
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -298,7 +502,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f13
 
-- **Accessibility** · severity 2 · high confidence · el_100
+- **a11y** · severity 2 · high confidence · el_100
 - https://www.allbirds.com/
 - mechanical: **contradicted** — says el_100 has no accessible name, but it is named "Instagram" via aria-label
 
@@ -310,7 +514,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f14
 
-- **Accessibility** · severity 2 · high confidence · el_32
+- **a11y** · severity 2 · high confidence · el_32
 - https://www.allbirds.com/
 - mechanical: **contradicted** — says el_32 has no accessible name, but it is named "Previous Product" via title
 
@@ -322,7 +526,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f15
 
-- **Conversion & CTA** · severity 1 · high confidence · positive · el_35
+- **conversion-cta** · severity 1 · high confidence · positive · el_35
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -334,7 +538,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f16
 
-- **Conversion & CTA + Heuristics** · severity 1 · medium confidence · positive · page-level
+- **conversion-cta+heuristics** · severity 1 · medium confidence · positive · page-level
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -346,7 +550,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f17
 
-- **Forms & Flow** · severity 1 · high confidence · positive · el_79
+- **forms** · severity 1 · high confidence · positive · el_79
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -358,7 +562,7 @@ is worth a founder's attention — that is the question below.
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f18
 
-- **Accessibility** · severity 1 · high confidence · positive · el_18
+- **a11y** · severity 1 · high confidence · positive · el_18
 - https://www.allbirds.com/
 - mechanical: **verified**
 
@@ -370,7 +574,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f1
 
-- **Conversion & CTA** · severity 3 · high confidence · el_137
+- **conversion-cta** · severity 3 · high confidence · el_137
 - https://linear.app/
 - mechanical: **verified**
 
@@ -382,7 +586,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f2
 
-- **Copy + Heuristics** · severity 2 · high confidence · el_11
+- **copy+heuristics** · severity 2 · high confidence · el_11
 - https://linear.app/
 - mechanical: **verified**
 
@@ -394,7 +598,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f3
 
-- **Copy** · severity 2 · medium confidence · page-level
+- **copy** · severity 2 · medium confidence · page-level
 - https://linear.app/
 - mechanical: **verified**
 
@@ -406,7 +610,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f4
 
-- **Copy** · severity 2 · high confidence · el_50
+- **copy** · severity 2 · high confidence · el_50
 - https://linear.app/
 - mechanical: **verified**
 
@@ -418,7 +622,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f5
 
-- **Conversion & CTA** · severity 3 · high confidence · el_6
+- **conversion-cta** · severity 3 · high confidence · el_6
 - https://linear.app/
 - mechanical: **verified**
 
@@ -430,7 +634,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f6
 
-- **Conversion & CTA** · severity 2 · high confidence · el_12
+- **conversion-cta** · severity 2 · high confidence · el_12
 - https://linear.app/
 - mechanical: **verified**
 
@@ -442,7 +646,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f7
 
-- **Conversion & CTA** · severity 2 · high confidence · el_10
+- **conversion-cta** · severity 2 · high confidence · el_10
 - https://linear.app/
 - mechanical: **verified**
 
@@ -454,7 +658,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f8
 
-- **Conversion & CTA** · severity 2 · high confidence · el_137
+- **conversion-cta** · severity 2 · high confidence · el_137
 - https://linear.app/
 - mechanical: **verified**
 
@@ -466,7 +670,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f9
 
-- **Heuristics + Forms & Flow** · severity 2 · high confidence · el_121
+- **forms+heuristics** · severity 2 · high confidence · el_121
 - https://linear.app/
 - mechanical: **verified**
 
@@ -478,7 +682,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f10
 
-- **Heuristics** · severity 3 · high confidence · el_15
+- **heuristics** · severity 3 · high confidence · el_15
 - https://linear.app/
 - mechanical: **verified**
 
@@ -490,7 +694,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f11
 
-- **Copy** · severity 2 · high confidence · el_108
+- **copy** · severity 2 · high confidence · el_108
 - https://linear.app/
 - mechanical: **verified**
 
@@ -502,7 +706,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f12
 
-- **Conversion & CTA** · severity 1 · high confidence · positive · el_133
+- **conversion-cta** · severity 1 · high confidence · positive · el_133
 - https://linear.app/
 - mechanical: **verified**
 
@@ -514,7 +718,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f13
 
-- **Heuristics** · severity 1 · high confidence · positive · el_52
+- **heuristics** · severity 1 · high confidence · positive · el_52
 - https://linear.app/
 - mechanical: **verified**
 
@@ -526,7 +730,7 @@ is worth a founder's attention — that is the question below.
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f14
 
-- **Copy** · severity 1 · high confidence · positive · el_128
+- **copy** · severity 1 · high confidence · positive · el_128
 - https://linear.app/
 - mechanical: **verified**
 
@@ -538,7 +742,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f1
 
-- **Copy** · severity 2 · high confidence · el_11
+- **copy** · severity 2 · high confidence · el_11
 - https://linear.app/
 - mechanical: **verified**
 
@@ -550,7 +754,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f2
 
-- **Conversion & CTA** · severity 3 · medium confidence · page-level
+- **conversion-cta** · severity 3 · medium confidence · page-level
 - https://linear.app/
 - mechanical: **verified**
 
@@ -562,7 +766,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f3
 
-- **Conversion & CTA** · severity 2 · high confidence · el_12
+- **conversion-cta** · severity 2 · high confidence · el_12
 - https://linear.app/
 - mechanical: **verified**
 
@@ -574,7 +778,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f4
 
-- **Heuristics** · severity 3 · high confidence · el_105
+- **heuristics** · severity 3 · high confidence · el_105
 - https://linear.app/
 - mechanical: **verified**
 
@@ -586,7 +790,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f5
 
-- **Conversion & CTA** · severity 2 · high confidence · el_10
+- **conversion-cta** · severity 2 · high confidence · el_10
 - https://linear.app/
 - mechanical: **verified**
 
@@ -598,7 +802,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f6
 
-- **Copy** · severity 2 · high confidence · el_92
+- **copy** · severity 2 · high confidence · el_92
 - https://linear.app/
 - mechanical: **verified**
 
@@ -610,7 +814,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f7
 
-- **Copy** · severity 2 · high confidence · el_50
+- **copy** · severity 2 · high confidence · el_50
 - https://linear.app/
 - mechanical: **verified**
 
@@ -622,7 +826,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f8
 
-- **Visual Hierarchy** · severity 3 · high confidence · el_50
+- **visual-hierarchy** · severity 3 · high confidence · el_50
 - https://linear.app/
 - mechanical: **verified**
 
@@ -634,7 +838,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f9
 
-- **Conversion & CTA** · severity 2 · high confidence · el_6
+- **conversion-cta** · severity 2 · high confidence · el_6
 - https://linear.app/
 - mechanical: **verified**
 
@@ -646,7 +850,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f10
 
-- **Conversion & CTA** · severity 2 · high confidence · el_137
+- **conversion-cta** · severity 2 · high confidence · el_137
 - https://linear.app/
 - mechanical: **verified**
 
@@ -658,7 +862,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f11
 
-- **Conversion & CTA** · severity 2 · high confidence · el_133
+- **conversion-cta** · severity 2 · high confidence · el_133
 - https://linear.app/
 - mechanical: **verified**
 
@@ -670,7 +874,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f12
 
-- **Heuristics** · severity 2 · high confidence · el_31
+- **heuristics** · severity 2 · high confidence · el_31
 - https://linear.app/
 - mechanical: **verified**
 
@@ -682,7 +886,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f13
 
-- **Visual Hierarchy** · severity 2 · high confidence · el_137
+- **visual-hierarchy** · severity 2 · high confidence · el_137
 - https://linear.app/
 - mechanical: **verified**
 
@@ -694,7 +898,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f14
 
-- **Copy** · severity 1 · high confidence · positive · el_51
+- **copy** · severity 1 · high confidence · positive · el_51
 - https://linear.app/
 - mechanical: **verified**
 
@@ -706,7 +910,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f15
 
-- **Heuristics + Visual Hierarchy** · severity 1 · high confidence · positive · el_52
+- **heuristics+visual-hierarchy** · severity 1 · high confidence · positive · el_52
 - https://linear.app/
 - mechanical: **verified**
 
@@ -718,7 +922,7 @@ is worth a founder's attention — that is the question below.
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f16
 
-- **Conversion & CTA** · severity 1 · high confidence · positive · el_137
+- **conversion-cta** · severity 1 · high confidence · positive · el_137
 - https://linear.app/
 - mechanical: **verified**
 
@@ -730,7 +934,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f1
 
-- **Accessibility + Heuristics** · severity 2 · high confidence · el_70
+- **a11y+heuristics** · severity 2 · high confidence · el_70
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -742,7 +946,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f2
 
-- **Accessibility** · severity 2 · high confidence · el_0
+- **a11y** · severity 2 · high confidence · el_0
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -754,7 +958,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f3
 
-- **Copy** · severity 2 · high confidence · el_18
+- **copy** · severity 2 · high confidence · el_18
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -766,7 +970,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f4
 
-- **Heuristics** · severity 2 · high confidence · el_0
+- **heuristics** · severity 2 · high confidence · el_0
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -778,7 +982,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f5
 
-- **Heuristics** · severity 2 · high confidence · el_97
+- **heuristics** · severity 2 · high confidence · el_97
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -790,7 +994,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f6
 
-- **Copy** · severity 2 · high confidence · el_128
+- **copy** · severity 2 · high confidence · el_128
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -802,7 +1006,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f7
 
-- **Heuristics** · severity 1 · high confidence · el_10
+- **heuristics** · severity 1 · high confidence · el_10
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -814,7 +1018,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f8
 
-- **Accessibility** · severity 1 · high confidence · positive · el_15
+- **a11y** · severity 1 · high confidence · positive · el_15
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -826,7 +1030,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f9
 
-- **Copy** · severity 1 · high confidence · positive · el_12
+- **copy** · severity 1 · high confidence · positive · el_12
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -838,7 +1042,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f10
 
-- **Copy** · severity 1 · high confidence · positive · el_25
+- **copy** · severity 1 · high confidence · positive · el_25
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -850,7 +1054,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f11
 
-- **Accessibility** · severity 1 · high confidence · positive · el_10
+- **a11y** · severity 1 · high confidence · positive · el_10
 - https://www.gov.uk/
 - mechanical: **verified**
 
@@ -862,7 +1066,7 @@ is worth a founder's attention — that is the question below.
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f12
 
-- **Heuristics** · severity 1 · high confidence · positive · el_2
+- **heuristics** · severity 1 · high confidence · positive · el_2
 - https://www.gov.uk/
 - mechanical: **verified**
 

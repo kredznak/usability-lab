@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 
 import path from "node:path";
 import { Capture, Finding } from "./types.js";
 import { checkClaim } from "./claims.js";
+import { ALL_RUBRICS } from "./agents/rubrics.js";
 
 /**
  * Builds the labelled corpus the outcome suite scores against — docs/design.md §10.
@@ -98,6 +99,28 @@ function completedAudits(): string[] {
     .sort();
 }
 
+/**
+ * Canonical rubric ids, whatever form the source used.
+ *
+ * Findings recovered from HTML carry display labels ("Accessibility + Heuristics")
+ * while the findings.json sidecar carries ids ("a11y+heuristics"). Left alone,
+ * the outcome report splits one lane across two rows and halves both counts —
+ * which is how a lane responsible for 4 of 5 false findings can look like two
+ * lanes with two each.
+ */
+function canonicalAgent(agent: string): string {
+  const byLabel = new Map(ALL_RUBRICS.map((r) => [r.label.toLowerCase(), r.id]));
+  return agent
+    .split("+")
+    .map((part) => {
+      const key = part.trim().toLowerCase();
+      return byLabel.get(key) ?? key;
+    })
+    .filter(Boolean)
+    .sort()
+    .join("+");
+}
+
 function decodeEntities(s: string): string {
   return s
     .replace(/&lt;/g, "<")
@@ -185,7 +208,7 @@ export function buildCorpus(): Corpus {
         key,
         audit_id: auditId,
         url: capture.final_url,
-        agent: f.agent,
+        agent: canonicalAgent(f.agent),
         heuristic: f.heuristic,
         severity: f.severity,
         confidence: f.confidence,

@@ -127,6 +127,14 @@ export function checkClaim(finding: RawFinding | Finding, capture: Capture): Cla
       if (nearbyRefs.length === 0 || !nearbyRefs.includes(cited.ref)) continue;
       if (nearbyRefs.some((r) => r !== cited.ref)) continue;
 
+      // A negated tag names an element that is ABSENT, not the one we cite:
+      // "the email field el_81 has no visible <label>" is a true sentence about
+      // an input, and reading it as calling el_81 a label inverts its meaning.
+      const before = text.slice(Math.max(0, m.index - 24), m.index);
+      if (/\b(?:no|not|without|missing|lacks?|lacking|absent|never|associated)\s+\S*\s*$/i.test(before)) {
+        continue;
+      }
+
       checks.push({
         kind: "tag",
         ok: tag === cited.tag,
