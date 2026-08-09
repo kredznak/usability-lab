@@ -16,7 +16,8 @@
     "test": "node --import tsx --test \"src/**/*.test.ts\" && sh src/hooks.test.sh",
     "check": "npm run typecheck && npm test && npm run snapshot -- check",
     "corpus": "node --import tsx src/corpus-build.ts",
-    "outcome": "node --import tsx src/outcome.ts"
+    "outcome": "node --import tsx src/outcome.ts",
+    "label": "node --import tsx src/label.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

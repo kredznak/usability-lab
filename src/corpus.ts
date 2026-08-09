@@ -27,6 +27,15 @@ import { ALL_RUBRICS } from "./agents/rubrics.js";
 const CORPUS = "fixtures/labelled";
 const CORPUS_FILE = path.join(CORPUS, "findings.json");
 
+/**
+ * Truth and usefulness are different questions and are stored separately.
+ *
+ * The machine can settle truth: does this contradict what we measured? It has
+ * no opinion at all on usefulness, which is a judgment about a specific
+ * customer. Folding them into one label makes a true-but-trivial finding look
+ * like a false one, which would drag down precision — a truth metric — and hide
+ * the ratio that actually decides whether the audit is worth paying for.
+ */
 export type HumanLabel = "true" | "false" | "unsure";
 
 export interface LabelledFinding {
@@ -47,8 +56,16 @@ export interface LabelledFinding {
     status: "verified" | "contradicted" | "unverifiable";
     contradictions: string[];
   };
-  /** Set by a person, preserved across rebuilds. Null until adjudicated. */
-  human: HumanLabel | null;
+  /**
+   * Is the claim true? Only asked when the mechanical check flagged something,
+   * so a person can overrule it. Null means "defer to `auto`".
+   */
+  human_true: boolean | null;
+  /**
+   * Would you show this to a founder paying for the audit? The machine cannot
+   * answer this at all, so null means genuinely unknown — never assumed.
+   */
+  human_useful: boolean | null;
   human_note: string | null;
 }
 
@@ -217,7 +234,8 @@ export function buildCorpus(): Corpus {
         observation: f.observation,
         impact_note: f.impact_note,
         auto: { status: verdict.status, contradictions: verdict.contradictions },
-        human: prior?.human ?? null,
+        human_true: prior?.human_true ?? null,
+        human_useful: prior?.human_useful ?? null,
         human_note: prior?.human_note ?? null,
       });
     }

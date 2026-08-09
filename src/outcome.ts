@@ -31,11 +31,17 @@ const QUEUE = "fixtures/labelled/review-queue.md";
 
 type Truth = "true" | "false" | "unknown";
 
-/** Human adjudication wins; the mechanical verdict is the fallback. */
+/**
+ * Is the claim true? Human adjudication overrules the checker where it exists;
+ * otherwise the mechanical verdict stands.
+ *
+ * Deliberately separate from usefulness. A true-but-trivial finding is a
+ * precision success and a product failure, and a single label conflating the
+ * two would report it as neither.
+ */
 function truthOf(f: LabelledFinding): Truth {
-  if (f.human === "true") return "true";
-  if (f.human === "false") return "false";
-  if (f.human === "unsure") return "unknown";
+  if (f.human_true === true) return "true";
+  if (f.human_true === false) return "false";
   if (f.auto.status === "contradicted") return "false";
   if (f.auto.status === "verified") return "true";
   return "unknown";
@@ -69,7 +75,9 @@ if (corpus.skipped.length > 0) {
   console.log(`        ${corpus.skipped.length} audit(s) skipped — see fixtures/labelled/findings.json`);
 }
 
-const humanLabelled = corpus.findings.filter((f) => f.human !== null).length;
+const humanLabelled = corpus.findings.filter(
+  (f) => f.human_true !== null || f.human_useful !== null,
+).length;
 console.log(
   `labels: ${humanLabelled} human, ${corpus.findings.length - humanLabelled} mechanical only\n`,
 );
@@ -121,18 +129,46 @@ if (falseOnes.length > 0) {
   }
 }
 
+// Usefulness — the axis no check can reach, and the one that decides whether
+// the audit is worth paying for. Reported only where a person has actually
+// answered; there is no defensible way to guess it.
+const withUsefulness = corpus.findings.filter((f) => f.human_useful !== null);
+if (withUsefulness.length === 0) {
+  console.log(
+    `\n  signal rate                  not measured` +
+      `\n${"".padEnd(4)}  Of the findings that are true, how many are worth showing? Nothing` +
+      `\n${"".padEnd(4)}  mechanical can answer this. Run \`npm run label\` to find out.`,
+  );
+} else {
+  const usefulCount = withUsefulness.filter((f) => f.human_useful).length;
+  console.log(
+    `\n  signal rate                 ${pct(usefulCount, withUsefulness.length)}   ` +
+      `(${usefulCount}/${withUsefulness.length} judged worth showing)`,
+  );
+  const trivial = withUsefulness.filter(
+    (f) => !f.human_useful && truthOf(f) === "true",
+  ).length;
+  if (trivial > 0) {
+    console.log(
+      `  true but not worth showing  ${String(trivial).padStart(6)}   ` +
+        `<- what the Synthesizer should have excluded`,
+    );
+  }
+}
+
 // The review queue: everything a person still has to judge, phrased so each
 // entry is answerable without reopening the audited page.
-const queue = scored.filter((s) => s.f.human === null);
+const queue = scored.filter((s) =>
+  s.f.auto.status === "contradicted" ? s.f.human_true === null : s.f.human_useful === null,
+);
 mkdirSync(path.dirname(QUEUE), { recursive: true });
 writeFileSync(
   QUEUE,
   [
     `# Review queue`,
     ``,
-    `${queue.length} findings await a human label. Set \`human\` to "true", "false" or`,
-    `"unsure" in \`fixtures/labelled/findings.json\` (keyed by \`key\`); labels survive`,
-    `\`npm run corpus\`.`,
+    `${queue.length} findings await a human label. The fastest way through this is`,
+    `\`npm run label\`, which asks one question at a time and saves as it goes.`,
     ``,
     `The machine has already checked what it can: cited elements exist, quotes appear`,
     `on the page, measurements match. What it cannot judge is whether a true statement`,
@@ -152,9 +188,9 @@ writeFileSync(
       ``,
       `> ${f.impact_note}`,
       ``,
-      truth === "false"
+      f.auto.status === "contradicted"
         ? `**Question:** the check above says this contradicts the capture. Is the check right?`
-        : `**Question:** is this true, and is it worth showing someone?`,
+        : `**Question:** would you show this to a founder paying for the audit?`,
       ``,
     ]),
   ].join("\n"),

@@ -7,7 +7,7 @@ for (const a of built.built_from) {
 }
 for (const s of built.skipped) console.log(`${s.audit_id.slice(0, 8)}  skipped — ${s.reason}`);
 const contradicted = built.findings.filter((f) => f.auto.status === "contradicted");
-const unlabelled = built.findings.filter((f) => f.human === null);
+const unlabelled = built.findings.filter((f) => f.human_useful === null && f.human_true === null);
 console.log(
   `\n${built.findings.length} findings from ${built.built_from.length} audits` +
     `\n${contradicted.length} mechanically contradicted` +
