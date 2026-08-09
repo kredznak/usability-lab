@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { requestFor, loadCapture, writeFixture, fixturePath } from "./agents/snapshot-request.js";
-import { runHeuristics } from "./agents/heuristics.js";
+import { runSubAgent } from "./agents/runner.js";
+import { RUBRICS } from "./agents/rubrics.js";
 
 /**
  * Writes (or checks) the request-body fixtures for every sub-agent.
@@ -10,9 +11,12 @@ import { runHeuristics } from "./agents/heuristics.js";
 /** The capture each agent's fixture is built from. One is enough to pin the shape. */
 const FIXTURE_CAPTURE = "govuk";
 
-const AGENTS: Record<string, Parameters<typeof requestFor>[0]> = {
-  heuristics: runHeuristics,
-};
+const AGENTS: Record<string, Parameters<typeof requestFor>[0]> = Object.fromEntries(
+  Object.values(RUBRICS).map((rubric) => [
+    rubric.id,
+    (client, capture, log) => runSubAgent(client, rubric, capture, log),
+  ]),
+);
 
 const check = process.argv.includes("check");
 const capture = loadCapture(FIXTURE_CAPTURE);

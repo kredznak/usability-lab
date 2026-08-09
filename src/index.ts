@@ -2,7 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { capture, CaptureFailed } from "./capture.js";
-import { runHeuristics } from "./agents/heuristics.js";
+import { runSubAgent } from "./agents/runner.js";
+import { HEURISTICS } from "./agents/rubrics.js";
 import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
@@ -77,7 +78,7 @@ async function main(): Promise<void> {
     const captured = await timed("capture", timings, () => capture(url, auditId, outDir));
 
     const heuristics = await timed("heuristics", timings, () =>
-      runHeuristics(client, captured, log),
+      runSubAgent(client, HEURISTICS, captured, log),
     );
 
     // Confidence gate. Pure, synchronous, and the only place confidence is set.

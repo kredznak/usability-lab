@@ -53,11 +53,6 @@ export const Capture = z.object({
 });
 export type Capture = z.infer<typeof Capture>;
 
-/**
- * What the Heuristics sub-agent returns. No confidence. No citation.
- * Severity is an enum, not a ranged int — JSON Schema numeric constraints
- * (minimum/maximum) are not supported by structured outputs, but enums are.
- */
 /** The 1–4 scale the pipeline guarantees. Only assembled Findings carry it. */
 export const Severity = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
 export type Severity = z.infer<typeof Severity>;
@@ -100,10 +95,11 @@ export const RawFinding = z.object({
 });
 export type RawFinding = z.infer<typeof RawFinding>;
 
-export const HeuristicsOutput = z.object({
+/** What every sub-agent returns. Identical across all six rubrics (§2). */
+export const SubAgentOutput = z.object({
   findings: z.array(RawFinding),
 });
-export type HeuristicsOutput = z.infer<typeof HeuristicsOutput>;
+export type SubAgentOutput = z.infer<typeof SubAgentOutput>;
 
 export const Citation = z.object({
   source_type: z.enum(["paper", "competitor", "none"]),
