@@ -1,0 +1,3034 @@
+{
+  "audit_id": "205b2f83-eec7-42b0-844e-e2ac272e2d77",
+  "url": "https://news.ycombinator.com",
+  "final_url": "https://news.ycombinator.com/",
+  "title": "Hacker News",
+  "screenshot_id": "205b2f83-eec7-42b0-844e-e2ac272e2d77-page",
+  "screenshot_path": "out/205b2f83-eec7-42b0-844e-e2ac272e2d77/205b2f83-eec7-42b0-844e-e2ac272e2d77-page.png",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "full_height": 1249,
+  "elements": [
+    {
+      "ref": "el_0",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 116.796875,
+        "y": 10,
+        "width": 20,
+        "height": 20
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_1",
+      "tag": "a",
+      "role": null,
+      "text": "Hacker News",
+      "bbox": {
+        "x": 141.796875,
+        "y": 12,
+        "width": 98,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_2",
+      "tag": "a",
+      "role": null,
+      "text": "new",
+      "bbox": {
+        "x": 244.796875,
+        "y": 12,
+        "width": 27.296875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_3",
+      "tag": "a",
+      "role": null,
+      "text": "past",
+      "bbox": {
+        "x": 287.53125,
+        "y": 12,
+        "width": 28.515625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_4",
+      "tag": "a",
+      "role": null,
+      "text": "comments",
+      "bbox": {
+        "x": 331.484375,
+        "y": 12,
+        "width": 69.546875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_5",
+      "tag": "a",
+      "role": null,
+      "text": "ask",
+      "bbox": {
+        "x": 416.46875,
+        "y": 12,
+        "width": 22.84375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_6",
+      "tag": "a",
+      "role": null,
+      "text": "show",
+      "bbox": {
+        "x": 454.75,
+        "y": 12,
+        "width": 34.390625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_7",
+      "tag": "a",
+      "role": null,
+      "text": "jobs",
+      "bbox": {
+        "x": 504.578125,
+        "y": 12,
+        "width": 27.9375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_8",
+      "tag": "a",
+      "role": null,
+      "text": "submit",
+      "bbox": {
+        "x": 547.953125,
+        "y": 12,
+        "width": 45.5625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_9",
+      "tag": "a",
+      "role": null,
+      "text": "login",
+      "bbox": {
+        "x": 1287.03125,
+        "y": 12,
+        "width": 32.15625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_10",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 45,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_11",
+      "tag": "a",
+      "role": null,
+      "text": "Denmark Requires Oral Defenses for Students' Written Work to Counter AI Cheating",
+      "bbox": {
+        "x": 150.609375,
+        "y": 43.5,
+        "width": 564.828125,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_12",
+      "tag": "a",
+      "role": null,
+      "text": "mezha.net",
+      "bbox": {
+        "x": 724.03125,
+        "y": 45.5,
+        "width": 56.65625,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_13",
+      "tag": "a",
+      "role": null,
+      "text": "theanonymousone",
+      "bbox": {
+        "x": 218.046875,
+        "y": 61,
+        "width": 86.28125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_14",
+      "tag": "a",
+      "role": null,
+      "text": "4 hours ago",
+      "bbox": {
+        "x": 307.609375,
+        "y": 61,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_15",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 374.3125,
+        "y": 61,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_16",
+      "tag": "a",
+      "role": null,
+      "text": "192 comments",
+      "bbox": {
+        "x": 404.96875,
+        "y": 61,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_17",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 80,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_18",
+      "tag": "a",
+      "role": null,
+      "text": "\"Code was never the hard part\" is an insult to all programmers",
+      "bbox": {
+        "x": 150.609375,
+        "y": 78.5,
+        "width": 422.703125,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_19",
+      "tag": "a",
+      "role": null,
+      "text": "senko.net",
+      "bbox": {
+        "x": 581.90625,
+        "y": 80.5,
+        "width": 52.40625,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_20",
+      "tag": "a",
+      "role": null,
+      "text": "senko",
+      "bbox": {
+        "x": 218.046875,
+        "y": 96,
+        "width": 27.421875,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_21",
+      "tag": "a",
+      "role": null,
+      "text": "7 hours ago",
+      "bbox": {
+        "x": 248.75,
+        "y": 96,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_22",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 315.453125,
+        "y": 96,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_23",
+      "tag": "a",
+      "role": null,
+      "text": "309 comments",
+      "bbox": {
+        "x": 346.109375,
+        "y": 96,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_24",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 115,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_25",
+      "tag": "a",
+      "role": null,
+      "text": "Fastmail offers EU data region",
+      "bbox": {
+        "x": 150.609375,
+        "y": 113.5,
+        "width": 202.171875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_26",
+      "tag": "a",
+      "role": null,
+      "text": "fastmail.com",
+      "bbox": {
+        "x": 361.375,
+        "y": 115.5,
+        "width": 68.796875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_27",
+      "tag": "a",
+      "role": null,
+      "text": "groomlake",
+      "bbox": {
+        "x": 218.046875,
+        "y": 131,
+        "width": 49.359375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_28",
+      "tag": "a",
+      "role": null,
+      "text": "6 hours ago",
+      "bbox": {
+        "x": 270.6875,
+        "y": 131,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_29",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 337.390625,
+        "y": 131,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_30",
+      "tag": "a",
+      "role": null,
+      "text": "121 comments",
+      "bbox": {
+        "x": 368.046875,
+        "y": 131,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_31",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 150,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_32",
+      "tag": "a",
+      "role": null,
+      "text": "Maryland Closes More of Cunningham Falls State Park After Second Beaver Attack",
+      "bbox": {
+        "x": 150.609375,
+        "y": 148.5,
+        "width": 550.171875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_33",
+      "tag": "a",
+      "role": null,
+      "text": "maryland.gov",
+      "bbox": {
+        "x": 709.375,
+        "y": 150.5,
+        "width": 73.578125,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_34",
+      "tag": "a",
+      "role": null,
+      "text": "bookofjoe",
+      "bbox": {
+        "x": 212.109375,
+        "y": 166,
+        "width": 45.953125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_35",
+      "tag": "a",
+      "role": null,
+      "text": "1 hour ago",
+      "bbox": {
+        "x": 261.34375,
+        "y": 166,
+        "width": 51.03125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_36",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 323.1875,
+        "y": 166,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_37",
+      "tag": "a",
+      "role": null,
+      "text": "12 comments",
+      "bbox": {
+        "x": 353.84375,
+        "y": 166,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_38",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 185,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_39",
+      "tag": "a",
+      "role": null,
+      "text": "A domain can now say it is for sale, in DNS",
+      "bbox": {
+        "x": 150.609375,
+        "y": 183.5,
+        "width": 289.828125,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_40",
+      "tag": "a",
+      "role": null,
+      "text": "specification.website",
+      "bbox": {
+        "x": 449.03125,
+        "y": 185.5,
+        "width": 110.625,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_41",
+      "tag": "a",
+      "role": null,
+      "text": "shaunpud",
+      "bbox": {
+        "x": 218.046875,
+        "y": 201,
+        "width": 45.71875,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_42",
+      "tag": "a",
+      "role": null,
+      "text": "9 hours ago",
+      "bbox": {
+        "x": 267.046875,
+        "y": 201,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_43",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 333.75,
+        "y": 201,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_44",
+      "tag": "a",
+      "role": null,
+      "text": "123 comments",
+      "bbox": {
+        "x": 364.40625,
+        "y": 201,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_45",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 220,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_46",
+      "tag": "a",
+      "role": null,
+      "text": "LinkedIn Feed Blocker",
+      "bbox": {
+        "x": 150.609375,
+        "y": 218.5,
+        "width": 147.6875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_47",
+      "tag": "a",
+      "role": null,
+      "text": "github.com/andrewpollack",
+      "bbox": {
+        "x": 306.890625,
+        "y": 220.5,
+        "width": 141.546875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_48",
+      "tag": "a",
+      "role": null,
+      "text": "andrewpollack",
+      "bbox": {
+        "x": 218.046875,
+        "y": 236,
+        "width": 67.078125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_49",
+      "tag": "a",
+      "role": null,
+      "text": "5 hours ago",
+      "bbox": {
+        "x": 288.40625,
+        "y": 236,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_50",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 355.109375,
+        "y": 236,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_51",
+      "tag": "a",
+      "role": null,
+      "text": "87 comments",
+      "bbox": {
+        "x": 385.765625,
+        "y": 236,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_52",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 255,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_53",
+      "tag": "a",
+      "role": null,
+      "text": "Open-source interactive map for the Aug 12 total solar eclipse",
+      "bbox": {
+        "x": 150.609375,
+        "y": 253.5,
+        "width": 417.921875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_54",
+      "tag": "a",
+      "role": null,
+      "text": "eclipsefan.org",
+      "bbox": {
+        "x": 577.125,
+        "y": 255.5,
+        "width": 74.75,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_55",
+      "tag": "a",
+      "role": null,
+      "text": "MarcoDewey",
+      "bbox": {
+        "x": 212.109375,
+        "y": 271,
+        "width": 59.4375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_56",
+      "tag": "a",
+      "role": null,
+      "text": "2 hours ago",
+      "bbox": {
+        "x": 274.828125,
+        "y": 271,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_57",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 341.53125,
+        "y": 271,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_58",
+      "tag": "a",
+      "role": null,
+      "text": "8 comments",
+      "bbox": {
+        "x": 372.1875,
+        "y": 271,
+        "width": 57.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_59",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 290,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_60",
+      "tag": "a",
+      "role": null,
+      "text": "Can Intel finally beat ARM on performance per Watt?",
+      "bbox": {
+        "x": 150.609375,
+        "y": 288.5,
+        "width": 354.71875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_61",
+      "tag": "a",
+      "role": null,
+      "text": "hackaday.com",
+      "bbox": {
+        "x": 513.921875,
+        "y": 290.5,
+        "width": 75.96875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_62",
+      "tag": "a",
+      "role": null,
+      "text": "gumby",
+      "bbox": {
+        "x": 218.046875,
+        "y": 306,
+        "width": 32.109375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_63",
+      "tag": "a",
+      "role": null,
+      "text": "6 hours ago",
+      "bbox": {
+        "x": 253.4375,
+        "y": 306,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_64",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 320.140625,
+        "y": 306,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_65",
+      "tag": "a",
+      "role": null,
+      "text": "46 comments",
+      "bbox": {
+        "x": 350.796875,
+        "y": 306,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_66",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 325,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_67",
+      "tag": "a",
+      "role": null,
+      "text": "Making difficulty curves in games",
+      "bbox": {
+        "x": 150.609375,
+        "y": 323.5,
+        "width": 223.375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_68",
+      "tag": "a",
+      "role": null,
+      "text": "davetech.co.uk",
+      "bbox": {
+        "x": 382.578125,
+        "y": 325.5,
+        "width": 81.109375,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_69",
+      "tag": "a",
+      "role": null,
+      "text": "hakkikonu",
+      "bbox": {
+        "x": 212.109375,
+        "y": 341,
+        "width": 48.015625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_70",
+      "tag": "a",
+      "role": null,
+      "text": "1 hour ago",
+      "bbox": {
+        "x": 263.40625,
+        "y": 341,
+        "width": 51.03125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_71",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 325.25,
+        "y": 341,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_72",
+      "tag": "a",
+      "role": null,
+      "text": "2 comments",
+      "bbox": {
+        "x": 355.90625,
+        "y": 341,
+        "width": 57.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_73",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 360,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_74",
+      "tag": "a",
+      "role": null,
+      "text": "DeepMind's WeatherNext model achieves breakthrough forecasting cyclones",
+      "bbox": {
+        "x": 150.609375,
+        "y": 358.5,
+        "width": 511.34375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_75",
+      "tag": "a",
+      "role": null,
+      "text": "deepmind.google",
+      "bbox": {
+        "x": 670.546875,
+        "y": 360.5,
+        "width": 92.046875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_76",
+      "tag": "a",
+      "role": null,
+      "text": "bhavansig",
+      "bbox": {
+        "x": 218.046875,
+        "y": 376,
+        "width": 47.34375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_77",
+      "tag": "a",
+      "role": null,
+      "text": "13 hours ago",
+      "bbox": {
+        "x": 268.671875,
+        "y": 376,
+        "width": 61.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_78",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 341.3125,
+        "y": 376,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_79",
+      "tag": "a",
+      "role": null,
+      "text": "107 comments",
+      "bbox": {
+        "x": 371.96875,
+        "y": 376,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_80",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 395,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_81",
+      "tag": "a",
+      "role": null,
+      "text": "Preventing Misfolding by Preventing Folding",
+      "bbox": {
+        "x": 150.609375,
+        "y": 393.5,
+        "width": 292.609375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_82",
+      "tag": "a",
+      "role": null,
+      "text": "science.org",
+      "bbox": {
+        "x": 451.8125,
+        "y": 395.5,
+        "width": 60.578125,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_83",
+      "tag": "a",
+      "role": null,
+      "text": "surprisetalk",
+      "bbox": {
+        "x": 212.109375,
+        "y": 411,
+        "width": 54.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_84",
+      "tag": "a",
+      "role": null,
+      "text": "3 hours ago",
+      "bbox": {
+        "x": 270.28125,
+        "y": 411,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_85",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 336.984375,
+        "y": 411,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_86",
+      "tag": "a",
+      "role": null,
+      "text": "1 comment",
+      "bbox": {
+        "x": 367.640625,
+        "y": 411,
+        "width": 53.03125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_87",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 430,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_88",
+      "tag": "a",
+      "role": null,
+      "text": "Timeline of the OpenAI accidental attack against Hugging Face",
+      "bbox": {
+        "x": 150.609375,
+        "y": 428.5,
+        "width": 420.734375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_89",
+      "tag": "a",
+      "role": null,
+      "text": "simonwillison.net",
+      "bbox": {
+        "x": 579.9375,
+        "y": 430.5,
+        "width": 92.390625,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_90",
+      "tag": "a",
+      "role": null,
+      "text": "882542F3884314B",
+      "bbox": {
+        "x": 218.046875,
+        "y": 446,
+        "width": 88.875,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_91",
+      "tag": "a",
+      "role": null,
+      "text": "11 hours ago",
+      "bbox": {
+        "x": 310.203125,
+        "y": 446,
+        "width": 61.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_92",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 382.84375,
+        "y": 446,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_93",
+      "tag": "a",
+      "role": null,
+      "text": "295 comments",
+      "bbox": {
+        "x": 413.5,
+        "y": 446,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_94",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 465,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_95",
+      "tag": "a",
+      "role": null,
+      "text": "Building a local positioning system to track runners using Ultra-Wideband",
+      "bbox": {
+        "x": 150.609375,
+        "y": 463.5,
+        "width": 493.140625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_96",
+      "tag": "a",
+      "role": null,
+      "text": "zeus.ugent.be",
+      "bbox": {
+        "x": 652.34375,
+        "y": 465.5,
+        "width": 75.625,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_97",
+      "tag": "a",
+      "role": null,
+      "text": "robinpdev",
+      "bbox": {
+        "x": 212.109375,
+        "y": 481,
+        "width": 46.640625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_98",
+      "tag": "a",
+      "role": null,
+      "text": "3 hours ago",
+      "bbox": {
+        "x": 262.03125,
+        "y": 481,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_99",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 328.734375,
+        "y": 481,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_100",
+      "tag": "a",
+      "role": null,
+      "text": "1 comment",
+      "bbox": {
+        "x": 359.390625,
+        "y": 481,
+        "width": 53.03125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_101",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 500,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_102",
+      "tag": "a",
+      "role": null,
+      "text": "TinySol, a tiny solitaire game for DOS",
+      "bbox": {
+        "x": 150.609375,
+        "y": 498.5,
+        "width": 253.46875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_103",
+      "tag": "a",
+      "role": null,
+      "text": "classicbits.net",
+      "bbox": {
+        "x": 412.671875,
+        "y": 500.5,
+        "width": 74.96875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_104",
+      "tag": "a",
+      "role": null,
+      "text": "skibz",
+      "bbox": {
+        "x": 212.109375,
+        "y": 516,
+        "width": 23.671875,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_105",
+      "tag": "a",
+      "role": null,
+      "text": "4 hours ago",
+      "bbox": {
+        "x": 239.0625,
+        "y": 516,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_106",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 305.765625,
+        "y": 516,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_107",
+      "tag": "a",
+      "role": null,
+      "text": "7 comments",
+      "bbox": {
+        "x": 336.421875,
+        "y": 516,
+        "width": 57.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_108",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 535,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_109",
+      "tag": "a",
+      "role": null,
+      "text": "Triton: DirectX 11 Driver for QEMU",
+      "bbox": {
+        "x": 150.609375,
+        "y": 533.5,
+        "width": 232.765625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_110",
+      "tag": "a",
+      "role": null,
+      "text": "getutm.app",
+      "bbox": {
+        "x": 391.96875,
+        "y": 535.5,
+        "width": 62.078125,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_111",
+      "tag": "a",
+      "role": null,
+      "text": "electricant",
+      "bbox": {
+        "x": 218.046875,
+        "y": 551,
+        "width": 48.8125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_112",
+      "tag": "a",
+      "role": null,
+      "text": "8 hours ago",
+      "bbox": {
+        "x": 270.140625,
+        "y": 551,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_113",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 336.84375,
+        "y": 551,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_114",
+      "tag": "a",
+      "role": null,
+      "text": "22 comments",
+      "bbox": {
+        "x": 367.5,
+        "y": 551,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_115",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 570,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_116",
+      "tag": "a",
+      "role": null,
+      "text": "Python string literals are kinda funny",
+      "bbox": {
+        "x": 150.609375,
+        "y": 568.5,
+        "width": 248.109375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_117",
+      "tag": "a",
+      "role": null,
+      "text": "sebsite.pw",
+      "bbox": {
+        "x": 407.3125,
+        "y": 570.5,
+        "width": 56.828125,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_118",
+      "tag": "a",
+      "role": null,
+      "text": "jandeboevrie",
+      "bbox": {
+        "x": 212.109375,
+        "y": 586,
+        "width": 60.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_119",
+      "tag": "a",
+      "role": null,
+      "text": "4 hours ago",
+      "bbox": {
+        "x": 276.140625,
+        "y": 586,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_120",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 342.84375,
+        "y": 586,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_121",
+      "tag": "a",
+      "role": null,
+      "text": "38 comments",
+      "bbox": {
+        "x": 373.5,
+        "y": 586,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_122",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 605,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_123",
+      "tag": "a",
+      "role": null,
+      "text": "Wikipedia's founder on his life's work: \"A propaganda tool\"",
+      "bbox": {
+        "x": 150.609375,
+        "y": 603.5,
+        "width": 394.765625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_124",
+      "tag": "a",
+      "role": null,
+      "text": "nordictimes.com",
+      "bbox": {
+        "x": 553.96875,
+        "y": 605.5,
+        "width": 88.5625,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_125",
+      "tag": "a",
+      "role": null,
+      "text": "thisislife2",
+      "bbox": {
+        "x": 206.1875,
+        "y": 621,
+        "width": 44.328125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_126",
+      "tag": "a",
+      "role": null,
+      "text": "53 minutes ago",
+      "bbox": {
+        "x": 253.796875,
+        "y": 621,
+        "width": 73.046875,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_127",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 337.65625,
+        "y": 621,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_128",
+      "tag": "a",
+      "role": null,
+      "text": "1 comment",
+      "bbox": {
+        "x": 368.3125,
+        "y": 621,
+        "width": 53.03125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_129",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 640,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_130",
+      "tag": "a",
+      "role": null,
+      "text": "Gateway 2000's hilariously bad ads in the 90s (Part II)",
+      "bbox": {
+        "x": 150.609375,
+        "y": 638.5,
+        "width": 368.3125,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_131",
+      "tag": "a",
+      "role": null,
+      "text": "buttondown.com/suchbadtechads",
+      "bbox": {
+        "x": 527.515625,
+        "y": 640.5,
+        "width": 180.4375,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_132",
+      "tag": "a",
+      "role": null,
+      "text": "rfarley04",
+      "bbox": {
+        "x": 212.109375,
+        "y": 656,
+        "width": 42.359375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_133",
+      "tag": "a",
+      "role": null,
+      "text": "9 hours ago",
+      "bbox": {
+        "x": 257.75,
+        "y": 656,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_134",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 324.453125,
+        "y": 656,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_135",
+      "tag": "a",
+      "role": null,
+      "text": "69 comments",
+      "bbox": {
+        "x": 355.109375,
+        "y": 656,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_136",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 675,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_137",
+      "tag": "a",
+      "role": null,
+      "text": "Amazon Is Creating the Biggest Pollution Source in the Country",
+      "bbox": {
+        "x": 150.609375,
+        "y": 673.5,
+        "width": 426.0625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_138",
+      "tag": "a",
+      "role": null,
+      "text": "newrepublic.com",
+      "bbox": {
+        "x": 585.265625,
+        "y": 675.5,
+        "width": 90.4375,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_139",
+      "tag": "a",
+      "role": null,
+      "text": "geox",
+      "bbox": {
+        "x": 218.046875,
+        "y": 691,
+        "width": 22.46875,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_140",
+      "tag": "a",
+      "role": null,
+      "text": "5 hours ago",
+      "bbox": {
+        "x": 243.796875,
+        "y": 691,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_141",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 310.5,
+        "y": 691,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_142",
+      "tag": "a",
+      "role": null,
+      "text": "77 comments",
+      "bbox": {
+        "x": 341.15625,
+        "y": 691,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_143",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 710,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_144",
+      "tag": "a",
+      "role": null,
+      "text": "US Military's cyber command unit grapples with cluster of deaths by suicide",
+      "bbox": {
+        "x": 150.609375,
+        "y": 708.5,
+        "width": 508,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_145",
+      "tag": "a",
+      "role": null,
+      "text": "bloomberg.com",
+      "bbox": {
+        "x": 667.203125,
+        "y": 710.5,
+        "width": 83.328125,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_146",
+      "tag": "a",
+      "role": null,
+      "text": "rbanffy",
+      "bbox": {
+        "x": 218.046875,
+        "y": 726,
+        "width": 33.34375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_147",
+      "tag": "a",
+      "role": null,
+      "text": "12 hours ago",
+      "bbox": {
+        "x": 254.671875,
+        "y": 726,
+        "width": 61.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_148",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 327.3125,
+        "y": 726,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_149",
+      "tag": "a",
+      "role": null,
+      "text": "312 comments",
+      "bbox": {
+        "x": 357.96875,
+        "y": 726,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_150",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 745,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_151",
+      "tag": "a",
+      "role": null,
+      "text": "A physicist rigged his pet hamster’s wheel to upload to Strava",
+      "bbox": {
+        "x": 150.609375,
+        "y": 743.5,
+        "width": 415.84375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_152",
+      "tag": "a",
+      "role": null,
+      "text": "runnersworld.com",
+      "bbox": {
+        "x": 575.046875,
+        "y": 745.5,
+        "width": 96.828125,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_153",
+      "tag": "a",
+      "role": null,
+      "text": "aanet",
+      "bbox": {
+        "x": 218.046875,
+        "y": 761,
+        "width": 26.359375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_154",
+      "tag": "a",
+      "role": null,
+      "text": "20 hours ago",
+      "bbox": {
+        "x": 247.6875,
+        "y": 761,
+        "width": 61.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_155",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 320.328125,
+        "y": 761,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_156",
+      "tag": "a",
+      "role": null,
+      "text": "97 comments",
+      "bbox": {
+        "x": 350.984375,
+        "y": 761,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_157",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 780,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_158",
+      "tag": "a",
+      "role": null,
+      "text": "The Unreasonable Effectiveness of Mathematics in the Natural Sciences [pdf]",
+      "bbox": {
+        "x": 150.609375,
+        "y": 778.5,
+        "width": 517.453125,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_159",
+      "tag": "a",
+      "role": null,
+      "text": "njit.edu",
+      "bbox": {
+        "x": 676.65625,
+        "y": 780.5,
+        "width": 41.171875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_160",
+      "tag": "a",
+      "role": null,
+      "text": "pseudolus",
+      "bbox": {
+        "x": 212.109375,
+        "y": 796,
+        "width": 46.9375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_161",
+      "tag": "a",
+      "role": null,
+      "text": "1 hour ago",
+      "bbox": {
+        "x": 262.328125,
+        "y": 796,
+        "width": 51.03125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_162",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 324.171875,
+        "y": 796,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_163",
+      "tag": "a",
+      "role": null,
+      "text": "1 comment",
+      "bbox": {
+        "x": 354.828125,
+        "y": 796,
+        "width": 53.03125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_164",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 815,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_165",
+      "tag": "a",
+      "role": null,
+      "text": "Hardware backdoors in some x86 CPUs",
+      "bbox": {
+        "x": 150.609375,
+        "y": 813.5,
+        "width": 263.046875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_166",
+      "tag": "a",
+      "role": null,
+      "text": "github.com/xoreaxeaxeax",
+      "bbox": {
+        "x": 422.25,
+        "y": 815.5,
+        "width": 139.046875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_167",
+      "tag": "a",
+      "role": null,
+      "text": "epestr",
+      "bbox": {
+        "x": 218.046875,
+        "y": 831,
+        "width": 29.453125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_168",
+      "tag": "a",
+      "role": null,
+      "text": "15 hours ago",
+      "bbox": {
+        "x": 250.78125,
+        "y": 831,
+        "width": 61.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_169",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 323.421875,
+        "y": 831,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_170",
+      "tag": "a",
+      "role": null,
+      "text": "92 comments",
+      "bbox": {
+        "x": 354.078125,
+        "y": 831,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_171",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 850,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_172",
+      "tag": "a",
+      "role": null,
+      "text": "DeepSeek V4 Flash 0731",
+      "bbox": {
+        "x": 150.609375,
+        "y": 848.5,
+        "width": 167.59375,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_173",
+      "tag": "a",
+      "role": null,
+      "text": "arcprize.org",
+      "bbox": {
+        "x": 326.796875,
+        "y": 850.5,
+        "width": 64.0625,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_174",
+      "tag": "a",
+      "role": null,
+      "text": "tosh",
+      "bbox": {
+        "x": 218.046875,
+        "y": 866,
+        "width": 20.109375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_175",
+      "tag": "a",
+      "role": null,
+      "text": "1 day ago",
+      "bbox": {
+        "x": 241.4375,
+        "y": 866,
+        "width": 46.4375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_176",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 298.6875,
+        "y": 866,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_177",
+      "tag": "a",
+      "role": null,
+      "text": "449 comments",
+      "bbox": {
+        "x": 329.34375,
+        "y": 866,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_178",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 885,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_179",
+      "tag": "a",
+      "role": null,
+      "text": "From your doorbell to your home network",
+      "bbox": {
+        "x": 150.609375,
+        "y": 883.5,
+        "width": 281.21875,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_180",
+      "tag": "a",
+      "role": null,
+      "text": "of0x.cc",
+      "bbox": {
+        "x": 440.421875,
+        "y": 885.5,
+        "width": 38.296875,
+        "height": 13
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_181",
+      "tag": "a",
+      "role": null,
+      "text": "mmoogle",
+      "bbox": {
+        "x": 212.109375,
+        "y": 901,
+        "width": 43.421875,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_182",
+      "tag": "a",
+      "role": null,
+      "text": "8 hours ago",
+      "bbox": {
+        "x": 258.8125,
+        "y": 901,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_183",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 325.515625,
+        "y": 901,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_184",
+      "tag": "a",
+      "role": null,
+      "text": "8 comments",
+      "bbox": {
+        "x": 356.171875,
+        "y": 901,
+        "width": 57.890625,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_185",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 920,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_186",
+      "tag": "a",
+      "role": null,
+      "text": "What happens if an entire class of workers loses faith in their careers",
+      "bbox": {
+        "x": 150.609375,
+        "y": 918.5,
+        "width": 465.328125,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_187",
+      "tag": "a",
+      "role": null,
+      "text": "noemamag.com",
+      "bbox": {
+        "x": 624.53125,
+        "y": 920.5,
+        "width": 86.03125,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_188",
+      "tag": "a",
+      "role": null,
+      "text": "RickJWagner",
+      "bbox": {
+        "x": 218.046875,
+        "y": 936,
+        "width": 59.3125,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_189",
+      "tag": "a",
+      "role": null,
+      "text": "1 day ago",
+      "bbox": {
+        "x": 280.640625,
+        "y": 936,
+        "width": 46.4375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_190",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 337.890625,
+        "y": 936,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_191",
+      "tag": "a",
+      "role": null,
+      "text": "1125 comments",
+      "bbox": {
+        "x": 368.546875,
+        "y": 936,
+        "width": 75.6875,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_192",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 955,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_193",
+      "tag": "a",
+      "role": null,
+      "text": "Voyager 1 FDS Computer Emulator",
+      "bbox": {
+        "x": 150.609375,
+        "y": 953.5,
+        "width": 234.8125,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_194",
+      "tag": "a",
+      "role": null,
+      "text": "zaneham.github.io",
+      "bbox": {
+        "x": 394.015625,
+        "y": 955.5,
+        "width": 99.578125,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_195",
+      "tag": "a",
+      "role": null,
+      "text": "rahen",
+      "bbox": {
+        "x": 212.109375,
+        "y": 971,
+        "width": 26.796875,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_196",
+      "tag": "a",
+      "role": null,
+      "text": "8 hours ago",
+      "bbox": {
+        "x": 242.1875,
+        "y": 971,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_197",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 308.890625,
+        "y": 971,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_198",
+      "tag": "a",
+      "role": null,
+      "text": "12 comments",
+      "bbox": {
+        "x": 339.546875,
+        "y": 971,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_199",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 990,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_200",
+      "tag": "a",
+      "role": null,
+      "text": "BYOC Is Not Just 'Deploy into Their Cloud'",
+      "bbox": {
+        "x": 150.609375,
+        "y": 988.5,
+        "width": 282.765625,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_201",
+      "tag": "a",
+      "role": null,
+      "text": "omnistrate.com",
+      "bbox": {
+        "x": 441.96875,
+        "y": 990.5,
+        "width": 83.859375,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_202",
+      "tag": "a",
+      "role": null,
+      "text": "kkgupta",
+      "bbox": {
+        "x": 212.109375,
+        "y": 1006,
+        "width": 37.859375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_203",
+      "tag": "a",
+      "role": null,
+      "text": "9 hours ago",
+      "bbox": {
+        "x": 253.25,
+        "y": 1006,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_204",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 319.953125,
+        "y": 1006,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_205",
+      "tag": "a",
+      "role": null,
+      "text": "10 comments",
+      "bbox": {
+        "x": 350.609375,
+        "y": 1006,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_206",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 1025,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_207",
+      "tag": "a",
+      "role": null,
+      "text": "Message your other Claude Code sessions",
+      "bbox": {
+        "x": 150.609375,
+        "y": 1023.5,
+        "width": 281.34375,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_208",
+      "tag": "a",
+      "role": null,
+      "text": "claude.com",
+      "bbox": {
+        "x": 440.546875,
+        "y": 1025.5,
+        "width": 60.890625,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_209",
+      "tag": "a",
+      "role": null,
+      "text": "mfiguiere",
+      "bbox": {
+        "x": 212.109375,
+        "y": 1041,
+        "width": 44.296875,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_210",
+      "tag": "a",
+      "role": null,
+      "text": "6 hours ago",
+      "bbox": {
+        "x": 259.6875,
+        "y": 1041,
+        "width": 55.890625,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_211",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 326.390625,
+        "y": 1041,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_212",
+      "tag": "a",
+      "role": null,
+      "text": "14 comments",
+      "bbox": {
+        "x": 357.046875,
+        "y": 1041,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_213",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 1060,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_214",
+      "tag": "a",
+      "role": null,
+      "text": "U.S. Department of Energy Launches the Genesis Open Models Initiative",
+      "bbox": {
+        "x": 150.609375,
+        "y": 1058.5,
+        "width": 487,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_215",
+      "tag": "a",
+      "role": null,
+      "text": "anl.gov",
+      "bbox": {
+        "x": 646.203125,
+        "y": 1060.5,
+        "width": 39.296875,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_216",
+      "tag": "a",
+      "role": null,
+      "text": "moelf",
+      "bbox": {
+        "x": 218.046875,
+        "y": 1076,
+        "width": 26.140625,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_217",
+      "tag": "a",
+      "role": null,
+      "text": "1 day ago",
+      "bbox": {
+        "x": 247.46875,
+        "y": 1076,
+        "width": 46.4375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_218",
+      "tag": "a",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 304.71875,
+        "y": 1076,
+        "width": 19.84375,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_219",
+      "tag": "a",
+      "role": null,
+      "text": "141 comments",
+      "bbox": {
+        "x": 335.375,
+        "y": 1076,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_220",
+      "tag": "a",
+      "role": null,
+      "text": "More",
+      "bbox": {
+        "x": 150.609375,
+        "y": 1102,
+        "width": 32.96875,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_221",
+      "tag": "a",
+      "role": null,
+      "text": "Consider applying for YC's Fall 2026 batch! Applications are open till July 27.",
+      "bbox": {
+        "x": 462.515625,
+        "y": 1146,
+        "width": 514.9375,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_222",
+      "tag": "a",
+      "role": null,
+      "text": "Guidelines",
+      "bbox": {
+        "x": 529.65625,
+        "y": 1178,
+        "width": 55.4375,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_223",
+      "tag": "a",
+      "role": null,
+      "text": "FAQ",
+      "bbox": {
+        "x": 597.4375,
+        "y": 1178,
+        "width": 21.296875,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_224",
+      "tag": "a",
+      "role": null,
+      "text": "Lists",
+      "bbox": {
+        "x": 631.078125,
+        "y": 1178,
+        "width": 24.171875,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_225",
+      "tag": "a",
+      "role": null,
+      "text": "API",
+      "bbox": {
+        "x": 667.59375,
+        "y": 1178,
+        "width": 18.203125,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_226",
+      "tag": "a",
+      "role": null,
+      "text": "Security",
+      "bbox": {
+        "x": 698.140625,
+        "y": 1178,
+        "width": 43.875,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_227",
+      "tag": "a",
+      "role": null,
+      "text": "Legal",
+      "bbox": {
+        "x": 754.359375,
+        "y": 1178,
+        "width": 28.265625,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_228",
+      "tag": "a",
+      "role": null,
+      "text": "Apply to YC",
+      "bbox": {
+        "x": 794.96875,
+        "y": 1178,
+        "width": 61.984375,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_229",
+      "tag": "a",
+      "role": null,
+      "text": "Contact",
+      "bbox": {
+        "x": 869.296875,
+        "y": 1178,
+        "width": 41.03125,
+        "height": 13
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_230",
+      "tag": "form",
+      "role": null,
+      "text": "Search:",
+      "bbox": {
+        "x": 114.796875,
+        "y": 1207,
+        "width": 1210.390625,
+        "height": 21
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_231",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 674.421875,
+        "y": 1207,
+        "width": 148,
+        "height": 21
+      },
+      "above_fold": false
+    }
+  ],
+  "elements_total": 232,
+  "text_excerpt": "Hacker Newsnew | past | comments | ask | show | jobs | submit login 1. Denmark Requires Oral Defenses for Students' Written Work to Counter AI Cheating (mezha.net) 408 points by theanonymousone 4 hours ago | hide | 192 comments 2. \"Code was never the hard part\" is an insult to all programmers (senko.net) 469 points by senko 7 hours ago | hide | 309 comments 3. Fastmail offers EU data region (fastmail.com) 274 points by groomlake 6 hours ago | hide | 121 comments 4. Maryland Closes More of Cunningham Falls State Park After Second Beaver Attack (maryland.gov) 34 points by bookofjoe 1 hour ago | hide | 12 comments 5. A domain can now say it is for sale, in DNS (specification.website) 306 points by shaunpud 9 hours ago | hide | 123 comments 6. LinkedIn Feed Blocker (github.com/andrewpollack) 148 points by andrewpollack 5 hours ago | hide | 87 comments 7. Open-source interactive map for the Aug 12 total solar eclipse (eclipsefan.org) 45 points by MarcoDewey 2 hours ago | hide | 8 comments 8. Can Intel finally beat ARM on performance per Watt? (hackaday.com) 125 points by gumby 6 hours ago | hide | 46 comments 9. Making difficulty curves in games (davetech.co.uk) 12 points by hakkikonu 1 hour ago | hide | 2 comments 10. DeepMind's WeatherNext model achieves breakthrough forecasting cyclones (deepmind.google) 347 points by bhavansig 13 hours ago | hide | 107 comments 11. Preventing Misfolding by Preventing Folding (science.org) 31 points by surprisetalk 3 hours ago | hide | 1 comment 12. Timeline of the OpenAI accidental attack against Hugging Face (simonwillison.net) 291 points by 882542F3884314B 11 hours ago | hide | 295 comments 13. Building a local positioning system to track runners using Ultra-Wideband (zeus.ugent.be) 23 points by robinpdev 3 hours ago | hide | 1 comment 14. TinySol, a tiny solitaire game for DOS (classicbits.net) 36 points by skibz 4 hours ago | hide | 7 comments 15. Triton: DirectX 11 Driver for QEMU (getutm.app) 118 points by electricant 8 hours ago | hide | 22 comments 16. Python string literals are kinda funny (sebsite.pw) 55 points by jandeboevrie 4 hours ago | hide | 38 comments 17. Wikipedia's founder on his life's work: \"A propaganda tool\" (nordictimes.com) 5 points by thisislife2 53 minutes ago | hide | 1 comment 18. Gateway 2000's hilariously bad ads in the 90s (Part II) (buttondown.com/suchbadtechads) 87 points by rfarley04 9 hours ago | hide | 69 comments 19. Amazon Is Creating the Biggest Pollution Source in the Country (newrepublic.com) 159 points by geox 5 hours ago | hide | 77 comments 20. US Military's cyber command unit grapples with cluster of deaths by suicide (bloomberg.com) 200 points by rbanffy 12 hours ago | hide | 312 comments 21. A physicist rigged his pet hamster’s wheel to upload to Strava (runnersworld.com) 410 points by aanet 20 hours ago | hide | 97 comments 22. The Unreasonable Effectiveness of Mathematics in the Natural Sciences [pdf] (njit.edu) 10 points by pseudolus 1 hour ago | hide | 1 comment 23. Hardware backdoors in some x86 CPUs (github.com/xoreaxeaxeax) 317 points by epestr 15 hours ago | hide | 92 comments 24. DeepSeek V4 Flash 0731 (arcprize.org) 751 points by tosh 1 day ago | hide | 449 comments 25. From your doorbell to your home network (of0x.cc) 67 points by mmoogle 8 hours ago | hide | 8 comments 26. What happens if an entire class of workers loses faith in their careers (noemamag.com) 952 points by RickJWagner 1 day ago | hide | 1125 comments 27. Voyager 1 FDS Computer Emulator (zaneham.github.io) 69 points by rahen 8 hours ago | hide | 12 comments 28. BYOC Is Not Just 'Deploy into Their Cloud' (omnistrate.com) 63 points by kkgupta 9 hours ago | hide | 10 comments 29. Message your other Claude Code sessions (claude.com) 32 points by mfiguiere 6 hours ago | hide | 14 comments 30. U.S. Department of Energy Launches the Genesis Open Models Initiative (anl.gov) 337 points by moelf 1 day ago | hide | 141 comments More Consider applying for YC's Fall 2026 batch! Appl",
+  "captured_at": "2026-08-08T22:28:32.095Z"
+}

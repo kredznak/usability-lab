@@ -9,7 +9,8 @@
     "smoke": "node --env-file-if-exists=.env --import tsx src/smoke.ts",
     "typecheck": "tsc --noEmit",
     "prepare": "git config core.hooksPath .githooks",
-    "test:hooks": "sh src/hooks.test.sh"
+    "test:hooks": "sh src/hooks.test.sh",
+    "snapshot": "node --import tsx src/snapshot.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

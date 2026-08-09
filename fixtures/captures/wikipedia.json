@@ -1,0 +1,1994 @@
+{
+  "audit_id": "smoke-ef8684d2b2",
+  "url": "https://en.wikipedia.org/wiki/List_of_common_misconceptions",
+  "final_url": "https://en.wikipedia.org/wiki/List_of_common_misconceptions",
+  "title": "List of common misconceptions - Wikipedia",
+  "screenshot_id": "smoke-ef8684d2b2-page",
+  "screenshot_path": "out/smoke-ef8684d2b2/smoke-ef8684d2b2-page.png",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "full_height": 2199,
+  "elements": [
+    {
+      "ref": "el_0",
+      "tag": "a",
+      "role": null,
+      "text": "Jump to content",
+      "bbox": {
+        "x": -1,
+        "y": -1,
+        "width": 1,
+        "height": 1
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_1",
+      "tag": "header",
+      "role": null,
+      "text": "Main menu Search Donate Create account Log in",
+      "bbox": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 66
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_2",
+      "tag": "nav",
+      "role": null,
+      "text": "Main menu",
+      "bbox": {
+        "x": 44,
+        "y": 17,
+        "width": 20,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_3",
+      "tag": "label",
+      "role": null,
+      "text": "Main menu",
+      "bbox": {
+        "x": 38,
+        "y": 17,
+        "width": 32,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_4",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 84,
+        "y": 14,
+        "width": 140,
+        "height": 38
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_5",
+      "tag": "form",
+      "role": null,
+      "text": "Search",
+      "bbox": {
+        "x": 266,
+        "y": 17,
+        "width": 474,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_6",
+      "tag": "input",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 266,
+        "y": 17,
+        "width": 404.296875,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_7",
+      "tag": "button",
+      "role": null,
+      "text": "Search",
+      "bbox": {
+        "x": 669.296875,
+        "y": 17,
+        "width": 70.703125,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_8",
+      "tag": "nav",
+      "role": null,
+      "text": "Donate Create account Log in",
+      "bbox": {
+        "x": 1193.734375,
+        "y": 25,
+        "width": 202.265625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_9",
+      "tag": "a",
+      "role": null,
+      "text": "Donate",
+      "bbox": {
+        "x": 1197.734375,
+        "y": 25,
+        "width": 45.15625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_10",
+      "tag": "a",
+      "role": null,
+      "text": "Create account",
+      "bbox": {
+        "x": 1250.890625,
+        "y": 25,
+        "width": 94.953125,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_11",
+      "tag": "a",
+      "role": null,
+      "text": "Log in",
+      "bbox": {
+        "x": 1353.84375,
+        "y": 25,
+        "width": 38.15625,
+        "height": 16
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_12",
+      "tag": "a",
+      "role": null,
+      "text": "Join our NYC Wiki-Picnic on Roosevelt Island on Sunday, August 9!",
+      "bbox": {
+        "x": 45,
+        "y": 91.046875,
+        "width": 1350,
+        "height": 80
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_13",
+      "tag": "nav",
+      "role": null,
+      "text": "Contents hide (Top) Lists Toggle Lists subsection Main lists Additional lists See also Further reading External links",
+      "bbox": {
+        "x": 32,
+        "y": 241.84375,
+        "width": 208,
+        "height": 232.53125
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_14",
+      "tag": "h2",
+      "role": null,
+      "text": "Contents",
+      "bbox": {
+        "x": 60,
+        "y": 242.984375,
+        "width": 60.671875,
+        "height": 22.390625
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_15",
+      "tag": "button",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 132.5625,
+        "y": 242.84375,
+        "width": 38.6875,
+        "height": 22
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_16",
+      "tag": "a",
+      "role": null,
+      "text": "(Top)",
+      "bbox": {
+        "x": 60,
+        "y": 278.375,
+        "width": 164,
+        "height": 28
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_17",
+      "tag": "a",
+      "role": null,
+      "text": "Lists",
+      "bbox": {
+        "x": 60,
+        "y": 306.375,
+        "width": 164,
+        "height": 28
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_18",
+      "tag": "button",
+      "role": null,
+      "text": "Toggle Lists subsection",
+      "bbox": {
+        "x": 37,
+        "y": 307.375,
+        "width": 22,
+        "height": 22
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_19",
+      "tag": "a",
+      "role": null,
+      "text": "Main lists",
+      "bbox": {
+        "x": 72,
+        "y": 334.375,
+        "width": 152,
+        "height": 28
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_20",
+      "tag": "a",
+      "role": null,
+      "text": "Additional lists",
+      "bbox": {
+        "x": 72,
+        "y": 362.375,
+        "width": 152,
+        "height": 28
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_21",
+      "tag": "a",
+      "role": null,
+      "text": "See also",
+      "bbox": {
+        "x": 60,
+        "y": 390.375,
+        "width": 164,
+        "height": 28
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_22",
+      "tag": "a",
+      "role": null,
+      "text": "Further reading",
+      "bbox": {
+        "x": 60,
+        "y": 418.375,
+        "width": 164,
+        "height": 28
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_23",
+      "tag": "a",
+      "role": null,
+      "text": "External links",
+      "bbox": {
+        "x": 60,
+        "y": 446.375,
+        "width": 164,
+        "height": 28
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_24",
+      "tag": "header",
+      "role": null,
+      "text": "List of common misconceptions 23 languages",
+      "bbox": {
+        "x": 264,
+        "y": 196.046875,
+        "width": 912,
+        "height": 39.59375
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_25",
+      "tag": "h1",
+      "role": null,
+      "text": "List of common misconceptions",
+      "bbox": {
+        "x": 264,
+        "y": 196.046875,
+        "width": 767.296875,
+        "height": 39.59375
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_26",
+      "tag": "label",
+      "role": null,
+      "text": "23 languages",
+      "bbox": {
+        "x": 1031.296875,
+        "y": 199.84375,
+        "width": 156.703125,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_27",
+      "tag": "nav",
+      "role": null,
+      "text": "Article Talk",
+      "bbox": {
+        "x": 256,
+        "y": 235.640625,
+        "width": 95.8125,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_28",
+      "tag": "a",
+      "role": null,
+      "text": "Article",
+      "bbox": {
+        "x": 264,
+        "y": 235.640625,
+        "width": 38.90625,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_29",
+      "tag": "a",
+      "role": null,
+      "text": "Talk",
+      "bbox": {
+        "x": 318.90625,
+        "y": 235.640625,
+        "width": 24.90625,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_30",
+      "tag": "nav",
+      "role": null,
+      "text": "Read Edit View history",
+      "bbox": {
+        "x": 971.171875,
+        "y": 235.640625,
+        "width": 180.828125,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_31",
+      "tag": "a",
+      "role": null,
+      "text": "Read",
+      "bbox": {
+        "x": 979.171875,
+        "y": 235.640625,
+        "width": 33.46875,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_32",
+      "tag": "a",
+      "role": null,
+      "text": "Edit",
+      "bbox": {
+        "x": 1028.640625,
+        "y": 235.640625,
+        "width": 24.125,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_33",
+      "tag": "a",
+      "role": null,
+      "text": "View history",
+      "bbox": {
+        "x": 1068.765625,
+        "y": 235.640625,
+        "width": 75.234375,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_34",
+      "tag": "nav",
+      "role": null,
+      "text": "Tools",
+      "bbox": {
+        "x": 1152,
+        "y": 235.640625,
+        "width": 32,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_35",
+      "tag": "label",
+      "role": null,
+      "text": "Tools",
+      "bbox": {
+        "x": 1152,
+        "y": 235.640625,
+        "width": 32,
+        "height": 32
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_36",
+      "tag": "nav",
+      "role": null,
+      "text": "Appearance hide Text Small Standard Large Width Standard Wide Color Automatic Light Dark",
+      "bbox": {
+        "x": 1200,
+        "y": 241.84375,
+        "width": 196,
+        "height": 427.53125
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_37",
+      "tag": "button",
+      "role": null,
+      "text": "hide",
+      "bbox": {
+        "x": 1308.046875,
+        "y": 242.84375,
+        "width": 38.6875,
+        "height": 22
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_38",
+      "tag": "form",
+      "role": null,
+      "text": "Small Standard Large",
+      "bbox": {
+        "x": 1216,
+        "y": 313.375,
+        "width": 164,
+        "height": 102
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_39",
+      "tag": "label",
+      "role": null,
+      "text": "Small",
+      "bbox": {
+        "x": 1216,
+        "y": 319.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_40",
+      "tag": "label",
+      "role": null,
+      "text": "Standard",
+      "bbox": {
+        "x": 1216,
+        "y": 351.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_41",
+      "tag": "label",
+      "role": null,
+      "text": "Large",
+      "bbox": {
+        "x": 1216,
+        "y": 383.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_42",
+      "tag": "form",
+      "role": null,
+      "text": "Standard Wide",
+      "bbox": {
+        "x": 1216,
+        "y": 456.375,
+        "width": 164,
+        "height": 70
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_43",
+      "tag": "label",
+      "role": null,
+      "text": "Standard",
+      "bbox": {
+        "x": 1216,
+        "y": 462.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_44",
+      "tag": "label",
+      "role": null,
+      "text": "Wide",
+      "bbox": {
+        "x": 1216,
+        "y": 494.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_45",
+      "tag": "form",
+      "role": null,
+      "text": "Automatic Light Dark",
+      "bbox": {
+        "x": 1216,
+        "y": 567.375,
+        "width": 164,
+        "height": 102
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_46",
+      "tag": "label",
+      "role": null,
+      "text": "Automatic",
+      "bbox": {
+        "x": 1216,
+        "y": 573.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_47",
+      "tag": "label",
+      "role": null,
+      "text": "Light",
+      "bbox": {
+        "x": 1216,
+        "y": 605.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_48",
+      "tag": "label",
+      "role": null,
+      "text": "Dark",
+      "bbox": {
+        "x": 1216,
+        "y": 637.375,
+        "width": 164,
+        "height": 26
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_49",
+      "tag": "a",
+      "role": null,
+      "text": "conventional wisdom",
+      "bbox": {
+        "x": 264,
+        "y": 387.390625,
+        "width": 908.5625,
+        "height": 44
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_50",
+      "tag": "a",
+      "role": null,
+      "text": "stereotypes",
+      "bbox": {
+        "x": 508.921875,
+        "y": 413.390625,
+        "width": 82.71875,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_51",
+      "tag": "a",
+      "role": null,
+      "text": "superstitions",
+      "bbox": {
+        "x": 600.53125,
+        "y": 413.390625,
+        "width": 89.828125,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_52",
+      "tag": "a",
+      "role": null,
+      "text": "logical fallacies",
+      "bbox": {
+        "x": 699.25,
+        "y": 413.390625,
+        "width": 107.609375,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_53",
+      "tag": "a",
+      "role": null,
+      "text": "pseudoscience",
+      "bbox": {
+        "x": 385.859375,
+        "y": 439.390625,
+        "width": 106.75,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_54",
+      "tag": "a",
+      "role": null,
+      "text": "pseudohistory",
+      "bbox": {
+        "x": 528.203125,
+        "y": 439.390625,
+        "width": 99.03125,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_55",
+      "tag": "a",
+      "role": null,
+      "text": "urban legends",
+      "bbox": {
+        "x": 940.59375,
+        "y": 439.390625,
+        "width": 101.421875,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_56",
+      "tag": "a",
+      "role": null,
+      "text": "moral panics",
+      "bbox": {
+        "x": 356.5,
+        "y": 465.390625,
+        "width": 90.703125,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_57",
+      "tag": "h2",
+      "role": null,
+      "text": "Lists",
+      "bbox": {
+        "x": 264,
+        "y": 518.390625,
+        "width": 50.546875,
+        "height": 27
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_58",
+      "tag": "h3",
+      "role": null,
+      "text": "Main lists",
+      "bbox": {
+        "x": 264,
+        "y": 603.859375,
+        "width": 87.5,
+        "height": 22
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_59",
+      "tag": "a",
+      "role": null,
+      "text": "List of common misconceptions about arts and culture",
+      "bbox": {
+        "x": 289.59375,
+        "y": 639.375,
+        "width": 382.421875,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_60",
+      "tag": "a",
+      "role": null,
+      "text": "List of common misconceptions about history",
+      "bbox": {
+        "x": 289.59375,
+        "y": 666.96875,
+        "width": 319.265625,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_61",
+      "tag": "a",
+      "role": null,
+      "text": "List of common misconceptions about science, technology, and mathematics",
+      "bbox": {
+        "x": 289.59375,
+        "y": 694.5625,
+        "width": 542.21875,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_62",
+      "tag": "h3",
+      "role": null,
+      "text": "Additional lists",
+      "bbox": {
+        "x": 264,
+        "y": 734.953125,
+        "width": 137.609375,
+        "height": 22
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_63",
+      "tag": "a",
+      "role": null,
+      "text": "List of common misconceptions about language learning",
+      "bbox": {
+        "x": 289.59375,
+        "y": 770.46875,
+        "width": 399.359375,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_64",
+      "tag": "a",
+      "role": null,
+      "text": "List of common misconceptions about the Middle Ages",
+      "bbox": {
+        "x": 289.59375,
+        "y": 798.0625,
+        "width": 386,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_65",
+      "tag": "a",
+      "role": null,
+      "text": "Common English usage misconceptions",
+      "bbox": {
+        "x": 289.59375,
+        "y": 825.65625,
+        "width": 284.59375,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_66",
+      "tag": "a",
+      "role": null,
+      "text": "Misconceptions about HIV/AIDS",
+      "bbox": {
+        "x": 289.59375,
+        "y": 853.25,
+        "width": 227.671875,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_67",
+      "tag": "a",
+      "role": null,
+      "text": "Tornado myths",
+      "bbox": {
+        "x": 289.59375,
+        "y": 880.84375,
+        "width": 104.9375,
+        "height": 18
+      },
+      "above_fold": true
+    },
+    {
+      "ref": "el_68",
+      "tag": "a",
+      "role": null,
+      "text": "Common misunderstandings of genetics",
+      "bbox": {
+        "x": 289.59375,
+        "y": 908.4375,
+        "width": 285.484375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_69",
+      "tag": "h2",
+      "role": null,
+      "text": "See also",
+      "bbox": {
+        "x": 264,
+        "y": 951.4375,
+        "width": 84.734375,
+        "height": 27
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_70",
+      "tag": "a",
+      "role": null,
+      "text": "False memory",
+      "bbox": {
+        "x": 289.59375,
+        "y": 996.515625,
+        "width": 101.359375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_71",
+      "tag": "a",
+      "role": null,
+      "text": "Illusory truth effect",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1024.109375,
+        "width": 130.4375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_72",
+      "tag": "a",
+      "role": null,
+      "text": "Legends and myths regarding the Titanic",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1051.703125,
+        "width": 289.375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_73",
+      "tag": "a",
+      "role": null,
+      "text": "List of cognitive biases",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1079.296875,
+        "width": 160.984375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_74",
+      "tag": "a",
+      "role": null,
+      "text": "List of common false etymologies of English words",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1106.890625,
+        "width": 358.390625,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_75",
+      "tag": "a",
+      "role": null,
+      "text": "List of conspiracy theories",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1134.484375,
+        "width": 184.984375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_76",
+      "tag": "a",
+      "role": null,
+      "text": "List of fallacies",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1162.078125,
+        "width": 104.9375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_77",
+      "tag": "a",
+      "role": null,
+      "text": "List of pseudoscience topics",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1189.671875,
+        "width": 200.125,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_78",
+      "tag": "a",
+      "role": null,
+      "text": "List of urban legends",
+      "bbox": {
+        "x": 753.59375,
+        "y": 996.515625,
+        "width": 148.546875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_79",
+      "tag": "a",
+      "role": null,
+      "text": "Mondegreen",
+      "bbox": {
+        "x": 753.59375,
+        "y": 1024.109375,
+        "width": 89.84375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_80",
+      "tag": "a",
+      "role": null,
+      "text": "Outline of public relations",
+      "bbox": {
+        "x": 753.59375,
+        "y": 1051.703125,
+        "width": 179.65625,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_81",
+      "tag": "a",
+      "role": null,
+      "text": "Pseudodoxia Epidemica",
+      "bbox": {
+        "x": 753.59375,
+        "y": 1079.296875,
+        "width": 171.671875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_82",
+      "tag": "a",
+      "role": null,
+      "text": "QI",
+      "bbox": {
+        "x": 753.59375,
+        "y": 1106.890625,
+        "width": 16.890625,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_83",
+      "tag": "a",
+      "role": null,
+      "text": "Scientific misconceptions",
+      "bbox": {
+        "x": 753.59375,
+        "y": 1134.484375,
+        "width": 178.75,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_84",
+      "tag": "a",
+      "role": null,
+      "text": "Superseded theories in science",
+      "bbox": {
+        "x": 753.59375,
+        "y": 1162.078125,
+        "width": 223.25,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_85",
+      "tag": "a",
+      "role": null,
+      "text": "The Straight Dope",
+      "bbox": {
+        "x": 753.59375,
+        "y": 1189.671875,
+        "width": 129.859375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_86",
+      "tag": "h2",
+      "role": null,
+      "text": "Further reading",
+      "bbox": {
+        "x": 264,
+        "y": 1234.265625,
+        "width": 168.234375,
+        "height": 27
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_87",
+      "tag": "a",
+      "role": null,
+      "text": "Amazing... But False!: Hundreds of \"Facts\" You Thought Were True, But Aren't",
+      "bbox": {
+        "x": 472.796875,
+        "y": 1279.34375,
+        "width": 569.71875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_88",
+      "tag": "a",
+      "role": null,
+      "text": "ISBN",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1305.34375,
+        "width": 37.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_89",
+      "tag": "a",
+      "role": null,
+      "text": "978-1-4027-3791-6",
+      "bbox": {
+        "x": 331.390625,
+        "y": 1305.34375,
+        "width": 137,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_90",
+      "tag": "a",
+      "role": null,
+      "text": "ISBN",
+      "bbox": {
+        "x": 978.546875,
+        "y": 1332.9375,
+        "width": 37.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_91",
+      "tag": "a",
+      "role": null,
+      "text": "978-0-7679-1992-0",
+      "bbox": {
+        "x": 1020.34375,
+        "y": 1332.9375,
+        "width": 137,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_92",
+      "tag": "a",
+      "role": null,
+      "text": "The Encyclopedia of Popular Misconceptions: The Ultimate Debunker's Guide to Widely Accepted Fallacies",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1360.53125,
+        "width": 861,
+        "height": 44
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_93",
+      "tag": "a",
+      "role": null,
+      "text": "ISBN",
+      "bbox": {
+        "x": 551.9375,
+        "y": 1386.53125,
+        "width": 37.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_94",
+      "tag": "a",
+      "role": null,
+      "text": "978-0-8065-1556-4",
+      "bbox": {
+        "x": 593.734375,
+        "y": 1386.53125,
+        "width": 137,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_95",
+      "tag": "a",
+      "role": null,
+      "text": "Great Mythconceptions: The Science Behind the Myths",
+      "bbox": {
+        "x": 572.703125,
+        "y": 1414.125,
+        "width": 406.140625,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_96",
+      "tag": "a",
+      "role": null,
+      "text": "ISBN",
+      "bbox": {
+        "x": 432.765625,
+        "y": 1440.125,
+        "width": 37.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_97",
+      "tag": "a",
+      "role": null,
+      "text": "978-0-7407-5364-0",
+      "bbox": {
+        "x": 474.5625,
+        "y": 1440.125,
+        "width": 137,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_98",
+      "tag": "a",
+      "role": null,
+      "text": "The Book of General Ignorance",
+      "bbox": {
+        "x": 555.53125,
+        "y": 1467.71875,
+        "width": 239.25,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_99",
+      "tag": "a",
+      "role": null,
+      "text": "ISBN",
+      "bbox": {
+        "x": 926.390625,
+        "y": 1467.71875,
+        "width": 37.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_100",
+      "tag": "a",
+      "role": null,
+      "text": "978-0-307-39491-0",
+      "bbox": {
+        "x": 968.1875,
+        "y": 1467.71875,
+        "width": 137,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_101",
+      "tag": "a",
+      "role": null,
+      "text": "ISBN",
+      "bbox": {
+        "x": 977.140625,
+        "y": 1495.3125,
+        "width": 37.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_102",
+      "tag": "a",
+      "role": null,
+      "text": "978-0-571-26965-5",
+      "bbox": {
+        "x": 1018.9375,
+        "y": 1495.3125,
+        "width": 137,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_103",
+      "tag": "a",
+      "role": null,
+      "text": "\"The science myths that will not die\"",
+      "bbox": {
+        "x": 582.1875,
+        "y": 1522.90625,
+        "width": 271.03125,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_104",
+      "tag": "a",
+      "role": null,
+      "text": "Bibcode",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1548.90625,
+        "width": 57.828125,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_105",
+      "tag": "a",
+      "role": null,
+      "text": "2015Natur.528..322S",
+      "bbox": {
+        "x": 351.875,
+        "y": 1548.90625,
+        "width": 167.25,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_106",
+      "tag": "a",
+      "role": null,
+      "text": "doi",
+      "bbox": {
+        "x": 528.015625,
+        "y": 1548.90625,
+        "width": 21.359375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_107",
+      "tag": "a",
+      "role": null,
+      "text": "10.1038/528322a",
+      "bbox": {
+        "x": 553.828125,
+        "y": 1548.90625,
+        "width": 140.578125,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_108",
+      "tag": "a",
+      "role": null,
+      "text": "PMID",
+      "bbox": {
+        "x": 703.296875,
+        "y": 1548.90625,
+        "width": 40,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_109",
+      "tag": "a",
+      "role": null,
+      "text": "26672537",
+      "bbox": {
+        "x": 747.75,
+        "y": 1548.90625,
+        "width": 87.1875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_110",
+      "tag": "a",
+      "role": null,
+      "text": "Fabulous Fallacies: More Than 300 Popular Beliefs That Are Not True",
+      "bbox": {
+        "x": 426.578125,
+        "y": 1576.5,
+        "width": 509.046875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_111",
+      "tag": "a",
+      "role": null,
+      "text": "ISBN",
+      "bbox": {
+        "x": 1062.8125,
+        "y": 1576.5,
+        "width": 37.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_112",
+      "tag": "a",
+      "role": null,
+      "text": "978-1-57866-065-0",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1576.5,
+        "width": 861.265625,
+        "height": 44
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_113",
+      "tag": "h2",
+      "role": null,
+      "text": "External links",
+      "bbox": {
+        "x": 264,
+        "y": 1645.5,
+        "width": 147.75,
+        "height": 27
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_114",
+      "tag": "a",
+      "role": null,
+      "text": "List of children's misconceptions about science",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1690.578125,
+        "width": 348.125,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_115",
+      "tag": "a",
+      "role": null,
+      "text": "Misconceptions taught by science textbooks",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1718.171875,
+        "width": 328.171875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_116",
+      "tag": "a",
+      "role": null,
+      "text": "Bad Science",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1745.765625,
+        "width": 105.84375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_117",
+      "tag": "a",
+      "role": null,
+      "text": "Portals",
+      "bbox": {
+        "x": 412.03125,
+        "y": 1791.0625,
+        "width": 47.734375,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_118",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 481.359375,
+        "y": 1791.0625,
+        "width": 19,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_119",
+      "tag": "a",
+      "role": null,
+      "text": "The arts",
+      "bbox": {
+        "x": 504.28125,
+        "y": 1791.0625,
+        "width": 54.78125,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_120",
+      "tag": "a",
+      "role": null,
+      "text": "History of science",
+      "bbox": {
+        "x": 599.6875,
+        "y": 1791.0625,
+        "width": 121.296875,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_121",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 740.6875,
+        "y": 1791.0625,
+        "width": 19,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_122",
+      "tag": "a",
+      "role": null,
+      "text": "Science",
+      "bbox": {
+        "x": 763.609375,
+        "y": 1791.0625,
+        "width": 53.234375,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_123",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 836.546875,
+        "y": 1791.0625,
+        "width": 21,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_124",
+      "tag": "a",
+      "role": null,
+      "text": "Society",
+      "bbox": {
+        "x": 861.46875,
+        "y": 1791.0625,
+        "width": 50.09375,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_125",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 931.265625,
+        "y": 1791.0625,
+        "width": 19,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_126",
+      "tag": "a",
+      "role": null,
+      "text": "Technology",
+      "bbox": {
+        "x": 954.1875,
+        "y": 1791.0625,
+        "width": 77.984375,
+        "height": 16
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_127",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 289.59375,
+        "y": 1841.265625,
+        "width": 30,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_128",
+      "tag": "a",
+      "role": null,
+      "text": "list of lists",
+      "bbox": {
+        "x": 485.890625,
+        "y": 1841.265625,
+        "width": 69.34375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_129",
+      "tag": "a",
+      "role": null,
+      "text": "Categories",
+      "bbox": {
+        "x": 270,
+        "y": 1895.859375,
+        "width": 77.375,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_130",
+      "tag": "a",
+      "role": null,
+      "text": "Lists of lists",
+      "bbox": {
+        "x": 360.265625,
+        "y": 1895.859375,
+        "width": 82.6875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_131",
+      "tag": "a",
+      "role": null,
+      "text": "Lists of common misconceptions",
+      "bbox": {
+        "x": 459.953125,
+        "y": 1895.859375,
+        "width": 231.203125,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_132",
+      "tag": "a",
+      "role": null,
+      "text": "Society-related lists",
+      "bbox": {
+        "x": 708.15625,
+        "y": 1895.859375,
+        "width": 138.71875,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_133",
+      "tag": "a",
+      "role": null,
+      "text": "Misconceptions",
+      "bbox": {
+        "x": 863.875,
+        "y": 1895.859375,
+        "width": 110.28125,
+        "height": 18
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_134",
+      "tag": "footer",
+      "role": null,
+      "text": "This page was last edited on 28 July 2026, at 20:52 (UTC). Page was rendered with Parsoid. Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply. ",
+      "bbox": {
+        "x": 44,
+        "y": 1973.859375,
+        "width": 1352,
+        "height": 99.390625
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_135",
+      "tag": "a",
+      "role": null,
+      "text": "Parsoid",
+      "bbox": {
+        "x": 493.390625,
+        "y": 1993.859375,
+        "width": 40.6875,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_136",
+      "tag": "a",
+      "role": null,
+      "text": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "bbox": {
+        "x": 186.09375,
+        "y": 2022.65625,
+        "width": 286.15625,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_137",
+      "tag": "a",
+      "role": null,
+      "text": "Terms of Use",
+      "bbox": {
+        "x": 814.109375,
+        "y": 2022.65625,
+        "width": 70.578125,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_138",
+      "tag": "a",
+      "role": null,
+      "text": "Privacy Policy",
+      "bbox": {
+        "x": 911.390625,
+        "y": 2022.65625,
+        "width": 74.25,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_139",
+      "tag": "a",
+      "role": null,
+      "text": "Wikimedia Foundation, Inc.",
+      "bbox": {
+        "x": 1225.484375,
+        "y": 2022.65625,
+        "width": 144.734375,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_140",
+      "tag": "a",
+      "role": null,
+      "text": "Privacy policy",
+      "bbox": {
+        "x": 44,
+        "y": 2072.25,
+        "width": 73.359375,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_141",
+      "tag": "a",
+      "role": null,
+      "text": "About Wikipedia",
+      "bbox": {
+        "x": 129.359375,
+        "y": 2072.25,
+        "width": 86.71875,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_142",
+      "tag": "a",
+      "role": null,
+      "text": "Disclaimers",
+      "bbox": {
+        "x": 228.078125,
+        "y": 2072.25,
+        "width": 62.015625,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_143",
+      "tag": "a",
+      "role": null,
+      "text": "Contact Wikipedia",
+      "bbox": {
+        "x": 302.09375,
+        "y": 2072.25,
+        "width": 96.71875,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_144",
+      "tag": "a",
+      "role": null,
+      "text": "Legal & safety contacts",
+      "bbox": {
+        "x": 410.8125,
+        "y": 2072.25,
+        "width": 124.078125,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_145",
+      "tag": "a",
+      "role": null,
+      "text": "Code of Conduct",
+      "bbox": {
+        "x": 546.890625,
+        "y": 2072.25,
+        "width": 90.0625,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_146",
+      "tag": "a",
+      "role": null,
+      "text": "Developers",
+      "bbox": {
+        "x": 648.953125,
+        "y": 2072.25,
+        "width": 60.703125,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_147",
+      "tag": "a",
+      "role": null,
+      "text": "Statistics",
+      "bbox": {
+        "x": 721.65625,
+        "y": 2072.25,
+        "width": 48.015625,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_148",
+      "tag": "a",
+      "role": null,
+      "text": "Cookie statement",
+      "bbox": {
+        "x": 781.671875,
+        "y": 2072.25,
+        "width": 93.390625,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_149",
+      "tag": "a",
+      "role": null,
+      "text": "Mobile view",
+      "bbox": {
+        "x": 887.0625,
+        "y": 2072.25,
+        "width": 62.703125,
+        "height": 14
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_150",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 1182,
+        "y": 2067.25,
+        "width": 102,
+        "height": 44
+      },
+      "above_fold": false
+    },
+    {
+      "ref": "el_151",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 1290,
+        "y": 2067.25,
+        "width": 106,
+        "height": 44
+      },
+      "above_fold": false
+    }
+  ],
+  "elements_total": 152,
+  "text_excerpt": "Jump to content Main menu Search Donate Create account Log in Join our NYC Wiki-Picnic on Roosevelt Island on Sunday, August 9! Contents hide (Top) Lists Toggle Lists subsection Main lists Additional lists See also Further reading External links List of common misconceptions 23 languages Article Talk Read Edit View history Tools Appearance hide Text Small Standard Large Width Standard Wide Color Automatic Light Dark From Wikipedia, the free encyclopedia Each entry on these lists of common misconceptions is phrased as a correction; the misconceptions themselves are implied rather than explicitly stated. These entries are concise summaries, and the main subject articles contain more detail. Common misconceptions are widely accepted viewpoints or factoids that are actually false. They often arise from conventional wisdom (such as old wives' tales), stereotypes, superstitions, logical fallacies, misunderstandings of science, or the popularization of pseudoscience and pseudohistory. Some misconceptions are also considered urban legends and may contribute to moral panics. Listsedit In order to manage page size and loading time, this long article has been split into multiple articles. Main listsedit List of common misconceptions about arts and culture List of common misconceptions about history List of common misconceptions about science, technology, and mathematics Additional listsedit List of common misconceptions about language learning List of common misconceptions about the Middle Ages Common English usage misconceptions Misconceptions about HIV/AIDS Tornado myths Common misunderstandings of genetics See alsoedit False memory Illusory truth effect Legends and myths regarding the Titanic List of cognitive biases List of common false etymologies of English words List of conspiracy theories List of fallacies List of pseudoscience topics List of urban legends Mondegreen Outline of public relations Pseudodoxia Epidemica QI Scientific misconceptions Superseded theories in science The Straight Dope Further readingedit Diefendorf, David (2007). Amazing... But False!: Hundreds of \"Facts\" You Thought Were True, But Aren't. Sterling. ISBN 978-1-4027-3791-6. Green, Joey (2005). Contrary to Popular Belief: More than 250 False Facts Revealed. Broadway. ISBN 978-0-7679-1992-0. Johnsen, Ferris (1994). The Encyclopedia of Popular Misconceptions: The Ultimate Debunker's Guide to Widely Accepted Fallacies. Carol Publishing Group. ISBN 978-0-8065-1556-4. Kruszelnicki, Karl; Adam Yazxhi (2006). Great Mythconceptions: The Science Behind the Myths (2008 ed.). Andrews McMeel Publishing. ISBN 978-0-7407-5364-0. Lloyd, John; John Mitchinson (2006). The Book of General Ignorance. Harmony Books. ISBN 978-0-307-39491-0. Lloyd, John; John Mitchinson (2010). The Second Book Of General Ignorance. Faber and Faber. ISBN 978-0-571-26965-5. Scudellari, Megan (December 17, 2015). \"The science myths that will not die\". Nature. 528 (7582): 322–25. Bibcode:2015Natur.528..322S. doi:10.1038/528322a. PMID 26672537. Tuleja, Tad (1999). Fabulous Fallacies: More Than 300 Popular Beliefs That Are Not True. Galahad Books. ISBN 978-1-57866-065-0. External linksedit List of children's misconceptions about science Misconceptions taught by science textbooks Bad Science Portals: The arts History of science Science Society Technology This article includes a list of lists. Categories: Lists of listsLists of common misconceptionsSociety-related listsMisconceptions This page was last edited on 28 July 2026, at 20:52 (UTC). Page was rendered with Parsoid. Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization. Privacy policy About Wikipedia Disclaimers Contact Wikipedia Legal & safety contacts Code of Conduct Developers Statistics Cookie statement Mobile view",
+  "captured_at": "2026-08-08T22:16:16.567Z"
+}

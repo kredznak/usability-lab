@@ -7,4 +7,6 @@ out/
 *.db
 *.db-journal
 .DS_Store
-captures/
+# Anchored to the repo root on purpose. Unanchored, `captures/` also matches
+# `fixtures/captures/`, which silently excluded the eval fixtures.
+/captures/
