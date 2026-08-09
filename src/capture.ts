@@ -100,11 +100,14 @@ export async function robotsAllows(url: string): Promise<boolean> {
   return !disallowed.some((rule) => target.pathname.startsWith(rule));
 }
 
+/** Upper bound on the page text we assemble. Well past any real page; a guard, not a budget. */
+const FULL_TEXT_CEILING = 500_000;
+
 async function extractElements(
   page: Page,
-): Promise<{ elements: CapturedElement[]; total: number }> {
+): Promise<{ elements: CapturedElement[]; total: number; fullText: string }> {
   return page.evaluate(
-    ({ selector, max, ceiling, bands, textLimit }) => {
+    ({ selector, max, ceiling, bands, textLimit, fullTextLimit }) => {
       interface Candidate {
         tag: string;
         role: string | null;
@@ -119,6 +122,68 @@ async function extractElements(
         order: number;
       }
 
+
+      /**
+       * The text a person actually sees, which is not what `innerText` returns.
+       *
+       * `innerText` is layout-aware — it already skips display:none and
+       * visibility:hidden — but it happily includes screen-reader-only text:
+       * the `position:absolute; width:1px; height:1px; overflow:hidden` pattern
+       * is *rendered*, just clipped to nothing. On linear.app that made the h1
+       * read as "The product development system for teams and agents The
+       * product development system for teams and agents", and a reviewer duly
+       * reported the headline as duplicated. It is not; it wraps onto two
+       * lines. The claim was false, it cited a real element, and so it passed
+       * the confidence gate at *high* — a confident, checkable, wrong statement
+       * on a customer's results page.
+       *
+       * So we assemble text ourselves and skip any descendant clipped to
+       * nothing.
+       *
+       * The IIFE wrapper is load-bearing. tsx compiles a *named* function with
+       * an esbuild `__name(...)` wrapper, and that identifier does not exist
+       * inside page.evaluate's browser context; naming comes from the binding,
+       * so returning the arrow from an IIFE leaves it anonymous. Assign this
+       * arrow directly to a const and every capture throws "__name is not
+       * defined" — loudly, at least, and the smoke test runs capture.
+       */
+      const visibleText = ((): ((root: Element, limit: number) => string) =>
+        (root, limit) => {
+        const parts: string[] = [];
+        const stack: Node[] = [root];
+        while (stack.length > 0) {
+          const node = stack.pop()!;
+          if (node.nodeType === Node.TEXT_NODE) {
+            parts.push(node.nodeValue ?? "");
+            continue;
+          }
+          if (node.nodeType !== Node.ELEMENT_NODE) continue;
+
+          if (node !== root) {
+            const el = node as HTMLElement;
+            const cs = window.getComputedStyle(el);
+            if (cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0") {
+              continue;
+            }
+            // Clipped to nothing: a box this small cannot show text, and the
+            // clipping is what makes it invisible rather than merely tiny.
+            const r = el.getBoundingClientRect();
+            if (
+              (r.width <= 1 || r.height <= 1) &&
+              (cs.overflow === "hidden" ||
+                cs.clipPath !== "none" ||
+                cs.getPropertyValue("clip") !== "auto")
+            ) {
+              continue;
+            }
+          }
+
+          // Pushed in reverse so the stack pops them in document order.
+          const kids = node.childNodes;
+          for (let i = kids.length - 1; i >= 0; i--) stack.push(kids[i]!);
+        }
+        return parts.join(" ").replace(/\s+/g, " ").trim().slice(0, limit);
+      })();
 
       // Interactive elements are what findings are usually about, so they win a
       // contested slot over a structural wrapper in the same band.
@@ -151,10 +216,7 @@ async function extractElements(
         const pageY = r.top + window.scrollY;
         const pageX = r.left + window.scrollX;
         const tag = el.tagName.toLowerCase();
-        const text = (el.innerText ?? el.textContent ?? "")
-          .replace(/\s+/g, " ")
-          .trim()
-          .slice(0, textLimit);
+        const text = visibleText(el, textLimit);
 
         // Accessible name, roughly in the order the accname spec resolves it.
         // Deliberately partial — the common cases, not a spec implementation.
@@ -289,6 +351,11 @@ async function extractElements(
       selected.sort((a, b) => a.order - b.order);
 
       return {
+        // Assembled with the same visibility rules as the element text. The
+        // confidence gate checks quoted text against this, so if the two
+        // disagreed a reviewer could quote text no visitor can see and have it
+        // verified as evidence.
+        fullText: visibleText(document.body, fullTextLimit),
         elements: selected.map((c, i) => ({
           ref: `el_${i}`,
           tag: c.tag,
@@ -310,6 +377,7 @@ async function extractElements(
       ceiling: COLLECT_CEILING,
       bands: SAMPLE_BANDS,
       textLimit: ELEMENT_TEXT_LIMIT,
+      fullTextLimit: FULL_TEXT_CEILING,
     },
   );
 }
@@ -356,7 +424,7 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
     });
     await page.waitForTimeout(400);
 
-    const { elements, total: elementsTotal } = await extractElements(page);
+    const { elements, total: elementsTotal, fullText } = await extractElements(page);
     if (elements.length === 0) {
       // F2: rendered, but nothing on it. A parked domain or a JS wall.
       throw new CaptureFailed("page rendered no visible elements", url);
@@ -367,9 +435,6 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
     await page.screenshot({ path: screenshotPath, fullPage: true });
 
     const fullHeight = await page.evaluate(() => document.body.scrollHeight);
-    const fullText = (await page.evaluate(() => document.body.innerText ?? ""))
-      .replace(/\s+/g, " ")
-      .trim();
     const textExcerpt = fullText.slice(0, TEXT_EXCERPT_LIMIT);
     const title = await page.title();
     const finalUrl = page.url();
