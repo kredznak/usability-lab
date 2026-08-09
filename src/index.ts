@@ -1,23 +1,31 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { createInterface } from "node:readline/promises";
 import path from "node:path";
 import { capture, CaptureFailed } from "./capture.js";
 import { runSubAgent } from "./agents/runner.js";
-import { HEURISTICS } from "./agents/rubrics.js";
+import { rubricFor } from "./agents/rubrics.js";
+import { runProfiler } from "./agents/profiler.js";
+import { runSynthesizer, identify } from "./agents/synthesizer.js";
+import { orchestrate } from "./orchestrator/index.js";
+import { deriveSignals } from "./signals.js";
 import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
 import { CallLog } from "./db.js";
-import { Finding, normalizeSeverity } from "./types.js";
+import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
+import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
 
 /**
- * v0 slice 1 — one URL end to end.
+ * v0 slice 2 — one URL and five answers, end to end.
  *
- *   capture -> heuristics (R0) -> derived confidence -> annotation -> results page
+ *   capture -> profile -> signals -> orchestrate (R0-R5, cap 4)
+ *     -> sub-agents -> synthesize -> derived confidence -> annotate -> page
  *
- * Deliberately NOT here: the question flow, Context Profiler, Orchestrator and
- * spawn rules R1-R5, Synthesizer, Research, lint, founder review. See §0 of
- * docs/design.md for the full v0 cut line.
+ * Deliberately NOT here: Research and citations (every finding still reports
+ * source_type "none", which §9.3 makes a legal output), the lint gate, the
+ * Content agent, founder review, multi-page capture. See §0 of docs/design.md.
  */
 
 interface Timing {
@@ -27,7 +35,7 @@ interface Timing {
 
 async function timed<T>(step: string, timings: Timing[], fn: () => Promise<T>): Promise<T> {
   const started = Date.now();
-  process.stderr.write(`  ${step.padEnd(12)} `);
+  process.stderr.write(`  ${step.padEnd(14)} `);
   try {
     const result = await fn();
     const ms = Date.now() - started;
@@ -40,10 +48,64 @@ async function timed<T>(step: string, timings: Timing[], fn: () => Promise<T>): 
   }
 }
 
+/** §6: "max 2 sub-agents concurrent within one audit". */
+const MAX_CONCURRENT_AGENTS = 2;
+
+async function inPools<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const i = next++;
+      if (i >= items.length) return;
+      results[i] = await fn(items[i]!);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
+async function collectAnswers(argv: string[]): Promise<Answers> {
+  const fileFlag = argv.indexOf("--answers");
+  if (fileFlag !== -1) {
+    const file = argv[fileFlag + 1];
+    if (!file) throw new Error("--answers needs a path to a JSON file");
+    const parsed = JSON.parse(readFileSync(file, "utf8")) as Answers;
+    return parsed;
+  }
+
+  // Non-interactive with no answers file is a legitimate run: the profile comes
+  // back empty and the spawn rules fall through to page signals alone.
+  if (!process.stdin.isTTY) return {};
+
+  const rl = createInterface({ input: process.stdin, output: process.stderr });
+  const answers: Answers = {};
+  process.stderr.write("\nFive questions. Press enter to skip any of them.\n\n");
+  for (const q of QUESTIONS) {
+    answers[q] = (await rl.question(`  ${q}\n  > `)).trim();
+    process.stderr.write("\n");
+  }
+  rl.close();
+  return answers;
+}
+
+/** With no answers to profile, we say so rather than inventing a profile. */
+const EMPTY_PROFILE: ContextProfile = {
+  site_kind: "other",
+  concerns: [],
+  goal: "unknown",
+  drop_point: "unknown",
+  summary: "No context was given, so this is a general review of the page.",
+};
+
 async function main(): Promise<void> {
   const url = process.argv[2];
-  if (!url) {
-    console.error("usage: npm run audit -- <url>");
+  if (!url || url.startsWith("--")) {
+    console.error("usage: npm run audit -- <url> [--answers answers.json]");
     process.exit(2);
   }
   try {
@@ -63,12 +125,16 @@ async function main(): Promise<void> {
     process.exit(2);
   }
 
+  const answers = await collectAnswers(process.argv.slice(2));
+
   // UUIDv7 is the correlation key in §8; v4 is a stand-in until we add a v7
   // generator. Either way it is the single ID threaded through every artifact.
   const auditId = randomUUID();
   const outDir = path.join("out", auditId);
   const timings: Timing[] = [];
   const log = new CallLog();
+  /** §7: DEGRADED is a logged, visible state — never a quiet one. */
+  const degraded: string[] = [];
 
   console.error(`\naudit ${auditId}\n${url}\n`);
 
@@ -76,31 +142,75 @@ async function main(): Promise<void> {
     const client = new Anthropic();
 
     const captured = await timed("capture", timings, () => capture(url, auditId, outDir));
+    const signals = deriveSignals(captured);
 
-    const heuristics = await timed("heuristics", timings, () =>
-      runSubAgent(client, HEURISTICS, captured, log),
+    const hasAnswers = Object.values(answers).some((a) => a && a.length > 0);
+    const profile = hasAnswers
+      ? (await timed("profile", timings, () => runProfiler(client, answers, auditId, log))).profile
+      : EMPTY_PROFILE;
+
+    const plan = await timed("orchestrate", timings, () =>
+      orchestrate(client, profile, signals, auditId, log),
+    );
+    if (plan.override_rejected) degraded.push(`orchestrator: ${plan.override_rejected}`);
+
+    console.error(
+      `\n  spawning ${plan.spawn.join(", ")}` +
+        plan.fired
+          .filter((f) => plan.spawn.includes(f.agent))
+          .map((f) => `\n    ${f.rule} ${f.agent.padEnd(17)} ${f.because}`)
+          .join("") +
+        plan.dropped.map((d) => `\n    -- ${d.agent.padEnd(17)} dropped: ${d.reason}`).join("") +
+        `\n  ${plan.rationale}\n`,
     );
 
-    // Confidence gate. Pure, synchronous, and the only place confidence is set.
+    // Reviewers never see each other's findings (§2 reach), so they are
+    // genuinely independent and run concurrently — bounded by §6's limit of 2.
+    const runs = await timed("review", timings, () =>
+      inPools(plan.spawn, MAX_CONCURRENT_AGENTS, async (agent) => {
+        try {
+          return await runSubAgent(client, rubricFor(agent), captured, log);
+        } catch (err) {
+          // One reviewer failing must not discard the work of the others. The
+          // audit continues without that lane and says so.
+          degraded.push(
+            `${agent} produced nothing: ${err instanceof Error ? err.message : String(err)}`,
+          );
+          return { agent, findings: [] as RawFinding[], latencyMs: 0, costUsd: 0 };
+        }
+      }),
+    );
+
+    const identified = identify(runs);
+    if (identified.length === 0) throw new Error("no reviewer produced a finding");
+
+    const synthesis = await timed("synthesize", timings, () =>
+      runSynthesizer(client, identified, profile.summary, auditId, log),
+    );
+    if (synthesis.degraded) degraded.push(`synthesizer: ${synthesis.degraded}`);
+
+    // Confidence gate. Pure, synchronous, and the only place confidence is set —
+    // re-derived here, after the merge, from the evidence rather than from
+    // anything the Synthesizer decided (§9.1 over §2's roster line).
     const findings: Finding[] = [];
     const dropped: { reason: string; heuristic: string }[] = [];
     let severityAdjusted = 0;
 
-    for (const raw of heuristics.findings) {
-      const verdict = deriveConfidence(raw, captured);
+    for (const m of synthesis.merged) {
+      const verdict = deriveConfidence(m.finding, captured);
       if (verdict.kind === "drop") {
-        dropped.push({ reason: verdict.reason, heuristic: raw.heuristic });
+        dropped.push({ reason: verdict.reason, heuristic: m.finding.heuristic });
         continue;
       }
-      const severity = normalizeSeverity(raw.severity);
+      const severity = normalizeSeverity(m.finding.severity);
       if (severity.adjusted) severityAdjusted++;
 
       findings.push(
         Finding.parse({
-          ...raw,
+          ...m.finding,
           severity: severity.value,
           id: `${auditId}-f${findings.length + 1}`,
-          agent: "heuristics",
+          agent: m.merged_from.join("+"),
           screen_ref: captured.screenshot_id,
           confidence: verdict.confidence,
           // Research lands in slice 3. Until then every finding is honestly
@@ -111,14 +221,10 @@ async function main(): Promise<void> {
       );
     }
 
-    // Rank by severity, then put screenshot-verified findings above inferred
-    // ones, so the strongest evidence leads (quality-bar.md §3).
-    findings.sort(
-      (a, b) =>
-        Number(a.positive) - Number(b.positive) ||
-        b.severity - a.severity ||
-        (a.confidence === b.confidence ? 0 : a.confidence === "high" ? -1 : 1),
-    );
+    // The Synthesizer ranked these against the visitor's concern, and that order
+    // is preserved above. Positives move to the end so the audit does not open
+    // on a compliment, but nothing else re-sorts what it decided.
+    findings.sort((a, b) => Number(a.positive) - Number(b.positive));
 
     const annotated = await timed("annotate", timings, () =>
       annotate(captured.screenshot_path, findings, outDir, auditId),
@@ -127,7 +233,19 @@ async function main(): Promise<void> {
     const costUsd = log.totalCost(auditId);
     const resultsPath = await timed("render", timings, () =>
       renderResults(
-        { capture: captured, findings, dropped, annotatedImage: annotated.path, timings, costUsd },
+        {
+          capture: captured,
+          findings,
+          dropped,
+          annotatedImage: annotated.path,
+          timings,
+          costUsd,
+          profile,
+          signals,
+          plan,
+          synthesis,
+          degraded,
+        },
         outDir,
       ),
     );
@@ -136,10 +254,17 @@ async function main(): Promise<void> {
     const high = findings.filter((f) => f.confidence === "high").length;
 
     console.error(
-      `\n  ${heuristics.findings.length} findings from the model` +
+      `\n  ${identified.length} findings from ${plan.spawn.length} reviewers` +
+        ` -> ${synthesis.merged.length} after synthesis (${synthesis.excluded.length} excluded)` +
         ` -> ${findings.length} survived the confidence gate (${high} high, ${dropped.length} dropped)` +
-        (severityAdjusted > 0 ? `\n  ${severityAdjusted} severity value(s) clamped onto the 1-4 scale` : "") +
+        (severityAdjusted > 0
+          ? `\n  ${severityAdjusted} severity value(s) clamped onto the 1-4 scale`
+          : "") +
+        (synthesis.rejected.length > 0
+          ? `\n  ${synthesis.rejected.length} synthesis reference(s) could not be honoured`
+          : "") +
         `\n  ${annotated.pinned} pinned on the screenshot` +
+        (degraded.length > 0 ? `\n  DEGRADED: ${degraded.join("; ")}` : "") +
         `\n  total ${(total / 1000).toFixed(1)}s   $${costUsd.toFixed(4)}` +
         `\n\n  ${resultsPath}\n`,
     );

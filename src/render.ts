@@ -1,11 +1,20 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Capture, Finding } from "./types.js";
+import type { ContextProfile } from "./profile.js";
+import type { CaptureSignals } from "./signals.js";
+import type { OrchestrationResult } from "./orchestrator/index.js";
+import type { SynthesisResult } from "./agents/synthesizer.js";
+import { rubricFor } from "./agents/rubrics.js";
 
 /**
- * Slice-1 results page. Deliberately plain — the Content agent (§2) owns voice
- * and top-3 selection in a later slice. This page's only job is to show that a
- * finding, its evidence, and its derived confidence survived the pipeline intact.
+ * Slice-2 results page. Deliberately plain — the Content agent (§2) owns voice
+ * and top-3 selection in a later slice. This page's job is to show that a
+ * finding, its evidence, and its derived confidence survived the pipeline
+ * intact, and to show the audit's own reasoning: which reviewers were sent, on
+ * what rule, and what was dropped on the way. An audit that will not show its
+ * work is asking to be taken on faith, which is the thing we are selling
+ * against.
  */
 
 function escapeHtml(s: string): string {
@@ -33,10 +42,30 @@ export interface RenderInput {
   annotatedImage: string;
   timings: { step: string; ms: number }[];
   costUsd: number;
+  profile: ContextProfile;
+  signals: CaptureSignals;
+  plan: OrchestrationResult;
+  synthesis: SynthesisResult;
+  /** §7: DEGRADED is a visible state. Rendered, not just logged. */
+  degraded: string[];
+}
+
+function agentLabels(agent: string): string {
+  return agent
+    .split("+")
+    .map((id) => {
+      try {
+        return rubricFor(id).label;
+      } catch {
+        return id;
+      }
+    })
+    .join(" + ");
 }
 
 export async function renderResults(input: RenderInput, outDir: string): Promise<string> {
   const { capture, findings, dropped, annotatedImage, timings, costUsd } = input;
+  const { profile, signals, plan, synthesis, degraded } = input;
   const imageSrc = path.basename(annotatedImage);
 
   const issues = findings.filter((f) => !f.positive);
@@ -51,6 +80,7 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
           <span class="tag sev-${finding.severity}">severity ${finding.severity}</span>
           <span class="tag conf-${finding.confidence}">${finding.confidence} confidence</span>
           ${finding.element_ref ? `<span class="tag ref">${escapeHtml(finding.element_ref)}</span>` : ""}
+          <span class="tag agent">${escapeHtml(agentLabels(finding.agent))}</span>
         </div>
         <p class="observation">${escapeHtml(finding.observation)}</p>
         <p class="impact">${escapeHtml(finding.impact_note)}</p>
@@ -98,6 +128,10 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
   th { color:var(--muted); font-weight:600; }
   td.num { text-align:right; font-variant-numeric:tabular-nums; }
   .dropped li { color:var(--muted); font-size:14px; }
+  .note.degraded { border-left-color:#b8860b; }
+  .lead { font-size:15px; color:#444; margin:0 0 16px; }
+  .muted-row td { color:var(--muted); }
+  .tag.agent { border-color:#c9c2b6; }
   .note { font-size:14px; color:var(--muted); background:#fff; border:1px solid var(--line);
           border-left:3px solid var(--accent); border-radius:4px; padding:12px 14px; }
   footer { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
@@ -117,12 +151,68 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
     from page text carry no pin, because there is no box to point at.</figcaption>
   </figure>
 
+  ${
+    degraded.length
+      ? `<p class="note degraded"><strong>This audit ran degraded.</strong>
+         ${degraded.map((d) => escapeHtml(d)).join("<br>")}
+         <br>The findings below are real; the audit is just less complete than a clean run.</p>`
+      : ""
+  }
+
   <h2>What we found (${issues.length})</h2>
   ${issues.length ? issues.map((f) => findingCard(f, findings.indexOf(f))).join("") : "<p>No issues survived the confidence gate.</p>"}
 
   ${positives.length ? `<h2>What's working (${positives.length})</h2>${positives.map((f) => findingCard(f, findings.indexOf(f))).join("")}` : ""}
 
+  <h2>How this audit was assembled</h2>
+  <p class="lead">${escapeHtml(profile.summary)}</p>
+  <table>
+    <tr><th>Reviewer</th><th>Rule</th><th>Sent because</th></tr>
+    ${plan.fired
+      .filter((f) => plan.spawn.includes(f.agent))
+      .map(
+        (f) =>
+          `<tr><td>${escapeHtml(agentLabels(f.agent))}</td><td>${escapeHtml(f.rule)}</td>` +
+          `<td>${escapeHtml(f.because)}</td></tr>`,
+      )
+      .join("")}
+    ${plan.dropped
+      .map(
+        (d) =>
+          `<tr class="muted-row"><td>${escapeHtml(agentLabels(d.agent))}</td>` +
+          `<td>${escapeHtml(d.rule)}</td>` +
+          `<td>not sent — ${escapeHtml(d.reason)}</td></tr>`,
+      )
+      .join("")}
+  </table>
+  <p class="citation">${escapeHtml(plan.rationale)}</p>
+
+  ${
+    synthesis.excluded.length
+      ? `<h2>Set aside by the synthesizer (${synthesis.excluded.length})</h2>
+         <ul class="dropped">${synthesis.excluded
+           .map(
+             (e) =>
+               `<li>${escapeHtml(agentLabels(e.agent))} — ${escapeHtml(e.reason)}</li>`,
+           )
+           .join("")}</ul>`
+      : ""
+  }
+
   <h2>Run detail</h2>
+  <table>
+    <tr><td>Page kind</td><td class="num">${escapeHtml(signals.page_kind)}</td></tr>
+    <tr><td>Form fields</td><td class="num">${signals.form_fields}</td></tr>
+    <tr><td>Text per screen</td><td class="num">${signals.copy_density} chars</td></tr>
+    <tr><td>Findings before synthesis</td><td class="num">${
+      synthesis.merged.length + synthesis.excluded.length
+    }</td></tr>
+    ${
+      synthesis.rejected.length
+        ? `<tr><td>Synthesis references not honoured</td><td class="num">${synthesis.rejected.length}</td></tr>`
+        : ""
+    }
+  </table>
   <table>
     <tr><th>Step</th><th class="num">Duration</th></tr>
     ${timings.map((t) => `<tr><td>${escapeHtml(t.step)}</td><td class="num">${(t.ms / 1000).toFixed(1)}s</td></tr>`).join("")}

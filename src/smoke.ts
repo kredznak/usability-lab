@@ -17,6 +17,7 @@ import { capture } from "./capture.js";
 import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
+import { deriveSignals } from "./signals.js";
 import { Finding, type RawFinding } from "./types.js";
 
 const url = process.argv[2] ?? "https://example.com";
@@ -106,6 +107,35 @@ const html = await renderResults(
     annotatedImage: annotated.path,
     timings: [{ step: "capture", ms: captureMs }],
     costUsd: 0,
+    // The smoke test exercises capture, the confidence gate and pin alignment.
+    // It makes no model call, so there is no profile, plan or synthesis to
+    // show — and saying so on the page is more honest than inventing one.
+    profile: {
+      site_kind: "other",
+      concerns: [],
+      goal: "unknown",
+      drop_point: "unknown",
+      summary: "Smoke test: synthetic findings against a real capture. No model was called.",
+    },
+    signals: deriveSignals(cap),
+    plan: {
+      spawn: [],
+      fired: [],
+      dropped: [],
+      rationale: "No reviewers were spawned; findings here are synthetic.",
+      override_rejected: null,
+      latencyMs: 0,
+      costUsd: 0,
+    },
+    synthesis: {
+      merged: [],
+      excluded: [],
+      rejected: [],
+      degraded: null,
+      latencyMs: 0,
+      costUsd: 0,
+    },
+    degraded: [],
   },
   outDir,
 );

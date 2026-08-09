@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { SubAgentOutput, type Capture, type RawFinding } from "../types.js";
 import { CallLog, estimateCost } from "../db.js";
-import { systemPrompt, type Rubric } from "./rubrics.js";
+import { SHARED_RULES, type Rubric } from "./rubrics.js";
 
 /**
  * The one call every sub-agent makes — docs/design.md §2.
@@ -58,11 +58,15 @@ export function buildRequest(rubric: Rubric, capture: Capture) {
       format: zodOutputFormat(SubAgentOutput),
     },
     system: [
+      // Shared block first, and it alone carries the breakpoint: all six agents
+      // then hit one cached prefix instead of six. The lane block that follows
+      // is small and differs per agent, so it is not worth caching.
       {
         type: "text" as const,
-        text: systemPrompt(rubric),
+        text: SHARED_RULES,
         cache_control: { type: "ephemeral" as const },
       },
+      { type: "text" as const, text: rubric.lane },
     ],
     messages: [
       {
