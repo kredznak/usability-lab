@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { createInterface } from "node:readline/promises";
 import path from "node:path";
 import { capture, CaptureFailed } from "./capture.js";
@@ -225,6 +226,15 @@ async function main(): Promise<void> {
     // is preserved above. Positives move to the end so the audit does not open
     // on a compliment, but nothing else re-sorts what it decided.
     findings.sort((a, b) => Number(a.positive) - Number(b.positive));
+
+    // §4 lists `findings` as a permanent store, and the outcome suite scores
+    // saved findings rather than re-running paid audits. Writing the HTML alone
+    // meant the only machine-readable record of an audit was its screenshot.
+    await writeFile(
+      path.join(outDir, "findings.json"),
+      JSON.stringify(findings, null, 2),
+      "utf8",
+    );
 
     const annotated = await timed("annotate", timings, () =>
       annotate(captured.screenshot_path, findings, outDir, auditId),

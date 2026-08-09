@@ -1,0 +1,183 @@
+import { writeFileSync, mkdirSync } from "node:fs";
+import path from "node:path";
+import { loadCorpus, type LabelledFinding } from "./corpus.js";
+
+/**
+ * Outcome suite — docs/design.md §10, at the smallest size that is useful.
+ *
+ *   npm run outcome        # score the frozen corpus, write the review queue
+ *
+ * Scores saved findings, so it costs nothing and runs in milliseconds. What it
+ * measures and what it does NOT are both worth being explicit about:
+ *
+ *   measured   — precision (are reported findings true?), and whether
+ *                high-confidence findings are more often true than the rest,
+ *                which is the whole claim "high confidence" makes.
+ *   deferred   — recall. §10 wants it against hand-labelled issue lists per
+ *                site, roughly two hours of work each. Without those lists any
+ *                recall number here would be invented, so none is printed.
+ *
+ * A mechanical `verified` is provisional: it means nothing checkable is wrong,
+ * not that a person agreed it was worth reporting. Where human labels exist
+ * they win, and the report always says how much of the score rests on which.
+ */
+
+/** §10: "precision of reported findings ≥ 80%". */
+const MIN_PRECISION = 0.8;
+/** §10: "confidence calibration (high-confidence findings verified correct ≥ 90%)". */
+const MIN_HIGH_CONFIDENCE_CORRECT = 0.9;
+
+const QUEUE = "fixtures/labelled/review-queue.md";
+
+type Truth = "true" | "false" | "unknown";
+
+/** Human adjudication wins; the mechanical verdict is the fallback. */
+function truthOf(f: LabelledFinding): Truth {
+  if (f.human === "true") return "true";
+  if (f.human === "false") return "false";
+  if (f.human === "unsure") return "unknown";
+  if (f.auto.status === "contradicted") return "false";
+  if (f.auto.status === "verified") return "true";
+  return "unknown";
+}
+
+function pct(n: number, d: number): string {
+  return d === 0 ? "  n/a" : `${((n / d) * 100).toFixed(1).padStart(5)}%`;
+}
+
+const corpus = loadCorpus();
+if (corpus.findings.length === 0) {
+  console.error("No corpus. Run `npm run corpus` first (it reads completed audits from out/).");
+  process.exit(2);
+}
+
+const scored = corpus.findings.map((f) => ({ f, truth: truthOf(f) }));
+const judged = scored.filter((s) => s.truth !== "unknown");
+const trueOnes = judged.filter((s) => s.truth === "true");
+const falseOnes = judged.filter((s) => s.truth === "false");
+
+const high = judged.filter((s) => s.f.confidence === "high");
+const highTrue = high.filter((s) => s.truth === "true");
+const medium = judged.filter((s) => s.f.confidence !== "high");
+const mediumTrue = medium.filter((s) => s.truth === "true");
+
+const precision = judged.length === 0 ? 0 : trueOnes.length / judged.length;
+const highCorrect = high.length === 0 ? 0 : highTrue.length / high.length;
+
+console.log(`\ncorpus: ${corpus.findings.length} findings from ${corpus.built_from.length} audits`);
+if (corpus.skipped.length > 0) {
+  console.log(`        ${corpus.skipped.length} audit(s) skipped — see fixtures/labelled/findings.json`);
+}
+
+const humanLabelled = corpus.findings.filter((f) => f.human !== null).length;
+console.log(
+  `labels: ${humanLabelled} human, ${corpus.findings.length - humanLabelled} mechanical only\n`,
+);
+
+console.log(`  precision                   ${pct(trueOnes.length, judged.length)}   ` +
+  `(${trueOnes.length}/${judged.length}, floor ${MIN_PRECISION * 100}%)`);
+console.log(`  high-confidence correct     ${pct(highTrue.length, high.length)}   ` +
+  `(${highTrue.length}/${high.length}, floor ${MIN_HIGH_CONFIDENCE_CORRECT * 100}%)`);
+console.log(`  medium-confidence correct   ${pct(mediumTrue.length, medium.length)}   ` +
+  `(${mediumTrue.length}/${medium.length})`);
+
+// Which lane produces the false claims is the actionable number — it points at
+// a rubric to fix rather than a score to worry about.
+const byAgent = new Map<string, { n: number; bad: number }>();
+for (const s of judged) {
+  for (const agent of s.f.agent.split("+").map((a) => a.trim())) {
+    const row = byAgent.get(agent) ?? { n: 0, bad: 0 };
+    row.n++;
+    if (s.truth === "false") row.bad++;
+    byAgent.set(agent, row);
+  }
+}
+console.log(`\n  by reviewer:`);
+for (const [agent, row] of [...byAgent.entries()].sort((a, b) => b[1].bad - a[1].bad)) {
+  console.log(
+    `    ${agent.padEnd(22)} ${String(row.n).padStart(3)} findings, ` +
+      `${row.bad} false${row.bad > 0 ? `  <- ${pct(row.bad, row.n).trim()} of its output` : ""}`,
+  );
+}
+
+// Per audit, because an aggregate hides the thing you most want to know: a
+// corpus built mostly from runs made before a fix will report the quality of
+// the code that was replaced, and read as if it were current.
+console.log(`\n  by audit:`);
+for (const a of corpus.built_from) {
+  const rows = judged.filter((s) => s.f.audit_id === a.audit_id);
+  const bad = rows.filter((s) => s.truth === "false").length;
+  console.log(
+    `    ${a.audit_id.slice(0, 8)} ${String(rows.length).padStart(3)} findings, ` +
+      `${bad} false   ${a.url}`,
+  );
+}
+
+if (falseOnes.length > 0) {
+  console.log(`\n  false findings:`);
+  for (const s of falseOnes) {
+    console.log(`    ${s.f.audit_id.slice(0, 8)} ${s.f.agent.slice(0, 20).padEnd(20)} ` +
+      `${(s.f.auto.contradictions[0] ?? s.f.human_note ?? "").slice(0, 90)}`);
+  }
+}
+
+// The review queue: everything a person still has to judge, phrased so each
+// entry is answerable without reopening the audited page.
+const queue = scored.filter((s) => s.f.human === null);
+mkdirSync(path.dirname(QUEUE), { recursive: true });
+writeFileSync(
+  QUEUE,
+  [
+    `# Review queue`,
+    ``,
+    `${queue.length} findings await a human label. Set \`human\` to "true", "false" or`,
+    `"unsure" in \`fixtures/labelled/findings.json\` (keyed by \`key\`); labels survive`,
+    `\`npm run corpus\`.`,
+    ``,
+    `The machine has already checked what it can: cited elements exist, quotes appear`,
+    `on the page, measurements match. What it cannot judge is whether a true statement`,
+    `is worth a founder's attention — that is the question below.`,
+    ``,
+    ...queue.flatMap(({ f, truth }) => [
+      `## ${f.key}`,
+      ``,
+      `- **${f.agent}** · severity ${f.severity} · ${f.confidence} confidence` +
+        `${f.positive ? " · positive" : ""} · ${f.element_ref ?? "page-level"}`,
+      `- ${f.url}`,
+      `- mechanical: **${f.auto.status}**${
+        f.auto.contradictions.length ? ` — ${f.auto.contradictions.join("; ")}` : ""
+      }`,
+      ``,
+      `> ${f.observation}`,
+      ``,
+      `> ${f.impact_note}`,
+      ``,
+      truth === "false"
+        ? `**Question:** the check above says this contradicts the capture. Is the check right?`
+        : `**Question:** is this true, and is it worth showing someone?`,
+      ``,
+    ]),
+  ].join("\n"),
+  "utf8",
+);
+console.log(`\n  review queue: ${QUEUE} (${queue.length} to judge)`);
+
+const failures: string[] = [];
+if (judged.length > 0 && precision < MIN_PRECISION) {
+  failures.push(`precision ${(precision * 100).toFixed(1)}% is below §10's ${MIN_PRECISION * 100}% floor`);
+}
+if (high.length > 0 && highCorrect < MIN_HIGH_CONFIDENCE_CORRECT) {
+  failures.push(
+    `high-confidence findings are correct ${(highCorrect * 100).toFixed(1)}% of the time, ` +
+      `below §10's ${MIN_HIGH_CONFIDENCE_CORRECT * 100}% floor — "high" is claiming more than it earns`,
+  );
+}
+
+if (failures.length > 0) {
+  console.error(`\nFAIL`);
+  for (const f of failures) console.error(`  ${f}`);
+  console.error("");
+  process.exitCode = 1;
+} else {
+  console.log(`\nPASS — both §10 floors met on the labels available.\n`);
+}

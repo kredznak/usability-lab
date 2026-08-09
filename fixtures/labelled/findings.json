@@ -1,0 +1,1433 @@
+{
+  "built_from": [
+    {
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "findings": 12
+    },
+    {
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "findings": 18
+    },
+    {
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "findings": 14
+    },
+    {
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "findings": 16
+    },
+    {
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "findings": 12
+    }
+  ],
+  "skipped": [
+    {
+      "audit_id": "0235352e-c672-4418-8347-ca4f0abd92dd",
+      "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
+    },
+    {
+      "audit_id": "0ed9c1cf-3faa-48ba-b904-95f796e6371a",
+      "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
+    },
+    {
+      "audit_id": "205b2f83-eec7-42b0-844e-e2ac272e2d77",
+      "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
+    },
+    {
+      "audit_id": "d442ae2e-9255-48cc-b9cf-3300224e3dbc",
+      "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
+    },
+    {
+      "audit_id": "e13bd840-8969-477e-a119-27455691193c",
+      "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
+    },
+    {
+      "audit_id": "f9fa8ade-565c-4e35-a5fb-069963bfeca5",
+      "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
+    }
+  ],
+  "findings": [
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f1",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility + Heuristics",
+      "heuristic": "WCAG 4.1.2 Name, Role, Value",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "A 61x61px <button> in the header region has no visible text and no accessible name recorded ('(no text)').",
+      "impact_note": "Screen reader users encounter an unlabeled control with no indication of its purpose, making it impossible to know what activating it does.",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "says el_10 has no accessible name, but it is named \"Show search menu\" via aria-label"
+        ]
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f2",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 2.5.8 Target Size (Minimum)",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_22",
+      "observation": "Many text links throughout the page, e.g. \"Childcare account: sign in\" (el_22) and the repeated set in the footer (el_96–el_127), report a height of only 23px.",
+      "impact_note": "Small interactive targets are harder to activate accurately for visitors with limited fine motor control or those using touch or switch input.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f3",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 2.4.6 Headings and Labels / 1.3.1 Info and Relationships",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "The page's only <h1>, \"The best place to find government services and information\", is preceded in document order by two <h2> elements: \"Cookies on GOV.UK\" (el_0) and the visually hidden \"Navigation menu\" (el_8).",
+      "impact_note": "Screen reader users who jump through headings to orient themselves on the page encounter subordinate headings before the main heading, adding friction to understanding page structure.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f4",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility + Heuristics",
+      "heuristic": "WCAG 2.4.4 Link Purpose (In Context)",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_96",
+      "observation": "Identical link text, e.g. \"Benefits\" (el_26 and el_96), \"News\" (el_70 and el_114), and other category names, appears more than once on the page pointing into the same or related sections.",
+      "impact_note": "Screen reader users browsing by a flat list of links rather than in visual context may struggle to distinguish which duplicate-named link goes where.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f5",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy",
+      "heuristic": "Jargon/Acronym on First Use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_18",
+      "observation": "The link reads \"HMRC account: sign in or set up\" — the acronym HMRC is not expanded anywhere on the page.",
+      "impact_note": "A visitor unfamiliar with UK government abbreviations cannot tell what this service is for without leaving the page to look it up.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f6",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy + Heuristics",
+      "heuristic": "Consistency in Wording",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_97",
+      "observation": "The footer link reads \"Births, death, marriages and care\" while the same category earlier on the page (el_27/el_28) reads \"Births, deaths, marriages and care\" — singular \"death\" versus plural \"deaths.\"",
+      "impact_note": "Inconsistent wording for the identical category signals a lack of proofreading and can make a visitor briefly wonder if these are two different sections.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f7",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Heuristics",
+      "heuristic": "User control and freedom",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_0",
+      "observation": "The cookie banner ('Cookies on GOV.UK') offers 'Accept additional cookies' and 'Reject additional cookies' but no visible dismiss/close control to defer the decision.",
+      "impact_note": "Visitors who want to explore the page first without committing to a cookie choice have no lightweight way to postpone the decision, which can feel like a forced interruption before reaching content.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f8",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy",
+      "heuristic": "Clarity over Cleverness",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "The main heading reads \"The best place to find government services and information.\"",
+      "impact_note": "A superlative claim with no comparison point or evidence gives a first-time visitor nothing concrete to verify; it reads as marketing rather than a description of what the site actually contains.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f9",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 1.3.1 Info and Relationships / 3.3.2 Labels or Instructions",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_14",
+      "observation": "The search field (el_15) has an associated <label> element (el_14) with visible text \"Search\", rather than relying on a placeholder for its name.",
+      "impact_note": "A real, persistent label ensures the field's purpose remains available to assistive technology and sighted users even after text is entered, unlike a placeholder-only approach.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f10",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 2.4.4 Link Purpose (In Context)",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "All sampled links and buttons in the capture use descriptive, self-contained text such as \"Check your State Pension forecast\" and \"Apply for a passport\" rather than generic phrases like \"click here\" or \"read more\".",
+      "impact_note": "Descriptive link text lets screen reader users understand a link's destination without needing surrounding context, which is a genuine accessibility strength across the page.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f11",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Heuristics",
+      "heuristic": "Recognition over recall",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_17",
+      "observation": "A 'Popular on GOV.UK' section (el_17) surfaces six frequently needed destinations such as 'HMRC account: sign in or set up' and 'Check your State Pension forecast' directly above the fold.",
+      "impact_note": "Surfacing high-frequency tasks near the top reduces the need for visitors to search or recall where a common service lives, which is good practice for a site with this many possible destinations.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f12",
+      "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy",
+      "heuristic": "Clarity over Cleverness",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The category descriptions throughout \"Services and information\" (e.g. \"Includes eligibility, appeals, tax credits and Universal Credit\" for Benefits) consistently use short, concrete \"Includes X, Y, Z\" phrasing rather than abstract summaries.",
+      "impact_note": "This consistent pattern across many categories makes the whole directory scannable, letting visitors self-select the right section quickly.",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "quotes \"Includes X, Y, Z\", which is NOT on the page"
+        ]
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f1",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Trust & Motivation before commitment",
+      "severity": 3,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The text \"Due to increased demand, orders may take up to 30 days to ship.\" appears at the very top of the page, before any product or value proposition is shown.",
+      "impact_note": "Disclosing a lengthy shipping delay before establishing product value or price gives a visitor a reason to hesitate before the page has made its case, which can suppress motivation to continue browsing.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f2",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Access to a human / trust",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_82",
+      "observation": "The only direct human-contact option visible in the capture is an email address, \"help@allbirds.com\", located in the footer alongside \"FAQ/Contact Us\".",
+      "impact_note": "No phone number or live chat is visible anywhere above or below the fold, so a visitor with a pre-purchase question has only a slow channel available, which can stall a purchase decision.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f3",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Heuristics",
+      "heuristic": "Match between system and real world",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The footer copyright line reads \"©AB DNAM LLC 2026\" while the brand shown everywhere else on the page is \"Allbirds\".",
+      "impact_note": "A legal entity name that doesn't match the visible brand can read as inconsistent or, to a wary visitor, as a possible trust signal to double-check.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f4",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Competing calls to action",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_13",
+      "observation": "Five carousel buttons of identical size (419x33px) — \"Shop Womens\", \"Shop Mens\", \"Shop Socks\", \"Shop Women's Sale\", \"Shop Men's Sale\" (el_13-el_17) — sit directly above the hero's own \"SHOP MEN\"/\"SHOP WOMEN\" buttons (el_19, el_20).",
+      "impact_note": "Seven near-identical shopping CTAs stacked in the first screen give no single obvious next step, which can leave a visitor uncertain which path is the intended one.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f5",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Accessibility + Forms & Flow",
+      "heuristic": "WCAG 4.1.2 Name, Role, Value",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_36",
+      "observation": "Repeated 24x24px <label> elements (el_36, el_39, el_42, el_45, el_48, el_51, el_54, el_57, el_60, el_63, el_66, el_69) sit next to each product tile but carry no visible or accessible text.",
+      "impact_note": "A screen reader encountering these controls announces only 'label, unchecked' or similar with no indication of what the control does (likely wishlist or quick-add), making the feature unusable without sight.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f6",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 1.1.1 Non-text Content / 4.1.2 Name, Role, Value",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_34",
+      "observation": "Product image links (e.g. el_34, el_37, el_40, el_43, el_46, el_49, el_52, el_55, el_58, el_61, el_64, el_67), each 390x390px, have no accessible name or alt text listed, despite sitting adjacent to a separately-linked product title.",
+      "impact_note": "Screen reader users hear an unlabeled link for every product image and must rely on a second, separate link to learn what the image was for, doubling navigation effort through a long product grid.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f7",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Accessibility + Heuristics",
+      "heuristic": "WCAG 4.1.2 Name, Role, Value",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_0",
+      "observation": "Header icon controls el_0, el_1, el_9, el_10, and el_12 are buttons or links with no visible text and no accessible name recorded.",
+      "impact_note": "These are likely search, account, and menu controls near the top of the page; without a name a screen reader user cannot tell what each one opens before activating it.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f8",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Forms & Flow + Heuristics + Accessibility",
+      "heuristic": "Field Purpose Clarity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_106",
+      "observation": "The footer select element (el_106) lists only two-letter country codes (\"AE AT AU BE CA CH CN CZ DE DK EE EU FI FR IE IS IT JP KR KW LI LT LU LV MT MY NL NO NZ PH PL SA SE SG SM UK US\") with no visible label such as \"Country\" or \"Ship to\" next to it.",
+      "impact_note": "Visitors cannot tell from the control itself what selecting a value will change (currency, region, shipping), which can cause hesitation or an unintended region switch.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f9",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Forms & Flow + Accessibility",
+      "heuristic": "Label Visibility",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_81",
+      "observation": "The email input in the newsletter signup form (el_79) carries no visible text of its own; the only nearby label-like text is the section heading \"Subscribe to our emails\" and the button text \"Sign Up\".",
+      "impact_note": "If the field relies on placeholder text that clears on focus, visitors who look away mid-entry lose the cue for what the field expects, which can lead to abandoned or mis-filled submissions.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f10",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Vague action label / unclear outcome",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_80",
+      "observation": "The newsletter form's submit button reads only \"Sign Up\" with no accompanying text stating what a subscriber receives (e.g. a discount or early access).",
+      "impact_note": "A generic label with no stated benefit gives little reason to trade an email address, likely lowering signups.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f11",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Primary action clarity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_19",
+      "observation": "The hero CTAs read only \"SHOP MEN\" / \"SHOP WOMEN\" with no supporting text on what happens next (e.g. browsing a catalog vs. a curated collection).",
+      "impact_note": "A visitor cannot tell from the button alone whether clicking leads to a full catalog, a single collection, or a filtered subset, adding a small amount of uncertainty before commitment.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f12",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Accessibility + Heuristics",
+      "heuristic": "WCAG 2.4.9 Link Purpose (Link Only)",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_74",
+      "observation": "Multiple links across the page repeat the identical text 'Shop Men' and 'Shop Women' (e.g. el_22, el_25, el_29, el_71, el_74 all say 'Shop Men'; el_23, el_27, el_30, el_72, el_75, el_77 all say 'Shop Women').",
+      "impact_note": "A screen reader user browsing by a links list hears the same phrase many times with no distinguishing context, making it hard to tell which link corresponds to which product section already passed.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f13",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 4.1.2 Name, Role, Value",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_100",
+      "observation": "The six social-media links in the 'Follow The Flock' footer section (el_100–el_105) are 42x42px with no accessible text.",
+      "impact_note": "Screen reader users get a list of six identical unlabeled links and cannot tell which platform each one leads to without guessing from icon shape alone.",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "says el_100 has no accessible name, but it is named \"Instagram\" via aria-label"
+        ]
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f14",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 4.1.2 Name, Role, Value",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_32",
+      "observation": "Carousel navigation buttons el_32 and el_33 (40x40px) below the 'Best Sellers' heading have no accessible name.",
+      "impact_note": "A keyboard or screen reader user reaching these controls cannot tell which one advances versus goes back through the product carousel.",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "says el_32 has no accessible name, but it is named \"Previous Product\" via title"
+        ]
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f15",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Trust signals — pricing transparency",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_35",
+      "observation": "Product entries show price directly beside the product name, e.g. \"Women's Tree Runner NZ Medium Grey $100\".",
+      "impact_note": "Plain, upfront pricing removes a common point of hesitation before a visitor commits to viewing or purchasing a product.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f16",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Conversion & CTA + Heuristics",
+      "heuristic": "Motivation before ask",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The visible text includes \"Spend $100 more to earn free shipping!\" tied to the (empty) cart state.",
+      "impact_note": "A concrete, quantified incentive gives a visitor a reason to add more to cart, though it is only visible once a cart is opened rather than earlier in the browsing path.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f17",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Forms & Flow",
+      "heuristic": "Minimal Data Collection",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_79",
+      "observation": "The only text-entry form visible in this capture, el_79, asks for a single input (el_81) before the \"Sign Up\" button (el_80) can be submitted.",
+      "impact_note": "Asking for just one piece of information keeps the newsletter signup low-friction and reduces a common source of drop-off seen in longer forms.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f18",
+      "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
+      "url": "https://www.allbirds.com/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 1.3.1 Info and Relationships (heading structure)",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_18",
+      "observation": "The page has a single <h1> ('Wildly Comfortable. Super Natural.') followed by <h2> section headings (New Arrivals, Mens, Womens, Best Sellers, Summer Travel Essentials, Fresh Colors For Summer) and a <h3> ('Follow The Flock') in the footer, with no level skipped in the captured structure.",
+      "impact_note": "A logical, non-skipping heading outline lets screen reader users jump between sections confidently using heading navigation.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f1",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Conversion - CTA prominence and placement",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_137",
+      "observation": "The most prominent styled call-to-action buttons, \"Get started\" (el_137) and \"Contact sales\" (el_138), appear only near the bottom of a page that is 10,898px tall. Above the fold, the only comparable action is \"Sign up\" (el_10), a plain text link in the header nav.",
+      "impact_note": "A visitor who scrolls through the extensive feature walkthrough (Intake, Plan, Build, Diffs, Monitor sections) has no reinforced action to take until the very end, increasing the chance they lose momentum or leave before converting.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f2",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Copy + Heuristics",
+      "heuristic": "Clarity of communication",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_11",
+      "observation": "The H1 text is rendered twice in sequence: \"The product development system for teams and agents The product development system for teams and agents\".",
+      "impact_note": "A visitor scanning the hero sees the same sentence repeated, which reads as a content error and undercuts confidence in the page before any claim is even evaluated.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f3",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Concrete claims over abstraction",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The subheadline text reads \"Purpose-built for planning and building products. Designed for the AI era.\"",
+      "impact_note": "\"Designed for the AI era\" is a phrase with no concrete referent — it does not say what the product does differently — so it adds length without adding understanding for a first-time reader.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f4",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Concrete claims over abstraction",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_50",
+      "observation": "The section heading reads \"A new species of product tool.\" followed by \"Purpose-built for modern teams with AI workflows at its core, Linear sets a new standard for planning and building products.\"",
+      "impact_note": "\"New species\" and \"sets a new standard\" are not concrete claims; a first-time visitor has no way to verify or picture what specifically is different, which weakens the section's ability to explain the product.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f5",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Conversion - trust and cost transparency",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_6",
+      "observation": "\"Pricing\" (el_6) exists only as a nav link; no price, plan tier, or cost figure appears anywhere in the captured page text.",
+      "impact_note": "Visitors deciding whether to commit typically look for a plain answer on cost before acting; requiring an extra click to even see pricing can cost conversions from price-sensitive visitors.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f6",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Conversion - CTA clarity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "\"New Coding Sessions →\" (el_12) is styled and positioned like an action link directly beneath the hero headline, but its text describes a feature name rather than an action or outcome.",
+      "impact_note": "A visitor scanning the hero for what to do next may be uncertain whether this link leads to a feature demo, documentation, or the product itself.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f7",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Conversion - competing calls to action",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "\"Log in\" (el_9) and \"Sign up\" (el_10) are both presented as plain nav-level text links of the same style and size.",
+      "impact_note": "Without differentiation, a first-time visitor has no cue about which action is intended for them, diluting the pull toward the new-visitor conversion action.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f8",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Conversion - CTA specificity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_137",
+      "observation": "The bottom CTA reads simply \"Get started\" with no indication of what follows — a signup form, a free trial, a credit-card request, or a demo.",
+      "impact_note": "Vague action labels leave visitors uncertain about the size of the commitment before they click, which can suppress click-through from cautious visitors.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f9",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Heuristics + Forms & Flow",
+      "heuristic": "Match between system and the real world",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_121",
+      "observation": "Elements styled as live product UI - a \"Listen\" button, a \"1.0×\" speed combobox (el_122), a command-menu input (el_105), and large empty textareas (el_40, el_115) - are embedded in what is otherwise static marketing content.",
+      "impact_note": "Presenting interactive-looking controls that are actually illustrative mockups can lead visitors to expect real functionality, and any resulting non-response undermines trust in the product being demonstrated.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f10",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Heuristics",
+      "heuristic": "Recognition rather than recall",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_15",
+      "observation": "Dozens of buttons across the page (e.g. el_15, el_16, el_31-el_34, el_37-el_39, el_41-el_46, el_53-el_76, el_78-el_87) carry no visible text label, only \"(no text)\" in the capture, meaning they rely on icon-only recognition.",
+      "impact_note": "Visitors cannot tell what these controls do without hovering or guessing, which slows scanning of an already very long page and can mask non-functional decorative elements as actionable ones.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f11",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Jargon / acronym on first use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_108",
+      "observation": "The button reads \"3.3 Linear MCP +\" with no expansion of the acronym \"MCP\" anywhere in the surrounding captured text.",
+      "impact_note": "Visitors unfamiliar with \"Model Context Protocol\" style acronyms cannot tell what this feature does from the label alone, forcing them to guess or skip it.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f12",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Conversion - trust signals",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_133",
+      "observation": "Testimonials are attributed to named, verifiable individuals with job titles and companies, e.g. \"Gabriel Peal Staff Software Engineer, OpenAI\" (el_133) and \"Nik Koblov Head of Engineering, Ramp\" (el_134).",
+      "impact_note": "Specific, attributed social proof of this kind is a credible trust signal that can support a visitor's decision to proceed.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f13",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Heuristics",
+      "heuristic": "Consistency and standards / Recognition rather than recall",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_52",
+      "observation": "Major sections are consistently numbered and labeled as a sequence: \"1.0Intake→\", \"2.0Plan→\", \"3.0Build→\", \"4.0Diffs→\", \"5.0Monitor→\".",
+      "impact_note": "This consistent numbering gives visitors a repeatable mental model of the product's workflow stages as they scroll through a long page, aiding orientation.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f14",
+      "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Clarity of communication",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_128",
+      "observation": "The changelog entry reads \"Coding sessions on mobile Your coding session doesn't have to stop when you leave your desk. Use the Linear mobile app to review code changes, comment on specific lines, and iterate with Linear Agent.\"",
+      "impact_note": "This entry states a specific, concrete benefit (reviewing code on mobile) in plain, visitor-facing language, giving readers something they can picture and act on.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f1",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Match between system and real world / plain language",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_11",
+      "observation": "The hero heading reads \"The product development system for teams and agents.\" The term \"agents\" is used without any definition on the first screen; the supporting line below is \"Purpose-built for planning and building products. Designed for the AI era.\"",
+      "impact_note": "A first-time visitor unfamiliar with the product may not know what \"agents\" refers to (AI agents vs. human agents/support reps) until scrolling much further down the page.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f2",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Calls to action persist through the page",
+      "severity": 3,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The page runs roughly 10,900px tall with an extended interactive product walkthrough (issue trackers, roadmaps, agent chat, code diffs, dashboards) between the top CTA \"New Coding Sessions →\" and the next explicit action CTAs \"Get started\" / \"Contact sales\" near the very bottom.",
+      "impact_note": "Visitors who scroll through the lengthy product demonstration have no reinforcing call to action to act on along the way, so interest built up during the walkthrough has no nearby outlet.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f3",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Clear next step",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "The hero call to action reads \"New Coding Sessions →\", a label tied to one specific product feature rather than a general next step like signing up or starting a trial.",
+      "impact_note": "A visitor arriving from the headline \"The product development system for teams and agents\" has no way to tell if clicking commits them to sign-up, opens a demo, or requires an existing account, which can stall the very first action on the page.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f4",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Heuristics",
+      "heuristic": "Visibility of system status",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_105",
+      "observation": "The page embeds apparently-interactive controls inside a static demonstration: a combobox (el_105), a code-filled textarea (el_115), a \"Listen\" button (el_121), and a playback-speed selector \"1.0×\" (el_122).",
+      "impact_note": "Visitors may try to type into the field, press Listen, or change the speed expecting a real response, since nothing distinguishes these from live functionality, and receive none.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f5",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Single primary action above the fold",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "Above the fold, the header offers \"Sign up\" while the hero also offers \"New Coding Sessions →\" as a separate, differently-labeled action.",
+      "impact_note": "Two above-the-fold actions with different labels and no visual hierarchy cue as to which is primary can split attention and slow the decision to act.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f6",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Acronym on first use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_92",
+      "observation": "The copy under \"Define the product direction\" reads \"Align your team with product initiatives, strategic roadmaps, and clear, up-to-date PRDs.\" The acronym \"PRDs\" is not expanded anywhere on the page.",
+      "impact_note": "Visitors outside product-management roles may not recognize \"PRDs\" (product requirements documents), which can stall comprehension of what the feature actually does.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f7",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Concrete over abstract claims",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_50",
+      "observation": "The section heading reads \"A new species of product tool.\" followed by \"Purpose-built for modern teams with AI workflows at its core, Linear sets a new standard for planning and building products.\"",
+      "impact_note": "\"A new species\" and \"sets a new standard\" are abstract superlatives with no concrete referent or evidence, which can read as marketing filler rather than information a visitor can evaluate.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f8",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Visual Hierarchy",
+      "heuristic": "Visual Hierarchy – heading scale",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_50",
+      "observation": "The page's single h1, \"The product development system for teams and agents,\" measures 1282x128px, but a later h2, \"A new species of product tool. Purpose-built for modern teams with AI workflows at its core, Linear sets a new standard for planning and building products,\" measures 1250x144px — 16px taller than the h1. A further h2, \"Built for the future. Available today.\" (el_136), measures 722x144px, also exceeding the h1's height.",
+      "impact_note": "When a subordinate heading is rendered larger than the page's only h1, the size cue that should mark the single most important statement is undermined, and a visitor scanning by size alone may land on the wrong sentence first.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f9",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Pricing transparency",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_6",
+      "observation": "\"Pricing\" appears only as a top navigation link; no price, plan tiers, or cost figures are present anywhere in the captured page text.",
+      "impact_note": "Visitors weighing whether to sign up cannot see cost or commitment level without leaving the page, which adds friction before the decision to act.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f10",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Specific action labels",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_137",
+      "observation": "The closing CTA is labeled simply \"Get started\" with no indication of what happens next (free trial, account creation, demo request).",
+      "impact_note": "A visitor who has just been convinced by the surrounding content still has to guess what committing to \"Get started\" actually involves.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f11",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Trust signals before commitment",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_133",
+      "observation": "Customer testimonials (\"You'll probably build a better product, just because of the craft that using Linear infuses on your brain.\" — Gabriel Peal, OpenAI) sit far below the fold, only after the full product walkthrough section.",
+      "impact_note": "Social proof is not visible near the top-of-page CTA, so the first decision to act happens without the credibility signal that testimonials would provide.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f12",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Heuristics",
+      "heuristic": "Recognition rather than recall",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_31",
+      "observation": "Dozens of buttons throughout the embedded product demo render as bare 20-32px squares with no visible text label, e.g. el_31, el_37, el_53 through el_76, el_78 through el_87.",
+      "impact_note": "Visitors must guess each control's function from an icon alone, which raises cognitive load, especially since the pattern repeats dozens of times down the page.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f13",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Visual Hierarchy",
+      "heuristic": "Visual Hierarchy – CTA size parity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_137",
+      "observation": "\"Get started\" (el_137, 127x44px) and \"Contact sales\" (el_138, 144x44px) sit side by side with identical height and only a 17px width difference.",
+      "impact_note": "With near-equal size, neither action is visually established as the primary path forward at the point where a visitor is deciding what to do next.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f14",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Copy",
+      "heuristic": "Clear, concrete copy",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_51",
+      "observation": "The section \"Make product operations self-driving\" is immediately followed by \"Turn conversations and customer feedback into actionable issues that are routed, labeled, and prioritized for the right team.\"",
+      "impact_note": "Pairing an abstract heading with a concrete, step-by-step explanation lets a visitor quickly understand what the feature actually does, which supports comprehension.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f15",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Heuristics + Visual Hierarchy",
+      "heuristic": "Consistency and standards",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_52",
+      "observation": "The five product-stage sections follow a uniform \"N.0 Label →\" pattern: \"1.0 Intake →\", \"2.0 Plan →\", \"3.0 Build →\", \"4.0 Diffs →\", \"5.0 Monitor →\".",
+      "impact_note": "The repeated numbering and arrow convention gives visitors a predictable structure to follow through a very long page, reducing disorientation.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f16",
+      "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
+      "url": "https://linear.app/",
+      "agent": "Conversion & CTA",
+      "heuristic": "Distinct paths for different intents",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_137",
+      "observation": "Near the bottom, two CTAs sit side by side: \"Get started\" and \"Contact sales\", offering separate paths for self-serve versus sales-assisted visitors.",
+      "impact_note": "Separating self-serve and enterprise intents lets each visitor type find an appropriately-sized commitment, which research suggests can reduce mismatched drop-off.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f1",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility + Heuristics",
+      "heuristic": "WCAG 2.4.4 Link Purpose (In Context)",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_70",
+      "observation": "Short link labels such as \"News\" (el_70) and \"Benefits\" (el_26) are repeated verbatim elsewhere on the page (el_114, el_96) with no distinguishing text, relying only on an adjacent heading for context.",
+      "impact_note": "When a screen reader user pulls up a page-wide list of links (a common navigation strategy), several identically-worded links with no differentiating text make it hard to tell which destination is which.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f2",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 1.3.1 Info and Relationships (heading structure)",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_0",
+      "observation": "The heading order on the page starts with two <h2> elements — \"Cookies on GOV.UK\" (el_0) and the visually hidden \"Navigation menu\" (el_8) — both appearing before the page's only <h1>, \"The best place to find government services and information\" (el_12).",
+      "impact_note": "Screen reader users who jump by heading level encounter h2s before any h1, breaking the expected top-down hierarchy and making the page's主 structure harder to predict.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f3",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy",
+      "heuristic": "Jargon / acronym on first use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_18",
+      "observation": "The link text reads \"HMRC account: sign in or set up\" with no expansion of the acronym \"HMRC\" anywhere nearby.",
+      "impact_note": "Visitors unfamiliar with UK government abbreviations may not recognise what this account relates to and could skip a relevant link.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f4",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Heuristics",
+      "heuristic": "User control and freedom",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_0",
+      "observation": "The cookie banner (el_0) offers only \"Accept additional cookies\" (el_1), \"Reject additional cookies\" (el_2) and \"View cookies\" (el_3); there is no visible option to close or dismiss the banner without making one of these choices.",
+      "impact_note": "Visitors who want to proceed straight to the page content are required to engage with the cookie prompt first, adding a forced step before any other action.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f5",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Heuristics",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_97",
+      "observation": "The main content list names a category \"Births, deaths, marriages and care\" (el_28), but the footer link for the same category reads \"Births, death, marriages and care\" (el_97). Similarly, \"Transparency documents\" (el_77) in the main list becomes just \"Transparency\" (el_118) in the footer.",
+      "impact_note": "Slightly different labels for links that lead to the same destination can make visitors unsure whether the two entries point to the same content, adding a small amount of doubt to navigation decisions.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f6",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy",
+      "heuristic": "Match between system and the real world",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_128",
+      "observation": "The footer link reads \"Rhestr o Wasanaethau Cymraeg\" with no English translation or label indicating it is a Welsh-language services list.",
+      "impact_note": "English-only readers cannot tell what this link leads to, and Welsh-speaking visitors get no visual cue distinguishing it from other footer links.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f7",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Heuristics",
+      "heuristic": "Consistency and standards",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "The navigation toggle (el_9) displays a visible text label \"Menu\", while the adjacent search toggle (el_10) shows no visible text at all, relying only on an icon with accessible name \"Show search menu\".",
+      "impact_note": "Inconsistent treatment of two adjacent header controls, one labelled with text and one icon-only, can make the function of the unlabelled control less immediately obvious when scanning the header.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f8",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 1.3.1 / 3.3.2 Labels or Instructions",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_15",
+      "observation": "The search combobox (el_15) has its accessible name sourced from an associated <label> element (el_14, text \"Search\") rather than from a placeholder attribute.",
+      "impact_note": "Because the label is a true <label>, the field's name persists for assistive technology users even once text is typed, unlike a placeholder-only label which disappears on input.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f9",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy",
+      "heuristic": "Match between system and the real world",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_12",
+      "observation": "The h1 reads \"The best place to find government services and information\", stating plainly what the site is and does.",
+      "impact_note": "A visitor who has never heard of GOV.UK can grasp the site's purpose in a single sentence, reducing early confusion.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f10",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Copy",
+      "heuristic": "Consistency and standards",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_25",
+      "observation": "Category descriptions follow a consistent, concrete pattern, e.g. \"Includes eligibility, appeals, tax credits and Universal Credit\" under \"Benefits\", giving a specific scope for each topic rather than vague summary language.",
+      "impact_note": "Consistent, concrete descriptions help visitors scan and self-select the right category quickly.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f11",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Accessibility",
+      "heuristic": "WCAG 4.1.2 Name, Role, Value",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_10",
+      "observation": "The icon-only button with no visible text is given an accessible name via aria-label=\"Show search menu\".",
+      "impact_note": "Screen reader and voice-control users get a clear, actionable name for a control that would otherwise be silent, so the control remains usable.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    },
+    {
+      "key": "dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f12",
+      "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
+      "url": "https://www.gov.uk/",
+      "agent": "Heuristics",
+      "heuristic": "User control and freedom",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_2",
+      "observation": "\"Accept additional cookies\" (el_1, 235x38px) and \"Reject additional cookies\" (el_2, 229x38px) are presented as two buttons of near-identical size and prominence, side by side.",
+      "impact_note": "Giving the reject option equal visual weight to accept respects visitor choice and avoids steering consent through design bias, which supports trust in the site.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human": null,
+      "human_note": null
+    }
+  ]
+}
