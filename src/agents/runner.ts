@@ -19,15 +19,44 @@ export interface SubAgentResult {
   costUsd: number;
 }
 
+/**
+ * One element, as a reviewer sees it.
+ *
+ * Every field here is one some lane's rubric explicitly promises. The
+ * Accessibility lane is told it can see each element's accessible name and
+ * where that name came from; Visual Hierarchy is told every element carries its
+ * font size. Both were true of the Capture and false of this renderer, so on a
+ * live gov.uk audit the Accessibility reviewer read "(no text)" on a correctly
+ * `aria-label`led button and reported a WCAG 4.1.2 violation — severity 3, high
+ * confidence, and wrong. A prompt that promises data the renderer does not send
+ * does not produce a cautious reviewer; it produces a confident guess.
+ */
+function renderElement(e: Capture["elements"][number]): string {
+  const attrs = [
+    e.role ? ` role="${e.role}"` : "",
+    e.input_type ? ` type="${e.input_type}"` : "",
+  ].join("");
+
+  // Only worth the tokens when it adds something the visible text does not.
+  let name = "";
+  if (!e.accessible_name) {
+    // Silence here is the finding, not the absence of one — but only for things
+    // a person can actually operate.
+    name = e.text ? "" : " NO ACCESSIBLE NAME";
+  } else if (e.accessible_name !== e.text) {
+    name = ` name(${e.name_source})="${e.accessible_name}"`;
+  }
+
+  return (
+    `${e.ref} <${e.tag}${attrs}> ` +
+    `[${e.above_fold ? "above fold" : "below fold"}] ` +
+    `${Math.round(e.bbox.width)}x${Math.round(e.bbox.height)}px ${e.font_size}px :: ` +
+    `${e.text || "(no text)"}${name}`
+  );
+}
+
 export function renderCapture(capture: Capture): string {
-  const elements = capture.elements
-    .map(
-      (e) =>
-        `${e.ref} <${e.tag}${e.role ? ` role="${e.role}"` : ""}> ` +
-        `[${e.above_fold ? "above fold" : "below fold"}] ` +
-        `${Math.round(e.bbox.width)}x${Math.round(e.bbox.height)}px :: ${e.text || "(no text)"}`,
-    )
-    .join("\n");
+  const elements = capture.elements.map(renderElement).join("\n");
 
   const truncated = capture.elements_total > capture.elements.length;
 
@@ -35,7 +64,8 @@ export function renderCapture(capture: Capture): string {
     `TITLE: ${capture.title}`,
     `VIEWPORT: ${capture.viewport.width}x${capture.viewport.height}, full page height ${Math.round(capture.full_height)}px`,
     ``,
-    `ELEMENTS (${capture.elements.length}` +
+    `ELEMENTS — ref, tag, position, box size, font size, visible text, and the`,
+    `accessible name where it differs from the visible text (${capture.elements.length}` +
       (truncated
         ? ` of ${capture.elements_total} visible — this list is TRUNCATED. Do not claim ` +
           `anything is missing from the page; you are only seeing part of it.`
