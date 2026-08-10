@@ -11,9 +11,15 @@ import { loadCorpus } from "./corpus.js";
  *
  * The machine has already settled what is checkable: the cited element exists,
  * quotes appear on the page, measurements match. It cannot settle the only
- * question that decides whether this product is worth £29 — is a true statement
- * worth a founder's attention? That judgment has to come from a person once,
- * and then it makes an LLM judge calibratable and everything after it cheap.
+ * question that decides whether this product is worth £29 — would a founder
+ * change something because of this? That judgment has to come from a person
+ * once, and then it makes an LLM judge calibratable and everything after cheap.
+ *
+ * The question is deliberately about ACTION, not interest. "Would you show
+ * this?" was the earlier wording and it drifted with mood: a finding can be
+ * true, well-observed, and worth reading, and still be one nobody would ever
+ * act on. Those are the ones the Synthesizer should be cutting, and a question
+ * that asks about showing rather than doing labels them as keepers.
  *
  * Answers write straight into fixtures/labelled/findings.json and survive
  * `npm run corpus`. Quitting mid-way keeps everything answered so far, because
@@ -101,8 +107,9 @@ async function ask(prompt: string): Promise<string | null> {
 
 console.log(
   `\n${BOLD}${queue.length} findings to judge.${RESET}\n\n` +
-    `  Most ask one question: ${BOLD}would you show this to a founder paying for the audit?${RESET}\n` +
-    `  I have already checked what is checkable, so this is not about accuracy.\n\n` +
+    `  Most ask one question: ${BOLD}would a founder change something because of this?${RESET}\n` +
+    `  I have already checked what is checkable, so this is not about accuracy.\n` +
+    `  ${DIM}True and interesting still earns an ${RESET}n${DIM} if nobody would act on it.${RESET}\n\n` +
     `  A few are marked ${RED}contradicts the capture${RESET} — for those the question changes to\n` +
     `  ${BOLD}is my check right?${RESET}, and the prompt says so.\n\n` +
     `  ${GREEN}y${RESET} yes     ${RED}n${RESET} no     ${YELLOW}s${RESET} unsure     ` +
@@ -141,7 +148,7 @@ for (const [i, f] of queue.entries()) {
   const isTruthQuestion = f.auto.status === "contradicted";
   const prompt = isTruthQuestion
     ? `\n  ${BOLD}Is my check right — is this finding wrong?${RESET}\n  > `
-    : `\n  ${BOLD}Would you show this?${RESET}\n  > `;
+    : `\n  ${BOLD}Would a founder change something because of this?${RESET}\n  > `;
 
   const answer = await ask(prompt);
   if (answer === null) break;

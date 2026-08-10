@@ -136,21 +136,21 @@ const withUsefulness = corpus.findings.filter((f) => f.human_useful !== null);
 if (withUsefulness.length === 0) {
   console.log(
     `\n  signal rate                  not measured` +
-      `\n${"".padEnd(4)}  Of the findings that are true, how many are worth showing? Nothing` +
-      `\n${"".padEnd(4)}  mechanical can answer this. Run \`npm run label\` to find out.`,
+      `\n${"".padEnd(4)}  Of the findings that are true, how many would a founder act on?` +
+      `\n${"".padEnd(4)}  Nothing mechanical can answer this. Run \`npm run label\`.`,
   );
 } else {
   const usefulCount = withUsefulness.filter((f) => f.human_useful).length;
   console.log(
     `\n  signal rate                 ${pct(usefulCount, withUsefulness.length)}   ` +
-      `(${usefulCount}/${withUsefulness.length} judged worth showing)`,
+      `(${usefulCount}/${withUsefulness.length} judged actionable)`,
   );
   const trivial = withUsefulness.filter(
     (f) => !f.human_useful && truthOf(f) === "true",
   ).length;
   if (trivial > 0) {
     console.log(
-      `  true but not worth showing  ${String(trivial).padStart(6)}   ` +
+      `  true but nobody would act   ${String(trivial).padStart(6)}   ` +
         `<- what the Synthesizer should have excluded`,
     );
   }
@@ -171,8 +171,8 @@ writeFileSync(
     `\`npm run label\`, which asks one question at a time and saves as it goes.`,
     ``,
     `The machine has already checked what it can: cited elements exist, quotes appear`,
-    `on the page, measurements match. What it cannot judge is whether a true statement`,
-    `is worth a founder's attention — that is the question below.`,
+    `on the page, measurements match. What it cannot judge is whether anyone would act`,
+    `on a true statement — that is the question below.`,
     ``,
     ...queue.flatMap(({ f, truth }) => [
       `## ${f.key}`,
@@ -190,7 +190,7 @@ writeFileSync(
       ``,
       f.auto.status === "contradicted"
         ? `**Question:** the check above says this contradicts the capture. Is the check right?`
-        : `**Question:** would you show this to a founder paying for the audit?`,
+        : `**Question:** would a founder change something because of this?`,
       ``,
     ]),
   ].join("\n"),

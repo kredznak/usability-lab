@@ -4,8 +4,8 @@
 `npm run label`, which asks one question at a time and saves as it goes.
 
 The machine has already checked what it can: cited elements exist, quotes appear
-on the page, measurements match. What it cannot judge is whether a true statement
-is worth a founder's attention — that is the question below.
+on the page, measurements match. What it cannot judge is whether anyone would act
+on a true statement — that is the question below.
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f1
 
@@ -17,7 +17,7 @@ is worth a founder's attention — that is the question below.
 
 > Announcing a lengthy shipping delay before a visitor has seen any product or price sets a costly expectation early and may discourage continued browsing before any value has been demonstrated.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f2
 
@@ -29,7 +29,7 @@ is worth a founder's attention — that is the question below.
 
 > A screen reader announces this control only as "button" with no purpose, making it unusable without sighted guessing.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f3
 
@@ -41,7 +41,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor who has not yet decided on a category, or wants to browse broadly, has no equally prominent path forward and may leave rather than choose a side.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f4
 
@@ -53,7 +53,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor scanning the page has no plain-language cue for what this control does or which country is currently selected, which can lead to accidental region/locale changes.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f6
 
@@ -65,7 +65,7 @@ is worth a founder's attention — that is the question below.
 
 > Targets below roughly 24x24px are harder to activate accurately for visitors with motor impairments or imprecise pointer control.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f7
 
@@ -77,7 +77,7 @@ is worth a founder's attention — that is the question below.
 
 > Screen reader users hit an unlabeled link before reaching the adjacent labelled product-name link, adding repeated noise across every product in the grid.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f8
 
@@ -89,7 +89,7 @@ is worth a founder's attention — that is the question below.
 
 > Once a visitor starts typing, the placeholder disappears and there is no persistent label to confirm what is being entered or to reference if the field is left blank on validation.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f10
 
@@ -101,7 +101,7 @@ is worth a founder's attention — that is the question below.
 
 > A sale link without any visible detail of the offer gives no reason to prioritize clicking it over other navigation items.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f11
 
@@ -113,7 +113,7 @@ is worth a founder's attention — that is the question below.
 
 > Asking for an email address with no stated benefit gives a visitor little reason to act, likely lowering signup rates.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f12
 
@@ -125,7 +125,7 @@ is worth a founder's attention — that is the question below.
 
 > Title-sourced names are not consistently exposed by assistive technology, and a bare <label> with no associated control may not be announced as interactive at all.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f14
 
@@ -137,7 +137,7 @@ is worth a founder's attention — that is the question below.
 
 > Using two different control types for the same kind of destination navigation is inconsistent and can produce different behavior (e.g. open-in-new-tab, drag, bookmarking) for what visitors experience as the same action.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f15
 
@@ -149,7 +149,7 @@ is worth a founder's attention — that is the question below.
 
 > Screen reader users navigating by heading level encounter a level-2 heading before the top-level heading, which can misrepresent the page's structure when the cart panel is exposed to the accessibility tree.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f16
 
@@ -161,7 +161,7 @@ is worth a founder's attention — that is the question below.
 
 > Breaking the established men's/women's pairing here may read as excluding male shoppers from that promotion, a small but avoidable drop-off point.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f17
 
@@ -173,7 +173,7 @@ is worth a founder's attention — that is the question below.
 
 > One section behaving differently from its structural siblings, without a visible reason, breaks the pattern a visitor has just learned from the other three sections.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f5
 
@@ -185,7 +185,7 @@ is worth a founder's attention — that is the question below.
 
 > Showing price up front before a click lets visitors self-select by budget, reducing wasted clicks and building trust in the shopping experience.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f9
 
@@ -197,7 +197,7 @@ is worth a founder's attention — that is the question below.
 
 > A clear exit control paired with an accurate, actionable status message lets visitors dismiss the panel confidently and understand exactly what is needed to unlock free shipping.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f13
 
@@ -209,7 +209,7 @@ is worth a founder's attention — that is the question below.
 
 > Giving an explicit next step when the cart is empty keeps the visitor moving toward a purchase instead of having to re-navigate from scratch.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f1
 
@@ -233,7 +233,7 @@ is worth a founder's attention — that is the question below.
 
 > Small interactive targets are harder to activate accurately for visitors with limited fine motor control or those using touch or switch input.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f3
 
@@ -245,7 +245,7 @@ is worth a founder's attention — that is the question below.
 
 > Screen reader users who jump through headings to orient themselves on the page encounter subordinate headings before the main heading, adding friction to understanding page structure.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f4
 
@@ -257,7 +257,7 @@ is worth a founder's attention — that is the question below.
 
 > Screen reader users browsing by a flat list of links rather than in visual context may struggle to distinguish which duplicate-named link goes where.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f5
 
@@ -269,7 +269,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor unfamiliar with UK government abbreviations cannot tell what this service is for without leaving the page to look it up.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f6
 
@@ -281,7 +281,7 @@ is worth a founder's attention — that is the question below.
 
 > Inconsistent wording for the identical category signals a lack of proofreading and can make a visitor briefly wonder if these are two different sections.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f7
 
@@ -293,7 +293,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors who want to explore the page first without committing to a cookie choice have no lightweight way to postpone the decision, which can feel like a forced interruption before reaching content.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f8
 
@@ -305,7 +305,7 @@ is worth a founder's attention — that is the question below.
 
 > A superlative claim with no comparison point or evidence gives a first-time visitor nothing concrete to verify; it reads as marketing rather than a description of what the site actually contains.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f9
 
@@ -317,7 +317,7 @@ is worth a founder's attention — that is the question below.
 
 > A real, persistent label ensures the field's purpose remains available to assistive technology and sighted users even after text is entered, unlike a placeholder-only approach.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f10
 
@@ -329,7 +329,7 @@ is worth a founder's attention — that is the question below.
 
 > Descriptive link text lets screen reader users understand a link's destination without needing surrounding context, which is a genuine accessibility strength across the page.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f11
 
@@ -341,7 +341,7 @@ is worth a founder's attention — that is the question below.
 
 > Surfacing high-frequency tasks near the top reduces the need for visitors to search or recall where a common service lives, which is good practice for a site with this many possible destinations.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 45567cab-13a0-43ee-a021-da09973d769b:recovered-f12
 
@@ -365,7 +365,7 @@ is worth a founder's attention — that is the question below.
 
 > Disclosing a lengthy shipping delay before establishing product value or price gives a visitor a reason to hesitate before the page has made its case, which can suppress motivation to continue browsing.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f2
 
@@ -377,7 +377,7 @@ is worth a founder's attention — that is the question below.
 
 > No phone number or live chat is visible anywhere above or below the fold, so a visitor with a pre-purchase question has only a slow channel available, which can stall a purchase decision.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f3
 
@@ -389,7 +389,7 @@ is worth a founder's attention — that is the question below.
 
 > A legal entity name that doesn't match the visible brand can read as inconsistent or, to a wary visitor, as a possible trust signal to double-check.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f4
 
@@ -401,7 +401,7 @@ is worth a founder's attention — that is the question below.
 
 > Seven near-identical shopping CTAs stacked in the first screen give no single obvious next step, which can leave a visitor uncertain which path is the intended one.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f5
 
@@ -413,7 +413,7 @@ is worth a founder's attention — that is the question below.
 
 > A screen reader encountering these controls announces only 'label, unchecked' or similar with no indication of what the control does (likely wishlist or quick-add), making the feature unusable without sight.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f6
 
@@ -425,7 +425,7 @@ is worth a founder's attention — that is the question below.
 
 > Screen reader users hear an unlabeled link for every product image and must rely on a second, separate link to learn what the image was for, doubling navigation effort through a long product grid.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f7
 
@@ -437,7 +437,7 @@ is worth a founder's attention — that is the question below.
 
 > These are likely search, account, and menu controls near the top of the page; without a name a screen reader user cannot tell what each one opens before activating it.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f8
 
@@ -449,7 +449,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors cannot tell from the control itself what selecting a value will change (currency, region, shipping), which can cause hesitation or an unintended region switch.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f9
 
@@ -461,7 +461,7 @@ is worth a founder's attention — that is the question below.
 
 > If the field relies on placeholder text that clears on focus, visitors who look away mid-entry lose the cue for what the field expects, which can lead to abandoned or mis-filled submissions.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f10
 
@@ -473,7 +473,7 @@ is worth a founder's attention — that is the question below.
 
 > A generic label with no stated benefit gives little reason to trade an email address, likely lowering signups.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f11
 
@@ -485,7 +485,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor cannot tell from the button alone whether clicking leads to a full catalog, a single collection, or a filtered subset, adding a small amount of uncertainty before commitment.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f12
 
@@ -497,7 +497,7 @@ is worth a founder's attention — that is the question below.
 
 > A screen reader user browsing by a links list hears the same phrase many times with no distinguishing context, making it hard to tell which link corresponds to which product section already passed.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f13
 
@@ -533,7 +533,7 @@ is worth a founder's attention — that is the question below.
 
 > Plain, upfront pricing removes a common point of hesitation before a visitor commits to viewing or purchasing a product.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f16
 
@@ -545,7 +545,7 @@ is worth a founder's attention — that is the question below.
 
 > A concrete, quantified incentive gives a visitor a reason to add more to cart, though it is only visible once a cart is opened rather than earlier in the browsing path.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f17
 
@@ -557,7 +557,7 @@ is worth a founder's attention — that is the question below.
 
 > Asking for just one piece of information keeps the newsletter signup low-friction and reduces a common source of drop-off seen in longer forms.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f18
 
@@ -569,7 +569,7 @@ is worth a founder's attention — that is the question below.
 
 > A logical, non-skipping heading outline lets screen reader users jump between sections confidently using heading navigation.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f1
 
@@ -581,7 +581,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor who scrolls through the extensive feature walkthrough (Intake, Plan, Build, Diffs, Monitor sections) has no reinforced action to take until the very end, increasing the chance they lose momentum or leave before converting.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f2
 
@@ -593,7 +593,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor scanning the hero sees the same sentence repeated, which reads as a content error and undercuts confidence in the page before any claim is even evaluated.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f3
 
@@ -605,7 +605,7 @@ is worth a founder's attention — that is the question below.
 
 > "Designed for the AI era" is a phrase with no concrete referent — it does not say what the product does differently — so it adds length without adding understanding for a first-time reader.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f4
 
@@ -617,7 +617,7 @@ is worth a founder's attention — that is the question below.
 
 > "New species" and "sets a new standard" are not concrete claims; a first-time visitor has no way to verify or picture what specifically is different, which weakens the section's ability to explain the product.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f5
 
@@ -629,7 +629,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors deciding whether to commit typically look for a plain answer on cost before acting; requiring an extra click to even see pricing can cost conversions from price-sensitive visitors.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f6
 
@@ -641,7 +641,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor scanning the hero for what to do next may be uncertain whether this link leads to a feature demo, documentation, or the product itself.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f7
 
@@ -653,7 +653,7 @@ is worth a founder's attention — that is the question below.
 
 > Without differentiation, a first-time visitor has no cue about which action is intended for them, diluting the pull toward the new-visitor conversion action.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f8
 
@@ -665,7 +665,7 @@ is worth a founder's attention — that is the question below.
 
 > Vague action labels leave visitors uncertain about the size of the commitment before they click, which can suppress click-through from cautious visitors.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f9
 
@@ -677,7 +677,7 @@ is worth a founder's attention — that is the question below.
 
 > Presenting interactive-looking controls that are actually illustrative mockups can lead visitors to expect real functionality, and any resulting non-response undermines trust in the product being demonstrated.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f10
 
@@ -689,7 +689,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors cannot tell what these controls do without hovering or guessing, which slows scanning of an already very long page and can mask non-functional decorative elements as actionable ones.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f11
 
@@ -701,7 +701,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors unfamiliar with "Model Context Protocol" style acronyms cannot tell what this feature does from the label alone, forcing them to guess or skip it.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f12
 
@@ -713,7 +713,7 @@ is worth a founder's attention — that is the question below.
 
 > Specific, attributed social proof of this kind is a credible trust signal that can support a visitor's decision to proceed.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f13
 
@@ -725,7 +725,7 @@ is worth a founder's attention — that is the question below.
 
 > This consistent numbering gives visitors a repeatable mental model of the product's workflow stages as they scroll through a long page, aiding orientation.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f14
 
@@ -737,7 +737,7 @@ is worth a founder's attention — that is the question below.
 
 > This entry states a specific, concrete benefit (reviewing code on mobile) in plain, visitor-facing language, giving readers something they can picture and act on.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f1
 
@@ -749,7 +749,7 @@ is worth a founder's attention — that is the question below.
 
 > A first-time visitor unfamiliar with the product may not know what "agents" refers to (AI agents vs. human agents/support reps) until scrolling much further down the page.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f2
 
@@ -761,7 +761,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors who scroll through the lengthy product demonstration have no reinforcing call to action to act on along the way, so interest built up during the walkthrough has no nearby outlet.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f3
 
@@ -773,7 +773,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor arriving from the headline "The product development system for teams and agents" has no way to tell if clicking commits them to sign-up, opens a demo, or requires an existing account, which can stall the very first action on the page.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f4
 
@@ -785,7 +785,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors may try to type into the field, press Listen, or change the speed expecting a real response, since nothing distinguishes these from live functionality, and receive none.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f5
 
@@ -797,7 +797,7 @@ is worth a founder's attention — that is the question below.
 
 > Two above-the-fold actions with different labels and no visual hierarchy cue as to which is primary can split attention and slow the decision to act.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f6
 
@@ -809,7 +809,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors outside product-management roles may not recognize "PRDs" (product requirements documents), which can stall comprehension of what the feature actually does.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f7
 
@@ -821,7 +821,7 @@ is worth a founder's attention — that is the question below.
 
 > "A new species" and "sets a new standard" are abstract superlatives with no concrete referent or evidence, which can read as marketing filler rather than information a visitor can evaluate.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f8
 
@@ -833,7 +833,7 @@ is worth a founder's attention — that is the question below.
 
 > When a subordinate heading is rendered larger than the page's only h1, the size cue that should mark the single most important statement is undermined, and a visitor scanning by size alone may land on the wrong sentence first.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f9
 
@@ -845,7 +845,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors weighing whether to sign up cannot see cost or commitment level without leaving the page, which adds friction before the decision to act.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f10
 
@@ -857,7 +857,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor who has just been convinced by the surrounding content still has to guess what committing to "Get started" actually involves.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f11
 
@@ -869,7 +869,7 @@ is worth a founder's attention — that is the question below.
 
 > Social proof is not visible near the top-of-page CTA, so the first decision to act happens without the credibility signal that testimonials would provide.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f12
 
@@ -881,7 +881,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors must guess each control's function from an icon alone, which raises cognitive load, especially since the pattern repeats dozens of times down the page.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f13
 
@@ -893,7 +893,7 @@ is worth a founder's attention — that is the question below.
 
 > With near-equal size, neither action is visually established as the primary path forward at the point where a visitor is deciding what to do next.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f14
 
@@ -905,7 +905,7 @@ is worth a founder's attention — that is the question below.
 
 > Pairing an abstract heading with a concrete, step-by-step explanation lets a visitor quickly understand what the feature actually does, which supports comprehension.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f15
 
@@ -917,7 +917,7 @@ is worth a founder's attention — that is the question below.
 
 > The repeated numbering and arrow convention gives visitors a predictable structure to follow through a very long page, reducing disorientation.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f16
 
@@ -929,7 +929,7 @@ is worth a founder's attention — that is the question below.
 
 > Separating self-serve and enterprise intents lets each visitor type find an appropriately-sized commitment, which research suggests can reduce mismatched drop-off.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f1
 
@@ -941,7 +941,7 @@ is worth a founder's attention — that is the question below.
 
 > When a screen reader user pulls up a page-wide list of links (a common navigation strategy), several identically-worded links with no differentiating text make it hard to tell which destination is which.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f2
 
@@ -953,7 +953,7 @@ is worth a founder's attention — that is the question below.
 
 > Screen reader users who jump by heading level encounter h2s before any h1, breaking the expected top-down hierarchy and making the page's主 structure harder to predict.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f3
 
@@ -965,7 +965,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors unfamiliar with UK government abbreviations may not recognise what this account relates to and could skip a relevant link.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f4
 
@@ -977,7 +977,7 @@ is worth a founder's attention — that is the question below.
 
 > Visitors who want to proceed straight to the page content are required to engage with the cookie prompt first, adding a forced step before any other action.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f5
 
@@ -989,7 +989,7 @@ is worth a founder's attention — that is the question below.
 
 > Slightly different labels for links that lead to the same destination can make visitors unsure whether the two entries point to the same content, adding a small amount of doubt to navigation decisions.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f6
 
@@ -1001,7 +1001,7 @@ is worth a founder's attention — that is the question below.
 
 > English-only readers cannot tell what this link leads to, and Welsh-speaking visitors get no visual cue distinguishing it from other footer links.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f7
 
@@ -1013,7 +1013,7 @@ is worth a founder's attention — that is the question below.
 
 > Inconsistent treatment of two adjacent header controls, one labelled with text and one icon-only, can make the function of the unlabelled control less immediately obvious when scanning the header.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f8
 
@@ -1025,7 +1025,7 @@ is worth a founder's attention — that is the question below.
 
 > Because the label is a true <label>, the field's name persists for assistive technology users even once text is typed, unlike a placeholder-only label which disappears on input.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f9
 
@@ -1037,7 +1037,7 @@ is worth a founder's attention — that is the question below.
 
 > A visitor who has never heard of GOV.UK can grasp the site's purpose in a single sentence, reducing early confusion.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f10
 
@@ -1049,7 +1049,7 @@ is worth a founder's attention — that is the question below.
 
 > Consistent, concrete descriptions help visitors scan and self-select the right category quickly.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f11
 
@@ -1061,7 +1061,7 @@ is worth a founder's attention — that is the question below.
 
 > Screen reader and voice-control users get a clear, actionable name for a control that would otherwise be silent, so the control remains usable.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
 
 ## dfcd777a-2bb6-4681-8d30-0c07769c9531:recovered-f12
 
@@ -1073,4 +1073,4 @@ is worth a founder's attention — that is the question below.
 
 > Giving the reject option equal visual weight to accept respects visitor choice and avoids steering consent through design bias, which supports trust in the site.
 
-**Question:** would you show this to a founder paying for the audit?
+**Question:** would a founder change something because of this?
