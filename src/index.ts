@@ -14,7 +14,7 @@ import { deriveSignals } from "./signals.js";
 import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
-import { CallLog } from "./db.js";
+import { CallLog, AuditStore, type AuditStatus } from "./db.js";
 import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
 import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
 
@@ -24,9 +24,13 @@ import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
  *   capture -> profile -> signals -> orchestrate (R0-R5, cap 4)
  *     -> sub-agents -> synthesize -> derived confidence -> annotate -> page
  *
+ * The run ends at REVIEW_PENDING, not at a published page. Nothing reaches a
+ * customer until a person has read it — §6's gate, and CLAUDE.md's "first audits
+ * gate on founder review". `npm run review <audit-id>` is the other half.
+ *
  * Deliberately NOT here: Research and citations (every finding still reports
  * source_type "none", which §9.3 makes a legal output), the lint gate, the
- * Content agent, founder review, multi-page capture. See §0 of docs/design.md.
+ * Content agent, multi-page capture. See §0 of docs/design.md.
  */
 
 interface Timing {
@@ -134,15 +138,34 @@ async function main(): Promise<void> {
   const outDir = path.join("out", auditId);
   const timings: Timing[] = [];
   const log = new CallLog();
+  const audits = new AuditStore();
   /** §7: DEGRADED is a logged, visible state — never a quiet one. */
   const degraded: string[] = [];
+
+  audits.create(auditId, url);
+
+  /**
+   * Status is bookkeeping; the audit is the work. If the state machine refuses
+   * an edge we want to hear about it loudly, but not by losing a $0.50 run that
+   * already produced findings — so a failed transition is reported and the
+   * pipeline continues.
+   */
+  const setStatus = (to: AuditStatus, fields = {}) => {
+    try {
+      audits.transition(auditId, to, fields);
+    } catch (err) {
+      degraded.push(`status ${to}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
 
   console.error(`\naudit ${auditId}\n${url}\n`);
 
   try {
     const client = new Anthropic();
 
+    setStatus("CAPTURING");
     const captured = await timed("capture", timings, () => capture(url, auditId, outDir));
+    setStatus("AUDITING", { final_url: captured.final_url, title: captured.title });
     const signals = deriveSignals(captured);
 
     const hasAnswers = Object.values(answers).some((a) => a && a.length > 0);
@@ -184,6 +207,8 @@ async function main(): Promise<void> {
 
     const identified = identify(runs);
     if (identified.length === 0) throw new Error("no reviewer produced a finding");
+
+    setStatus("ASSEMBLING");
 
     const synthesis = await timed("synthesize", timings, () =>
       runSynthesizer(client, identified, profile.summary, auditId, log),
@@ -260,6 +285,12 @@ async function main(): Promise<void> {
       ),
     );
 
+    setStatus("REVIEW_PENDING", {
+      profile_summary: profile.summary,
+      findings_total: findings.length,
+      cost_usd: costUsd,
+    });
+
     const total = timings.reduce((s, t) => s + t.ms, 0);
     const high = findings.filter((f) => f.confidence === "high").length;
 
@@ -276,7 +307,9 @@ async function main(): Promise<void> {
         `\n  ${annotated.pinned} pinned on the screenshot` +
         (degraded.length > 0 ? `\n  DEGRADED: ${degraded.join("; ")}` : "") +
         `\n  total ${(total / 1000).toFixed(1)}s   $${costUsd.toFixed(4)}` +
-        `\n\n  ${resultsPath}\n`,
+        `\n\n  ${resultsPath}` +
+        `\n\n  REVIEW_PENDING — nothing is published yet.` +
+        `\n  npm run review -- ${auditId.slice(0, 8)}\n`,
     );
 
     if (findings.length === 0) {
@@ -287,14 +320,17 @@ async function main(): Promise<void> {
   } catch (err) {
     if (err instanceof CaptureFailed) {
       // F1/F2: named state, honest message, never an audit from imagination.
+      setStatus("CAPTURE_FAILED");
       console.error(`\nCAPTURE_FAILED: ${err.message}\n  ${err.detail}\n`);
       process.exitCode = 1;
       return;
     }
+    setStatus("FAILED");
     console.error(`\nFAILED: ${err instanceof Error ? err.message : String(err)}\n`);
     process.exitCode = 1;
   } finally {
     log.close();
+    audits.close();
   }
 }
 

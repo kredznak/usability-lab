@@ -65,6 +65,191 @@ export function estimateCost(
   );
 }
 
+/**
+ * §6's audit state machine. States are rows in `audits.status`.
+ *
+ * §6 also lists EMAIL_CAPTURED and SUBSCRIBED after PUBLISHED. Neither is here:
+ * the email gate is not built, and a state nothing can reach is a state nobody
+ * maintains. They go in with the thing that writes them.
+ *
+ * RESEARCHING is listed but skippable — Research is not built either, so
+ * AUDITING leads to ASSEMBLING directly. It stays in the map because the step
+ * is coming and the edge is already specified.
+ */
+export type AuditStatus =
+  | "REQUESTED"
+  | "CAPTURING"
+  | "AUDITING"
+  | "RESEARCHING"
+  | "ASSEMBLING"
+  | "REVIEW_PENDING"
+  | "PUBLISHED"
+  | "AUTO_PUBLISHED"
+  | "CAPTURE_FAILED"
+  | "PARKED"
+  | "FAILED";
+
+/**
+ * Every legal edge, and nothing else. §6: "transitions only via Inngest steps —
+ * no agent writes status." There is no Inngest in v0, so this map plus
+ * `AuditStore.transition` is what enforces it.
+ *
+ * FAILED is reachable from any live state ("any step → FAILED") and is applied
+ * in `transition` rather than duplicated into all nine rows.
+ */
+const LEGAL: Record<AuditStatus, AuditStatus[]> = {
+  REQUESTED: ["CAPTURING"],
+  CAPTURING: ["AUDITING", "CAPTURE_FAILED"],
+  AUDITING: ["RESEARCHING", "ASSEMBLING"],
+  RESEARCHING: ["ASSEMBLING"],
+  ASSEMBLING: ["REVIEW_PENDING", "AUTO_PUBLISHED"],
+  REVIEW_PENDING: ["PUBLISHED"],
+  // Terminal. A published audit that turns out to be wrong gets a correction
+  // path, not a status rewind — quality-bar.md still has that UNRESOLVED.
+  PUBLISHED: [],
+  AUTO_PUBLISHED: ["REVIEW_PENDING"],
+  CAPTURE_FAILED: ["CAPTURING", "PARKED"],
+  PARKED: ["CAPTURING"],
+  FAILED: [],
+};
+
+/** Live states can always fail; §6's "any step → FAILED". */
+const TERMINAL: AuditStatus[] = ["PUBLISHED", "FAILED"];
+
+export class IllegalTransition extends Error {
+  constructor(
+    readonly auditId: string,
+    readonly from: AuditStatus,
+    readonly to: AuditStatus,
+  ) {
+    super(`audit ${auditId}: ${from} -> ${to} is not a legal transition`);
+    this.name = "IllegalTransition";
+  }
+}
+
+export interface AuditRow {
+  audit_id: string;
+  url: string;
+  final_url: string | null;
+  title: string | null;
+  status: AuditStatus;
+  profile_summary: string | null;
+  findings_total: number;
+  findings_published: number;
+  cost_usd: number;
+  created_at: string;
+  updated_at: string;
+  published_at: string | null;
+}
+
+/**
+ * §4's `audits` store: audit_id, url, profile, status, timestamps.
+ *
+ * Separate connection to the same file as CallLog. SQLite in WAL mode handles
+ * concurrent readers and a single writer, and keeping the two apart means the
+ * review tool can open the audits table without dragging in the cost log.
+ */
+export class AuditStore {
+  private db: Database.Database;
+
+  constructor(dbPath = "out/usability-lab.db") {
+    mkdirSync(path.dirname(dbPath), { recursive: true });
+    this.db = new Database(dbPath);
+    this.db.pragma("journal_mode = WAL");
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS audits (
+        audit_id           TEXT PRIMARY KEY,
+        url                TEXT NOT NULL,
+        final_url          TEXT,
+        title              TEXT,
+        status             TEXT NOT NULL,
+        profile_summary    TEXT,
+        findings_total     INTEGER NOT NULL DEFAULT 0,
+        findings_published INTEGER NOT NULL DEFAULT 0,
+        cost_usd           REAL    NOT NULL DEFAULT 0,
+        created_at         TEXT NOT NULL,
+        updated_at         TEXT NOT NULL,
+        published_at       TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_audits_status ON audits(status);
+    `);
+  }
+
+  /** Opens an audit at REQUESTED — the only state that may be created. */
+  create(auditId: string, url: string): void {
+    const now = new Date().toISOString();
+    this.db
+      .prepare(
+        `INSERT INTO audits (audit_id, url, status, created_at, updated_at)
+         VALUES (?, ?, 'REQUESTED', ?, ?)`,
+      )
+      .run(auditId, url, now, now);
+  }
+
+  get(auditId: string): AuditRow | null {
+    return (this.db.prepare(`SELECT * FROM audits WHERE audit_id = ?`).get(auditId) as
+      | AuditRow
+      | undefined) ?? null;
+  }
+
+  /** Prefix match, so the CLI can take the first 8 characters of a UUID. */
+  find(prefix: string): AuditRow[] {
+    return this.db
+      .prepare(`SELECT * FROM audits WHERE audit_id LIKE ? ORDER BY created_at DESC`)
+      .all(`${prefix}%`) as AuditRow[];
+  }
+
+  list(status?: AuditStatus): AuditRow[] {
+    return (
+      status
+        ? this.db.prepare(`SELECT * FROM audits WHERE status = ? ORDER BY created_at DESC`).all(status)
+        : this.db.prepare(`SELECT * FROM audits ORDER BY created_at DESC`).all()
+    ) as AuditRow[];
+  }
+
+  /**
+   * The only way status changes. Throws on an illegal edge rather than
+   * recording it — a status that lies is worse than a crash, because every
+   * later decision reads it as fact.
+   */
+  transition(auditId: string, to: AuditStatus, fields: Partial<AuditRow> = {}): void {
+    const row = this.get(auditId);
+    if (!row) throw new Error(`audit ${auditId} does not exist`);
+
+    const legal =
+      LEGAL[row.status].includes(to) || (to === "FAILED" && !TERMINAL.includes(row.status));
+    if (!legal) throw new IllegalTransition(auditId, row.status, to);
+
+    const now = new Date().toISOString();
+    const sets: string[] = ["status = @status", "updated_at = @updated_at"];
+    const params: Record<string, unknown> = { audit_id: auditId, status: to, updated_at: now };
+
+    for (const key of [
+      "final_url",
+      "title",
+      "profile_summary",
+      "findings_total",
+      "findings_published",
+      "cost_usd",
+    ] as const) {
+      if (fields[key] !== undefined) {
+        sets.push(`${key} = @${key}`);
+        params[key] = fields[key];
+      }
+    }
+    if (to === "PUBLISHED" || to === "AUTO_PUBLISHED") {
+      sets.push("published_at = @published_at");
+      params.published_at = now;
+    }
+
+    this.db.prepare(`UPDATE audits SET ${sets.join(", ")} WHERE audit_id = @audit_id`).run(params);
+  }
+
+  close(): void {
+    this.db.close();
+  }
+}
+
 export class CallLog {
   private db: Database.Database;
 

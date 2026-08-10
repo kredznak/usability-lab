@@ -14,22 +14,32 @@ be argued into a slice plan instead of parked.
 These three came out of labelling all 17 findings from one allbirds audit on
 both axes — truth and usefulness. Each is evidenced, not suspected.
 
-### B1. Persist the Synthesizer's exclusions
+### B1. Make the Synthesizer's exclusions machine-readable
 
 **What.** `SynthesisResult.excluded` carries `{ id, agent, reason }` for every
-finding the Synthesizer cut. `src/index.ts` prints the *count* to the console at
-run time and writes none of it. The reasons are gone the moment the process
-exits.
+cut finding. `src/render.ts` already publishes all of it under "Set aside by the
+synthesizer", so it is visible to a human reading the page. It is **not** in
+`findings.json`, so `npm run corpus` and `npm run outcome` cannot see it.
+
+*(Corrected 2026-08-10. This entry first claimed the reasons were discarded
+entirely. They are not — they are rendered, just not stored as data.)*
 
 **Why it matters.** Precision only measures findings that survived. If the
 Synthesizer is systematically cutting the *good* ones, every metric we have
-would keep looking healthy while the product quietly got worse. On `1e6d5d13`
-roughly 30 findings went in and 17 came out — reconstructed from token counts,
-because the record itself does not exist. That is a third to a half of the
-audit's raw output that we cannot inspect.
+would keep looking healthy while the product quietly got worse. On `1e6d5d13`,
+29 findings went in, 18 survived synthesis and 11 were cut — a bit under 40% of
+the audit's raw output, invisible to every score we compute.
 
-**Cost.** One line to write `excluded` into `findings.json`, a little more to
-surface it. Small.
+**What the cuts actually looked like** — worth reading before assuming the
+Synthesizer needs fixing. It rejected findings for being unverifiable from the
+capture ("the reviewer could not establish that the two listings actually
+differ"), for self-contradiction across lanes, for duplication, and repeatedly
+for irrelevance to the visitor's stated concern: *"correctly labelled social
+icons in the footer do not inform the checkout drop-off this visitor came
+about."* That is the behaviour we asked for.
+
+**Cost.** Small — write `excluded` into `findings.json` alongside the findings,
+then teach `corpus.ts` to read it.
 
 ### B2. Tighten the positives rule
 
