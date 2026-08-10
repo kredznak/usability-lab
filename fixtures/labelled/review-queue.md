@@ -1,35 +1,11 @@
 # Review queue
 
-89 findings await a human label. The fastest way through this is
+74 findings await a human label. The fastest way through this is
 `npm run label`, which asks one question at a time and saves as it goes.
 
 The machine has already checked what it can: cited elements exist, quotes appear
 on the page, measurements match. What it cannot judge is whether anyone would act
 on a true statement — that is the question below.
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f1
-
-- **conversion-cta** · severity 3 · medium confidence · page-level
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> Near the top of the page, before any product content, the text reads "Due to increased demand, orders may take up to 30 days to ship."
-
-> Announcing a lengthy shipping delay before a visitor has seen any product or price sets a costly expectation early and may discourage continued browsing before any value has been demonstrated.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f2
-
-- **a11y+heuristics** · severity 4 · high confidence · el_0
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> Button at top of page is 24x24px with no visible text and no accessible name (also true of el_1 next to it).
-
-> A screen reader announces this control only as "button" with no purpose, making it unusable without sighted guessing.
-
-**Question:** would a founder change something because of this?
 
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f3
 
@@ -43,90 +19,6 @@ on a true statement — that is the question below.
 
 **Question:** would a founder change something because of this?
 
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f4
-
-- **forms** · severity 2 · high confidence · el_106
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> A `<select>` element (el_106) in the footer lists a long run of country codes ("AE AT AU BE CA CH CN...") as its visible text, with only an aria-label of "Select country" to explain its purpose; no visible label or currently-selected value is distinguishable in the capture.
-
-> A visitor scanning the page has no plain-language cue for what this control does or which country is currently selected, which can lead to accidental region/locale changes.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f6
-
-- **a11y** · severity 2 · high confidence · el_6
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> Nav buttons "Men" (30x16px) and "Sale" (31x16px, el_8) measure only 16px in height.
-
-> Targets below roughly 24x24px are harder to activate accurately for visitors with motor impairments or imprecise pointer control.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f7
-
-- **a11y** · severity 3 · high confidence · el_34
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> Product image link (390x390px) has no accessible name, and this pattern repeats across all twelve product tiles (el_37, el_40, el_43, el_46, el_49, el_52, el_55, el_58, el_61, el_64, el_67).
-
-> Screen reader users hit an unlabeled link before reaching the adjacent labelled product-name link, adding repeated noise across every product in the grid.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f8
-
-- **a11y+forms** · severity 2 · high confidence · el_81
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> The email field el_81 has no visible <label>; its only identifying text is the placeholder "Email Address", which is not present in the element's visible text/label list, meaning it exists solely as placeholder content.
-
-> Once a visitor starts typing, the placeholder disappears and there is no persistent label to confirm what is being entered or to reference if the field is left blank on validation.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f10
-
-- **conversion-cta** · severity 2 · high confidence · el_8
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> The main navigation includes a "Sale" item (el_8), but no discount amount, sale scope, or end date is visible anywhere in the captured page.
-
-> A sale link without any visible detail of the offer gives no reason to prioritize clicking it over other navigation items.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f11
-
-- **conversion-cta** · severity 2 · high confidence · el_79
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> The footer newsletter form is labeled "Subscribe to our emails" with a "Sign Up" button (el_80) and an email input (el_81), but no incentive (discount, early access, etc.) is stated anywhere near it.
-
-> Asking for an email address with no stated benefit gives a visitor little reason to act, likely lowering signup rates.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f12
-
-- **a11y** · severity 2 · high confidence · el_36
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> Wishlist-style control is a <label> element with no visible text, deriving its name from a title attribute (e.g. "Women's Tree Runner NZ - Medium Grey (Blizzard Sole)"); the same pattern recurs on el_39 through el_69.
-
-> Title-sourced names are not consistently exposed by assistive technology, and a bare <label> with no associated control may not be announced as interactive at all.
-
-**Question:** would a founder change something because of this?
-
 ## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f14
 
 - **heuristics** · severity 2 · high confidence · el_13
@@ -136,78 +28,6 @@ on a true statement — that is the question below.
 > The flyout menu items "Shop Womens", "Shop Mens", "Shop Socks", "Shop Women's Sale" and "Shop Men's Sale" (el_13-el_17) are implemented as <button> elements, while functionally identical category navigation elsewhere on the page, such as "Shop Men" (el_22) and "Shop Men" (el_71), are implemented as <a> elements.
 
 > Using two different control types for the same kind of destination navigation is inconsistent and can produce different behavior (e.g. open-in-new-tab, drag, bookmarking) for what visitors experience as the same action.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f15
-
-- **a11y** · severity 2 · high confidence · el_11
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> An <h2> reading "Cart (0)" appears in the element order before the page's only <h1>, "Wildly Comfortable. Super Natural." (el_18).
-
-> Screen reader users navigating by heading level encounter a level-2 heading before the top-level heading, which can misrepresent the page's structure when the cart panel is exposed to the accessibility tree.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f16
-
-- **conversion-cta** · severity 1 · high confidence · el_77
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> The "Fresh Colors For Summer" section offers only a single "Shop Women" link (el_77), unlike the other promotional sections which pair a men's and women's link.
-
-> Breaking the established men's/women's pairing here may read as excluding male shoppers from that promotion, a small but avoidable drop-off point.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f17
-
-- **heuristics** · severity 2 · high confidence · el_31
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> Of four parallel section headings shown together ("New Arrivals" el_21, "Mens" el_24, "Womens" el_26, "Best Sellers" el_28), only "Best Sellers" is accompanied by an adjacent button element (el_31) with the same label.
-
-> One section behaving differently from its structural siblings, without a visible reason, breaks the pattern a visitor has just learned from the other three sections.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f5
-
-- **conversion-cta** · severity 1 · medium confidence · positive · page-level
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> Each product tile in the grids displays its price plainly next to the name, e.g. "Women's Tree Runner NZ Medium Grey $100" and "Women's Canvas Cruiser Slip On Warm White $75".
-
-> Showing price up front before a click lets visitors self-select by budget, reducing wasted clicks and building trust in the shopping experience.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f9
-
-- **heuristics** · severity 1 · high confidence · positive · el_12
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> The cart panel includes an explicit "Close cart" button (el_12) alongside a specific status message, "Spend $100 more to earn free shipping!", consistent with the stated empty cart total.
-
-> A clear exit control paired with an accurate, actionable status message lets visitors dismiss the panel confidently and understand exactly what is needed to unlock free shipping.
-
-**Question:** would a founder change something because of this?
-
-## 1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f13
-
-- **forms** · severity 1 · high confidence · positive · el_13
-- https://www.allbirds.com/
-- mechanical: **verified**
-
-> The empty cart panel offers direct links back into shopping ("Shop Womens", "Shop Mens", "Shop Socks", "Shop Women's Sale", "Shop Men's Sale") rather than a dead end.
-
-> Giving an explicit next step when the cart is empty keeps the visitor moving toward a purchase instead of having to re-navigate from scratch.
 
 **Question:** would a founder change something because of this?
 

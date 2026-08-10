@@ -75,7 +75,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -95,7 +95,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -135,7 +135,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -155,7 +155,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -175,7 +175,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -195,7 +195,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -215,7 +215,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -235,7 +235,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -255,7 +255,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -295,7 +295,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -315,7 +315,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": false,
       "human_note": null
     },
     {
@@ -335,7 +335,7 @@
         "contradictions": []
       },
       "human_true": true,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -355,7 +355,7 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": false,
       "human_note": null
     },
     {
@@ -375,7 +375,7 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null
     },
     {
@@ -395,7 +395,7 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": false,
       "human_note": null
     },
     {
