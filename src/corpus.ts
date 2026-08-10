@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
-import { Capture, Finding } from "./types.js";
+import { Capture, Finding, type ReviewDecision, type ReviewRecord } from "./types.js";
 import { checkClaim } from "./claims.js";
 import { ALL_RUBRICS } from "./agents/rubrics.js";
 
@@ -62,11 +62,22 @@ export interface LabelledFinding {
    */
   human_true: boolean | null;
   /**
-   * Would you show this to a founder paying for the audit? The machine cannot
-   * answer this at all, so null means genuinely unknown — never assumed.
+   * Would a founder change something because of this? The machine cannot answer
+   * this at all, so null means genuinely unknown — never assumed.
    */
   human_useful: boolean | null;
   human_note: string | null;
+  /**
+   * The keep/cut call made at the founder gate, recorded separately from
+   * `human_useful` on purpose.
+   *
+   * The gate asks the same question, so it seeds usefulness — that is how the
+   * eval set grows without anyone doing eval chores. But keeping it in its own
+   * field means a later `npm run label -- --redo` can overrule it and survive
+   * the next rebuild. Folding the two together would make every rebuild quietly
+   * revert the correction.
+   */
+  review_keep: boolean | null;
 }
 
 /**
@@ -217,10 +228,23 @@ export function buildCorpus(): Corpus {
 
     built.built_from.push({ audit_id: auditId, url: capture.final_url, findings: findings.length });
 
+    // The founder gate's keep/cut decisions, where this audit has been through
+    // it. See LabelledFinding.review_keep for why these stay in their own field.
+    const reviewFile = path.join(dir, "review.json");
+    const review = existsSync(reviewFile)
+      ? new Map(
+          (JSON.parse(readFileSync(reviewFile, "utf8")) as ReviewRecord).decisions.map((d) => [
+            d.finding_id,
+            d,
+          ]),
+        )
+      : new Map<string, ReviewDecision>();
+
     for (const f of findings) {
       const key = `${auditId}:${f.id}`;
       const verdict = checkClaim(f, capture);
       const prior = previous.get(key);
+      const decision = review.get(f.id);
       built.findings.push({
         key,
         audit_id: auditId,
@@ -235,8 +259,11 @@ export function buildCorpus(): Corpus {
         impact_note: f.impact_note,
         auto: { status: verdict.status, contradictions: verdict.contradictions },
         human_true: prior?.human_true ?? null,
-        human_useful: prior?.human_useful ?? null,
-        human_note: prior?.human_note ?? null,
+        // An explicit label wins over the gate decision, so a `--redo` survives
+        // the next rebuild. With no label, the gate's keep/cut is the answer.
+        human_useful: prior?.human_useful ?? decision?.keep ?? null,
+        human_note: prior?.human_note ?? decision?.note ?? null,
+        review_keep: decision?.keep ?? null,
       });
     }
   }

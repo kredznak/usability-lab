@@ -17,7 +17,8 @@
     "check": "npm run typecheck && npm test && npm run snapshot -- check",
     "corpus": "node --import tsx src/corpus-build.ts",
     "outcome": "node --import tsx src/outcome.ts",
-    "label": "node --import tsx src/label.ts"
+    "label": "node --import tsx src/label.ts",
+    "review": "node --import tsx src/review.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

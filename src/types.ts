@@ -169,3 +169,24 @@ export const Finding = RawFinding.extend({
   }),
 });
 export type Finding = z.infer<typeof Finding>;
+
+/**
+ * The founder gate's record — docs/design.md §6, REVIEW_PENDING -> PUBLISHED.
+ *
+ * Lives here rather than in review.ts so `corpus.ts` can read the shape without
+ * importing a script that runs on import.
+ */
+export interface ReviewDecision {
+  finding_id: string;
+  keep: boolean;
+  severity_before: number;
+  severity_after: number;
+  /** Why it was cut, or why severity moved. Optional, and worth typing. */
+  note: string | null;
+}
+
+export interface ReviewRecord {
+  audit_id: string;
+  reviewed_at: string;
+  decisions: ReviewDecision[];
+}

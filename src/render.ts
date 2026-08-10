@@ -8,13 +8,20 @@ import type { SynthesisResult } from "./agents/synthesizer.js";
 import { rubricFor } from "./agents/rubrics.js";
 
 /**
- * Slice-2 results page. Deliberately plain — the Content agent (§2) owns voice
- * and top-3 selection in a later slice. This page's job is to show that a
- * finding, its evidence, and its derived confidence survived the pipeline
- * intact, and to show the audit's own reasoning: which reviewers were sent, on
- * what rule, and what was dropped on the way. An audit that will not show its
- * work is asking to be taken on faith, which is the thing we are selling
- * against.
+ * Two pages, written at two different moments.
+ *
+ * `results-full.html` — every finding plus the audit's own reasoning: which
+ * reviewers were sent on what rule, what the Synthesizer set aside and why, what
+ * the confidence gate dropped. Written at REVIEW_PENDING. This is what the
+ * founder reads at the gate, and an audit that will not show its work is asking
+ * to be taken on faith, which is the thing we are selling against.
+ *
+ * `results.html` — what the visitor sees, written only on PUBLISH. Three
+ * findings, and an honest account of how many are held back. quality-bar §7:
+ * "three free, eleven behind the call — the withhold *is* the business model."
+ * The count is stated plainly, including how severe the withheld ones are,
+ * because a teaser that hides its own size is the kind of thing we are
+ * competing against.
  */
 
 function escapeHtml(s: string): string {
@@ -50,6 +57,36 @@ export interface RenderInput {
   degraded: string[];
 }
 
+/**
+ * Turns `el_19` into something a person can act on without opening devtools.
+ *
+ * The ref is kept in the line rather than replaced by it: the prose is for the
+ * founder, the ref is what makes the finding checkable, and dropping it would
+ * cost us the thing that makes an audit verifiable.
+ */
+export function locationLine(finding: Finding, capture: Capture): string {
+  if (!finding.element_ref) {
+    return "Page-level — no single element to point at";
+  }
+  const el = capture.elements.find((e) => e.ref === finding.element_ref);
+  if (!el) {
+    // Should be unreachable: claims.ts contradicts findings citing absent
+    // elements. Saying so plainly beats rendering a bare ref that looks fine.
+    return `${finding.element_ref} — not present in the capture`;
+  }
+
+  const raw = (el.text || el.accessible_name || "").replace(/\s+/g, " ").trim();
+  const label = raw.length > 48 ? `${raw.slice(0, 47)}…` : raw;
+  const what = label ? `the “${label}” <${el.tag}>` : `an unlabelled <${el.tag}>`;
+  const where = el.above_fold ? "above the fold" : "below the fold";
+  return `${what}, ${where} (${finding.element_ref})`;
+}
+
+/** Highest severity first; ties keep the Synthesizer's ranking. */
+function bySeverity(findings: Finding[]): Finding[] {
+  return findings.map((f, i) => ({ f, i })).sort((a, b) => b.f.severity - a.f.severity || a.i - b.i).map((x) => x.f);
+}
+
 function agentLabels(agent: string): string {
   return agent
     .split("+")
@@ -68,7 +105,7 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
   const { profile, signals, plan, synthesis, degraded } = input;
   const imageSrc = path.basename(annotatedImage);
 
-  const issues = findings.filter((f) => !f.positive);
+  const issues = bySeverity(findings.filter((f) => !f.positive));
   const positives = findings.filter((f) => f.positive);
 
   const findingCard = (finding: Finding, index: number) => `
@@ -79,11 +116,11 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
           <span class="heuristic">${escapeHtml(finding.heuristic)}</span>
           <span class="tag sev-${finding.severity}">severity ${finding.severity}</span>
           <span class="tag conf-${finding.confidence}">${finding.confidence} confidence</span>
-          ${finding.element_ref ? `<span class="tag ref">${escapeHtml(finding.element_ref)}</span>` : ""}
           <span class="tag agent">${escapeHtml(agentLabels(finding.agent))}</span>
         </div>
         <p class="observation">${escapeHtml(finding.observation)}</p>
         <p class="impact">${escapeHtml(finding.impact_note)}</p>
+        <p class="location">Location: ${escapeHtml(locationLine(finding, capture))}</p>
         <p class="citation">${citationLabel(finding)}</p>
       </div>
     </article>`;
@@ -122,6 +159,7 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
   .sev-4, .sev-3 { border-color:var(--accent); color:var(--accent); }
   .observation { margin:0 0 8px; }
   .impact { margin:0 0 8px; color:#444; }
+  .location { margin:0 0 6px; font-size:13px; color:var(--muted); }
   .citation { margin:0; font-size:13px; color:var(--muted); }
   table { border-collapse:collapse; width:100%; font-size:14px; }
   th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
@@ -158,6 +196,10 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
          <br>The findings below are real; the audit is just less complete than a clean run.</p>`
       : ""
   }
+
+  <p class="note"><strong>Internal review copy — not published.</strong>
+     Everything the audit produced, in severity order, with the reasoning behind it.
+     Publishing happens at the gate: <code>npm run review</code>.</p>
 
   <h2>What we found (${issues.length})</h2>
   ${issues.length ? issues.map((f) => findingCard(f, findings.indexOf(f))).join("") : "<p>No issues survived the confidence gate.</p>"}
@@ -236,9 +278,153 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
   }
 
   <footer>
-    Slice 1 of the v0 build: capture &rarr; heuristics &rarr; derived confidence &rarr; annotation.
-    Research citations, synthesis, tone lint, and founder review are not in this slice —
-    every finding here shows &ldquo;based on our evaluation&rdquo; by design.
+    capture &rarr; context profile &rarr; reviewers &rarr; synthesis &rarr; derived confidence
+    &rarr; annotation &rarr; founder review. Research and citations are not built, so every
+    finding here shows &ldquo;based on our evaluation&rdquo; &mdash; honest rather than decorated.
+  </footer>
+</div>
+</body>
+</html>`;
+
+  const outPath = path.join(outDir, "results-full.html");
+  await writeFile(outPath, html, "utf8");
+  return outPath;
+}
+
+export interface PublishInput {
+  capture: Capture;
+  /** Findings the founder kept, in the order they should be read. */
+  kept: Finding[];
+  annotatedImage: string;
+  profile: ContextProfile;
+}
+
+/** quality-bar §7 — three shown free. */
+export const FREE_FINDINGS = 3;
+
+/**
+ * The visitor's page. Three findings and an honest account of the rest.
+ *
+ * The withheld count names its own severity spread. A teaser saying only "9
+ * more findings" invites the reader to assume filler; saying "9 more, 2 of them
+ * severity 4" is both more persuasive and true, and if the withheld findings
+ * ever *are* filler this line makes that visible rather than hiding it.
+ */
+export async function renderPublic(input: PublishInput, outDir: string): Promise<string> {
+  const { capture, kept, annotatedImage, profile } = input;
+  const imageSrc = path.basename(annotatedImage);
+
+  const issues = bySeverity(kept.filter((f) => !f.positive));
+  const positives = kept.filter((f) => f.positive);
+  const shown = issues.slice(0, FREE_FINDINGS);
+  const withheld = issues.slice(FREE_FINDINGS);
+  const severeWithheld = withheld.filter((f) => f.severity >= 3).length;
+
+  const card = (finding: Finding, n: number) => `
+    <article class="finding">
+      <div class="sev sev-${finding.severity}">${finding.severity}</div>
+      <div class="body">
+        <h3>${escapeHtml(finding.heuristic)}</h3>
+        <p class="observation">${escapeHtml(finding.observation)}</p>
+        <p class="impact">${escapeHtml(finding.impact_note)}</p>
+        <p class="location">Location: ${escapeHtml(locationLine(finding, capture))}</p>
+        <p class="citation">${citationLabel(finding)} &middot; ${finding.confidence} confidence
+           &middot; finding ${n} of ${issues.length}</p>
+      </div>
+    </article>`;
+
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX audit — ${escapeHtml(capture.title || capture.url)}</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#666; --line:#e2e2e2; --accent:#E4572E; --bg:#fbfaf8; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+  header { border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:28px; }
+  h1 { font-size:26px; margin:0 0 6px; }
+  .url { color:var(--muted); font-size:14px; word-break:break-all; }
+  .lead { font-size:15px; color:#444; margin:0 0 24px; }
+  h2 { font-size:18px; margin:36px 0 16px; }
+  figure { margin:0 0 28px; }
+  figure img { width:100%; height:auto; border:1px solid var(--line); border-radius:6px;
+               background:#fff; display:block; }
+  figcaption { color:var(--muted); font-size:13px; margin-top:8px; }
+  .finding { display:flex; gap:16px; padding:22px 0; border-bottom:1px solid var(--line); }
+  .sev { flex:0 0 34px; height:34px; border-radius:6px; display:flex; align-items:center;
+         justify-content:center; font-weight:700; font-size:15px; background:#efe9e2; color:#6b5f52; }
+  .sev-4 { background:var(--accent); color:#fff; }
+  .sev-3 { background:#f0b429; color:#4a3708; }
+  .body { flex:1; min-width:0; }
+  h3 { font-size:16px; margin:0 0 8px; }
+  .observation { margin:0 0 8px; }
+  .impact { margin:0 0 8px; color:#444; }
+  .location, .citation { margin:0 0 4px; font-size:13px; color:var(--muted); }
+  .gate { background:#fff; border:1px solid var(--line); border-left:3px solid var(--accent);
+          border-radius:4px; padding:18px 20px; margin:32px 0; }
+  .gate h2 { margin:0 0 8px; font-size:17px; }
+  .gate p { margin:0 0 6px; }
+  .positive { border-left:3px solid #3c965a; padding-left:14px; margin-bottom:14px; }
+  .positive p { margin:0 0 4px; }
+  footer { margin-top:44px; padding-top:20px; border-top:1px solid var(--line);
+           color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>${escapeHtml(capture.title || "Untitled page")}</h1>
+    <div class="url">${escapeHtml(capture.final_url)}</div>
+  </header>
+
+  <p class="lead">${escapeHtml(profile.summary)}</p>
+
+  <figure>
+    <img src="${escapeHtml(imageSrc)}" alt="Annotated screenshot of the audited page">
+    <figcaption>Every finding below points at something on this screenshot.</figcaption>
+  </figure>
+
+  <h2>${shown.length === 0 ? "No issues found" : `The ${shown.length} that matter most`}</h2>
+  ${shown.map((f, i) => card(f, i + 1)).join("")}
+
+  ${
+    withheld.length > 0
+      ? `<div class="gate">
+           <h2>${withheld.length} more finding${withheld.length === 1 ? "" : "s"}</h2>
+           <p>This audit found ${issues.length} issues on this page. ${shown.length} are above.${
+             severeWithheld > 0
+               ? ` ${severeWithheld} of the ${withheld.length} held back ${
+                   severeWithheld === 1 ? "is" : "are"
+                 } severity 3 or higher.`
+               : ` None of the ${withheld.length} held back ${
+                   withheld.length === 1 ? "is" : "are"
+                 } above severity 2.`
+           }</p>
+           <p>Each one names the element it is about and what it costs you.</p>
+         </div>`
+      : ""
+  }
+
+  ${
+    positives.length > 0
+      ? `<h2>What's already working</h2>${positives
+          .map(
+            (f) =>
+              `<div class="positive"><p><strong>${escapeHtml(f.heuristic)}</strong></p>` +
+              `<p>${escapeHtml(f.observation)}</p></div>`,
+          )
+          .join("")}`
+      : ""
+  }
+
+  <footer>
+    Every finding above was checked against the page as captured, read by a person before
+    publishing, and carries the element it refers to so you can verify it yourself.
+    Findings show &ldquo;based on our evaluation&rdquo; where we have no external source to cite.
   </footer>
 </div>
 </body>
