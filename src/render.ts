@@ -314,9 +314,22 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
   const { capture, kept, annotatedImage, profile } = input;
   const imageSrc = path.basename(annotatedImage);
 
-  const issues = bySeverity(kept.filter((f) => !f.positive));
+  const issues = kept.filter((f) => !f.positive);
   const positives = kept.filter((f) => f.positive);
-  const shown = issues.slice(0, FREE_FINDINGS);
+
+  /**
+   * Selection is by rank, presentation is by severity, and the two are
+   * different jobs. Rank is the Synthesizer weighing severity, fixability and
+   * the visitor's stated concern together (see synthesizer-v2); raw severity
+   * knows only the first of those, so picking the free three by severity would
+   * throw away the goal-following we asked for and the founder confirmed at the
+   * gate. Within the three, severity decides what the eye hits first.
+   *
+   * This does mean a severity 4 the Synthesizer ranked low can be withheld.
+   * That is a real risk and it is deliberately unguarded: `npm run outcome`
+   * measures it, and a guard added now would pre-empt the measurement.
+   */
+  const shown = bySeverity(issues.slice(0, FREE_FINDINGS));
   const withheld = issues.slice(FREE_FINDINGS);
   const severeWithheld = withheld.filter((f) => f.severity >= 3).length;
 

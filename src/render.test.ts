@@ -4,6 +4,7 @@ import { mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { Capture, Finding, type CapturedElement } from "./types.js";
+import type { ContextProfile } from "./profile.js";
 import { renderPublic, locationLine, FREE_FINDINGS } from "./render.js";
 
 /**
@@ -66,12 +67,12 @@ function finding(n: number, severity: number, over: Partial<Finding> = {}): Find
 }
 
 const PROFILE = {
-  site_kind: "other" as const,
+  site_kind: "other",
   concerns: [],
   goal: "unknown",
   drop_point: "unknown",
   summary: "A review of this page.",
-};
+} satisfies ContextProfile;
 
 async function publish(kept: Finding[], cap = capture()): Promise<string> {
   const dir = mkdtempSync(path.join(tmpdir(), "ulab-render-"));
@@ -103,13 +104,28 @@ describe("the visitor's page: what it shows and what it admits to hiding", () =>
     assert.match(html, /found 7 issues on this page/);
   });
 
-  test("severity order decides what is free — a severity 4 is never withheld behind 2s", async () => {
-    // Ranked last by the Synthesizer but the most severe thing on the page.
+  test("rank decides what is free, not raw severity", async () => {
+    // The Synthesizer ranked the severity 4 last — it weighs fixability and the
+    // visitor's stated concern, which raw severity cannot see. Selecting by
+    // severity here would discard that judgment.
     const kept = [finding(1, 2), finding(2, 2), finding(3, 2), finding(4, 4)];
     const html = await publish(kept);
-    assert.match(html, /Observation 4</, "the severity 4 must be one of the three shown");
+    assert.doesNotMatch(html, /Observation 4</, "rank 4 is withheld even at severity 4");
     assert.match(html, /1 more finding\b/);
     assert.doesNotMatch(html, /1 more findings/, "singular when one is held back");
+  });
+
+  test("withholding a severe finding is admitted in the same breath", async () => {
+    // The honest half of the rule above: if rank withholds something severe,
+    // the page says so rather than letting the reader assume filler.
+    const html = await publish([finding(1, 2), finding(2, 2), finding(3, 2), finding(4, 4)]);
+    assert.match(html, /1 of the 1 held back is severity 3 or higher/);
+  });
+
+  test("within the three shown, the most severe leads", async () => {
+    const html = await publish([finding(1, 2), finding(2, 4), finding(3, 1), finding(4, 2)]);
+    const order = [...html.matchAll(/Observation (\d)</g)].map((m) => m[1]);
+    assert.deepEqual(order, ["2", "1", "3"], "severity orders presentation, rank chose the set");
   });
 
   test("the withheld line states how severe the held-back findings are", async () => {
