@@ -1,6 +1,6 @@
 # Review queue
 
-74 findings await a human label. The fastest way through this is
+75 findings await a human label. The fastest way through this is
 `npm run label`, which asks one question at a time and saves as it goes.
 
 The machine has already checked what it can: cited elements exist, quotes appear
@@ -172,6 +172,18 @@ on a true statement — that is the question below.
 > The category descriptions throughout "Services and information" (e.g. "Includes eligibility, appeals, tax credits and Universal Credit" for Benefits) consistently use short, concrete "Includes X, Y, Z" phrasing rather than abstract summaries.
 
 > This consistent pattern across many categories makes the whole directory scannable, letting visitors self-select the right section quickly.
+
+**Question:** the check above says this contradicts the capture. Is the check right?
+
+## 4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f4
+
+- **copy** · severity 2 · medium confidence · page-level
+- https://basecamp.com/
+- mechanical: **contradicted** — quotes "You’re juggling people, projects, and expectations...This al", which is NOT on the page
+
+> The section opening "There’s a good chance we know why you’re here." is followed by several sentences describing the visitor's situation ("You’re juggling people, projects, and expectations...This all has to happen somewhere.") before Basecamp or its function is named again.
+
+> Visitors who skim rather than read narrative copy may leave before the paragraph reaches its point about the product.
 
 **Question:** the check above says this contradicts the capture. Is the check right?
 

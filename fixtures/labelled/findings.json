@@ -11,6 +11,11 @@
       "findings": 12
     },
     {
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "findings": 17
+    },
+    {
       "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
       "url": "https://www.allbirds.com/",
       "findings": 18
@@ -670,6 +675,365 @@
       "human_useful": null,
       "human_note": null,
       "review_keep": null
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f1",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Recognition rather than recall",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_14",
+      "observation": "The six large tool tiles (Message Board, Docs & Files, To-dos, Chat, Schedule, Card Table) carry no visible text on the page — their labels exist only as accessible names, not as rendered captions.",
+      "impact_note": "Without an on-screen label, a sighted visitor must infer each tile's purpose from icon alone, adding cognitive load to what should be a quick feature scan.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": null,
+      "review_keep": false
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f2",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Primary action clarity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "The largest, most prominent interactive element in the hero area is \"Take a 3 minute tour of Basecamp\" (476x89px). The actual signup CTA, \"Sign up free\", exists only as a small 112x34px link in the nav bar (el_2).",
+      "impact_note": "Visitors scanning the hero encounter a low-commitment exploratory action before any prompt to start the free plan, which can delay or dilute the intended conversion action.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f3",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "CTA repetition / reinforcement",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_90",
+      "observation": "Across a page that is 4604px tall, the only clear signup calls to action are \"Sign up free\" in the top nav (el_2) and \"Try Basecamp free\" in the footer (el_90); the long stretch of testimonials, stats, and support/class content in between contains no repeated signup prompt.",
+      "impact_note": "A visitor persuaded midway through the long page has no nearby action to act on, requiring them to scroll back up or all the way down.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f4",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "copy",
+      "heuristic": "Get to the point / front-loaded value proposition",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The section opening \"There’s a good chance we know why you’re here.\" is followed by several sentences describing the visitor's situation (\"You’re juggling people, projects, and expectations...This all has to happen somewhere.\") before Basecamp or its function is named again.",
+      "impact_note": "Visitors who skim rather than read narrative copy may leave before the paragraph reaches its point about the product.",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "quotes \"You’re juggling people, projects, and expectations...This al\", which is NOT on the page"
+        ]
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f5",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "copy",
+      "heuristic": "Recognition over recall / heading specificity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_38",
+      "observation": "Section heading reads \"All these questions have the same answer: Yes!\" without stating what the questions are.",
+      "impact_note": "The heading alone communicates nothing concrete; a skimming visitor has to read on to find the questions being referenced, which many will not do.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": null,
+      "review_keep": false
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f6",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta+copy+heuristics",
+      "heuristic": "Visibility of system status / Match between system and the real world",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "The element reads only \"people are working in Basecamp right now!\" with no visible number preceding it, though the phrasing implies a live count.",
+      "impact_note": "A missing or unrendered live counter reads as a broken feature rather than a social-proof signal, which can undercut the trust the number was meant to build.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": null,
+      "review_keep": false
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f7",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust / cost transparency",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "Pricing is referenced only indirectly in the nav item \"Pricing & sign up — Two paid plans, one free plan\"; no dollar amounts or plan details appear anywhere else in the captured content.",
+      "impact_note": "Visitors have to click through to a separate page to learn what a paid plan costs, which can be a point of drop-off for cost-sensitive evaluators.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f8",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "copy",
+      "heuristic": "Plain language / jargon-free communication",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_8",
+      "observation": "Nav item reads \"API, CLI, Skills — Developer tools, AI Agent-ready\" with three acronyms (API, CLI) left unexpanded on first use.",
+      "impact_note": "Visitors who are not developers may not know what these terms mean, making this navigation entry unusable as a way to understand what is being offered.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f9",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "Top navigation items each combine a bolded label and a descriptive subtitle into a single anchor, e.g. \"Pricing & sign up — Two paid plans, one free plan\" as one clickable link rather than the conventional single-word nav label.",
+      "impact_note": "Visitors scanning a nav bar expect short labels; a full sentence per item slows scanning and can be mistaken for two separate pieces of text rather than one link.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f10",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Competing calls to action",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_36",
+      "observation": "\"Meet Chase, our Head of Support\" is styled as a large button (473x89px), comparable in weight to the hero's tour button, but leads toward a support story rather than the sign-up path.",
+      "impact_note": "A secondary, non-conversion action presented with CTA-level prominence can pull attention away from the intended next step for a new visitor.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f11",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Consistency of the call to action",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_90",
+      "observation": "The nav CTA reads \"Sign up free\" (el_2) while the footer CTA reads \"Try Basecamp free\" (el_90) — two different phrasings for what appears to be the same free-plan action.",
+      "impact_note": "Inconsistent wording for the same action can make a returning eye wonder if a different offer or step is involved, adding a small amount of hesitation.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f15",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "copy",
+      "heuristic": "Consistency in terminology",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_27",
+      "observation": "Link text reads \"And BC5 is all new for 2026\", introducing the abbreviation \"BC5\" where earlier references on the page use the full \"Basecamp 5\" (e.g. el_5: \"Basecamp 5 is here\").",
+      "impact_note": "Switching between a full name and an unexplained abbreviation for the same product can momentarily confuse a visitor about whether it's the same thing being referenced.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f16",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "copy",
+      "heuristic": "Concrete claims over vague marketing language",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The body copy states \"In software, longevity like this isn’t luck — it’s proof it works.\" without specifying what \"it works\" refers to or citing a measurable outcome.",
+      "impact_note": "The sentence sounds persuasive but gives a skeptical reader nothing concrete to evaluate, weakening the credibility of the surrounding pitch.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f17",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Aesthetic and minimalist design",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_49",
+      "observation": "The footer contains roughly 30 links (el_51 through el_78) covering product pages, philosophy essays, and support topics, with no visible section headings separating the groups in the captured text.",
+      "impact_note": "A flat, undifferentiated list of that length makes it hard to locate a specific link and can make the site feel harder to navigate than its content warrants.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f12",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "copy",
+      "heuristic": "Clarity of value proposition (first screen answers what/who)",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_11",
+      "observation": "The main heading reads \"The refreshingly straightforward project management system that’s rock-solid and easy to use.\", naming the product category (project management system) and its core promise in one sentence.",
+      "impact_note": "A first-time visitor can identify what the product is within the first screen without needing to read further, which reduces early drop-off from confusion.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f13",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust signals / Social proof",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_24",
+      "observation": "The page shows a long series of named, attributed customer quotes (e.g. \"Patrick Sheffield, Moore Communications Group\") followed by a link reading \"Check out over 1,000 more customer testimonials…\".",
+      "impact_note": "Real names, titles and companies attached to quotes are a credible trust signal that can reduce hesitation before a visitor commits to signing up.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f14",
+      "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "What happens after I click",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_12",
+      "observation": "The hero button explicitly states \"Take a 3 minute tour of Basecamp\", setting a concrete time expectation before commitment.",
+      "impact_note": "Naming the format and duration of the next step is a small but genuine reduction in the uncertainty that otherwise stops visitors from clicking an unfamiliar CTA.",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
     },
     {
       "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f1",

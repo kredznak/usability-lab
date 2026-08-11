@@ -72,6 +72,21 @@ accessible names *and* element attributes, and a false alarm here is expensive.
 See the calibration history in `src/claims.test.ts` — the checker's first run
 flagged 15 findings and 14 were its own bugs.
 
+### B4. No end-to-end test of the publish path
+
+**What.** `renderPublic` is well covered and the state machine is well covered,
+but nothing tests `review.ts` itself: load an audit, walk the findings, write
+`review.json`, publish, transition. It was proven once by hand on `4f8f1271`.
+
+**Why it matters.** This is now the most business-critical code in the repo —
+it decides what a paying visitor sees and what stays behind the gate. Its first
+run had a real bug (piped answers 2–17 silently discarded) that only surfaced
+because it was used.
+
+**Cost.** Small, now that the gate accepts piped input: a temp `out/` directory,
+a temp database, a scripted answer string, and assertions on `review.json` plus
+the resulting status.
+
 ---
 
 ## The deeper problem behind B3

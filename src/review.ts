@@ -121,15 +121,38 @@ const findings = (JSON.parse(readFileSync(findingsFile, "utf8")) as unknown[]).m
 );
 const capture = Capture.parse(JSON.parse(readFileSync(path.join(dir, "capture.json"), "utf8")));
 
-const rl = createInterface({ input: process.stdin, output: process.stdout });
+/**
+ * Answers come from a person at a terminal, or from a pipe.
+ *
+ * readline cannot do the second one. On a non-TTY stream it emits a `line` for
+ * every buffered row the moment input arrives; `rl.question()` takes the next
+ * one and the rest are dropped on the floor, then the stream closes. Piping 17
+ * answers in got exactly one recorded and the other sixteen discarded — safe,
+ * because a partial review refuses to publish, but silent about why.
+ *
+ * So piped input is read whole, up front, and served from a queue. That also
+ * makes the gate scriptable — there is no end-to-end test of the publish path
+ * yet, and this is what one would be built on. See docs/backlog.md B4.
+ */
+const piped = !process.stdin.isTTY;
+const queued: string[] = piped ? readFileSync(0, "utf8").split("\n") : [];
+const rl = piped ? null : createInterface({ input: process.stdin, output: process.stdout });
+
 let closed = false;
-rl.on("close", () => {
+rl?.on("close", () => {
   closed = true;
 });
 
 /** See label.ts — rl.question never settles once stdin closes, losing the session. */
 async function ask(prompt: string): Promise<string | null> {
-  if (closed) return null;
+  if (piped) {
+    const next = queued.shift();
+    if (next === undefined) return null;
+    // Echo, so a piped run reads back as the conversation it stands in for.
+    process.stdout.write(`${prompt}${next}\n`);
+    return next;
+  }
+  if (closed || !rl) return null;
   return Promise.race([
     rl.question(prompt),
     new Promise<null>((resolve) => rl.once("close", () => resolve(null))),
@@ -200,9 +223,8 @@ for (const [i, f] of findings.entries()) {
   console.log(`${DIM}  ${keep ? "kept" : "cut"}${RESET}\n`);
 }
 
-rl.close();
-
 if (quit && decisions.length < findings.length) {
+  rl?.close();
   // A partial review cannot publish: the findings never reached would be
   // silently dropped, which looks identical to a deliberate cut.
   console.log(
@@ -232,9 +254,11 @@ console.log(
     `${keptIssues.length} issues, and say how many are held back.\n`,
 );
 
-const confirm = createInterface({ input: process.stdin, output: process.stdout });
-const go = (await confirm.question(`  ${BOLD}Publish?${RESET} (y/N) > `)).trim().toLowerCase();
-confirm.close();
+// Reuses the one interface rather than opening a second. A fresh readline over
+// an already-ended stdin never resolves, so a piped review would hang here at
+// the last question — after every judgment had been made and none saved.
+const go = ((await ask(`  ${BOLD}Publish?${RESET} (y/N) > `)) ?? "").trim().toLowerCase();
+rl?.close();
 
 if (go !== "y") {
   console.log(`\n  Not published. The audit is still REVIEW_PENDING.\n`);
