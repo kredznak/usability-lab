@@ -75,6 +75,7 @@
       "element_ref": null,
       "observation": "Near the top of the page, before any product content, the text reads \"Due to increased demand, orders may take up to 30 days to ship.\"",
       "impact_note": "Announcing a lengthy shipping delay before a visitor has seen any product or price sets a costly expectation early and may discourage continued browsing before any value has been demonstrated.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -96,6 +97,7 @@
       "element_ref": "el_0",
       "observation": "Button at top of page is 24x24px with no visible text and no accessible name (also true of el_1 next to it).",
       "impact_note": "A screen reader announces this control only as \"button\" with no purpose, making it unusable without sighted guessing.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -117,6 +119,7 @@
       "element_ref": "el_19",
       "observation": "The hero presents two equally weighted CTAs, \"SHOP MEN\" (el_19) and \"SHOP WOMEN\" (el_20), with no third option (e.g. \"Shop All\") given similar prominence.",
       "impact_note": "A visitor who has not yet decided on a category, or wants to browse broadly, has no equally prominent path forward and may leave rather than choose a side.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -138,6 +141,7 @@
       "element_ref": "el_106",
       "observation": "A `<select>` element (el_106) in the footer lists a long run of country codes (\"AE AT AU BE CA CH CN...\") as its visible text, with only an aria-label of \"Select country\" to explain its purpose; no visible label or currently-selected value is distinguishable in the capture.",
       "impact_note": "A visitor scanning the page has no plain-language cue for what this control does or which country is currently selected, which can lead to accidental region/locale changes.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -159,6 +163,7 @@
       "element_ref": "el_6",
       "observation": "Nav buttons \"Men\" (30x16px) and \"Sale\" (31x16px, el_8) measure only 16px in height.",
       "impact_note": "Targets below roughly 24x24px are harder to activate accurately for visitors with motor impairments or imprecise pointer control.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -180,6 +185,7 @@
       "element_ref": "el_34",
       "observation": "Product image link (390x390px) has no accessible name, and this pattern repeats across all twelve product tiles (el_37, el_40, el_43, el_46, el_49, el_52, el_55, el_58, el_61, el_64, el_67).",
       "impact_note": "Screen reader users hit an unlabeled link before reaching the adjacent labelled product-name link, adding repeated noise across every product in the grid.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -201,6 +207,7 @@
       "element_ref": "el_81",
       "observation": "The email field el_81 has no visible <label>; its only identifying text is the placeholder \"Email Address\", which is not present in the element's visible text/label list, meaning it exists solely as placeholder content.",
       "impact_note": "Once a visitor starts typing, the placeholder disappears and there is no persistent label to confirm what is being entered or to reference if the field is left blank on validation.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -222,6 +229,7 @@
       "element_ref": "el_8",
       "observation": "The main navigation includes a \"Sale\" item (el_8), but no discount amount, sale scope, or end date is visible anywhere in the captured page.",
       "impact_note": "A sale link without any visible detail of the offer gives no reason to prioritize clicking it over other navigation items.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -243,6 +251,7 @@
       "element_ref": "el_79",
       "observation": "The footer newsletter form is labeled \"Subscribe to our emails\" with a \"Sign Up\" button (el_80) and an email input (el_81), but no incentive (discount, early access, etc.) is stated anywhere near it.",
       "impact_note": "Asking for an email address with no stated benefit gives a visitor little reason to act, likely lowering signup rates.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -264,6 +273,7 @@
       "element_ref": "el_36",
       "observation": "Wishlist-style control is a <label> element with no visible text, deriving its name from a title attribute (e.g. \"Women's Tree Runner NZ - Medium Grey (Blizzard Sole)\"); the same pattern recurs on el_39 through el_69.",
       "impact_note": "Title-sourced names are not consistently exposed by assistive technology, and a bare <label> with no associated control may not be announced as interactive at all.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -285,6 +295,7 @@
       "element_ref": "el_13",
       "observation": "The flyout menu items \"Shop Womens\", \"Shop Mens\", \"Shop Socks\", \"Shop Women's Sale\" and \"Shop Men's Sale\" (el_13-el_17) are implemented as <button> elements, while functionally identical category navigation elsewhere on the page, such as \"Shop Men\" (el_22) and \"Shop Men\" (el_71), are implemented as <a> elements.",
       "impact_note": "Using two different control types for the same kind of destination navigation is inconsistent and can produce different behavior (e.g. open-in-new-tab, drag, bookmarking) for what visitors experience as the same action.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -306,6 +317,7 @@
       "element_ref": "el_11",
       "observation": "An <h2> reading \"Cart (0)\" appears in the element order before the page's only <h1>, \"Wildly Comfortable. Super Natural.\" (el_18).",
       "impact_note": "Screen reader users navigating by heading level encounter a level-2 heading before the top-level heading, which can misrepresent the page's structure when the cart panel is exposed to the accessibility tree.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -327,6 +339,7 @@
       "element_ref": "el_77",
       "observation": "The \"Fresh Colors For Summer\" section offers only a single \"Shop Women\" link (el_77), unlike the other promotional sections which pair a men's and women's link.",
       "impact_note": "Breaking the established men's/women's pairing here may read as excluding male shoppers from that promotion, a small but avoidable drop-off point.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -348,6 +361,7 @@
       "element_ref": "el_31",
       "observation": "Of four parallel section headings shown together (\"New Arrivals\" el_21, \"Mens\" el_24, \"Womens\" el_26, \"Best Sellers\" el_28), only \"Best Sellers\" is accompanied by an adjacent button element (el_31) with the same label.",
       "impact_note": "One section behaving differently from its structural siblings, without a visible reason, breaks the pattern a visitor has just learned from the other three sections.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -369,6 +383,7 @@
       "element_ref": null,
       "observation": "Each product tile in the grids displays its price plainly next to the name, e.g. \"Women's Tree Runner NZ Medium Grey $100\" and \"Women's Canvas Cruiser Slip On Warm White $75\".",
       "impact_note": "Showing price up front before a click lets visitors self-select by budget, reducing wasted clicks and building trust in the shopping experience.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -390,6 +405,7 @@
       "element_ref": "el_12",
       "observation": "The cart panel includes an explicit \"Close cart\" button (el_12) alongside a specific status message, \"Spend $100 more to earn free shipping!\", consistent with the stated empty cart total.",
       "impact_note": "A clear exit control paired with an accurate, actionable status message lets visitors dismiss the panel confidently and understand exactly what is needed to unlock free shipping.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -411,6 +427,7 @@
       "element_ref": "el_13",
       "observation": "The empty cart panel offers direct links back into shopping (\"Shop Womens\", \"Shop Mens\", \"Shop Socks\", \"Shop Women's Sale\", \"Shop Men's Sale\") rather than a dead end.",
       "impact_note": "Giving an explicit next step when the cart is empty keeps the visitor moving toward a purchase instead of having to re-navigate from scratch.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -432,6 +449,7 @@
       "element_ref": "el_10",
       "observation": "A 61x61px <button> in the header region has no visible text and no accessible name recorded ('(no text)').",
       "impact_note": "Screen reader users encounter an unlabeled control with no indication of its purpose, making it impossible to know what activating it does.",
+      "source_type": "none",
       "auto": {
         "status": "contradicted",
         "contradictions": [
@@ -455,6 +473,7 @@
       "element_ref": "el_22",
       "observation": "Many text links throughout the page, e.g. \"Childcare account: sign in\" (el_22) and the repeated set in the footer (el_96–el_127), report a height of only 23px.",
       "impact_note": "Small interactive targets are harder to activate accurately for visitors with limited fine motor control or those using touch or switch input.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -476,6 +495,7 @@
       "element_ref": "el_12",
       "observation": "The page's only <h1>, \"The best place to find government services and information\", is preceded in document order by two <h2> elements: \"Cookies on GOV.UK\" (el_0) and the visually hidden \"Navigation menu\" (el_8).",
       "impact_note": "Screen reader users who jump through headings to orient themselves on the page encounter subordinate headings before the main heading, adding friction to understanding page structure.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -497,6 +517,7 @@
       "element_ref": "el_96",
       "observation": "Identical link text, e.g. \"Benefits\" (el_26 and el_96), \"News\" (el_70 and el_114), and other category names, appears more than once on the page pointing into the same or related sections.",
       "impact_note": "Screen reader users browsing by a flat list of links rather than in visual context may struggle to distinguish which duplicate-named link goes where.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -518,6 +539,7 @@
       "element_ref": "el_18",
       "observation": "The link reads \"HMRC account: sign in or set up\" — the acronym HMRC is not expanded anywhere on the page.",
       "impact_note": "A visitor unfamiliar with UK government abbreviations cannot tell what this service is for without leaving the page to look it up.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -539,6 +561,7 @@
       "element_ref": "el_97",
       "observation": "The footer link reads \"Births, death, marriages and care\" while the same category earlier on the page (el_27/el_28) reads \"Births, deaths, marriages and care\" — singular \"death\" versus plural \"deaths.\"",
       "impact_note": "Inconsistent wording for the identical category signals a lack of proofreading and can make a visitor briefly wonder if these are two different sections.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -560,6 +583,7 @@
       "element_ref": "el_0",
       "observation": "The cookie banner ('Cookies on GOV.UK') offers 'Accept additional cookies' and 'Reject additional cookies' but no visible dismiss/close control to defer the decision.",
       "impact_note": "Visitors who want to explore the page first without committing to a cookie choice have no lightweight way to postpone the decision, which can feel like a forced interruption before reaching content.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -581,6 +605,7 @@
       "element_ref": "el_12",
       "observation": "The main heading reads \"The best place to find government services and information.\"",
       "impact_note": "A superlative claim with no comparison point or evidence gives a first-time visitor nothing concrete to verify; it reads as marketing rather than a description of what the site actually contains.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -602,6 +627,7 @@
       "element_ref": "el_14",
       "observation": "The search field (el_15) has an associated <label> element (el_14) with visible text \"Search\", rather than relying on a placeholder for its name.",
       "impact_note": "A real, persistent label ensures the field's purpose remains available to assistive technology and sighted users even after text is entered, unlike a placeholder-only approach.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -623,6 +649,7 @@
       "element_ref": null,
       "observation": "All sampled links and buttons in the capture use descriptive, self-contained text such as \"Check your State Pension forecast\" and \"Apply for a passport\" rather than generic phrases like \"click here\" or \"read more\".",
       "impact_note": "Descriptive link text lets screen reader users understand a link's destination without needing surrounding context, which is a genuine accessibility strength across the page.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -644,6 +671,7 @@
       "element_ref": "el_17",
       "observation": "A 'Popular on GOV.UK' section (el_17) surfaces six frequently needed destinations such as 'HMRC account: sign in or set up' and 'Check your State Pension forecast' directly above the fold.",
       "impact_note": "Surfacing high-frequency tasks near the top reduces the need for visitors to search or recall where a common service lives, which is good practice for a site with this many possible destinations.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -665,6 +693,7 @@
       "element_ref": null,
       "observation": "The category descriptions throughout \"Services and information\" (e.g. \"Includes eligibility, appeals, tax credits and Universal Credit\" for Benefits) consistently use short, concrete \"Includes X, Y, Z\" phrasing rather than abstract summaries.",
       "impact_note": "This consistent pattern across many categories makes the whole directory scannable, letting visitors self-select the right section quickly.",
+      "source_type": "none",
       "auto": {
         "status": "contradicted",
         "contradictions": [
@@ -688,6 +717,7 @@
       "element_ref": "el_14",
       "observation": "The six large tool tiles (Message Board, Docs & Files, To-dos, Chat, Schedule, Card Table) carry no visible text on the page — their labels exist only as accessible names, not as rendered captions.",
       "impact_note": "Without an on-screen label, a sighted visitor must infer each tile's purpose from icon alone, adding cognitive load to what should be a quick feature scan.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -709,6 +739,7 @@
       "element_ref": "el_12",
       "observation": "The largest, most prominent interactive element in the hero area is \"Take a 3 minute tour of Basecamp\" (476x89px). The actual signup CTA, \"Sign up free\", exists only as a small 112x34px link in the nav bar (el_2).",
       "impact_note": "Visitors scanning the hero encounter a low-commitment exploratory action before any prompt to start the free plan, which can delay or dilute the intended conversion action.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -730,6 +761,7 @@
       "element_ref": "el_90",
       "observation": "Across a page that is 4604px tall, the only clear signup calls to action are \"Sign up free\" in the top nav (el_2) and \"Try Basecamp free\" in the footer (el_90); the long stretch of testimonials, stats, and support/class content in between contains no repeated signup prompt.",
       "impact_note": "A visitor persuaded midway through the long page has no nearby action to act on, requiring them to scroll back up or all the way down.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -751,6 +783,7 @@
       "element_ref": null,
       "observation": "The section opening \"There’s a good chance we know why you’re here.\" is followed by several sentences describing the visitor's situation (\"You’re juggling people, projects, and expectations...This all has to happen somewhere.\") before Basecamp or its function is named again.",
       "impact_note": "Visitors who skim rather than read narrative copy may leave before the paragraph reaches its point about the product.",
+      "source_type": "none",
       "auto": {
         "status": "contradicted",
         "contradictions": [
@@ -774,6 +807,7 @@
       "element_ref": "el_38",
       "observation": "Section heading reads \"All these questions have the same answer: Yes!\" without stating what the questions are.",
       "impact_note": "The heading alone communicates nothing concrete; a skimming visitor has to read on to find the questions being referenced, which many will not do.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -795,6 +829,7 @@
       "element_ref": "el_10",
       "observation": "The element reads only \"people are working in Basecamp right now!\" with no visible number preceding it, though the phrasing implies a live count.",
       "impact_note": "A missing or unrendered live counter reads as a broken feature rather than a social-proof signal, which can undercut the trust the number was meant to build.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -816,6 +851,7 @@
       "element_ref": "el_4",
       "observation": "Pricing is referenced only indirectly in the nav item \"Pricing & sign up — Two paid plans, one free plan\"; no dollar amounts or plan details appear anywhere else in the captured content.",
       "impact_note": "Visitors have to click through to a separate page to learn what a paid plan costs, which can be a point of drop-off for cost-sensitive evaluators.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -837,6 +873,7 @@
       "element_ref": "el_8",
       "observation": "Nav item reads \"API, CLI, Skills — Developer tools, AI Agent-ready\" with three acronyms (API, CLI) left unexpanded on first use.",
       "impact_note": "Visitors who are not developers may not know what these terms mean, making this navigation entry unusable as a way to understand what is being offered.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -858,6 +895,7 @@
       "element_ref": "el_4",
       "observation": "Top navigation items each combine a bolded label and a descriptive subtitle into a single anchor, e.g. \"Pricing & sign up — Two paid plans, one free plan\" as one clickable link rather than the conventional single-word nav label.",
       "impact_note": "Visitors scanning a nav bar expect short labels; a full sentence per item slows scanning and can be mistaken for two separate pieces of text rather than one link.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -879,6 +917,7 @@
       "element_ref": "el_36",
       "observation": "\"Meet Chase, our Head of Support\" is styled as a large button (473x89px), comparable in weight to the hero's tour button, but leads toward a support story rather than the sign-up path.",
       "impact_note": "A secondary, non-conversion action presented with CTA-level prominence can pull attention away from the intended next step for a new visitor.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -900,6 +939,7 @@
       "element_ref": "el_90",
       "observation": "The nav CTA reads \"Sign up free\" (el_2) while the footer CTA reads \"Try Basecamp free\" (el_90) — two different phrasings for what appears to be the same free-plan action.",
       "impact_note": "Inconsistent wording for the same action can make a returning eye wonder if a different offer or step is involved, adding a small amount of hesitation.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -921,6 +961,7 @@
       "element_ref": "el_27",
       "observation": "Link text reads \"And BC5 is all new for 2026\", introducing the abbreviation \"BC5\" where earlier references on the page use the full \"Basecamp 5\" (e.g. el_5: \"Basecamp 5 is here\").",
       "impact_note": "Switching between a full name and an unexplained abbreviation for the same product can momentarily confuse a visitor about whether it's the same thing being referenced.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -942,6 +983,7 @@
       "element_ref": null,
       "observation": "The body copy states \"In software, longevity like this isn’t luck — it’s proof it works.\" without specifying what \"it works\" refers to or citing a measurable outcome.",
       "impact_note": "The sentence sounds persuasive but gives a skeptical reader nothing concrete to evaluate, weakening the credibility of the surrounding pitch.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -963,6 +1005,7 @@
       "element_ref": "el_49",
       "observation": "The footer contains roughly 30 links (el_51 through el_78) covering product pages, philosophy essays, and support topics, with no visible section headings separating the groups in the captured text.",
       "impact_note": "A flat, undifferentiated list of that length makes it hard to locate a specific link and can make the site feel harder to navigate than its content warrants.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -984,6 +1027,7 @@
       "element_ref": "el_11",
       "observation": "The main heading reads \"The refreshingly straightforward project management system that’s rock-solid and easy to use.\", naming the product category (project management system) and its core promise in one sentence.",
       "impact_note": "A first-time visitor can identify what the product is within the first screen without needing to read further, which reduces early drop-off from confusion.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1005,6 +1049,7 @@
       "element_ref": "el_24",
       "observation": "The page shows a long series of named, attributed customer quotes (e.g. \"Patrick Sheffield, Moore Communications Group\") followed by a link reading \"Check out over 1,000 more customer testimonials…\".",
       "impact_note": "Real names, titles and companies attached to quotes are a credible trust signal that can reduce hesitation before a visitor commits to signing up.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1026,6 +1071,7 @@
       "element_ref": "el_12",
       "observation": "The hero button explicitly states \"Take a 3 minute tour of Basecamp\", setting a concrete time expectation before commitment.",
       "impact_note": "Naming the format and duration of the next step is a small but genuine reduction in the uncertainty that otherwise stops visitors from clicking an unfamiliar CTA.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1047,6 +1093,7 @@
       "element_ref": null,
       "observation": "The text \"Due to increased demand, orders may take up to 30 days to ship.\" appears at the very top of the page, before any product or value proposition is shown.",
       "impact_note": "Disclosing a lengthy shipping delay before establishing product value or price gives a visitor a reason to hesitate before the page has made its case, which can suppress motivation to continue browsing.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1068,6 +1115,7 @@
       "element_ref": "el_82",
       "observation": "The only direct human-contact option visible in the capture is an email address, \"help@allbirds.com\", located in the footer alongside \"FAQ/Contact Us\".",
       "impact_note": "No phone number or live chat is visible anywhere above or below the fold, so a visitor with a pre-purchase question has only a slow channel available, which can stall a purchase decision.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1089,6 +1137,7 @@
       "element_ref": null,
       "observation": "The footer copyright line reads \"©AB DNAM LLC 2026\" while the brand shown everywhere else on the page is \"Allbirds\".",
       "impact_note": "A legal entity name that doesn't match the visible brand can read as inconsistent or, to a wary visitor, as a possible trust signal to double-check.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1110,6 +1159,7 @@
       "element_ref": "el_13",
       "observation": "Five carousel buttons of identical size (419x33px) — \"Shop Womens\", \"Shop Mens\", \"Shop Socks\", \"Shop Women's Sale\", \"Shop Men's Sale\" (el_13-el_17) — sit directly above the hero's own \"SHOP MEN\"/\"SHOP WOMEN\" buttons (el_19, el_20).",
       "impact_note": "Seven near-identical shopping CTAs stacked in the first screen give no single obvious next step, which can leave a visitor uncertain which path is the intended one.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1131,6 +1181,7 @@
       "element_ref": "el_36",
       "observation": "Repeated 24x24px <label> elements (el_36, el_39, el_42, el_45, el_48, el_51, el_54, el_57, el_60, el_63, el_66, el_69) sit next to each product tile but carry no visible or accessible text.",
       "impact_note": "A screen reader encountering these controls announces only 'label, unchecked' or similar with no indication of what the control does (likely wishlist or quick-add), making the feature unusable without sight.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1152,6 +1203,7 @@
       "element_ref": "el_34",
       "observation": "Product image links (e.g. el_34, el_37, el_40, el_43, el_46, el_49, el_52, el_55, el_58, el_61, el_64, el_67), each 390x390px, have no accessible name or alt text listed, despite sitting adjacent to a separately-linked product title.",
       "impact_note": "Screen reader users hear an unlabeled link for every product image and must rely on a second, separate link to learn what the image was for, doubling navigation effort through a long product grid.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1173,6 +1225,7 @@
       "element_ref": "el_0",
       "observation": "Header icon controls el_0, el_1, el_9, el_10, and el_12 are buttons or links with no visible text and no accessible name recorded.",
       "impact_note": "These are likely search, account, and menu controls near the top of the page; without a name a screen reader user cannot tell what each one opens before activating it.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1194,6 +1247,7 @@
       "element_ref": "el_106",
       "observation": "The footer select element (el_106) lists only two-letter country codes (\"AE AT AU BE CA CH CN CZ DE DK EE EU FI FR IE IS IT JP KR KW LI LT LU LV MT MY NL NO NZ PH PL SA SE SG SM UK US\") with no visible label such as \"Country\" or \"Ship to\" next to it.",
       "impact_note": "Visitors cannot tell from the control itself what selecting a value will change (currency, region, shipping), which can cause hesitation or an unintended region switch.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1215,6 +1269,7 @@
       "element_ref": "el_81",
       "observation": "The email input in the newsletter signup form (el_79) carries no visible text of its own; the only nearby label-like text is the section heading \"Subscribe to our emails\" and the button text \"Sign Up\".",
       "impact_note": "If the field relies on placeholder text that clears on focus, visitors who look away mid-entry lose the cue for what the field expects, which can lead to abandoned or mis-filled submissions.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1236,6 +1291,7 @@
       "element_ref": "el_80",
       "observation": "The newsletter form's submit button reads only \"Sign Up\" with no accompanying text stating what a subscriber receives (e.g. a discount or early access).",
       "impact_note": "A generic label with no stated benefit gives little reason to trade an email address, likely lowering signups.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1257,6 +1313,7 @@
       "element_ref": "el_19",
       "observation": "The hero CTAs read only \"SHOP MEN\" / \"SHOP WOMEN\" with no supporting text on what happens next (e.g. browsing a catalog vs. a curated collection).",
       "impact_note": "A visitor cannot tell from the button alone whether clicking leads to a full catalog, a single collection, or a filtered subset, adding a small amount of uncertainty before commitment.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1278,6 +1335,7 @@
       "element_ref": "el_74",
       "observation": "Multiple links across the page repeat the identical text 'Shop Men' and 'Shop Women' (e.g. el_22, el_25, el_29, el_71, el_74 all say 'Shop Men'; el_23, el_27, el_30, el_72, el_75, el_77 all say 'Shop Women').",
       "impact_note": "A screen reader user browsing by a links list hears the same phrase many times with no distinguishing context, making it hard to tell which link corresponds to which product section already passed.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1299,6 +1357,7 @@
       "element_ref": "el_100",
       "observation": "The six social-media links in the 'Follow The Flock' footer section (el_100–el_105) are 42x42px with no accessible text.",
       "impact_note": "Screen reader users get a list of six identical unlabeled links and cannot tell which platform each one leads to without guessing from icon shape alone.",
+      "source_type": "none",
       "auto": {
         "status": "contradicted",
         "contradictions": [
@@ -1322,6 +1381,7 @@
       "element_ref": "el_32",
       "observation": "Carousel navigation buttons el_32 and el_33 (40x40px) below the 'Best Sellers' heading have no accessible name.",
       "impact_note": "A keyboard or screen reader user reaching these controls cannot tell which one advances versus goes back through the product carousel.",
+      "source_type": "none",
       "auto": {
         "status": "contradicted",
         "contradictions": [
@@ -1345,6 +1405,7 @@
       "element_ref": "el_35",
       "observation": "Product entries show price directly beside the product name, e.g. \"Women's Tree Runner NZ Medium Grey $100\".",
       "impact_note": "Plain, upfront pricing removes a common point of hesitation before a visitor commits to viewing or purchasing a product.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1366,6 +1427,7 @@
       "element_ref": null,
       "observation": "The visible text includes \"Spend $100 more to earn free shipping!\" tied to the (empty) cart state.",
       "impact_note": "A concrete, quantified incentive gives a visitor a reason to add more to cart, though it is only visible once a cart is opened rather than earlier in the browsing path.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1387,6 +1449,7 @@
       "element_ref": "el_79",
       "observation": "The only text-entry form visible in this capture, el_79, asks for a single input (el_81) before the \"Sign Up\" button (el_80) can be submitted.",
       "impact_note": "Asking for just one piece of information keeps the newsletter signup low-friction and reduces a common source of drop-off seen in longer forms.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1408,6 +1471,7 @@
       "element_ref": "el_18",
       "observation": "The page has a single <h1> ('Wildly Comfortable. Super Natural.') followed by <h2> section headings (New Arrivals, Mens, Womens, Best Sellers, Summer Travel Essentials, Fresh Colors For Summer) and a <h3> ('Follow The Flock') in the footer, with no level skipped in the captured structure.",
       "impact_note": "A logical, non-skipping heading outline lets screen reader users jump between sections confidently using heading navigation.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1429,6 +1493,7 @@
       "element_ref": "el_137",
       "observation": "The most prominent styled call-to-action buttons, \"Get started\" (el_137) and \"Contact sales\" (el_138), appear only near the bottom of a page that is 10,898px tall. Above the fold, the only comparable action is \"Sign up\" (el_10), a plain text link in the header nav.",
       "impact_note": "A visitor who scrolls through the extensive feature walkthrough (Intake, Plan, Build, Diffs, Monitor sections) has no reinforced action to take until the very end, increasing the chance they lose momentum or leave before converting.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1450,6 +1515,7 @@
       "element_ref": "el_11",
       "observation": "The H1 text is rendered twice in sequence: \"The product development system for teams and agents The product development system for teams and agents\".",
       "impact_note": "A visitor scanning the hero sees the same sentence repeated, which reads as a content error and undercuts confidence in the page before any claim is even evaluated.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1471,6 +1537,7 @@
       "element_ref": null,
       "observation": "The subheadline text reads \"Purpose-built for planning and building products. Designed for the AI era.\"",
       "impact_note": "\"Designed for the AI era\" is a phrase with no concrete referent — it does not say what the product does differently — so it adds length without adding understanding for a first-time reader.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1492,6 +1559,7 @@
       "element_ref": "el_50",
       "observation": "The section heading reads \"A new species of product tool.\" followed by \"Purpose-built for modern teams with AI workflows at its core, Linear sets a new standard for planning and building products.\"",
       "impact_note": "\"New species\" and \"sets a new standard\" are not concrete claims; a first-time visitor has no way to verify or picture what specifically is different, which weakens the section's ability to explain the product.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1513,6 +1581,7 @@
       "element_ref": "el_6",
       "observation": "\"Pricing\" (el_6) exists only as a nav link; no price, plan tier, or cost figure appears anywhere in the captured page text.",
       "impact_note": "Visitors deciding whether to commit typically look for a plain answer on cost before acting; requiring an extra click to even see pricing can cost conversions from price-sensitive visitors.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1534,6 +1603,7 @@
       "element_ref": "el_12",
       "observation": "\"New Coding Sessions →\" (el_12) is styled and positioned like an action link directly beneath the hero headline, but its text describes a feature name rather than an action or outcome.",
       "impact_note": "A visitor scanning the hero for what to do next may be uncertain whether this link leads to a feature demo, documentation, or the product itself.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1555,6 +1625,7 @@
       "element_ref": "el_10",
       "observation": "\"Log in\" (el_9) and \"Sign up\" (el_10) are both presented as plain nav-level text links of the same style and size.",
       "impact_note": "Without differentiation, a first-time visitor has no cue about which action is intended for them, diluting the pull toward the new-visitor conversion action.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1576,6 +1647,7 @@
       "element_ref": "el_137",
       "observation": "The bottom CTA reads simply \"Get started\" with no indication of what follows — a signup form, a free trial, a credit-card request, or a demo.",
       "impact_note": "Vague action labels leave visitors uncertain about the size of the commitment before they click, which can suppress click-through from cautious visitors.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1597,6 +1669,7 @@
       "element_ref": "el_121",
       "observation": "Elements styled as live product UI - a \"Listen\" button, a \"1.0×\" speed combobox (el_122), a command-menu input (el_105), and large empty textareas (el_40, el_115) - are embedded in what is otherwise static marketing content.",
       "impact_note": "Presenting interactive-looking controls that are actually illustrative mockups can lead visitors to expect real functionality, and any resulting non-response undermines trust in the product being demonstrated.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1618,6 +1691,7 @@
       "element_ref": "el_15",
       "observation": "Dozens of buttons across the page (e.g. el_15, el_16, el_31-el_34, el_37-el_39, el_41-el_46, el_53-el_76, el_78-el_87) carry no visible text label, only \"(no text)\" in the capture, meaning they rely on icon-only recognition.",
       "impact_note": "Visitors cannot tell what these controls do without hovering or guessing, which slows scanning of an already very long page and can mask non-functional decorative elements as actionable ones.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1639,6 +1713,7 @@
       "element_ref": "el_108",
       "observation": "The button reads \"3.3 Linear MCP +\" with no expansion of the acronym \"MCP\" anywhere in the surrounding captured text.",
       "impact_note": "Visitors unfamiliar with \"Model Context Protocol\" style acronyms cannot tell what this feature does from the label alone, forcing them to guess or skip it.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1660,6 +1735,7 @@
       "element_ref": "el_133",
       "observation": "Testimonials are attributed to named, verifiable individuals with job titles and companies, e.g. \"Gabriel Peal Staff Software Engineer, OpenAI\" (el_133) and \"Nik Koblov Head of Engineering, Ramp\" (el_134).",
       "impact_note": "Specific, attributed social proof of this kind is a credible trust signal that can support a visitor's decision to proceed.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1681,6 +1757,7 @@
       "element_ref": "el_52",
       "observation": "Major sections are consistently numbered and labeled as a sequence: \"1.0Intake→\", \"2.0Plan→\", \"3.0Build→\", \"4.0Diffs→\", \"5.0Monitor→\".",
       "impact_note": "This consistent numbering gives visitors a repeatable mental model of the product's workflow stages as they scroll through a long page, aiding orientation.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1702,6 +1779,7 @@
       "element_ref": "el_128",
       "observation": "The changelog entry reads \"Coding sessions on mobile Your coding session doesn't have to stop when you leave your desk. Use the Linear mobile app to review code changes, comment on specific lines, and iterate with Linear Agent.\"",
       "impact_note": "This entry states a specific, concrete benefit (reviewing code on mobile) in plain, visitor-facing language, giving readers something they can picture and act on.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1723,6 +1801,7 @@
       "element_ref": "el_11",
       "observation": "The hero heading reads \"The product development system for teams and agents.\" The term \"agents\" is used without any definition on the first screen; the supporting line below is \"Purpose-built for planning and building products. Designed for the AI era.\"",
       "impact_note": "A first-time visitor unfamiliar with the product may not know what \"agents\" refers to (AI agents vs. human agents/support reps) until scrolling much further down the page.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1744,6 +1823,7 @@
       "element_ref": null,
       "observation": "The page runs roughly 10,900px tall with an extended interactive product walkthrough (issue trackers, roadmaps, agent chat, code diffs, dashboards) between the top CTA \"New Coding Sessions →\" and the next explicit action CTAs \"Get started\" / \"Contact sales\" near the very bottom.",
       "impact_note": "Visitors who scroll through the lengthy product demonstration have no reinforcing call to action to act on along the way, so interest built up during the walkthrough has no nearby outlet.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1765,6 +1845,7 @@
       "element_ref": "el_12",
       "observation": "The hero call to action reads \"New Coding Sessions →\", a label tied to one specific product feature rather than a general next step like signing up or starting a trial.",
       "impact_note": "A visitor arriving from the headline \"The product development system for teams and agents\" has no way to tell if clicking commits them to sign-up, opens a demo, or requires an existing account, which can stall the very first action on the page.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1786,6 +1867,7 @@
       "element_ref": "el_105",
       "observation": "The page embeds apparently-interactive controls inside a static demonstration: a combobox (el_105), a code-filled textarea (el_115), a \"Listen\" button (el_121), and a playback-speed selector \"1.0×\" (el_122).",
       "impact_note": "Visitors may try to type into the field, press Listen, or change the speed expecting a real response, since nothing distinguishes these from live functionality, and receive none.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1807,6 +1889,7 @@
       "element_ref": "el_10",
       "observation": "Above the fold, the header offers \"Sign up\" while the hero also offers \"New Coding Sessions →\" as a separate, differently-labeled action.",
       "impact_note": "Two above-the-fold actions with different labels and no visual hierarchy cue as to which is primary can split attention and slow the decision to act.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1828,6 +1911,7 @@
       "element_ref": "el_92",
       "observation": "The copy under \"Define the product direction\" reads \"Align your team with product initiatives, strategic roadmaps, and clear, up-to-date PRDs.\" The acronym \"PRDs\" is not expanded anywhere on the page.",
       "impact_note": "Visitors outside product-management roles may not recognize \"PRDs\" (product requirements documents), which can stall comprehension of what the feature actually does.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1849,6 +1933,7 @@
       "element_ref": "el_50",
       "observation": "The section heading reads \"A new species of product tool.\" followed by \"Purpose-built for modern teams with AI workflows at its core, Linear sets a new standard for planning and building products.\"",
       "impact_note": "\"A new species\" and \"sets a new standard\" are abstract superlatives with no concrete referent or evidence, which can read as marketing filler rather than information a visitor can evaluate.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1870,6 +1955,7 @@
       "element_ref": "el_50",
       "observation": "The page's single h1, \"The product development system for teams and agents,\" measures 1282x128px, but a later h2, \"A new species of product tool. Purpose-built for modern teams with AI workflows at its core, Linear sets a new standard for planning and building products,\" measures 1250x144px — 16px taller than the h1. A further h2, \"Built for the future. Available today.\" (el_136), measures 722x144px, also exceeding the h1's height.",
       "impact_note": "When a subordinate heading is rendered larger than the page's only h1, the size cue that should mark the single most important statement is undermined, and a visitor scanning by size alone may land on the wrong sentence first.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1891,6 +1977,7 @@
       "element_ref": "el_6",
       "observation": "\"Pricing\" appears only as a top navigation link; no price, plan tiers, or cost figures are present anywhere in the captured page text.",
       "impact_note": "Visitors weighing whether to sign up cannot see cost or commitment level without leaving the page, which adds friction before the decision to act.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1912,6 +1999,7 @@
       "element_ref": "el_137",
       "observation": "The closing CTA is labeled simply \"Get started\" with no indication of what happens next (free trial, account creation, demo request).",
       "impact_note": "A visitor who has just been convinced by the surrounding content still has to guess what committing to \"Get started\" actually involves.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1933,6 +2021,7 @@
       "element_ref": "el_133",
       "observation": "Customer testimonials (\"You'll probably build a better product, just because of the craft that using Linear infuses on your brain.\" — Gabriel Peal, OpenAI) sit far below the fold, only after the full product walkthrough section.",
       "impact_note": "Social proof is not visible near the top-of-page CTA, so the first decision to act happens without the credibility signal that testimonials would provide.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1954,6 +2043,7 @@
       "element_ref": "el_31",
       "observation": "Dozens of buttons throughout the embedded product demo render as bare 20-32px squares with no visible text label, e.g. el_31, el_37, el_53 through el_76, el_78 through el_87.",
       "impact_note": "Visitors must guess each control's function from an icon alone, which raises cognitive load, especially since the pattern repeats dozens of times down the page.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1975,6 +2065,7 @@
       "element_ref": "el_137",
       "observation": "\"Get started\" (el_137, 127x44px) and \"Contact sales\" (el_138, 144x44px) sit side by side with identical height and only a 17px width difference.",
       "impact_note": "With near-equal size, neither action is visually established as the primary path forward at the point where a visitor is deciding what to do next.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -1996,6 +2087,7 @@
       "element_ref": "el_51",
       "observation": "The section \"Make product operations self-driving\" is immediately followed by \"Turn conversations and customer feedback into actionable issues that are routed, labeled, and prioritized for the right team.\"",
       "impact_note": "Pairing an abstract heading with a concrete, step-by-step explanation lets a visitor quickly understand what the feature actually does, which supports comprehension.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2017,6 +2109,7 @@
       "element_ref": "el_52",
       "observation": "The five product-stage sections follow a uniform \"N.0 Label →\" pattern: \"1.0 Intake →\", \"2.0 Plan →\", \"3.0 Build →\", \"4.0 Diffs →\", \"5.0 Monitor →\".",
       "impact_note": "The repeated numbering and arrow convention gives visitors a predictable structure to follow through a very long page, reducing disorientation.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2038,6 +2131,7 @@
       "element_ref": "el_137",
       "observation": "Near the bottom, two CTAs sit side by side: \"Get started\" and \"Contact sales\", offering separate paths for self-serve versus sales-assisted visitors.",
       "impact_note": "Separating self-serve and enterprise intents lets each visitor type find an appropriately-sized commitment, which research suggests can reduce mismatched drop-off.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2059,6 +2153,7 @@
       "element_ref": "el_70",
       "observation": "Short link labels such as \"News\" (el_70) and \"Benefits\" (el_26) are repeated verbatim elsewhere on the page (el_114, el_96) with no distinguishing text, relying only on an adjacent heading for context.",
       "impact_note": "When a screen reader user pulls up a page-wide list of links (a common navigation strategy), several identically-worded links with no differentiating text make it hard to tell which destination is which.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2080,6 +2175,7 @@
       "element_ref": "el_0",
       "observation": "The heading order on the page starts with two <h2> elements — \"Cookies on GOV.UK\" (el_0) and the visually hidden \"Navigation menu\" (el_8) — both appearing before the page's only <h1>, \"The best place to find government services and information\" (el_12).",
       "impact_note": "Screen reader users who jump by heading level encounter h2s before any h1, breaking the expected top-down hierarchy and making the page's主 structure harder to predict.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2101,6 +2197,7 @@
       "element_ref": "el_18",
       "observation": "The link text reads \"HMRC account: sign in or set up\" with no expansion of the acronym \"HMRC\" anywhere nearby.",
       "impact_note": "Visitors unfamiliar with UK government abbreviations may not recognise what this account relates to and could skip a relevant link.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2122,6 +2219,7 @@
       "element_ref": "el_0",
       "observation": "The cookie banner (el_0) offers only \"Accept additional cookies\" (el_1), \"Reject additional cookies\" (el_2) and \"View cookies\" (el_3); there is no visible option to close or dismiss the banner without making one of these choices.",
       "impact_note": "Visitors who want to proceed straight to the page content are required to engage with the cookie prompt first, adding a forced step before any other action.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2143,6 +2241,7 @@
       "element_ref": "el_97",
       "observation": "The main content list names a category \"Births, deaths, marriages and care\" (el_28), but the footer link for the same category reads \"Births, death, marriages and care\" (el_97). Similarly, \"Transparency documents\" (el_77) in the main list becomes just \"Transparency\" (el_118) in the footer.",
       "impact_note": "Slightly different labels for links that lead to the same destination can make visitors unsure whether the two entries point to the same content, adding a small amount of doubt to navigation decisions.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2164,6 +2263,7 @@
       "element_ref": "el_128",
       "observation": "The footer link reads \"Rhestr o Wasanaethau Cymraeg\" with no English translation or label indicating it is a Welsh-language services list.",
       "impact_note": "English-only readers cannot tell what this link leads to, and Welsh-speaking visitors get no visual cue distinguishing it from other footer links.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2185,6 +2285,7 @@
       "element_ref": "el_10",
       "observation": "The navigation toggle (el_9) displays a visible text label \"Menu\", while the adjacent search toggle (el_10) shows no visible text at all, relying only on an icon with accessible name \"Show search menu\".",
       "impact_note": "Inconsistent treatment of two adjacent header controls, one labelled with text and one icon-only, can make the function of the unlabelled control less immediately obvious when scanning the header.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2206,6 +2307,7 @@
       "element_ref": "el_15",
       "observation": "The search combobox (el_15) has its accessible name sourced from an associated <label> element (el_14, text \"Search\") rather than from a placeholder attribute.",
       "impact_note": "Because the label is a true <label>, the field's name persists for assistive technology users even once text is typed, unlike a placeholder-only label which disappears on input.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2227,6 +2329,7 @@
       "element_ref": "el_12",
       "observation": "The h1 reads \"The best place to find government services and information\", stating plainly what the site is and does.",
       "impact_note": "A visitor who has never heard of GOV.UK can grasp the site's purpose in a single sentence, reducing early confusion.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2248,6 +2351,7 @@
       "element_ref": "el_25",
       "observation": "Category descriptions follow a consistent, concrete pattern, e.g. \"Includes eligibility, appeals, tax credits and Universal Credit\" under \"Benefits\", giving a specific scope for each topic rather than vague summary language.",
       "impact_note": "Consistent, concrete descriptions help visitors scan and self-select the right category quickly.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2269,6 +2373,7 @@
       "element_ref": "el_10",
       "observation": "The icon-only button with no visible text is given an accessible name via aria-label=\"Show search menu\".",
       "impact_note": "Screen reader and voice-control users get a clear, actionable name for a control that would otherwise be silent, so the control remains usable.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
@@ -2290,6 +2395,7 @@
       "element_ref": "el_2",
       "observation": "\"Accept additional cookies\" (el_1, 235x38px) and \"Reject additional cookies\" (el_2, 229x38px) are presented as two buttons of near-identical size and prominence, side by side.",
       "impact_note": "Giving the reject option equal visual weight to accept respects visitor choice and avoids steering consent through design bias, which supports trust in the site.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []

@@ -26,11 +26,19 @@ class Captured extends Error {
   }
 }
 
-/** A client whose only job is to steal the request and refuse to make it. */
-export function recordingClient(): Anthropic {
+/**
+ * A client whose only job is to steal the request and refuse to make it.
+ *
+ * It both records into `seen` and throws. Throwing unwinds a well-behaved agent
+ * immediately; recording covers the agents that catch their own failures and
+ * degrade rather than propagate — which is most of them, by design (§7). Without
+ * the holder, snapshotting one of those would report "never called the model".
+ */
+export function recordingClient(seen: { request?: unknown } = {}): Anthropic {
   return {
     messages: {
       parse: async (request: unknown) => {
+        seen.request = request;
         throw new Captured(request);
       },
     },
@@ -46,12 +54,14 @@ export async function requestFor(
   fn: (client: Anthropic, capture: Capture, log: CallLog) => Promise<unknown>,
   capture: Capture,
 ): Promise<unknown> {
+  const seen: { request?: unknown } = {};
   try {
-    await fn(recordingClient(), capture, silentLog());
+    await fn(recordingClient(seen), capture, silentLog());
   } catch (err) {
     if (err instanceof Captured) return err.request;
     throw err;
   }
+  if (seen.request !== undefined) return seen.request;
   throw new Error("agent returned without calling messages.parse");
 }
 

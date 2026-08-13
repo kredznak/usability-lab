@@ -9,6 +9,7 @@ import { runSubAgent } from "./agents/runner.js";
 import { rubricFor } from "./agents/rubrics.js";
 import { runProfiler } from "./agents/profiler.js";
 import { runSynthesizer, identify } from "./agents/synthesizer.js";
+import { runResearcher } from "./agents/researcher.js";
 import { orchestrate } from "./orchestrator/index.js";
 import { deriveSignals } from "./signals.js";
 import { deriveConfidence } from "./confidence.js";
@@ -29,9 +30,13 @@ import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
  * customer until a person has read it — §6's gate, and CLAUDE.md's "first audits
  * gate on founder review". `npm run review <audit-id>` is the other half.
  *
- * Deliberately NOT here: Research and citations (every finding still reports
- * source_type "none", which §9.3 makes a legal output), the lint gate, the
- * Content agent, multi-page capture. See §0 of docs/design.md.
+ * Research runs on the survivors of synthesis and cites from a curated corpus
+ * only (src/sources.ts). No web search: a source id resolves to a URL in code,
+ * so a fabricated citation is not something the model has a field to express.
+ *
+ * Deliberately NOT here: web search and competitor examples, the lint gate, the
+ * Content agent, multi-page capture, and any citation-based confidence boost.
+ * See §0 of docs/design.md.
  */
 
 interface Timing {
@@ -209,7 +214,7 @@ async function main(): Promise<void> {
     const identified = identify(runs);
     if (identified.length === 0) throw new Error("no reviewer produced a finding");
 
-    setStatus("ASSEMBLING");
+    setStatus("RESEARCHING");
 
     const synthesis = await timed("synthesize", timings, () =>
       runSynthesizer(client, identified, profile.summary, auditId, log),
@@ -253,17 +258,43 @@ async function main(): Promise<void> {
     // on a compliment, but nothing else re-sorts what it decided.
     findings.sort((a, b) => Number(a.positive) - Number(b.positive));
 
+    /**
+     * Research runs on the findings that survived synthesis, not on the raw
+     * reviewer output. §5's arrow order is `audit → research → assemble`, which
+     * would research ~29 findings so that ~18 could use the result — about 40%
+     * of the step's spend on findings nobody will ever read. Same output,
+     * cheaper. The state machine's AUDITING → RESEARCHING → ASSEMBLING edges
+     * are unchanged.
+     *
+     * A failure here costs citations, never the audit: every finding still
+     * ships, honestly reporting `none`.
+     */
+    const research = await timed("research", timings, () =>
+      runResearcher(client, findings, auditId, log),
+    );
+    if (research.degraded) degraded.push(`research: ${research.degraded}`);
+    const cited = research.findings;
+    if (research.notes.length > 0) {
+      await writeFile(
+        path.join(outDir, "citations.json"),
+        JSON.stringify(research.notes, null, 2),
+        "utf8",
+      );
+    }
+
+    setStatus("ASSEMBLING");
+
     // §4 lists `findings` as a permanent store, and the outcome suite scores
     // saved findings rather than re-running paid audits. Writing the HTML alone
     // meant the only machine-readable record of an audit was its screenshot.
     await writeFile(
       path.join(outDir, "findings.json"),
-      JSON.stringify(findings, null, 2),
+      JSON.stringify(cited, null, 2),
       "utf8",
     );
 
     const annotated = await timed("annotate", timings, () =>
-      annotate(captured.screenshot_path, findings, outDir, auditId),
+      annotate(captured.screenshot_path, cited, outDir, auditId),
     );
 
     const costUsd = log.totalCost(auditId);
@@ -271,7 +302,7 @@ async function main(): Promise<void> {
       renderResults(
         {
           capture: captured,
-          findings,
+          findings: cited,
           dropped,
           annotatedImage: annotated.path,
           timings,
@@ -306,6 +337,7 @@ async function main(): Promise<void> {
           ? `\n  ${synthesis.rejected.length} synthesis reference(s) could not be honoured`
           : "") +
         `\n  ${annotated.pinned} pinned on the screenshot` +
+        `\n  ${research.cited} of ${cited.length} carry a citation` +
         (degraded.length > 0 ? `\n  DEGRADED: ${degraded.join("; ")}` : "") +
         `\n  total ${(total / 1000).toFixed(1)}s   $${costUsd.toFixed(4)}` +
         `\n\n  ${resultsPath}` +

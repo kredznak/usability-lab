@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { requestFor, loadCapture, writeFixture, fixturePath } from "./agents/snapshot-request.js";
 import { runSubAgent } from "./agents/runner.js";
+import { runResearcher } from "./agents/researcher.js";
 import { RUBRICS } from "./agents/rubrics.js";
+import { Finding } from "./types.js";
 
 /**
  * Writes (or checks) the request-body fixtures for every sub-agent.
@@ -11,12 +13,53 @@ import { RUBRICS } from "./agents/rubrics.js";
 /** The capture each agent's fixture is built from. One is enough to pin the shape. */
 const FIXTURE_CAPTURE = "govuk";
 
-const AGENTS: Record<string, Parameters<typeof requestFor>[0]> = Object.fromEntries(
-  Object.values(RUBRICS).map((rubric) => [
-    rubric.id,
-    (client, capture, log) => runSubAgent(client, rubric, capture, log),
-  ]),
-);
+/**
+ * Fixed input for the Research snapshot. Two findings on different lenses, so
+ * the fixture pins both the prompt and which sources the shortlist includes —
+ * an accidental widening of `sourcesFor` shows up as a diff rather than as a
+ * larger bill and a stretched citation.
+ */
+const RESEARCH_FINDINGS = [
+  {
+    id: "snap-f1",
+    agent: "forms",
+    heuristic: "Labels",
+    severity: 3,
+    element_ref: "el_4",
+    observation: "Three of the six fields use placeholder text in place of a visible label.",
+    impact_note: "The prompt disappears once typing starts, so a corrected entry cannot be checked.",
+    positive: false,
+    screen_ref: "s",
+    confidence: "high",
+    citation: { source_type: "none", url: null },
+    evidence: { screenshot_id: "s", bbox: { x: 10, y: 20, width: 300, height: 40 } },
+  },
+  {
+    id: "snap-f2",
+    agent: "visual-hierarchy",
+    heuristic: "Emphasis",
+    severity: 2,
+    element_ref: null,
+    observation: "Five above-the-fold elements are set at the largest type size on the page.",
+    impact_note: "With everything emphasised, nothing is, and the eye has no entry point.",
+    positive: false,
+    screen_ref: "s",
+    confidence: "medium",
+    citation: { source_type: "none", url: null },
+    evidence: { screenshot_id: "s", bbox: null },
+  },
+].map((f) => Finding.parse(f));
+
+const AGENTS: Record<string, Parameters<typeof requestFor>[0]> = {
+  ...Object.fromEntries(
+    Object.values(RUBRICS).map((rubric) => [
+      rubric.id,
+      (client, capture, log) => runSubAgent(client, rubric, capture, log),
+    ]),
+  ),
+  researcher: (client, _capture, log) =>
+    runResearcher(client, RESEARCH_FINDINGS, "snapshot", log),
+};
 
 const check = process.argv.includes("check");
 const capture = loadCapture(FIXTURE_CAPTURE);

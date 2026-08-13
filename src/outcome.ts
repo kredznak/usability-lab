@@ -90,6 +90,32 @@ console.log(`  high-confidence correct     ${pct(highTrue.length, high.length)} 
 console.log(`  medium-confidence correct   ${pct(mediumTrue.length, medium.length)}   ` +
   `(${mediumTrue.length}/${medium.length})`);
 
+/**
+ * The `none`-citation rate — §10's quality dashboard, and its alert threshold.
+ *
+ * This is not a score to drive down. `none` is a legal, unpunished output and a
+ * finding that honestly declines a citation is better than one that stretches
+ * for it. The number is here to show the corpus going stale: if most findings
+ * cannot be supported by anything we hold, the answer is more sources, not more
+ * citing. §10 notifies above 50%, measured over audits that have been through
+ * Research at all.
+ */
+const NONE_CITATION_ALERT = 0.5;
+const researched = corpus.findings.filter((f) => f.source_type !== undefined);
+const noneCited = researched.filter((f) => f.source_type === "none");
+if (researched.length > 0) {
+  const rate = noneCited.length / researched.length;
+  console.log(
+    `\n  uncited findings            ${pct(noneCited.length, researched.length)}   ` +
+      `(${noneCited.length}/${researched.length} report source_type "none")` +
+      (rate > NONE_CITATION_ALERT
+        ? `\n      <- above §10's ${NONE_CITATION_ALERT * 100}% notify line. The corpus is too thin` +
+          `\n         for what we are finding, or Research is declining too readily.` +
+          `\n         Add sources; do not loosen the citing.`
+        : ""),
+  );
+}
+
 // Which lane produces the false claims is the actionable number — it points at
 // a rubric to fix rather than a score to worry about.
 const byAgent = new Map<string, { n: number; bad: number }>();

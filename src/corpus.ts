@@ -52,6 +52,12 @@ export interface LabelledFinding {
   element_ref: string | null;
   observation: string;
   impact_note: string;
+  /**
+   * What the finding cites, if anything. `none` is a legal, unpunished output
+   * (§9.3) — it is tracked so we can see the corpus going stale, not to punish
+   * a finding for being honest. §10 alerts above a 50% `none` rate.
+   */
+  source_type: "paper" | "competitor" | "none";
   /** Mechanical verdict, recomputed on every rebuild. */
   auto: {
     status: "verified" | "contradicted" | "unverifiable";
@@ -258,6 +264,10 @@ export function buildCorpus(): Corpus {
         element_ref: f.element_ref,
         observation: f.observation,
         impact_note: f.impact_note,
+        // Recovered-from-HTML findings predate citations entirely, and every
+        // one of them genuinely shipped uncited, so `none` is the fact rather
+        // than a stand-in for missing data.
+        source_type: "citation" in f ? (f as Finding).citation.source_type : "none",
         auto: { status: verdict.status, contradictions: verdict.contradictions },
         human_true: prior?.human_true ?? null,
         // An explicit label wins over the gate decision, so a `--redo` survives
