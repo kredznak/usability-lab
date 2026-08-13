@@ -72,7 +72,7 @@ accessible names *and* element attributes, and a false alarm here is expensive.
 See the calibration history in `src/claims.test.ts` — the checker's first run
 flagged 15 findings and 14 were its own bugs.
 
-### B4. No end-to-end test of the publish path
+### ~~B4. No end-to-end test of the publish path~~ — done 2026-08-13
 
 **What.** `renderPublic` is well covered and the state machine is well covered,
 but nothing tests `review.ts` itself: load an audit, walk the findings, write
@@ -83,9 +83,11 @@ it decides what a paying visitor sees and what stays behind the gate. Its first
 run had a real bug (piped answers 2–17 silently discarded) that only surfaced
 because it was used.
 
-**Cost.** Small, now that the gate accepts piped input: a temp `out/` directory,
-a temp database, a scripted answer string, and assertions on `review.json` plus
-the resulting status.
+**Done.** `src/review.test.ts` — seven tests driving the real script as a
+subprocess with piped answers, against a temp database and `out/` directory
+(`USABILITY_LAB_DB` / `USABILITY_LAB_OUT`, `src/paths.ts`). Raised at the Slice 4
+`/karpathy-review`, where the argument for doing it now was that B4 stops being
+backlog the moment the gate publishes something.
 
 ---
 

@@ -26,6 +26,27 @@ export interface AnnotationResult {
 }
 
 /**
+ * Which number, if any, got drawn on the screenshot for each finding.
+ *
+ * The one definition of the pin rule. Both pages render pins and neither draws
+ * them, so without this they each re-derive the numbering and drift from the
+ * image — which is exactly what happened: the visitor's page showed severity
+ * badges under a caption promising the pins matched.
+ *
+ * Numbers are positions in the full findings array, so they have gaps. A
+ * finding with no bbox takes its number out of circulation rather than
+ * renumbering everything after it, because the alternative is a page whose pin
+ * 4 is the image's pin 5.
+ */
+export function pinNumbers(findings: Finding[]): Map<string, number> {
+  const pins = new Map<string, number>();
+  findings.forEach((finding, index) => {
+    if (finding.evidence.bbox) pins.set(finding.id, index + 1);
+  });
+  return pins;
+}
+
+/**
  * Draws numbered pins over the full-page screenshot. Findings without a bbox
  * (medium confidence, text-inferred) are intentionally not drawn — a pin with
  * nowhere to point would be a claim we cannot back.
@@ -43,9 +64,10 @@ export async function annotate(
   if (!width || !height) throw new Error(`cannot read dimensions of ${screenshotPath}`);
 
   const shapes: string[] = [];
+  const pins = pinNumbers(findings);
   let pinned = 0;
 
-  findings.forEach((finding, index) => {
+  findings.forEach((finding) => {
     const box = finding.evidence.bbox;
     if (!box) return;
 
@@ -55,7 +77,9 @@ export async function annotate(
     const w = Math.max(1, Math.min(box.width, width - x));
     const h = Math.max(1, Math.min(box.height, height - y));
 
-    const label = String(index + 1);
+    // From the same map the pages read, so the drawn number and the rendered
+    // number cannot disagree.
+    const label = String(pins.get(finding.id));
     // Pin sits at the top-left of the box, nudged inside when the box is flush
     // against the left or top edge so the badge never clips off-canvas.
     const cx = Math.max(PIN_R + 2, x);

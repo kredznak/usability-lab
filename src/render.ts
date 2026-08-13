@@ -6,6 +6,7 @@ import type { CaptureSignals } from "./signals.js";
 import type { OrchestrationResult } from "./orchestrator/index.js";
 import type { SynthesisResult } from "./agents/synthesizer.js";
 import { rubricFor } from "./agents/rubrics.js";
+import { pinNumbers } from "./annotate.js";
 
 /**
  * Two pages, written at two different moments.
@@ -105,12 +106,17 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
   const { profile, signals, plan, synthesis, degraded } = input;
   const imageSrc = path.basename(annotatedImage);
 
-  const issues = bySeverity(findings.filter((f) => !f.positive));
+  // The Synthesizer's rank order, deliberately not re-sorted by severity. This
+  // is the page the founder reads at the gate, `npm run review` walks the
+  // findings in this same order, and `npm run outcome` scores rank against the
+  // keep/cut calls — three views of one judgment, so they show one order.
+  const issues = findings.filter((f) => !f.positive);
   const positives = findings.filter((f) => f.positive);
+  const pins = pinNumbers(findings);
 
-  const findingCard = (finding: Finding, index: number) => `
+  const findingCard = (finding: Finding) => `
     <article class="finding ${finding.positive ? "positive" : ""}">
-      <div class="pin">${finding.evidence.bbox ? index + 1 : "—"}</div>
+      <div class="pin">${pins.get(finding.id) ?? "—"}</div>
       <div class="body">
         <div class="meta">
           <span class="heuristic">${escapeHtml(finding.heuristic)}</span>
@@ -198,13 +204,14 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
   }
 
   <p class="note"><strong>Internal review copy — not published.</strong>
-     Everything the audit produced, in severity order, with the reasoning behind it.
-     Publishing happens at the gate: <code>npm run review</code>.</p>
+     Everything the audit produced, with the reasoning behind it. Findings are in the
+     Synthesizer&rsquo;s rank order &mdash; the same order <code>npm run review</code> walks
+     them in, and the order the top three are picked from. Publishing happens at the gate.</p>
 
   <h2>What we found (${issues.length})</h2>
-  ${issues.length ? issues.map((f) => findingCard(f, findings.indexOf(f))).join("") : "<p>No issues survived the confidence gate.</p>"}
+  ${issues.length ? issues.map((f) => findingCard(f)).join("") : "<p>No issues survived the confidence gate.</p>"}
 
-  ${positives.length ? `<h2>What's working (${positives.length})</h2>${positives.map((f) => findingCard(f, findings.indexOf(f))).join("")}` : ""}
+  ${positives.length ? `<h2>What's working (${positives.length})</h2>${positives.map((f) => findingCard(f)).join("")}` : ""}
 
   <h2>How this audit was assembled</h2>
   <p class="lead">${escapeHtml(profile.summary)}</p>
@@ -295,8 +302,22 @@ export interface PublishInput {
   capture: Capture;
   /** Findings the founder kept, in the order they should be read. */
   kept: Finding[];
+  /**
+   * Every finding the audit produced, including the ones the founder cut.
+   *
+   * Needed only for pin numbers, which are positions in the array `annotate`
+   * drew from. Numbering off `kept` would renumber the cards without
+   * renumbering the image.
+   */
+  allFindings: Finding[];
   annotatedImage: string;
-  profile: ContextProfile;
+  /**
+   * The profile's one-line summary. Deliberately not the whole ContextProfile:
+   * the publish path does not have one, and the version it used to build to
+   * satisfy the type was four invented values — `goal: "unknown"`, `site_kind:
+   * "other"` — that would have been read as fact the moment this page used them.
+   */
+  summary: string;
 }
 
 /** quality-bar §7 — three shown free. */
@@ -311,11 +332,12 @@ export const FREE_FINDINGS = 3;
  * ever *are* filler this line makes that visible rather than hiding it.
  */
 export async function renderPublic(input: PublishInput, outDir: string): Promise<string> {
-  const { capture, kept, annotatedImage, profile } = input;
+  const { capture, kept, allFindings, annotatedImage, summary } = input;
   const imageSrc = path.basename(annotatedImage);
 
   const issues = kept.filter((f) => !f.positive);
   const positives = kept.filter((f) => f.positive);
+  const pins = pinNumbers(allFindings);
 
   /**
    * Selection is by rank, presentation is by severity, and the two are
@@ -333,16 +355,24 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
   const withheld = issues.slice(FREE_FINDINGS);
   const severeWithheld = withheld.filter((f) => f.severity >= 3).length;
 
+  /**
+   * The badge is the pin number, not the severity.
+   *
+   * It used to be severity, under a caption promising every finding pointed at
+   * something on the screenshot — three cards reading "2" beside an image
+   * pinned 1..n, with nothing connecting them. Severity is still here, in
+   * words, where it cannot be mistaken for a coordinate.
+   */
   const card = (finding: Finding, n: number) => `
     <article class="finding">
-      <div class="sev sev-${finding.severity}">${finding.severity}</div>
+      <div class="sev sev-${finding.severity}">${pins.get(finding.id) ?? "&mdash;"}</div>
       <div class="body">
         <h3>${escapeHtml(finding.heuristic)}</h3>
         <p class="observation">${escapeHtml(finding.observation)}</p>
         <p class="impact">${escapeHtml(finding.impact_note)}</p>
         <p class="location">Location: ${escapeHtml(locationLine(finding, capture))}</p>
-        <p class="citation">${citationLabel(finding)} &middot; ${finding.confidence} confidence
-           &middot; finding ${n} of ${issues.length}</p>
+        <p class="citation">${citationLabel(finding)} &middot; severity ${finding.severity}
+           &middot; ${finding.confidence} confidence &middot; finding ${n} of ${issues.length}</p>
       </div>
     </article>`;
 
@@ -394,11 +424,12 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
     <div class="url">${escapeHtml(capture.final_url)}</div>
   </header>
 
-  <p class="lead">${escapeHtml(profile.summary)}</p>
+  <p class="lead">${escapeHtml(summary)}</p>
 
   <figure>
     <img src="${escapeHtml(imageSrc)}" alt="Annotated screenshot of the audited page">
-    <figcaption>Every finding below points at something on this screenshot.</figcaption>
+    <figcaption>The number on each finding below is its pin on this screenshot. Findings
+    inferred from page text carry no pin, because there is no box to point at.</figcaption>
   </figure>
 
   <h2>${shown.length === 0 ? "No issues found" : `The ${shown.length} that matter most`}</h2>

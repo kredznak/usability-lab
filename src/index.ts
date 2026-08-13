@@ -15,6 +15,7 @@ import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
 import { CallLog, AuditStore, type AuditStatus } from "./db.js";
+import { OUT_ROOT } from "./paths.js";
 import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
 import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
 
@@ -135,7 +136,7 @@ async function main(): Promise<void> {
   // UUIDv7 is the correlation key in §8; v4 is a stand-in until we add a v7
   // generator. Either way it is the single ID threaded through every artifact.
   const auditId = randomUUID();
-  const outDir = path.join("out", auditId);
+  const outDir = path.join(OUT_ROOT, auditId);
   const timings: Timing[] = [];
   const log = new CallLog();
   const audits = new AuditStore();

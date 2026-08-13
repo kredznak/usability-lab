@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
 import path from "node:path";
 import { AuditStore } from "./db.js";
+import { OUT_ROOT } from "./paths.js";
 import {
   Capture,
   Finding,
@@ -108,7 +109,7 @@ if (audit.status !== "REVIEW_PENDING") {
   process.exit(2);
 }
 
-const dir = path.join("out", audit.audit_id);
+const dir = path.join(OUT_ROOT, audit.audit_id);
 const findingsFile = path.join(dir, "findings.json");
 if (!existsSync(findingsFile)) {
   console.error(`No findings.json in ${dir}. The audit did not get far enough to review.`);
@@ -254,18 +255,15 @@ console.log(
     `${keptIssues.length} issues, and say how many are held back.\n`,
 );
 
-// Reuses the one interface rather than opening a second. A fresh readline over
-// an already-ended stdin never resolves, so a piped review would hang here at
-// the last question — after every judgment had been made and none saved.
-const go = ((await ask(`  ${BOLD}Publish?${RESET} (y/N) > `)) ?? "").trim().toLowerCase();
-rl?.close();
-
-if (go !== "y") {
-  console.log(`\n  Not published. The audit is still REVIEW_PENDING.\n`);
-  store.close();
-  process.exit(0);
-}
-
+/**
+ * Saved before the publish prompt, not after.
+ *
+ * These decisions are the usefulness labels — the reason the gate was built
+ * ahead of Research. Writing them only on publish meant a founder could judge
+ * every finding, answer "not yet", and lose the lot. Deciding not to publish is
+ * a judgment about the audit; it says nothing about whether the seventeen calls
+ * just made were right.
+ */
 const record: ReviewRecord = {
   audit_id: audit.audit_id,
   reviewed_at: new Date().toISOString(),
@@ -273,18 +271,29 @@ const record: ReviewRecord = {
 };
 writeFileSync(path.join(dir, "review.json"), JSON.stringify(record, null, 2) + "\n");
 
+// Reuses the one interface rather than opening a second. A fresh readline over
+// an already-ended stdin never resolves, so a piped review would hang here at
+// the last question — after every judgment had been made and none saved.
+const go = ((await ask(`  ${BOLD}Publish?${RESET} (y/N) > `)) ?? "").trim().toLowerCase();
+rl?.close();
+
+if (go !== "y") {
+  console.log(
+    `\n  Not published. The audit is still REVIEW_PENDING.\n` +
+      `  ${DIM}${decisions.length} decisions saved to review.json — run the same command` +
+      ` again to redo them.${RESET}\n`,
+  );
+  store.close();
+  process.exit(0);
+}
+
 const publicPath = await renderPublic(
   {
     capture,
     kept,
+    allFindings: findings,
     annotatedImage: path.join(dir, `${audit.audit_id}-annotated.png`),
-    profile: {
-      site_kind: "other",
-      concerns: [],
-      goal: "unknown",
-      drop_point: "unknown",
-      summary: audit.profile_summary ?? "A review of this page.",
-    },
+    summary: audit.profile_summary ?? "A review of this page.",
   },
   dir,
 );

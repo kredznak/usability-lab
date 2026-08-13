@@ -4,7 +4,6 @@ import { mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { Capture, Finding, type CapturedElement } from "./types.js";
-import type { ContextProfile } from "./profile.js";
 import { renderPublic, locationLine, FREE_FINDINGS } from "./render.js";
 
 /**
@@ -66,19 +65,27 @@ function finding(n: number, severity: number, over: Partial<Finding> = {}): Find
   });
 }
 
-const PROFILE = {
-  site_kind: "other",
-  concerns: [],
-  goal: "unknown",
-  drop_point: "unknown",
-  summary: "A review of this page.",
-} satisfies ContextProfile;
-
-async function publish(kept: Finding[], cap = capture()): Promise<string> {
+/**
+ * `allFindings` defaults to `kept` because most of these tests publish
+ * everything. The pin tests pass it explicitly, which is the case that matters:
+ * pin numbers are positions in the array the screenshot was drawn from, so a
+ * cut finding still uses up its number.
+ */
+async function publish(
+  kept: Finding[],
+  cap = capture(),
+  allFindings: Finding[] = kept,
+): Promise<string> {
   const dir = mkdtempSync(path.join(tmpdir(), "ulab-render-"));
   try {
     const out = await renderPublic(
-      { capture: cap, kept, annotatedImage: path.join(dir, "a.png"), profile: PROFILE },
+      {
+        capture: cap,
+        kept,
+        allFindings,
+        annotatedImage: path.join(dir, "a.png"),
+        summary: "A review of this page.",
+      },
       dir,
     );
     return readFileSync(out, "utf8");
@@ -204,5 +211,45 @@ describe("locationLine: a founder should not need devtools", () => {
   test("a ref that is not in the capture is reported, not rendered as if fine", () => {
     const line = locationLine(finding(1, 2, { element_ref: "el_999" }), cap);
     assert.match(line, /not present in the capture/);
+  });
+});
+
+/**
+ * The published basecamp page shipped with three cards badged "2", "2", "2" —
+ * severity — under a caption promising each finding pointed at something on the
+ * screenshot, which is pinned 1..n. Nothing connected a card to a pin.
+ */
+describe("pin numbers: the card and the screenshot agree", () => {
+  const boxed = (n: number, severity = 2) =>
+    finding(n, severity, { evidence: { screenshot_id: "s", bbox: { x: 1, y: 1, width: 9, height: 9 } } });
+
+  test("the badge is the pin number, not the severity", async () => {
+    const html = await publish([boxed(1, 4)]);
+    assert.match(html, /class="sev sev-4">1</, "badge shows pin 1, coloured by severity 4");
+    assert.match(html, /severity 4/, "severity is still stated, in words");
+  });
+
+  test("pin numbers survive the findings the founder cut", async () => {
+    // Four findings drawn on the screenshot as 1,2,3,4; the founder cuts 1 and 2.
+    const all = [1, 2, 3, 4].map((n) => boxed(n));
+    const html = await publish([all[2]!, all[3]!], capture(), all);
+    assert.match(html, /class="sev sev-2">3</, "the third finding keeps pin 3");
+    assert.match(html, /class="sev sev-2">4</, "the fourth keeps pin 4");
+    assert.doesNotMatch(html, /class="sev sev-2">1</, "renumbering from 1 would point at the wrong box");
+  });
+
+  test("a finding with no bbox has no pin, and the caption says why", async () => {
+    const html = await publish([finding(1, 2)]);
+    assert.match(html, /class="sev sev-2">&mdash;</, "no box means no number, not a made-up one");
+    assert.match(html, /carry no pin/, "the caption must account for the dash");
+  });
+
+  test("the caption claims only what the page can back", async () => {
+    const html = await publish([boxed(1)]);
+    assert.doesNotMatch(
+      html,
+      /Every finding below points at something on this screenshot/,
+      "false for any text-inferred finding",
+    );
   });
 });

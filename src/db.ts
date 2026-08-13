@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
+import { DB_PATH } from "./paths.js";
 
 /**
  * model_calls — docs/design.md §4, §8. "Log every model call to model_calls from
@@ -152,7 +153,7 @@ export interface AuditRow {
 export class AuditStore {
   private db: Database.Database;
 
-  constructor(dbPath = "out/usability-lab.db") {
+  constructor(dbPath = DB_PATH) {
     mkdirSync(path.dirname(dbPath), { recursive: true });
     this.db = new Database(dbPath);
     this.db.pragma("journal_mode = WAL");
@@ -253,7 +254,7 @@ export class AuditStore {
 export class CallLog {
   private db: Database.Database;
 
-  constructor(dbPath = "out/usability-lab.db") {
+  constructor(dbPath = DB_PATH) {
     mkdirSync(path.dirname(dbPath), { recursive: true });
     this.db = new Database(dbPath);
     this.db.pragma("journal_mode = WAL");
