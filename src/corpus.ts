@@ -3,6 +3,7 @@ import path from "node:path";
 import { Capture, Finding, type ReviewDecision, type ReviewRecord } from "./types.js";
 import { checkClaim } from "./claims.js";
 import { ALL_RUBRICS } from "./agents/rubrics.js";
+import { OUT_ROOT } from "./paths.js";
 
 /**
  * Builds the labelled corpus the outcome suite scores against — docs/design.md §10.
@@ -115,14 +116,14 @@ export function loadCorpus(): Corpus {
 
 /** Every completed audit on disk: a capture plus findings in either form. */
 function completedAudits(): string[] {
-  if (!existsSync("out")) return [];
-  return readdirSync("out")
+  if (!existsSync(OUT_ROOT)) return [];
+  return readdirSync(OUT_ROOT)
     .filter((d) => !d.startsWith("smoke-") && !d.startsWith("fixture-"))
-    .filter((d) => existsSync(path.join("out", d, "capture.json")))
+    .filter((d) => existsSync(path.join(OUT_ROOT, d, "capture.json")))
     .filter(
       (d) =>
-        existsSync(path.join("out", d, "findings.json")) ||
-        existsSync(path.join("out", d, "results.html")),
+        existsSync(path.join(OUT_ROOT, d, "findings.json")) ||
+        existsSync(path.join(OUT_ROOT, d, "results.html")),
     )
     .sort();
 }
@@ -203,7 +204,7 @@ export function buildCorpus(): Corpus {
   const built: Corpus = { built_from: [], skipped: [], findings: [] };
 
   for (const auditId of completedAudits()) {
-    const dir = path.join("out", auditId);
+    const dir = path.join(OUT_ROOT, auditId);
 
     // Audits from before the capture schema grew input types, accessible names
     // and font sizes cannot be claim-checked against it. Skipped loudly.

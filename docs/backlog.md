@@ -91,6 +91,42 @@ backlog the moment the gate publishes something.
 
 ---
 
+## B5. We rewrote a published page, and the correction path is still UNRESOLVED
+
+**What happened.** 2026-08-13, fixing the pin/severity bug: `results.html` for
+`4f8f1271` (basecamp) was regenerated with a throwaway script. The audit is
+PUBLISHED, and [`review.ts`](../src/review.ts) explicitly refuses to touch a
+PUBLISHED audit — *"Re-reviewing would rewrite what the visitor saw"*. The guard
+was bypassed rather than failing; nothing in the audit's history records that
+the page changed, and `published_at` still points at the original publish.
+
+**Why it matters.** The page was making a false claim, so changing it was right.
+That is exactly the situation the correction path is *for*, and we do not have
+one — `docs/quality-bar.md` still carries it as `[UNRESOLVED]`. Today it cost
+nothing because the only reader was us. The next time it will not be.
+
+**The decision to make.** What does a customer get when a published finding or
+page turns out to be wrong?
+
+- *Silent update* — cheapest, and indistinguishable from the thing we sell
+  against. A reader who acted on the old page never learns.
+- *Visible correction on the page* — a dated line saying what changed and why.
+  Costs a schema field and some rendering.
+- *New URL plus a notice* — the old page stays as evidence of what was said.
+  Most honest, most machinery.
+
+**Cost.** The decision is minutes; the build is small-to-medium depending on the
+answer. **Not mine to make** — noted here so it stops being invisible. When it is
+decided, `review.ts`'s refusal should route to that path instead of just
+refusing, or the same bypass happens again.
+
+**Also from that session:** the commit message on `335535d` describes the piped-
+answers test as *"the one for the bug that shipped"*. It is a regression guard —
+that bug was fixed in Slice 4, and the test passes on the pre-fix code. Five of
+the other new tests do go red when their fixes are reverted; that one does not.
+
+---
+
 ## The deeper problem behind B3
 
 Two of the seventeen findings were false, and neither was a wrong fact:

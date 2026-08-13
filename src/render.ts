@@ -337,6 +337,26 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
 
   const issues = kept.filter((f) => !f.positive);
   const positives = kept.filter((f) => f.positive);
+
+  /**
+   * Pin numbers are only meaningful if `allFindings` is the array `annotate`
+   * drew from. Nothing in the type system says so, and a caller who filters
+   * first would produce a page pointing at the wrong boxes — silently, because
+   * a wrong number looks exactly like a right one.
+   *
+   * That is the bug this page shipped with once already, so it gets a guard
+   * rather than a comment. db.ts makes the same call about status: a value that
+   * lies is worse than a crash, because every later reader takes it as fact.
+   */
+  const known = new Set(allFindings.map((f) => f.id));
+  const orphan = kept.find((f) => !known.has(f.id));
+  if (orphan) {
+    throw new Error(
+      `renderPublic: kept finding ${orphan.id} is not in allFindings. ` +
+        `allFindings must be every finding the audit produced, in the order annotate drew them.`,
+    );
+  }
+
   const pins = pinNumbers(allFindings);
 
   /**

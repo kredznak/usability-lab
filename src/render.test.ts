@@ -4,7 +4,8 @@ import { mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { Capture, Finding, type CapturedElement } from "./types.js";
-import { renderPublic, locationLine, FREE_FINDINGS } from "./render.js";
+import { renderPublic, renderResults, locationLine, FREE_FINDINGS, type RenderInput } from "./render.js";
+import { deriveSignals } from "./signals.js";
 
 /**
  * The visitor's page is the only artifact a customer ever sees, and its riskiest
@@ -73,16 +74,15 @@ function finding(n: number, severity: number, over: Partial<Finding> = {}): Find
  */
 async function publish(
   kept: Finding[],
-  cap = capture(),
-  allFindings: Finding[] = kept,
+  opts: { capture?: Capture; allFindings?: Finding[] } = {},
 ): Promise<string> {
   const dir = mkdtempSync(path.join(tmpdir(), "ulab-render-"));
   try {
     const out = await renderPublic(
       {
-        capture: cap,
+        capture: opts.capture ?? capture(),
         kept,
-        allFindings,
+        allFindings: opts.allFindings ?? kept,
         annotatedImage: path.join(dir, "a.png"),
         summary: "A review of this page.",
       },
@@ -232,7 +232,7 @@ describe("pin numbers: the card and the screenshot agree", () => {
   test("pin numbers survive the findings the founder cut", async () => {
     // Four findings drawn on the screenshot as 1,2,3,4; the founder cuts 1 and 2.
     const all = [1, 2, 3, 4].map((n) => boxed(n));
-    const html = await publish([all[2]!, all[3]!], capture(), all);
+    const html = await publish([all[2]!, all[3]!], { allFindings: all });
     assert.match(html, /class="sev sev-2">3</, "the third finding keeps pin 3");
     assert.match(html, /class="sev sev-2">4</, "the fourth keeps pin 4");
     assert.doesNotMatch(html, /class="sev sev-2">1</, "renumbering from 1 would point at the wrong box");
@@ -251,5 +251,128 @@ describe("pin numbers: the card and the screenshot agree", () => {
       /Every finding below points at something on this screenshot/,
       "false for any text-inferred finding",
     );
+  });
+});
+
+test("a kept finding that is not in allFindings is a crash, not a wrong pin", async () => {
+  // The coupling renderPublic cannot check in the type system: pin numbers are
+  // only meaningful if allFindings is the array annotate drew from. A caller who
+  // filters first would produce a page pointing at the wrong boxes, and a wrong
+  // number looks exactly like a right one.
+  const all = [1, 2, 3].map((n) => finding(n, 2));
+  await assert.rejects(
+    () => publish([finding(9, 2)], { allFindings: all }),
+    /is not in allFindings/,
+  );
+});
+
+/**
+ * The page the founder reads at the gate. Until now it had no test at all,
+ * which is how it acquired a severity re-sort that put it out of step with
+ * `npm run review` and `npm run outcome`.
+ */
+describe("the internal review copy", () => {
+  const boxed = (n: number, severity = 2) =>
+    finding(n, severity, { evidence: { screenshot_id: "s", bbox: { x: 1, y: 1, width: 9, height: 9 } } });
+
+  async function full(findings: Finding[], over: Partial<RenderInput> = {}): Promise<string> {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-full-"));
+    const cap = capture();
+    try {
+      const out = await renderResults(
+        {
+          capture: cap,
+          findings,
+          dropped: [],
+          annotatedImage: path.join(dir, "a.png"),
+          timings: [{ step: "capture", ms: 1000 }],
+          costUsd: 0.34,
+          profile: {
+            site_kind: "other",
+            concerns: ["abandonment"],
+            goal: "purchase",
+            drop_point: "final_step",
+            summary: "A shop that sells things.",
+          },
+          signals: deriveSignals(cap),
+          plan: {
+            spawn: ["heuristics"],
+            fired: [],
+            dropped: [],
+            rationale: "One reviewer was enough.",
+            override_rejected: null,
+            latencyMs: 10,
+            costUsd: 0.01,
+          },
+          synthesis: {
+            merged: [],
+            excluded: [],
+            rejected: [],
+            degraded: null,
+            latencyMs: 10,
+            costUsd: 0.02,
+          },
+          degraded: [],
+          ...over,
+        },
+        dir,
+      );
+      return readFileSync(out, "utf8");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  test("shows every finding, not the visitor's three", async () => {
+    const html = await full([1, 2, 3, 4, 5, 6, 7].map((n) => finding(n, 2)));
+    for (const n of [1, 2, 3, 4, 5, 6, 7]) {
+      assert.match(html, new RegExp(`Observation ${n}<`), `finding ${n} must be on the gate page`);
+    }
+    assert.match(html, /What we found \(7\)/);
+  });
+
+  test("keeps the Synthesizer's rank order, so the page and the terminal agree", async () => {
+    // A severity 4 ranked last stays last. `npm run review` walks findings.json
+    // in this order and `npm run outcome` scores rank against those calls —
+    // re-sorting here would mean judging one order while reading another.
+    const html = await full([finding(1, 2), finding(2, 1), finding(3, 4)]);
+    const order = [...html.matchAll(/Observation (\d)</g)].map((m) => m[1]);
+    assert.deepEqual(order, ["1", "2", "3"]);
+  });
+
+  test("pins match the numbers annotate drew, gaps and all", async () => {
+    // Finding 2 has no bbox, so it takes its number out of circulation: the
+    // third finding is pin 3 on the image, not pin 2.
+    const html = await full([boxed(1), finding(2, 2), boxed(3)]);
+    const pins = [...html.matchAll(/class="pin">([^<]*)</g)].map((m) => m[1]);
+    assert.deepEqual(pins, ["1", "—", "3"]);
+  });
+
+  test("positives are shown but do not count as issues", async () => {
+    const html = await full([finding(1, 2), finding(2, 1, { positive: true })]);
+    assert.match(html, /What we found \(1\)/);
+    assert.match(html, /What's working \(1\)/);
+  });
+
+  test("what the Synthesizer set aside is on the page, with its reason", async () => {
+    // The audit showing its own work is the thing we sell against being taken
+    // on faith — and these exclusions are invisible to every metric we compute.
+    const html = await full([finding(1, 2)], {
+      synthesis: {
+        merged: [],
+        excluded: [{ id: "x1", agent: "a11y", reason: "not relevant to the stated concern" }],
+        rejected: [],
+        degraded: null,
+        latencyMs: 10,
+        costUsd: 0.02,
+      },
+    });
+    assert.match(html, /not relevant to the stated concern/);
+  });
+
+  test("a degraded run says so on the page, not just in the log", async () => {
+    const html = await full([finding(1, 2)], { degraded: ["forms: timed out"] });
+    assert.match(html, /ran degraded/);
+    assert.match(html, /forms: timed out/);
   });
 });
