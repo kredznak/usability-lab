@@ -192,6 +192,7 @@ async function extractElements(
 
       const candidates: Candidate[] = [];
       const foldY = window.innerHeight;
+      const viewportW = window.innerWidth;
       let total = 0;
       let order = 0;
 
@@ -215,6 +216,27 @@ async function extractElements(
         // would be off by the scroll offset.
         const pageY = r.top + window.scrollY;
         const pageX = r.left + window.scrollX;
+
+        // Off-canvas: rendered, but outside the strip the screenshot covers.
+        //
+        // A slide-out cart or nav drawer is parked past the edge with
+        // `transform: translateX(100%)`, which defeats every skip above it —
+        // it is not display:none, not visibility:hidden, not opacity:0, and it
+        // has a real bounding box. Cotopaxi's mini-cart sat at x=1455-1778 on a
+        // 1440px viewport and produced four findings about controls no visitor
+        // could see, all at high confidence: "the same donation toggle appears
+        // twice" is true of the document and false of the page.
+        //
+        // Nothing downstream can catch that. claims.ts confirms the element
+        // exists and the quoted text is present; deriveConfidence confirms the
+        // element is real. Both pass, because both are asking about the DOM.
+        // Visibility is a fact only the capture holds, so it is settled here.
+        //
+        // Straddling the edge is kept on purpose — partly visible is visible,
+        // and dropping those would hide genuine overflow bugs. Counted in
+        // `total` before the skip, so a page whose content is all in a drawer
+        // reads as a page we mostly excluded, not a page with nothing on it.
+        if (pageX >= viewportW || pageX + r.width <= 0) continue;
         const tag = el.tagName.toLowerCase();
         const text = visibleText(el, textLimit);
 

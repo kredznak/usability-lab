@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Off-canvas drawer — capture fixture</title>
+    <style>
+      body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+      main { padding: 40px; }
+      button, input { font: inherit; padding: 8px 16px; }
+
+      /*
+        A slide-out cart drawer, written the way real stores write one.
+
+        This is the whole point of the fixture: the drawer is NOT display:none,
+        NOT visibility:hidden, and NOT opacity:0. It is fully painted, has a
+        real bounding box, and sits past the right edge of the viewport because
+        of the transform. Every skip condition the capture had before this
+        fixture existed lets it through, and its contents were reported as
+        visible page elements — on Cotopaxi, as elements ABOVE THE FOLD.
+
+        Left off-canvas is included too. A right-only check would pass the
+        Cotopaxi case and still miss RTL layouts and left-hand nav drawers.
+      */
+      .drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 380px;
+        height: 100%;
+        background: #fff;
+        border-left: 1px solid #ccc;
+        transform: translateX(100%);
+      }
+      .drawer-left {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        background: #fff;
+        transform: translateX(-100%);
+      }
+      .drawer h2 { margin: 24px 16px 8px; }
+      .drawer button, .drawer-left button { margin: 8px 16px; }
+
+      /* Straddles the right edge: partly visible, so it must be KEPT. */
+      .peeking {
+        position: absolute;
+        top: 300px;
+        left: 1380px;
+        width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Your cart is empty</h1>
+      <p>Nothing here yet. Have a look around.</p>
+      <button id="visible-checkout">Continue to Checkout</button>
+      <label for="email">Email</label>
+      <input id="email" type="email" />
+    </main>
+
+    <!-- Off-canvas right: a mini-cart. Nothing here is visible to a visitor. -->
+    <aside class="drawer">
+      <h2>Cart drawer heading</h2>
+      <button id="drawer-checkout">Check Out</button>
+      <button id="drawer-donate">Donate today</button>
+    </aside>
+
+    <!-- Off-canvas left: a nav drawer, the mirror-image case. -->
+    <nav class="drawer-left">
+      <button id="nav-drawer-item">Shop all</button>
+    </nav>
+
+    <!-- Straddles the viewport edge. A visitor can see part of it. -->
+    <button class="peeking" id="peeking-button">Partly on screen</button>
+  </body>
+</html>

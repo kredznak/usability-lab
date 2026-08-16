@@ -1,6 +1,6 @@
 # Review queue
 
-76 findings await a human label. The fastest way through this is
+89 findings await a human label. The fastest way through this is
 `npm run label`, which asks one question at a time and saves as it goes.
 
 The machine has already checked what it can: cited elements exist, quotes appear
@@ -760,6 +760,162 @@ on a true statement — that is the question below.
 > Near the bottom, two CTAs sit side by side: "Get started" and "Contact sales", offering separate paths for self-serve versus sales-assisted visitors.
 
 > Separating self-serve and enterprise intents lets each visitor type find an appropriately-sized commitment, which research suggests can reduce mismatched drop-off.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f1
+
+- **conversion-cta+heuristics** · severity 3 · high confidence · el_12
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> The primary CTA "Check Out" button is fully rendered and enabled even though the page states "Your cart is empty" and shows "0 Items $0.00".
+
+> Presenting a checkout action as the primary next step on an empty cart offers no path of value and can make the cart state feel unreliable, wasting the visitor's attention at the key decision point.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f2
+
+- **conversion-cta+forms** · severity 2 · high confidence · el_8
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> A donation toggle labeled "Donate today and help end extreme poverty in our lifetime." sits directly above the checkout button with no dollar amount displayed next to the switch itself.
+
+> Without a visible amount attached to the toggle, a visitor cannot judge the financial commitment of leaving it on before proceeding to pay.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f3
+
+- **conversion-cta+forms+heuristics** · severity 2 · high confidence · el_8
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> The same donation opt-in toggle, labeled 'Donate today and help end extreme poverty in our lifetime,' appears twice on the page as two separate switch inputs (el_8 and el_43) with identical label text.
+
+> Two identical toggles for the same choice make it unclear whether they are linked or independent, risking a visitor toggling one and assuming the donation state is set when it may not match the other control.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f4
+
+- **conversion-cta+forms+heuristics** · severity 2 · high confidence · el_44
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> The page shows two separate checkout entry points: a 'Check Out' button/link (el_11, el_12) near the top cart summary and a distinct 'Continue to Checkout' link (el_44) further down, both leading toward the same next step.
+
+> Two differently labeled controls for what appears to be the same action can make a visitor pause to check whether they do different things, adding hesitation before the primary conversion step.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f5
+
+- **conversion-cta+heuristics** · severity 2 · medium confidence · page-level
+- https://www.cotopaxi.com/cart
+- mechanical: **unverifiable**
+
+> The page shows 'Your cart is empty' alongside the message 'Spend $99.00 more to qualify for free shipping,' a threshold prompt that presumes items are already in the cart.
+
+> A shipping-progress message that contradicts the empty-cart state can read as a system error, undermining trust in the displayed totals.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f6
+
+- **a11y** · severity 2 · high confidence · el_43
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> Checkbox with role="switch" (the second donate toggle, near the order summary) has no accessible name at all, while the earlier toggle el_8 does.
+
+> A screen reader announces this switch with no label, so a user cannot tell what turning it on or off does.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f7
+
+- **a11y** · severity 3 · high confidence · el_18
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> Button with no visible text and no accessible name (22x18px), positioned near the search area.
+
+> Screen reader users hear only "button" with no indication of its purpose, making it unusable without trial and error.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f8
+
+- **conversion-cta** · severity 2 · high confidence · el_95
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> The only visible way to reach a person, "Support M–F 9–5 MDT", appears in the footer below the fold, with nothing similar placed near the cart or checkout buttons.
+
+> A visitor with a question about the order or the donation charge has no readily visible way to reach support at the point where they are deciding whether to check out.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f9
+
+- **a11y** · severity 3 · high confidence · el_48
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> Email input's only accessible name comes from placeholder text "Your Email..." with no associated <label>.
+
+> Once a visitor types, the placeholder disappears, and screen reader users who tab past this field mid-form lose the field's identity entirely.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f10
+
+- **forms** · severity 2 · high confidence · el_48
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> The footer signup section reads 'Sign up with your email and phone number to be the first to know about new arrivals,' yet the form (el_47) contains only a single input, el_48, with placeholder 'Your Email...' and no phone field.
+
+> Promising a phone-based benefit while only collecting email can leave a visitor expecting a further step, or wondering if the phone-related offer applies to them at all.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f11
+
+- **conversion-cta** · severity 2 · high confidence · el_49
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> The newsletter signup button reads only "NEXT STEP" with no indication of what follows submission.
+
+> A visitor asked to hand over an email at this point cannot anticipate what happens afterward, which can reduce willingness to complete the signup.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f12
+
+- **conversion-cta** · severity 1 · high confidence · positive · el_9
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> Above the fold, next to the cart summary, the page repeats "Guaranteed for Good™", "Easy U.S. Returns & Exchanges", "Lifetime Warranty + Repairs", and "Trade-In for Gift Cards".
+
+> Placing concrete post-purchase guarantees beside the order total reassures visitors about risk before they commit to checkout.
+
+**Question:** would a founder change something because of this?
+
+## dcc8c35a-e890-438d-a1de-85039fe25c4a:dcc8c35a-e890-438d-a1de-85039fe25c4a-f13
+
+- **forms+heuristics** · severity 1 · high confidence · positive · el_41
+- https://www.cotopaxi.com/cart
+- mechanical: **verified**
+
+> A '< Back to shopping' link (el_41) is present above the cart summary.
+
+> An explicit path back to shopping lets a visitor easily resume browsing without relying on the browser back button, reducing the chance of an unintended exit.
 
 **Question:** would a founder change something because of this?
 
