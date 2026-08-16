@@ -73,7 +73,18 @@ export function renderCapture(capture: Capture): string {
       `):`,
     elements,
     ``,
-    `VISIBLE PAGE TEXT:`,
+    // The element list has warned about its own truncation since Slice 2. The
+    // page text did not, and a reviewer read the silence as absence: basecamp's
+    // text was cut at 4000 of 6753 chars and the missing 41% held six tile
+    // labels it then reported as "no visible text on the page". Rank 1, high
+    // confidence, mechanically verified, false. Same warning, same wording —
+    // the reviewer should distrust both inputs for the same reason.
+    `VISIBLE PAGE TEXT` +
+      (capture.text_total_chars > capture.text_excerpt.length
+        ? ` (${capture.text_excerpt.length} of ${capture.text_total_chars} characters — this text is ` +
+          `TRUNCATED. Do not claim anything is missing from the page; you are only seeing part of it.)`
+        : ``) +
+      `:`,
     capture.text_excerpt,
   ].join("\n");
 }

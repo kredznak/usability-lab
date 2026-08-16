@@ -40,7 +40,22 @@ const COLLECT_CEILING = 5000;
  */
 const SAMPLE_BANDS = 12;
 
-const TEXT_EXCERPT_LIMIT = 4000;
+/**
+ * How much page text a reviewer is shown.
+ *
+ * Was 4000, chosen in Slice 1 and never revisited. **5 of the 11 distinct pages
+ * we have ever captured exceed it**, and the cost of that is not a slightly
+ * thinner brief — it is false findings. basecamp's page text is 6753 chars, the
+ * reviewer saw 59% of it, and reported that six tool tiles "carry no visible
+ * text on the page". The labels are rendered as headings above every tile. That
+ * finding was rank 1, high confidence, mechanically verified, and wrong.
+ *
+ * 16000 covers 9 of those 11. At roughly 4 chars per token that is ~4K tokens
+ * per reviewer against a 16K output budget, or about $0.04 on a $0.54 audit —
+ * cheap next to a whole class of absence claims we cannot otherwise trust.
+ * Anything still truncated now says so, which is the part that actually matters.
+ */
+const TEXT_EXCERPT_LIMIT = 16_000;
 /** §8 redaction: raw page text is kept to 200-char excerpts. */
 const ELEMENT_TEXT_LIMIT = 200;
 
@@ -161,6 +176,25 @@ async function extractElements(
 
           if (node !== root) {
             const el = node as HTMLElement;
+
+            // Elements whose *contents are not content*, skipped by tag.
+            //
+            // `<noscript>` is the one that bit us. With scripting enabled its
+            // children are never parsed — the whole thing is a single text node
+            // holding literal markup — and Chromium computes it as
+            // `display: inline`, `visibility: visible`, `opacity: 1` with a 0x0
+            // rect, so every style check we had waved it through. 47% of
+            // asana's "visible page text" was
+            // `<iframe src="//b.yjtag.jp/iframe?c=..." width="1" ...>`.
+            //
+            // script and style usually are display:none and usually get caught.
+            // Usually is not a contract. A tag check is a fact; a style check
+            // turned out to be a request.
+            const tag = el.tagName.toLowerCase();
+            if (tag === "script" || tag === "style" || tag === "noscript" || tag === "template") {
+              continue;
+            }
+
             const cs = window.getComputedStyle(el);
             if (cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0") {
               continue;

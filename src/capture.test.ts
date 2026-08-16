@@ -170,6 +170,32 @@ describe("hidden by an ancestor is hidden", () => {
   });
 });
 
+describe("markup is not page text", () => {
+  /**
+   * B9. 47% of asana's "visible page text" was `<iframe src="//b.yjtag.jp/...">`
+   * — tracking markup inside `<noscript>`, which with scripting enabled is a
+   * single unparsed text node, and which Chromium computes as display:inline,
+   * opacity 1, 0x0. Every style check we had waved it through. Reviewers are
+   * asked to reason about the words a visitor reads; half of asana's were this.
+   */
+  test("noscript contents never reach the page text", () => {
+    assert.ok(!cap.text_excerpt.includes("<iframe"), `raw markup in page text: ${cap.text_excerpt}`);
+    assert.ok(!cap.text_excerpt.includes("GTM-TRACKME"));
+  });
+
+  test("script and template contents do not either", () => {
+    // These are usually display:none and usually caught. Usually is not a
+    // contract, which is why the skip is by tag.
+    assert.ok(!cap.text_excerpt.includes("scriptTextIsNotPageText"));
+    assert.ok(!cap.text_excerpt.includes("templateTextIsNotPageText"));
+  });
+
+  test("the words a visitor actually reads are untouched", () => {
+    assert.ok(cap.text_excerpt.includes("Your cart is empty"));
+    assert.ok(cap.text_excerpt.includes("Continue to Checkout"));
+  });
+});
+
 describe("the exclusion is data, not silence", () => {
   test("elements_total counts what the page had, so the drop is visible", () => {
     // If total silently equalled the kept count, a page whose entire content

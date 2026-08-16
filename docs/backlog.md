@@ -158,21 +158,21 @@ contradicted when it is true, and the asana audit reports 12 findings / 1 false.
 
 ---
 
-## B8. The page text truncates silently, and a reviewer read the silence as absence
+## B8. The page text truncates silently
 
-**Found by** the rank-agreement diagnosis, 2026-08-16. This is the root cause of
-one of only two free-three cuts in the whole corpus.
+*(Corrected 2026-08-16, an hour after filing. This entry first claimed the
+truncation caused basecamp's false finding. **It did not** — see B10. I fixed
+the truncation, re-captured basecamp, and the labels were still missing from a
+now-complete 6666-character page text, which is how the real cause surfaced.
+The bug below is real and the fix stands; the causal claim was wrong.)*
 
-**What happened.** basecamp `4f8f1271` rank 1, severity 2, high confidence,
-mechanically **verified**: *"The six large tool tiles (Message Board, Docs &
-Files, To-dos, Chat, Schedule, Card Table) carry no visible text on the page —
-their labels exist only as accessible names, not as rendered captions."* Kelly
-cut it. The screenshot settles it: every one of those labels is rendered as a
-red heading directly above its tile. The finding is false.
+**Found by** the rank-agreement diagnosis, 2026-08-16.
 
-**Why the reviewer believed it.** `text_excerpt` is `fullText.slice(0, 4000)`.
-basecamp's page text is 6753 characters, so the reviewer saw **59% of the
-page** — and the labels are in the missing 41%.
+**What happens.** `text_excerpt` was `fullText.slice(0, 4000)`, and **5 of the
+11 distinct pages we have ever captured exceed it** — stripe/pricing 28086
+chars, stripe 12310, linear 8146, basecamp 6753, wikipedia 4102. A reviewer
+handed 59% of a page under the heading `VISIBLE PAGE TEXT` has no way to know
+it is reasoning about a fragment.
 
 **The part that makes it a defect rather than a limit.**
 [`runner.ts`](../src/agents/runner.ts) already solves this problem for the other
@@ -182,10 +182,10 @@ it."* The page text is handed over under the heading `VISIBLE PAGE TEXT` with
 no warning at all. We taught the reviewer to distrust one truncated input and
 not the other.
 
-**Cost.** Small — mirror the existing warning, and consider raising the 4000
-limit, which is a budget choice nothing has re-examined since Slice 1. **What it
-distorts until fixed:** every absence claim on any page over 4000 characters of
-text, which is most real pages. Related: B3 (absence claims).
+**Fixed** the same day: the warning is mirrored, and the limit raised 4000 →
+16000, which covers 9 of the 11. Kept here because the *reasoning* is worth
+holding on to — the guard existed twenty lines away and had simply never been
+applied to the second input. Related: B3 (absence claims), B10.
 
 ---
 
@@ -212,6 +212,49 @@ happily draw a conclusion from.
 **Cost.** Small — skip `script`, `style`, `noscript`, `template` and `head` by
 tag in `visibleText`, rather than hoping their computed style gives them away.
 A tag check is a fact; a style check turned out to be a request.
+
+---
+
+## B10. Text rendered as an image is invisible to us and obvious to a visitor
+
+**This is the real cause of basecamp's false finding**, and the reason B8 above
+carries a correction. It is also the first bug this project has found that
+cannot be fixed by looking harder at the DOM.
+
+**What happened.** `4f8f1271` rank 1, high confidence, mechanically **verified**:
+*"The six large tool tiles (Message Board, Docs & Files, To-dos, Chat, Schedule,
+Card Table) carry no visible text on the page — their labels exist only as
+accessible names, not as rendered captions."* Kelly cut it. The screenshot shows
+all six labels rendered as red headings.
+
+**What the page actually does.** Each label is a `.webp` image —
+`tool-message-board-light.webp`, `tool-docs-and-files-light.webp`, and so on —
+every one with `alt=""`. Probed on the live page:
+`document.body.textContent.includes("Message Board")` is **false**. The string
+is nowhere in the DOM text. The `<button>`s carry `aria-label="Tool: Message
+Board"`, which is exactly what our capture recorded.
+
+**So the capture was right and the finding was wrong.** Every fact in it is true
+of the document. The conclusion — that a visitor sees no caption — is false,
+and no amount of DOM inspection can tell us otherwise, because the caption is
+pixels.
+
+**Why this is the hard one.** Every capture bug found on 2026-08-16 was fixed by
+asking a better question of the DOM. This one cannot be. The options, none free:
+
+- **Stop reviewers claiming absence of text at all.** Cheapest and bluntest.
+  They can say "no text node exists for X", which is true and much weaker. Costs
+  real findings — "this page never states its price" is a *good* finding.
+- **Send the screenshot to the reviewer.** They currently get text only and
+  never see the page. Correct, and materially more expensive per audit.
+- **OCR the screenshot** into a second text source. Most machinery, and its own
+  false positives.
+
+**Cost.** The decision is the expensive part; each option is small to medium.
+**What it distorts until decided:** every absence-of-text claim on any page that
+sets type in images — which is most marketing pages. Related: B3, B8, and
+`usability-lab-evidence-failures` — this is the purest example yet of a right
+fact with a wrong conclusion.
 
 ---
 

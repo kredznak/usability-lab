@@ -70,4 +70,43 @@ describe("renderCapture sends every field a rubric promises", () => {
     assert.match(truncated, /TRUNCATED/);
     assert.doesNotMatch(rendered, /TRUNCATED/, "an untruncated capture must not claim it is");
   });
+
+  /**
+   * B8. The element list has warned about its own truncation since Slice 2.
+   * The page text did not, and a reviewer read the silence as absence:
+   * basecamp's text was cut at 4000 of 6753 characters, and the missing 41%
+   * held the six tile labels it then reported as "no visible text on the page".
+   * Rank 1, high confidence, mechanically verified, and false — the labels are
+   * rendered as headings above every tile.
+   *
+   * Two truncations, one warning, was the whole bug.
+   */
+  test("truncated page text is disclosed too, not just a truncated element list", () => {
+    const out = renderCapture({ ...capture, text_excerpt: "abc", text_total_chars: 6753 });
+    assert.match(out, /VISIBLE PAGE TEXT \(3 of 6753 characters/);
+    assert.match(out, /this text is TRUNCATED/);
+    assert.match(out, /Do not claim anything is missing from the page/);
+  });
+
+  test("page text that is whole does not claim to be cut", () => {
+    const out = renderCapture({
+      ...capture,
+      text_excerpt: "the whole page",
+      text_total_chars: "the whole page".length,
+    });
+    assert.match(out, /VISIBLE PAGE TEXT:/);
+    assert.doesNotMatch(out, /this text is TRUNCATED/);
+  });
+
+  test("the two truncation warnings are independent", () => {
+    // A page can have a complete element list and a cut page text, or the
+    // reverse. Reporting one because the other happened would be a new lie.
+    const textOnly = renderCapture({ ...capture, text_excerpt: "abc", text_total_chars: 900 });
+    assert.match(textOnly, /this text is TRUNCATED/);
+    assert.doesNotMatch(textOnly, /this list is TRUNCATED/);
+
+    const listOnly = renderCapture({ ...capture, elements_total: capture.elements.length + 40 });
+    assert.match(listOnly, /this list is TRUNCATED/);
+    assert.doesNotMatch(listOnly, /this text is TRUNCATED/);
+  });
 });

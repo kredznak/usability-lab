@@ -91,6 +91,20 @@
       <button id="nav-drawer-item">Shop all</button>
     </nav>
 
+    <!--
+      Contents that are not content. noscript is the load-bearing case: with
+      scripting on, its children are never parsed — this is one text node of
+      literal markup — and Chromium computes it display:inline, opacity 1,
+      0x0 box, so no style check catches it.
+    -->
+    <noscript>
+      <iframe src="https://tracker.example/ns.html?id=GTM-TRACKME" height="0" width="0"></iframe>
+    </noscript>
+    <script type="application/json">
+      { "analyticsPayload": "scriptTextIsNotPageText" }
+    </script>
+    <template><p>templateTextIsNotPageText</p></template>
+
     <!-- A closed region dropdown, well inside the viewport horizontally. -->
     <div class="dropdown">
       <ul>
