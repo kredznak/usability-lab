@@ -43,6 +43,24 @@
       .drawer h2 { margin: 24px 16px 8px; }
       .drawer button, .drawer-left button { margin: 8px 16px; }
 
+      /*
+        A closed dropdown, written the way Cotopaxi's region picker is.
+
+        The trap: `opacity` does not inherit as a computed value, so the links
+        inside compute opacity:1, visibility:visible, and a real box. Asking
+        each link about itself says "visible". Only the wrapper knows.
+      */
+      .dropdown {
+        position: absolute;
+        top: 40px;
+        left: 400px;
+        width: 175px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+      }
+      .dropdown a { display: inline-block; width: 151px; }
+
       /* Straddles the right edge: partly visible, so it must be KEPT. */
       .peeking {
         position: absolute;
@@ -72,6 +90,14 @@
     <nav class="drawer-left">
       <button id="nav-drawer-item">Shop all</button>
     </nav>
+
+    <!-- A closed region dropdown, well inside the viewport horizontally. -->
+    <div class="dropdown">
+      <ul>
+        <li><a href="/au">Australia</a></li>
+        <li><a href="/ca">Canada</a></li>
+      </ul>
+    </div>
 
     <!-- Straddles the viewport edge. A visitor can see part of it. -->
     <button class="peeking" id="peeking-button">Partly on screen</button>

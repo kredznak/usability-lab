@@ -200,6 +200,54 @@ async function extractElements(
         return parts.join(" ").replace(/\s+/g, " ").trim().slice(0, limit);
       })();
 
+      /**
+       * Is this element hidden by something above it in the tree?
+       *
+       * `visibleText` walks down from the body, so it prunes a hidden subtree
+       * for free. The element list uses querySelectorAll and inspects each
+       * element on its own, which is not the same question — and the gap is not
+       * theoretical. Cotopaxi's region dropdown holds `<a>Australia</a>` with
+       * computed opacity 1, visibility visible, and a real 151x19 box, inside a
+       * `<ul>` with `opacity: 0` and a 1px-tall `overflow: hidden` wrapper.
+       * `opacity` does not inherit as a computed value, so asking the link
+       * about itself says "visible" and means nothing.
+       *
+       * The two paths disagreeing is how it surfaced: the audit produced a
+       * finding about country links that were nowhere in text_excerpt, because
+       * the text walk had correctly dropped them. The stricter of the two
+       * answers was the right one.
+       *
+       * Memoized per ancestor. Without it this is getComputedStyle on every
+       * ancestor of every one of up to 5000 candidates.
+       */
+      const ancestorHidden = ((): ((el: HTMLElement) => boolean) => {
+        const cache = new Map<Element, boolean>();
+        return (start) => {
+          const chain: Element[] = [];
+          let node: HTMLElement | null = start.parentElement;
+          let hidden = false;
+          while (node) {
+            const cached = cache.get(node);
+            if (cached !== undefined) {
+              hidden = cached;
+              break;
+            }
+            const cs = window.getComputedStyle(node);
+            const r = node.getBoundingClientRect();
+            const collapsed = (r.width <= 1 || r.height <= 1) && cs.overflow === "hidden";
+            if (cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0" || collapsed) {
+              hidden = true;
+              cache.set(node, true);
+              break;
+            }
+            chain.push(node);
+            node = node.parentElement;
+          }
+          for (const c of chain) cache.set(c, hidden);
+          return hidden;
+        };
+      })();
+
       // Interactive elements are what findings are usually about, so they win a
       // contested slot over a structural wrapper in the same band.
       const INTERACTIVE = ["a", "button", "input", "select", "textarea", "label", "form"];
@@ -219,6 +267,10 @@ async function extractElements(
         if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
           continue;
         }
+        // Asking the element about itself is not the same as asking whether it
+        // is visible. A collapsed dropdown's links answer "visible" truthfully
+        // and are still invisible, because the wrapper above them is not.
+        if (ancestorHidden(el)) continue;
 
         const r = el.getBoundingClientRect();
         if (r.width < 1 || r.height < 1) continue;

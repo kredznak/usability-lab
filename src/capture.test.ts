@@ -135,6 +135,41 @@ describe("drawer text stays out of the page text too", () => {
   });
 });
 
+describe("hidden by an ancestor is hidden", () => {
+  /**
+   * Cotopaxi's region dropdown: `<a>Australia</a>` computing opacity 1,
+   * visibility visible, and a real 151x19 box, inside a wrapper with
+   * `opacity: 0` and 1px of overflow-hidden height. `opacity` does not inherit
+   * as a computed value, so the link's own style says "visible" and means
+   * nothing. The audit duly reported that the country list fails to mark the
+   * active region — about a menu nobody had opened.
+   */
+  test("a closed dropdown's links are not captured", () => {
+    assert.equal(byText("Australia").length, 0, "closed dropdown link was captured");
+    assert.equal(byText("Canada").length, 0);
+  });
+
+  test("and its words are not in the page text", () => {
+    assert.ok(!cap.text_excerpt.includes("Australia"));
+  });
+
+  test("the element list and the page text agree about what is visible", () => {
+    // The invariant behind all of this. The text walk prunes from the top and
+    // was always the stricter of the two; the element list inspecting each
+    // node alone is what let three separate findings through. Any element
+    // carrying text the page text does not have means they have diverged
+    // again.
+    for (const e of cap.elements) {
+      const own = (e.text ?? "").trim();
+      if (own.length < 8) continue;
+      assert.ok(
+        cap.text_excerpt.includes(own),
+        `${e.ref} <${e.tag}> carries "${own}", which is not in the visible page text`,
+      );
+    }
+  });
+});
+
 describe("the exclusion is data, not silence", () => {
   test("elements_total counts what the page had, so the drop is visible", () => {
     // If total silently equalled the kept count, a page whose entire content
