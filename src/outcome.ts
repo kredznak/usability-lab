@@ -2,6 +2,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { loadCorpus, type LabelledFinding } from "./corpus.js";
 import { FREE_FINDINGS } from "./render.js";
+import { CORPUS_ROOT } from "./paths.js";
 
 /**
  * Outcome suite — docs/design.md §10, at the smallest size that is useful.
@@ -28,7 +29,7 @@ const MIN_PRECISION = 0.8;
 /** §10: "confidence calibration (high-confidence findings verified correct ≥ 90%)". */
 const MIN_HIGH_CONFIDENCE_CORRECT = 0.9;
 
-const QUEUE = "fixtures/labelled/review-queue.md";
+const QUEUE = path.join(CORPUS_ROOT, "review-queue.md");
 
 type Truth = "true" | "false" | "unknown";
 

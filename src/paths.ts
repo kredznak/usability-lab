@@ -15,3 +15,12 @@ export const DB_PATH = process.env.USABILITY_LAB_DB || "out/usability-lab.db";
 
 /** The directory holding one folder of artifacts per audit. */
 export const OUT_ROOT = process.env.USABILITY_LAB_OUT || "out";
+
+/**
+ * The labelled corpus the outcome suite scores against.
+ *
+ * Redirectable for the same reason as the other two, with an extra edge:
+ * `buildCorpus()` both reads and writes this file, so a test that did not
+ * redirect it would overwrite months of human labels to assert one thing.
+ */
+export const CORPUS_ROOT = process.env.USABILITY_LAB_CORPUS || "fixtures/labelled";

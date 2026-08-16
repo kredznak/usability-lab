@@ -1,6 +1,8 @@
 import { writeFileSync } from "node:fs";
+import path from "node:path";
 import { createInterface } from "node:readline/promises";
 import { loadCorpus } from "./corpus.js";
+import { CORPUS_ROOT } from "./paths.js";
 
 /**
  * `npm run label` — adjudicate findings one keystroke at a time.
@@ -26,7 +28,7 @@ import { loadCorpus } from "./corpus.js";
  * a labelling tool you cannot walk away from does not get used.
  */
 
-const CORPUS_FILE = "fixtures/labelled/findings.json";
+const CORPUS_FILE = path.join(CORPUS_ROOT, "findings.json");
 
 const args = process.argv.slice(2);
 const redo = args.includes("--redo");

@@ -3,7 +3,8 @@ import path from "node:path";
 import { Capture, Finding, type ReviewDecision, type ReviewRecord } from "./types.js";
 import { checkClaim } from "./claims.js";
 import { ALL_RUBRICS } from "./agents/rubrics.js";
-import { OUT_ROOT } from "./paths.js";
+import { OUT_ROOT, CORPUS_ROOT } from "./paths.js";
+import { AuditStore } from "./db.js";
 
 /**
  * Builds the labelled corpus the outcome suite scores against — docs/design.md §10.
@@ -25,7 +26,7 @@ import { OUT_ROOT } from "./paths.js";
  * has no opinion at all on "this is worth a founder's attention".
  */
 
-const CORPUS = "fixtures/labelled";
+const CORPUS = CORPUS_ROOT;
 const CORPUS_FILE = path.join(CORPUS, "findings.json");
 
 /**
@@ -202,15 +203,52 @@ function findingsFromHtml(html: string): unknown[] {
   });
 }
 
+/**
+ * Audits the state machine has retired, which must not be scored.
+ *
+ * A FAILED audit is one we decided is not a real audit — a timeout, or a run
+ * superseded because the capture it rested on was wrong. On 2026-08-16 three
+ * retired Cotopaxi runs were still contributing 38 findings here, including
+ * the four built on the off-canvas capture, and they scored **0 false**:
+ * `claims.ts` cannot see a visibility problem, so a broken capture reads as a
+ * clean audit and quietly raises precision.
+ *
+ * Unknown is not failed. The six oldest audits predate the `audits` table and
+ * have no row at all; they stay in. Only an explicit FAILED is removed.
+ */
+function retiredAudits(): Map<string, string> {
+  const out = new Map<string, string>();
+  try {
+    const store = new AuditStore();
+    for (const status of ["FAILED", "CAPTURE_FAILED"] as const) {
+      for (const row of store.list(status)) out.set(row.audit_id, status);
+    }
+    store.close();
+  } catch {
+    // No database yet is a legitimate state — corpus predates the audits table.
+  }
+  return out;
+}
+
 export function buildCorpus(): Corpus {
   // Human labels survive a rebuild; that work is expensive and must not be
   // thrown away because a claim check was refined.
   const previous = new Map(loadCorpus().findings.map((f) => [f.key, f]));
 
   const built: Corpus = { built_from: [], skipped: [], findings: [] };
+  const retired = retiredAudits();
 
   for (const auditId of completedAudits()) {
     const dir = path.join(OUT_ROOT, auditId);
+
+    const retiredAs = retired.get(auditId);
+    if (retiredAs) {
+      built.skipped.push({
+        audit_id: auditId,
+        reason: `${retiredAs} — retired by the state machine, not scored`,
+      });
+      continue;
+    }
 
     // Audits from before the capture schema grew input types, accessible names
     // and font sizes cannot be claim-checked against it. Skipped loudly.
