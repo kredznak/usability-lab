@@ -1,4 +1,5 @@
-import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import type Anthropic from "@anthropic-ai/sdk";
 import { Capture } from "../types.js";
@@ -66,9 +67,50 @@ export async function requestFor(
 }
 
 export function loadCapture(name: string): Capture {
-  return Capture.parse(
+  const parsed = Capture.parse(
     JSON.parse(readFileSync(path.join("fixtures/captures", `${name}.json`), "utf8")),
   );
+
+  // A frozen capture records the screenshot it was taken with, but that file
+  // lives under out/, which is gitignored — so on a fresh clone it is simply
+  // not there, and the snapshot harness would build a request with no images
+  // and call it unchanged. The fixtures are meant to be hermetic. When a
+  // committed screenshot sits beside the JSON, prefer it.
+  const committed = path.join("fixtures/captures", `${name}-page.png`);
+  return existsSync(committed) ? { ...parsed, screenshot_path: committed } : parsed;
+}
+
+/**
+ * Replaces image payloads with a digest of themselves.
+ *
+ * A single 1440x900 PNG is ~200KB of base64, and govuk is six of them. Embedded
+ * verbatim, every request fixture gains megabytes, `npm run snapshot -- check`
+ * diffs become unreadable, and the one thing the snapshot exists for — being a
+ * review surface a person actually reads — is lost.
+ *
+ * A digest keeps every property that matters: the number of images, their order
+ * and position in the message, and whether the bytes changed. It does not let
+ * you eyeball the picture, which was never what this file was for.
+ */
+export function digestImages(request: unknown): unknown {
+  if (Array.isArray(request)) return request.map(digestImages);
+  if (request === null || typeof request !== "object") return request;
+
+  const obj = request as Record<string, unknown>;
+  if (obj.type === "image") {
+    const source = obj.source as { media_type?: string; data?: string } | undefined;
+    const data = source?.data ?? "";
+    return {
+      type: "image",
+      source: {
+        media_type: source?.media_type ?? "unknown",
+        bytes: Buffer.from(data, "base64").length,
+        sha256: createHash("sha256").update(data).digest("hex").slice(0, 16),
+      },
+    };
+  }
+
+  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, digestImages(v)]));
 }
 
 export function fixturePath(agent: string): string {
@@ -77,5 +119,5 @@ export function fixturePath(agent: string): string {
 
 export function writeFixture(agent: string, request: unknown): void {
   mkdirSync(FIXTURE_DIR, { recursive: true });
-  writeFileSync(fixturePath(agent), JSON.stringify(request, null, 2) + "\n");
+  writeFileSync(fixturePath(agent), JSON.stringify(digestImages(request), null, 2) + "\n");
 }

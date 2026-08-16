@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
-import { requestFor, loadCapture, writeFixture, fixturePath } from "./agents/snapshot-request.js";
+import { requestFor, loadCapture, writeFixture, fixturePath, digestImages } from "./agents/snapshot-request.js";
 import { runSubAgent } from "./agents/runner.js";
+import { pageTiles } from "./agents/tiles.js";
 import { runResearcher } from "./agents/researcher.js";
 import { RUBRICS } from "./agents/rubrics.js";
 import { Finding } from "./types.js";
@@ -54,7 +55,7 @@ const AGENTS: Record<string, Parameters<typeof requestFor>[0]> = {
   ...Object.fromEntries(
     Object.values(RUBRICS).map((rubric) => [
       rubric.id,
-      (client, capture, log) => runSubAgent(client, rubric, capture, log),
+      async (client, capture, log) => runSubAgent(client, rubric, capture, log, await pageTiles(capture)),
     ]),
   ),
   researcher: (client, _capture, log) =>
@@ -67,7 +68,9 @@ let drift = 0;
 
 for (const [name, fn] of Object.entries(AGENTS)) {
   const request = await requestFor(fn, capture);
-  const serialized = JSON.stringify(request, null, 2) + "\n";
+  // Digested here as well as in writeFixture, so `check` compares like for
+  // like instead of diffing a digest against megabytes of base64.
+  const serialized = JSON.stringify(digestImages(request), null, 2) + "\n";
 
   if (!check) {
     writeFixture(name, request);

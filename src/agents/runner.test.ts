@@ -1,8 +1,10 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { Capture } from "../types.js";
-import { renderCapture } from "./runner.js";
+import { renderCapture, buildRequest } from "./runner.js";
+import { RUBRICS } from "./rubrics.js";
+import { digestImages, loadCapture } from "./snapshot-request.js";
 
 /**
  * What a reviewer can actually see.
@@ -98,6 +100,85 @@ describe("renderCapture sends every field a rubric promises", () => {
     assert.doesNotMatch(out, /this text is TRUNCATED/);
   });
 
+  test("a screenshot that was cut short says so", () => {
+    // Third input, third truncation warning, same wording. B8's lesson was that
+    // an input which truncates in silence gets read as evidence of absence.
+    const out = buildRequest(RUBRICS.heuristics!, capture, {
+      tiles: [{ base64: "AAAA", fromY: 0, toY: 900 }],
+      unshownPx: 3200,
+      fullHeightPx: 4100,
+    });
+    const text = JSON.stringify(out.messages[0]!.content);
+    assert.match(text, /TRUNCATED/);
+    assert.match(text, /first 900 of 4100px/);
+    assert.match(text, /Do not claim anything is missing from the page/);
+  });
+
+  test("a whole-page screenshot does not claim to be cut", () => {
+    const out = buildRequest(RUBRICS.heuristics!, capture, {
+      tiles: [{ base64: "AAAA", fromY: 0, toY: 900 }],
+      unshownPx: 0,
+      fullHeightPx: 900,
+    });
+    const text = JSON.stringify(out.messages[0]!.content);
+    assert.doesNotMatch(text, /TRUNCATED: it covers/);
+    assert.match(text, /cover the whole page/);
+  });
+
+  test("the images come before the measurements", () => {
+    // Order is the finding, not a style choice. The screenshot is the page; the
+    // element list is our description of it. A reviewer given the description
+    // first anchors on it and reads the picture as confirmation — which is how
+    // basecamp's tile labels were reported as absent while plainly visible.
+    const out = buildRequest(RUBRICS.heuristics!, capture, {
+      tiles: [
+        { base64: "AAAA", fromY: 0, toY: 900 },
+        { base64: "BBBB", fromY: 900, toY: 1800 },
+      ],
+      unshownPx: 0,
+      fullHeightPx: 1800,
+    });
+    const blocks = out.messages[0]!.content as { type: string }[];
+    const firstImage = blocks.findIndex((b) => b.type === "image");
+    const capturedData = blocks.findIndex(
+      (b) => b.type === "text" && /captured_page_data/.test((b as { text?: string }).text ?? ""),
+    );
+    assert.ok(firstImage !== -1, "no image block was sent");
+    assert.ok(firstImage < capturedData, "the element list must not precede the screenshot");
+    assert.equal(blocks.filter((b) => b.type === "image").length, 2);
+  });
+
+  test("a capture with no screenshot still builds a request", () => {
+    // Tiling can fail on a page we still audited successfully. Losing the run
+    // at the last step over a missing crop would trade an audit for a picture.
+    const out = buildRequest(RUBRICS.heuristics!, capture, {
+      tiles: [],
+      unshownPx: 0,
+      fullHeightPx: 0,
+    });
+    const blocks = out.messages[0]!.content as { type: string }[];
+    assert.equal(blocks.filter((b) => b.type === "image").length, 0);
+    assert.match(JSON.stringify(blocks), /captured_page_data/);
+    assert.doesNotMatch(JSON.stringify(blocks), /SCREENSHOT/);
+  });
+
+  test("the page content carries a cache breakpoint", () => {
+    // Four reviewers, one page. Without this the images are sent four times and
+    // become the most expensive thing in the audit.
+    const out = buildRequest(RUBRICS.heuristics!, capture, {
+      tiles: [{ base64: "AAAA", fromY: 0, toY: 900 }],
+      unshownPx: 0,
+      fullHeightPx: 900,
+    });
+    const blocks = out.messages[0]!.content as { cache_control?: unknown }[];
+    assert.equal(
+      blocks.filter((b) => b.cache_control).length,
+      1,
+      "exactly one breakpoint, on the last block, so everything before it caches",
+    );
+    assert.ok(blocks[blocks.length - 1]!.cache_control, "the breakpoint must be last");
+  });
+
   test("the two truncation warnings are independent", () => {
     // A page can have a complete element list and a cut page text, or the
     // reverse. Reporting one because the other happened would be a new lie.
@@ -108,5 +189,51 @@ describe("renderCapture sends every field a rubric promises", () => {
     const listOnly = renderCapture({ ...capture, elements_total: capture.elements.length + 40 });
     assert.match(listOnly, /this list is TRUNCATED/);
     assert.doesNotMatch(listOnly, /this text is TRUNCATED/);
+  });
+});
+
+/**
+ * The request snapshot is a review surface — a diff a person reads before a
+ * prompt change ships. Six 1440x900 PNGs is roughly 1.2MB of base64, which
+ * would make every fixture unreadable and every diff meaningless.
+ */
+describe("request fixtures record images without carrying them", () => {
+  test("an image block becomes a digest, never base64", () => {
+    const png = Buffer.from("not really a png, but bytes are bytes");
+    const digested = digestImages({
+      messages: [
+        {
+          content: [
+            { type: "text", text: "hello" },
+            { type: "image", source: { type: "base64", media_type: "image/png", data: png.toString("base64") } },
+          ],
+        },
+      ],
+    }) as { messages: { content: { type: string; source?: Record<string, unknown>; text?: string }[] }[] };
+
+    const [text, image] = digested.messages[0]!.content;
+    assert.equal(text!.text, "hello", "text blocks pass through untouched");
+    assert.equal(image!.type, "image");
+    assert.equal(image!.source!.bytes, png.length);
+    assert.equal(typeof image!.source!.sha256, "string");
+    assert.equal(image!.source!.data, undefined, "the payload must not survive");
+    assert.doesNotMatch(JSON.stringify(digested), /bm90IHJlYWxseQ/, "base64 leaked into the fixture");
+  });
+
+  test("different bytes give different digests, so a changed screenshot shows up", () => {
+    const of = (s: string) =>
+      JSON.stringify(
+        digestImages({ type: "image", source: { type: "base64", media_type: "image/png", data: Buffer.from(s).toString("base64") } }),
+      );
+    assert.notEqual(of("page one"), of("page two"));
+    assert.equal(of("page one"), of("page one"), "and the same bytes are stable");
+  });
+
+  test("the snapshot fixture's screenshot is committed, not left under out/", () => {
+    // out/ is gitignored. Without a committed PNG the harness would silently
+    // build an image-free request on a fresh clone and report it unchanged.
+    const loaded = loadCapture("govuk");
+    assert.match(loaded.screenshot_path, /^fixtures\/captures\/govuk-page\.png$/);
+    assert.ok(existsSync(loaded.screenshot_path), "the committed screenshot is missing");
   });
 });

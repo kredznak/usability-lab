@@ -1,0 +1,7 @@
+{
+  "What kind of site is it?": "A project management SaaS. Teams use it to plan work and track projects.",
+  "What's your biggest concern right now?": "We're losing people at the account creation form itself, not before it. They get to the signup page and don't finish.",
+  "What should a visitor do on your site?": "Create an account and start a free trial.",
+  "Where do they seem to drop off?": "On the create-account step.",
+  "Anything else we should know?": "We removed the credit-card requirement recently and it hasn't moved the numbers as much as we hoped."
+}

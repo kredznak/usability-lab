@@ -6,6 +6,7 @@ import { createInterface } from "node:readline/promises";
 import path from "node:path";
 import { capture, CaptureFailed } from "./capture.js";
 import { runSubAgent } from "./agents/runner.js";
+import { pageTiles } from "./agents/tiles.js";
 import { rubricFor } from "./agents/rubrics.js";
 import { runProfiler } from "./agents/profiler.js";
 import { runSynthesizer, identify } from "./agents/synthesizer.js";
@@ -194,12 +195,17 @@ async function main(): Promise<void> {
         `\n  ${plan.rationale}\n`,
     );
 
+    // Cropped once for the whole fan-out. Every reviewer of this audit gets the
+    // same slices, and the request marks them cached, so the images are written
+    // to the cache once and read by the rest.
+    const tiles = await pageTiles(captured);
+
     // Reviewers never see each other's findings (§2 reach), so they are
     // genuinely independent and run concurrently — bounded by §6's limit of 2.
     const runs = await timed("review", timings, () =>
       inPools(plan.spawn, MAX_CONCURRENT_AGENTS, async (agent) => {
         try {
-          return await runSubAgent(client, rubricFor(agent), captured, log);
+          return await runSubAgent(client, rubricFor(agent), captured, log, tiles);
         } catch (err) {
           // One reviewer failing must not discard the work of the others. The
           // audit continues without that lane and says so.
