@@ -9,7 +9,7 @@
     "width": 1440,
     "height": 900
   },
-  "full_height": 1217,
+  "full_height": 1214,
   "elements": [
     {
       "ref": "el_0",
@@ -202,11 +202,11 @@
       "ref": "el_11",
       "tag": "a",
       "role": null,
-      "text": "Mea Culpa – Dark Hours",
+      "text": "A 3rd World Embedded Engineer Responds to \"RISC-V They Should Have Known Better\"",
       "bbox": {
         "x": 150.609375,
         "y": 43.5,
-        "width": 163.15625,
+        "width": 591.1875,
         "height": 16
       },
       "above_fold": true,
@@ -219,11 +219,11 @@
       "ref": "el_12",
       "tag": "a",
       "role": null,
-      "text": "terrygodier.com",
+      "text": "rvembedded.com",
       "bbox": {
-        "x": 322.359375,
+        "x": 750.390625,
         "y": 45.5,
-        "width": 84.25,
+        "width": 93.03125,
         "height": 13
       },
       "above_fold": true,
@@ -236,11 +236,11 @@
       "ref": "el_13",
       "tag": "a",
       "role": null,
-      "text": "satvikpendem",
+      "text": "Narishma",
       "bbox": {
         "x": 218.046875,
         "y": 61,
-        "width": 65.46875,
+        "width": 44.578125,
         "height": 11
       },
       "above_fold": true,
@@ -255,7 +255,7 @@
       "role": null,
       "text": "4 hours ago",
       "bbox": {
-        "x": 286.796875,
+        "x": 265.90625,
         "y": 61,
         "width": 55.890625,
         "height": 11
@@ -272,7 +272,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 353.5,
+        "x": 332.609375,
         "y": 61,
         "width": 19.84375,
         "height": 11
@@ -287,9 +287,9 @@
       "ref": "el_16",
       "tag": "a",
       "role": null,
-      "text": "139 comments",
+      "text": "119 comments",
       "bbox": {
-        "x": 384.15625,
+        "x": 363.265625,
         "y": 61,
         "width": 69.75,
         "height": 11
@@ -321,11 +321,11 @@
       "ref": "el_18",
       "tag": "a",
       "role": null,
-      "text": "Criminal Deception in Silicon Valley",
+      "text": "The Case Against Formal Verification, 50 Years Later",
       "bbox": {
         "x": 150.609375,
         "y": 78.5,
-        "width": 236.234375,
+        "width": 351.578125,
         "height": 16
       },
       "above_fold": true,
@@ -338,11 +338,11 @@
       "ref": "el_19",
       "tag": "a",
       "role": null,
-      "text": "informs.org",
+      "text": "ivan-gavran.github.io",
       "bbox": {
-        "x": 395.4375,
+        "x": 510.78125,
         "y": 80.5,
-        "width": 61.90625,
+        "width": 114.75,
         "height": 13
       },
       "above_fold": true,
@@ -355,11 +355,11 @@
       "ref": "el_20",
       "tag": "a",
       "role": null,
-      "text": "iamnothere",
+      "text": "ghuntley",
       "bbox": {
         "x": 212.109375,
         "y": 96,
-        "width": 53.484375,
+        "width": 40.84375,
         "height": 11
       },
       "above_fold": true,
@@ -372,11 +372,11 @@
       "ref": "el_21",
       "tag": "a",
       "role": null,
-      "text": "2 hours ago",
+      "text": "29 minutes ago",
       "bbox": {
-        "x": 268.875,
+        "x": 256.234375,
         "y": 96,
-        "width": 55.890625,
+        "width": 73.046875,
         "height": 11
       },
       "above_fold": true,
@@ -391,7 +391,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 335.578125,
+        "x": 340.09375,
         "y": 96,
         "width": 19.84375,
         "height": 11
@@ -406,11 +406,11 @@
       "ref": "el_23",
       "tag": "a",
       "role": null,
-      "text": "20 comments",
+      "text": "4 comments",
       "bbox": {
-        "x": 366.234375,
+        "x": 370.75,
         "y": 96,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -440,11 +440,11 @@
       "ref": "el_25",
       "tag": "a",
       "role": null,
-      "text": "Cool URIs Don't Change (1998)",
+      "text": "Claude: System Prompts",
       "bbox": {
         "x": 150.609375,
         "y": 113.5,
-        "width": 211.546875,
+        "width": 166.28125,
         "height": 16
       },
       "above_fold": true,
@@ -457,11 +457,11 @@
       "ref": "el_26",
       "tag": "a",
       "role": null,
-      "text": "w3.org",
+      "text": "claude.com",
       "bbox": {
-        "x": 370.75,
+        "x": 325.484375,
         "y": 115.5,
-        "width": 37.046875,
+        "width": 60.890625,
         "height": 13
       },
       "above_fold": true,
@@ -474,11 +474,11 @@
       "ref": "el_27",
       "tag": "a",
       "role": null,
-      "text": "Klaster_1",
+      "text": "tosh",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 131,
-        "width": 44.578125,
+        "width": 20.109375,
         "height": 11
       },
       "above_fold": true,
@@ -491,9 +491,9 @@
       "ref": "el_28",
       "tag": "a",
       "role": null,
-      "text": "3 hours ago",
+      "text": "8 hours ago",
       "bbox": {
-        "x": 259.96875,
+        "x": 241.4375,
         "y": 131,
         "width": 55.890625,
         "height": 11
@@ -510,7 +510,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 326.671875,
+        "x": 308.140625,
         "y": 131,
         "width": 19.84375,
         "height": 11
@@ -525,11 +525,11 @@
       "ref": "el_30",
       "tag": "a",
       "role": null,
-      "text": "4 comments",
+      "text": "190 comments",
       "bbox": {
-        "x": 357.328125,
+        "x": 338.796875,
         "y": 131,
-        "width": 57.890625,
+        "width": 69.75,
         "height": 11
       },
       "above_fold": true,
@@ -559,11 +559,11 @@
       "ref": "el_32",
       "tag": "a",
       "role": null,
-      "text": "Show HN: A Project Oberon System version running on RISC-V instead of RISC-5",
+      "text": "Protobuf has LSP support. You're welcome",
       "bbox": {
         "x": 150.609375,
         "y": 148.5,
-        "width": 546.4375,
+        "width": 283.390625,
         "height": 16
       },
       "above_fold": true,
@@ -576,11 +576,11 @@
       "ref": "el_33",
       "tag": "a",
       "role": null,
-      "text": "github.com/rochus-keller",
+      "text": "buf.build",
       "bbox": {
-        "x": 705.640625,
+        "x": 442.59375,
         "y": 150.5,
-        "width": 134.671875,
+        "width": 46.28125,
         "height": 13
       },
       "above_fold": true,
@@ -593,11 +593,11 @@
       "ref": "el_34",
       "tag": "a",
       "role": null,
-      "text": "Rochus",
+      "text": "theanonymousone",
       "bbox": {
         "x": 212.109375,
         "y": 166,
-        "width": 33.453125,
+        "width": 86.28125,
         "height": 11
       },
       "above_fold": true,
@@ -610,9 +610,9 @@
       "ref": "el_35",
       "tag": "a",
       "role": null,
-      "text": "4 hours ago",
+      "text": "2 hours ago",
       "bbox": {
-        "x": 248.84375,
+        "x": 301.671875,
         "y": 166,
         "width": 55.890625,
         "height": 11
@@ -629,7 +629,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 315.546875,
+        "x": 368.375,
         "y": 166,
         "width": 19.84375,
         "height": 11
@@ -644,9 +644,9 @@
       "ref": "el_37",
       "tag": "a",
       "role": null,
-      "text": "15 comments",
+      "text": "18 comments",
       "bbox": {
-        "x": 346.203125,
+        "x": 399.03125,
         "y": 166,
         "width": 63.828125,
         "height": 11
@@ -678,11 +678,11 @@
       "ref": "el_39",
       "tag": "a",
       "role": null,
-      "text": "John C. Lilly on solid state intelligence and the elimination of man (1978)",
+      "text": "Models Are Getting Dumber on Purpose",
       "bbox": {
         "x": 150.609375,
         "y": 183.5,
-        "width": 492.421875,
+        "width": 265.109375,
         "height": 16
       },
       "above_fold": true,
@@ -695,11 +695,11 @@
       "ref": "el_40",
       "tag": "a",
       "role": null,
-      "text": "kibotronics.net",
+      "text": "w4g1.dev",
       "bbox": {
-        "x": 651.625,
+        "x": 424.3125,
         "y": 185.5,
-        "width": 79.53125,
+        "width": 52.109375,
         "height": 13
       },
       "above_fold": true,
@@ -712,11 +712,11 @@
       "ref": "el_41",
       "tag": "a",
       "role": null,
-      "text": "Kiboneu",
+      "text": "hruvhwe",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 201,
-        "width": 37.875,
+        "width": 40.375,
         "height": 11
       },
       "above_fold": true,
@@ -729,9 +729,9 @@
       "ref": "el_42",
       "tag": "a",
       "role": null,
-      "text": "3 hours ago",
+      "text": "2 hours ago",
       "bbox": {
-        "x": 253.265625,
+        "x": 261.703125,
         "y": 201,
         "width": 55.890625,
         "height": 11
@@ -748,7 +748,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 319.96875,
+        "x": 328.40625,
         "y": 201,
         "width": 19.84375,
         "height": 11
@@ -763,9 +763,9 @@
       "ref": "el_44",
       "tag": "a",
       "role": null,
-      "text": "21 comments",
+      "text": "91 comments",
       "bbox": {
-        "x": 350.625,
+        "x": 359.0625,
         "y": 201,
         "width": 63.828125,
         "height": 11
@@ -797,11 +797,11 @@
       "ref": "el_46",
       "tag": "a",
       "role": null,
-      "text": "Human vs. AI – Diff-based line-level provenance for text under agentic editing",
+      "text": "SIMD in the 90s: Programming Intel's Pentium MMX",
       "bbox": {
         "x": 150.609375,
         "y": 218.5,
-        "width": 526.703125,
+        "width": 350.046875,
         "height": 16
       },
       "above_fold": true,
@@ -814,11 +814,11 @@
       "ref": "el_47",
       "tag": "a",
       "role": null,
-      "text": "github.com/eighttrigrams",
+      "text": "pikuma.com",
       "bbox": {
-        "x": 685.90625,
+        "x": 509.25,
         "y": 220.5,
-        "width": 136.78125,
+        "width": 65.671875,
         "height": 13
       },
       "above_fold": true,
@@ -831,11 +831,11 @@
       "ref": "el_48",
       "tag": "a",
       "role": null,
-      "text": "eighttrigrams",
+      "text": "ibobev",
       "bbox": {
         "x": 212.109375,
         "y": 236,
-        "width": 62.90625,
+        "width": 30.9375,
         "height": 11
       },
       "above_fold": true,
@@ -850,7 +850,7 @@
       "role": null,
       "text": "2 hours ago",
       "bbox": {
-        "x": 278.296875,
+        "x": 246.328125,
         "y": 236,
         "width": 55.890625,
         "height": 11
@@ -867,7 +867,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 345,
+        "x": 313.03125,
         "y": 236,
         "width": 19.84375,
         "height": 11
@@ -884,7 +884,7 @@
       "role": null,
       "text": "1 comment",
       "bbox": {
-        "x": 375.65625,
+        "x": 343.6875,
         "y": 236,
         "width": 53.03125,
         "height": 11
@@ -916,11 +916,11 @@
       "ref": "el_53",
       "tag": "a",
       "role": null,
-      "text": "Every fast write moves work somewhere else",
+      "text": "The AI Credit Resale Economy",
       "bbox": {
         "x": 150.609375,
         "y": 253.5,
-        "width": 303.71875,
+        "width": 202.359375,
         "height": 16
       },
       "above_fold": true,
@@ -933,11 +933,11 @@
       "ref": "el_54",
       "tag": "a",
       "role": null,
-      "text": "shayon.dev",
+      "text": "vectoral.com",
       "bbox": {
-        "x": 462.921875,
+        "x": 361.5625,
         "y": 255.5,
-        "width": 61.234375,
+        "width": 68.75,
         "height": 13
       },
       "above_fold": true,
@@ -950,11 +950,11 @@
       "ref": "el_55",
       "tag": "a",
       "role": null,
-      "text": "shayonj",
+      "text": "mlenhard",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 271,
-        "width": 36.515625,
+        "width": 44.40625,
         "height": 11
       },
       "above_fold": true,
@@ -967,9 +967,9 @@
       "ref": "el_56",
       "tag": "a",
       "role": null,
-      "text": "2 hours ago",
+      "text": "6 hours ago",
       "bbox": {
-        "x": 251.90625,
+        "x": 265.734375,
         "y": 271,
         "width": 55.890625,
         "height": 11
@@ -986,7 +986,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 318.609375,
+        "x": 332.4375,
         "y": 271,
         "width": 19.84375,
         "height": 11
@@ -1001,11 +1001,11 @@
       "ref": "el_58",
       "tag": "a",
       "role": null,
-      "text": "3 comments",
+      "text": "69 comments",
       "bbox": {
-        "x": 349.265625,
+        "x": 363.09375,
         "y": 271,
-        "width": 57.890625,
+        "width": 63.828125,
         "height": 11
       },
       "above_fold": true,
@@ -1035,11 +1035,11 @@
       "ref": "el_60",
       "tag": "a",
       "role": null,
-      "text": "There Are Magic Hexagons of Every Order",
+      "text": "Low-Tech Ceramic Water Filter",
       "bbox": {
         "x": 150.609375,
         "y": 288.5,
-        "width": 281.46875,
+        "width": 203.09375,
         "height": 16
       },
       "above_fold": true,
@@ -1052,11 +1052,11 @@
       "ref": "el_61",
       "tag": "a",
       "role": null,
-      "text": "gukov.dev",
+      "text": "lowtechlab.org",
       "bbox": {
-        "x": 440.671875,
+        "x": 362.296875,
         "y": 290.5,
-        "width": 54.546875,
+        "width": 78.375,
         "height": 13
       },
       "above_fold": true,
@@ -1069,11 +1069,11 @@
       "ref": "el_62",
       "tag": "a",
       "role": null,
-      "text": "gukoff",
+      "text": "Bluestein",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 306,
-        "width": 29.375,
+        "width": 42.984375,
         "height": 11
       },
       "above_fold": true,
@@ -1086,11 +1086,11 @@
       "ref": "el_63",
       "tag": "a",
       "role": null,
-      "text": "10 hours ago",
+      "text": "3 hours ago",
       "bbox": {
-        "x": 250.703125,
+        "x": 258.375,
         "y": 306,
-        "width": 61.828125,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1105,7 +1105,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 323.34375,
+        "x": 325.078125,
         "y": 306,
         "width": 19.84375,
         "height": 11
@@ -1120,11 +1120,11 @@
       "ref": "el_65",
       "tag": "a",
       "role": null,
-      "text": "21 comments",
+      "text": "6 comments",
       "bbox": {
-        "x": 354,
+        "x": 355.734375,
         "y": 306,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1154,11 +1154,11 @@
       "ref": "el_67",
       "tag": "a",
       "role": null,
-      "text": "Crickets as Pets",
+      "text": "St Lucie Nuclear Reactor Unit 1 manually shutdown, 3 control rods drop into core",
       "bbox": {
         "x": 150.609375,
         "y": 323.5,
-        "width": 105.671875,
+        "width": 545.640625,
         "height": 16
       },
       "above_fold": true,
@@ -1171,11 +1171,11 @@
       "ref": "el_68",
       "tag": "a",
       "role": null,
-      "text": "wikipedia.org",
+      "text": "wptv.com",
       "bbox": {
-        "x": 264.875,
+        "x": 704.84375,
         "y": 325.5,
-        "width": 71.390625,
+        "width": 51.21875,
         "height": 13
       },
       "above_fold": true,
@@ -1188,11 +1188,11 @@
       "ref": "el_69",
       "tag": "a",
       "role": null,
-      "text": "Michelangelo11",
+      "text": "toomuchtodo",
       "bbox": {
-        "x": 212.109375,
+        "x": 218.046875,
         "y": 341,
-        "width": 72.28125,
+        "width": 61.5625,
         "height": 11
       },
       "above_fold": true,
@@ -1205,9 +1205,9 @@
       "ref": "el_70",
       "tag": "a",
       "role": null,
-      "text": "2 hours ago",
+      "text": "5 hours ago",
       "bbox": {
-        "x": 287.671875,
+        "x": 282.890625,
         "y": 341,
         "width": 55.890625,
         "height": 11
@@ -1224,7 +1224,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 354.375,
+        "x": 349.59375,
         "y": 341,
         "width": 19.84375,
         "height": 11
@@ -1239,11 +1239,11 @@
       "ref": "el_72",
       "tag": "a",
       "role": null,
-      "text": "2 comments",
+      "text": "89 comments",
       "bbox": {
-        "x": 385.03125,
+        "x": 380.25,
         "y": 341,
-        "width": 57.890625,
+        "width": 63.828125,
         "height": 11
       },
       "above_fold": true,
@@ -1273,11 +1273,11 @@
       "ref": "el_74",
       "tag": "a",
       "role": null,
-      "text": "My server is a phone now",
+      "text": "MathCode, Mathematical Coding Agent",
       "bbox": {
         "x": 150.609375,
         "y": 358.5,
-        "width": 171.78125,
+        "width": 260,
         "height": 16
       },
       "above_fold": true,
@@ -1290,11 +1290,11 @@
       "ref": "el_75",
       "tag": "a",
       "role": null,
-      "text": "seg6.space",
+      "text": "math-ai-org.github.io",
       "bbox": {
-        "x": 330.984375,
+        "x": 419.203125,
         "y": 360.5,
-        "width": 59.703125,
+        "width": 115.234375,
         "height": 13
       },
       "above_fold": true,
@@ -1307,11 +1307,11 @@
       "ref": "el_76",
       "tag": "a",
       "role": null,
-      "text": "seg6",
+      "text": "homarp",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 376,
-        "width": 22.171875,
+        "width": 36.046875,
         "height": 11
       },
       "above_fold": true,
@@ -1324,11 +1324,11 @@
       "ref": "el_77",
       "tag": "a",
       "role": null,
-      "text": "18 hours ago",
+      "text": "2 hours ago",
       "bbox": {
-        "x": 243.5,
+        "x": 251.4375,
         "y": 376,
-        "width": 61.828125,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1343,7 +1343,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 316.140625,
+        "x": 318.140625,
         "y": 376,
         "width": 19.84375,
         "height": 11
@@ -1358,11 +1358,11 @@
       "ref": "el_79",
       "tag": "a",
       "role": null,
-      "text": "215 comments",
+      "text": "9 comments",
       "bbox": {
-        "x": 346.796875,
+        "x": 348.796875,
         "y": 376,
-        "width": 69.75,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1392,11 +1392,11 @@
       "ref": "el_81",
       "tag": "a",
       "role": null,
-      "text": "Silicon Valley misreads science fiction and undermines democracy",
+      "text": "NIH is ending a key grant for budding clinical researchers",
       "bbox": {
         "x": 150.609375,
         "y": 393.5,
-        "width": 442,
+        "width": 385.859375,
         "height": 16
       },
       "above_fold": true,
@@ -1409,11 +1409,11 @@
       "ref": "el_82",
       "tag": "a",
       "role": null,
-      "text": "techcrunch.com",
+      "text": "science.org",
       "bbox": {
-        "x": 601.203125,
+        "x": 545.0625,
         "y": 395.5,
-        "width": 85.015625,
+        "width": 60.578125,
         "height": 13
       },
       "above_fold": true,
@@ -1426,11 +1426,11 @@
       "ref": "el_83",
       "tag": "a",
       "role": null,
-      "text": "evo_9",
+      "text": "brandonb",
       "bbox": {
         "x": 218.046875,
         "y": 411,
-        "width": 28.53125,
+        "width": 44.34375,
         "height": 11
       },
       "above_fold": true,
@@ -1443,9 +1443,9 @@
       "ref": "el_84",
       "tag": "a",
       "role": null,
-      "text": "2 hours ago",
+      "text": "4 hours ago",
       "bbox": {
-        "x": 249.859375,
+        "x": 265.671875,
         "y": 411,
         "width": 55.890625,
         "height": 11
@@ -1462,7 +1462,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 316.5625,
+        "x": 332.375,
         "y": 411,
         "width": 19.84375,
         "height": 11
@@ -1477,9 +1477,9 @@
       "ref": "el_86",
       "tag": "a",
       "role": null,
-      "text": "95 comments",
+      "text": "53 comments",
       "bbox": {
-        "x": 347.21875,
+        "x": 363.03125,
         "y": 411,
         "width": 63.828125,
         "height": 11
@@ -1511,11 +1511,11 @@
       "ref": "el_88",
       "tag": "a",
       "role": null,
-      "text": "Tom Stanton's supersonic trebuchet breaks sound barrier with gravity alone",
+      "text": "Anton Chekhov played at love most of his life",
       "bbox": {
         "x": 150.609375,
         "y": 428.5,
-        "width": 509.34375,
+        "width": 304.234375,
         "height": 16
       },
       "above_fold": true,
@@ -1528,11 +1528,11 @@
       "ref": "el_89",
       "tag": "a",
       "role": null,
-      "text": "techeblog.com",
+      "text": "wustl.edu",
       "bbox": {
-        "x": 668.546875,
+        "x": 463.4375,
         "y": 430.5,
-        "width": 78.15625,
+        "width": 51.765625,
         "height": 13
       },
       "above_fold": true,
@@ -1545,11 +1545,11 @@
       "ref": "el_90",
       "tag": "a",
       "role": null,
-      "text": "Thorondor",
+      "text": "lermontov",
       "bbox": {
         "x": 212.109375,
         "y": 446,
-        "width": 48.328125,
+        "width": 47.546875,
         "height": 11
       },
       "above_fold": true,
@@ -1562,9 +1562,9 @@
       "ref": "el_91",
       "tag": "a",
       "role": null,
-      "text": "2 hours ago",
+      "text": "5 hours ago",
       "bbox": {
-        "x": 263.71875,
+        "x": 262.9375,
         "y": 446,
         "width": 55.890625,
         "height": 11
@@ -1581,7 +1581,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 330.421875,
+        "x": 329.640625,
         "y": 446,
         "width": 19.84375,
         "height": 11
@@ -1596,11 +1596,11 @@
       "ref": "el_93",
       "tag": "a",
       "role": null,
-      "text": "21 comments",
+      "text": "6 comments",
       "bbox": {
-        "x": 361.078125,
+        "x": 360.296875,
         "y": 446,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1630,11 +1630,11 @@
       "ref": "el_95",
       "tag": "a",
       "role": null,
-      "text": "Microsoft Word for Windows 1.1a, Native X64 Port",
+      "text": "Clamiga: Common Lisp for the Amiga",
       "bbox": {
         "x": 150.609375,
         "y": 463.5,
-        "width": 336.078125,
+        "width": 251.71875,
         "height": 16
       },
       "above_fold": true,
@@ -1647,11 +1647,11 @@
       "ref": "el_96",
       "tag": "a",
       "role": null,
-      "text": "github.com/jmarshall23",
+      "text": "nnamgreb.de",
       "bbox": {
-        "x": 495.28125,
+        "x": 410.921875,
         "y": 465.5,
-        "width": 128.015625,
+        "width": 71.21875,
         "height": 13
       },
       "above_fold": true,
@@ -1664,11 +1664,11 @@
       "ref": "el_97",
       "tag": "a",
       "role": null,
-      "text": "BruceEel",
+      "text": "emptybits",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 481,
-        "width": 40.71875,
+        "width": 46.515625,
         "height": 11
       },
       "above_fold": true,
@@ -1681,11 +1681,11 @@
       "ref": "el_98",
       "tag": "a",
       "role": null,
-      "text": "12 hours ago",
+      "text": "6 hours ago",
       "bbox": {
-        "x": 262.046875,
+        "x": 261.90625,
         "y": 481,
-        "width": 61.828125,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1700,7 +1700,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 334.6875,
+        "x": 328.609375,
         "y": 481,
         "width": 19.84375,
         "height": 11
@@ -1715,11 +1715,11 @@
       "ref": "el_100",
       "tag": "a",
       "role": null,
-      "text": "59 comments",
+      "text": "4 comments",
       "bbox": {
-        "x": 365.34375,
+        "x": 359.265625,
         "y": 481,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1749,11 +1749,11 @@
       "ref": "el_102",
       "tag": "a",
       "role": null,
-      "text": "Os8088: A powerful Mac-like OS for the IBM XT, 286, 386",
+      "text": "Firefox for iOS now has a native adblocker",
       "bbox": {
         "x": 150.609375,
         "y": 498.5,
-        "width": 387.890625,
+        "width": 284.609375,
         "height": 16
       },
       "above_fold": true,
@@ -1766,11 +1766,11 @@
       "ref": "el_103",
       "tag": "a",
       "role": null,
-      "text": "os8088.com",
+      "text": "support.mozilla.org",
       "bbox": {
-        "x": 547.09375,
+        "x": 443.8125,
         "y": 500.5,
-        "width": 65.40625,
+        "width": 103.84375,
         "height": 13
       },
       "above_fold": true,
@@ -1783,11 +1783,11 @@
       "ref": "el_104",
       "tag": "a",
       "role": null,
-      "text": "jggonz",
+      "text": "pentagrama",
       "bbox": {
         "x": 218.046875,
         "y": 516,
-        "width": 31.3125,
+        "width": 56.46875,
         "height": 11
       },
       "above_fold": true,
@@ -1800,11 +1800,11 @@
       "ref": "el_105",
       "tag": "a",
       "role": null,
-      "text": "18 hours ago",
+      "text": "8 hours ago",
       "bbox": {
-        "x": 252.640625,
+        "x": 277.796875,
         "y": 516,
-        "width": 61.828125,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1819,7 +1819,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 325.28125,
+        "x": 344.5,
         "y": 516,
         "width": 19.84375,
         "height": 11
@@ -1834,9 +1834,9 @@
       "ref": "el_107",
       "tag": "a",
       "role": null,
-      "text": "150 comments",
+      "text": "189 comments",
       "bbox": {
-        "x": 355.9375,
+        "x": 375.15625,
         "y": 516,
         "width": 69.75,
         "height": 11
@@ -1868,11 +1868,11 @@
       "ref": "el_109",
       "tag": "a",
       "role": null,
-      "text": "Dithered QR Codes",
+      "text": "Plastic mechanical computer from 1963: The Digi-Comp 1 [video]",
       "bbox": {
         "x": 150.609375,
         "y": 533.5,
-        "width": 127.21875,
+        "width": 441.671875,
         "height": 16
       },
       "above_fold": true,
@@ -1885,11 +1885,11 @@
       "ref": "el_110",
       "tag": "a",
       "role": null,
-      "text": "andrewt.net",
+      "text": "youtube.com",
       "bbox": {
-        "x": 286.421875,
+        "x": 600.875,
         "y": 535.5,
-        "width": 64.796875,
+        "width": 69.640625,
         "height": 13
       },
       "above_fold": true,
@@ -1902,11 +1902,11 @@
       "ref": "el_111",
       "tag": "a",
       "role": null,
-      "text": "jmusall",
+      "text": "tobr",
       "bbox": {
-        "x": 218.046875,
+        "x": 212.109375,
         "y": 551,
-        "width": 33.78125,
+        "width": 19.140625,
         "height": 11
       },
       "above_fold": true,
@@ -1919,11 +1919,11 @@
       "ref": "el_112",
       "tag": "a",
       "role": null,
-      "text": "18 hours ago",
+      "text": "4 hours ago",
       "bbox": {
-        "x": 255.109375,
+        "x": 234.53125,
         "y": 551,
-        "width": 61.828125,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1938,7 +1938,7 @@
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 327.75,
+        "x": 301.234375,
         "y": 551,
         "width": 19.84375,
         "height": 11
@@ -1953,11 +1953,11 @@
       "ref": "el_114",
       "tag": "a",
       "role": null,
-      "text": "36 comments",
+      "text": "6 comments",
       "bbox": {
-        "x": 358.40625,
+        "x": 331.890625,
         "y": 551,
-        "width": 63.828125,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -1987,11 +1987,11 @@
       "ref": "el_116",
       "tag": "a",
       "role": null,
-      "text": "Taxi drivers rarely die of Alzheimer's",
+      "text": "Tell HN: Cloudflare silently injects its analytics when you switch nameservers",
       "bbox": {
         "x": 150.609375,
         "y": 568.5,
-        "width": 243.890625,
+        "width": 517,
         "height": 16
       },
       "above_fold": true,
@@ -2004,28 +2004,28 @@
       "ref": "el_117",
       "tag": "a",
       "role": null,
-      "text": "theconversation.com",
+      "text": "stagas",
       "bbox": {
-        "x": 403.09375,
-        "y": 570.5,
-        "width": 111.65625,
-        "height": 13
+        "x": 218.046875,
+        "y": 586,
+        "width": 30.421875,
+        "height": 11
       },
       "above_fold": true,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 11
+      "font_size": 9
     },
     {
       "ref": "el_118",
       "tag": "a",
       "role": null,
-      "text": "jader201",
+      "text": "3 hours ago",
       "bbox": {
-        "x": 212.109375,
+        "x": 251.75,
         "y": 586,
-        "width": 41.96875,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -2038,11 +2038,11 @@
       "ref": "el_119",
       "tag": "a",
       "role": null,
-      "text": "2 hours ago",
+      "text": "hide",
       "bbox": {
-        "x": 257.359375,
+        "x": 318.453125,
         "y": 586,
-        "width": 55.890625,
+        "width": 19.84375,
         "height": 11
       },
       "above_fold": true,
@@ -2055,26 +2055,9 @@
       "ref": "el_120",
       "tag": "a",
       "role": null,
-      "text": "hide",
+      "text": "38 comments",
       "bbox": {
-        "x": 324.0625,
-        "y": 586,
-        "width": 19.84375,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_121",
-      "tag": "a",
-      "role": null,
-      "text": "25 comments",
-      "bbox": {
-        "x": 354.71875,
+        "x": 349.109375,
         "y": 586,
         "width": 63.828125,
         "height": 11
@@ -2086,7 +2069,7 @@
       "font_size": 9
     },
     {
-      "ref": "el_122",
+      "ref": "el_121",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2103,14 +2086,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_123",
+      "ref": "el_122",
       "tag": "a",
       "role": null,
-      "text": "Show HN: Today's cities on a globe of Earth's tectonic past and future",
+      "text": "ICE Shot a Journalist and Threw Him in Detention. He's Approaching 300 Days",
       "bbox": {
         "x": 150.609375,
         "y": 603.5,
-        "width": 468.875,
+        "width": 527.703125,
         "height": 16
       },
       "above_fold": true,
@@ -2120,14 +2103,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_124",
+      "ref": "el_123",
       "tag": "a",
       "role": null,
-      "text": "douwe.com",
+      "text": "theintercept.com",
       "bbox": {
-        "x": 628.078125,
+        "x": 686.90625,
         "y": 605.5,
-        "width": 61.203125,
+        "width": 91.09375,
         "height": 13
       },
       "above_fold": true,
@@ -2137,14 +2120,31 @@
       "font_size": 11
     },
     {
-      "ref": "el_125",
+      "ref": "el_124",
       "tag": "a",
       "role": null,
-      "text": "dosinga",
+      "text": "Jimmc414",
       "bbox": {
         "x": 212.109375,
         "y": 621,
-        "width": 36.21875,
+        "width": 47.609375,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_125",
+      "tag": "a",
+      "role": null,
+      "text": "1 hour ago",
+      "bbox": {
+        "x": 263,
+        "y": 621,
+        "width": 51.03125,
         "height": 11
       },
       "above_fold": true,
@@ -2157,11 +2157,11 @@
       "ref": "el_126",
       "tag": "a",
       "role": null,
-      "text": "3 hours ago",
+      "text": "hide",
       "bbox": {
-        "x": 251.609375,
+        "x": 324.84375,
         "y": 621,
-        "width": 55.890625,
+        "width": 19.84375,
         "height": 11
       },
       "above_fold": true,
@@ -2174,11 +2174,11 @@
       "ref": "el_127",
       "tag": "a",
       "role": null,
-      "text": "hide",
+      "text": "16 comments",
       "bbox": {
-        "x": 318.3125,
+        "x": 355.5,
         "y": 621,
-        "width": 19.84375,
+        "width": 63.828125,
         "height": 11
       },
       "above_fold": true,
@@ -2189,23 +2189,6 @@
     },
     {
       "ref": "el_128",
-      "tag": "a",
-      "role": null,
-      "text": "discuss",
-      "bbox": {
-        "x": 348.96875,
-        "y": 621,
-        "width": 33.734375,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_129",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2222,14 +2205,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_130",
+      "ref": "el_129",
       "tag": "a",
       "role": null,
-      "text": "The Alpha 21264 CPU: NT's Greatest RISC (1998)",
+      "text": "Before Rightmove, there was the Cosmorama",
       "bbox": {
         "x": 150.609375,
         "y": 638.5,
-        "width": 335.828125,
+        "width": 305.8125,
         "height": 16
       },
       "above_fold": true,
@@ -2239,14 +2222,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_131",
+      "ref": "el_130",
       "tag": "a",
       "role": null,
-      "text": "halfhill.com",
+      "text": "ianvisits.co.uk",
       "bbox": {
-        "x": 495.03125,
+        "x": 465.015625,
         "y": 640.5,
-        "width": 61.625,
+        "width": 76.171875,
         "height": 13
       },
       "above_fold": true,
@@ -2256,14 +2239,31 @@
       "font_size": 11
     },
     {
-      "ref": "el_132",
+      "ref": "el_131",
       "tag": "a",
       "role": null,
-      "text": "Lammy",
+      "text": "brod_ie",
       "bbox": {
         "x": 212.109375,
         "y": 656,
-        "width": 34.390625,
+        "width": 35.328125,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_132",
+      "tag": "a",
+      "role": null,
+      "text": "5 hours ago",
+      "bbox": {
+        "x": 250.71875,
+        "y": 656,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -2276,11 +2276,11 @@
       "ref": "el_133",
       "tag": "a",
       "role": null,
-      "text": "7 hours ago",
+      "text": "hide",
       "bbox": {
-        "x": 249.78125,
+        "x": 317.421875,
         "y": 656,
-        "width": 55.890625,
+        "width": 19.84375,
         "height": 11
       },
       "above_fold": true,
@@ -2293,11 +2293,11 @@
       "ref": "el_134",
       "tag": "a",
       "role": null,
-      "text": "hide",
+      "text": "2 comments",
       "bbox": {
-        "x": 316.484375,
+        "x": 348.078125,
         "y": 656,
-        "width": 19.84375,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -2308,23 +2308,6 @@
     },
     {
       "ref": "el_135",
-      "tag": "a",
-      "role": null,
-      "text": "41 comments",
-      "bbox": {
-        "x": 347.140625,
-        "y": 656,
-        "width": 63.828125,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_136",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2341,14 +2324,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_137",
+      "ref": "el_136",
       "tag": "a",
       "role": null,
-      "text": "The Grid That Doubles the Strength of the Ground",
+      "text": "Archie G. Norcross' Maine Forest Fire Maps (1918–22)",
       "bbox": {
         "x": 150.609375,
         "y": 673.5,
-        "width": 337.375,
+        "width": 363.109375,
         "height": 16
       },
       "above_fold": true,
@@ -2358,14 +2341,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_138",
+      "ref": "el_137",
       "tag": "a",
       "role": null,
-      "text": "practical.engineering",
+      "text": "publicdomainreview.org",
       "bbox": {
-        "x": 496.578125,
+        "x": 522.3125,
         "y": 675.5,
-        "width": 111.828125,
+        "width": 127.375,
         "height": 13
       },
       "above_fold": true,
@@ -2375,14 +2358,31 @@
       "font_size": 11
     },
     {
+      "ref": "el_138",
+      "tag": "a",
+      "role": null,
+      "text": "samclemens",
+      "bbox": {
+        "x": 212.109375,
+        "y": 691,
+        "width": 57.921875,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
       "ref": "el_139",
       "tag": "a",
       "role": null,
-      "text": "michaefe",
+      "text": "5 hours ago",
       "bbox": {
-        "x": 218.046875,
+        "x": 273.3125,
         "y": 691,
-        "width": 42.40625,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -2395,11 +2395,11 @@
       "ref": "el_140",
       "tag": "a",
       "role": null,
-      "text": "10 hours ago",
+      "text": "hide",
       "bbox": {
-        "x": 263.734375,
+        "x": 340.015625,
         "y": 691,
-        "width": 61.828125,
+        "width": 19.84375,
         "height": 11
       },
       "above_fold": true,
@@ -2412,11 +2412,11 @@
       "ref": "el_141",
       "tag": "a",
       "role": null,
-      "text": "hide",
+      "text": "3 comments",
       "bbox": {
-        "x": 336.375,
+        "x": 370.671875,
         "y": 691,
-        "width": 19.84375,
+        "width": 57.890625,
         "height": 11
       },
       "above_fold": true,
@@ -2427,23 +2427,6 @@
     },
     {
       "ref": "el_142",
-      "tag": "a",
-      "role": null,
-      "text": "29 comments",
-      "bbox": {
-        "x": 367.03125,
-        "y": 691,
-        "width": 63.828125,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_143",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2460,14 +2443,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_144",
+      "ref": "el_143",
       "tag": "a",
       "role": null,
-      "text": "Literary Sins",
+      "text": "The weekend is 100 years old",
       "bbox": {
         "x": 150.609375,
         "y": 708.5,
-        "width": 84.15625,
+        "width": 199.6875,
         "height": 16
       },
       "above_fold": true,
@@ -2477,14 +2460,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_145",
+      "ref": "el_144",
       "tag": "a",
       "role": null,
-      "text": "thedial.world",
+      "text": "theguardian.com",
       "bbox": {
-        "x": 243.359375,
+        "x": 358.890625,
         "y": 710.5,
-        "width": 69.390625,
+        "width": 90.625,
         "height": 13
       },
       "above_fold": true,
@@ -2494,14 +2477,31 @@
       "font_size": 11
     },
     {
+      "ref": "el_145",
+      "tag": "a",
+      "role": null,
+      "text": "lentil_soup",
+      "bbox": {
+        "x": 218.046875,
+        "y": 726,
+        "width": 51,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
       "ref": "el_146",
       "tag": "a",
       "role": null,
-      "text": "lermontov",
+      "text": "5 hours ago",
       "bbox": {
-        "x": 206.1875,
+        "x": 272.328125,
         "y": 726,
-        "width": 47.546875,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -2514,11 +2514,11 @@
       "ref": "el_147",
       "tag": "a",
       "role": null,
-      "text": "1 hour ago",
+      "text": "hide",
       "bbox": {
-        "x": 257.015625,
+        "x": 339.03125,
         "y": 726,
-        "width": 51.03125,
+        "width": 19.84375,
         "height": 11
       },
       "above_fold": true,
@@ -2531,11 +2531,11 @@
       "ref": "el_148",
       "tag": "a",
       "role": null,
-      "text": "hide",
+      "text": "82 comments",
       "bbox": {
-        "x": 318.859375,
+        "x": 369.6875,
         "y": 726,
-        "width": 19.84375,
+        "width": 63.828125,
         "height": 11
       },
       "above_fold": true,
@@ -2548,45 +2548,11 @@
       "ref": "el_149",
       "tag": "a",
       "role": null,
-      "text": "discuss",
-      "bbox": {
-        "x": 349.515625,
-        "y": 726,
-        "width": 33.734375,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_150",
-      "tag": "a",
-      "role": null,
-      "text": "",
-      "bbox": {
-        "x": 136.609375,
-        "y": 745,
-        "width": 14,
-        "height": 10
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_151",
-      "tag": "a",
-      "role": null,
-      "text": "FCC moves to ban Lidar-equipped foreign drones from US",
+      "text": "Tasklet (YC P26) Is Hiring a Head of Design Engineering",
       "bbox": {
         "x": 150.609375,
-        "y": 743.5,
-        "width": 388.1875,
+        "y": 742,
+        "width": 375.28125,
         "height": 16
       },
       "above_fold": true,
@@ -2596,14 +2562,14 @@
       "font_size": 13
     },
     {
-      "ref": "el_152",
+      "ref": "el_150",
       "tag": "a",
       "role": null,
-      "text": "tomshardware.com",
+      "text": "tasklet.ai",
       "bbox": {
-        "x": 547.390625,
-        "y": 745.5,
-        "width": 103.125,
+        "x": 534.484375,
+        "y": 744,
+        "width": 49.15625,
         "height": 13
       },
       "above_fold": true,
@@ -2613,14 +2579,14 @@
       "font_size": 11
     },
     {
-      "ref": "el_153",
+      "ref": "el_151",
       "tag": "a",
       "role": null,
-      "text": "f-serif",
+      "text": "7 hours ago",
       "bbox": {
-        "x": 212.109375,
-        "y": 761,
-        "width": 27.53125,
+        "x": 150.609375,
+        "y": 758,
+        "width": 55.890625,
         "height": 11
       },
       "above_fold": true,
@@ -2630,30 +2596,13 @@
       "font_size": 9
     },
     {
-      "ref": "el_154",
-      "tag": "a",
-      "role": null,
-      "text": "1 hour ago",
-      "bbox": {
-        "x": 242.921875,
-        "y": 761,
-        "width": 51.03125,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_155",
+      "ref": "el_152",
       "tag": "a",
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 304.765625,
-        "y": 761,
+        "x": 217.3125,
+        "y": 758,
         "width": 19.84375,
         "height": 11
       },
@@ -2664,14 +2613,65 @@
       "font_size": 9
     },
     {
+      "ref": "el_153",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 777,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_154",
+      "tag": "a",
+      "role": null,
+      "text": "A True Telnet BBS on a Casio Calculator",
+      "bbox": {
+        "x": 150.609375,
+        "y": 775.5,
+        "width": 265.890625,
+        "height": 16
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_155",
+      "tag": "a",
+      "role": null,
+      "text": "ei3lh.eu",
+      "bbox": {
+        "x": 425.09375,
+        "y": 777.5,
+        "width": 42.703125,
+        "height": 13
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_156",
       "tag": "a",
       "role": null,
-      "text": "2 comments",
+      "text": "austinallegro",
       "bbox": {
-        "x": 335.421875,
-        "y": 761,
-        "width": 57.890625,
+        "x": 212.109375,
+        "y": 793,
+        "width": 60.25,
         "height": 11
       },
       "above_fold": true,
@@ -2684,78 +2684,10 @@
       "ref": "el_157",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "8 hours ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 780,
-        "width": 14,
-        "height": 10
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_158",
-      "tag": "a",
-      "role": null,
-      "text": "A partial digestion of the HRT counterexample",
-      "bbox": {
-        "x": 150.609375,
-        "y": 778.5,
-        "width": 309.40625,
-        "height": 16
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_159",
-      "tag": "a",
-      "role": null,
-      "text": "terrytao.wordpress.com",
-      "bbox": {
-        "x": 468.609375,
-        "y": 780.5,
-        "width": 128.109375,
-        "height": 13
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_160",
-      "tag": "a",
-      "role": null,
-      "text": "ijustlovemath",
-      "bbox": {
-        "x": 206.1875,
-        "y": 796,
-        "width": 63.625,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_161",
-      "tag": "a",
-      "role": null,
-      "text": "3 hours ago",
-      "bbox": {
-        "x": 273.09375,
-        "y": 796,
+        "x": 275.640625,
+        "y": 793,
         "width": 55.890625,
         "height": 11
       },
@@ -2766,13 +2698,13 @@
       "font_size": 9
     },
     {
-      "ref": "el_162",
+      "ref": "el_158",
       "tag": "a",
       "role": null,
       "text": "hide",
       "bbox": {
-        "x": 339.796875,
-        "y": 796,
+        "x": 342.34375,
+        "y": 793,
         "width": 19.84375,
         "height": 11
       },
@@ -2783,14 +2715,82 @@
       "font_size": 9
     },
     {
+      "ref": "el_159",
+      "tag": "a",
+      "role": null,
+      "text": "9 comments",
+      "bbox": {
+        "x": 373,
+        "y": 793,
+        "width": 57.890625,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_160",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 812,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_161",
+      "tag": "a",
+      "role": null,
+      "text": "Chestnut – eGPU dock with open-source firmware",
+      "bbox": {
+        "x": 150.609375,
+        "y": 810.5,
+        "width": 334.375,
+        "height": 16
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_162",
+      "tag": "a",
+      "role": null,
+      "text": "hwbusters.com",
+      "bbox": {
+        "x": 493.578125,
+        "y": 812.5,
+        "width": 81.296875,
+        "height": 13
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_163",
       "tag": "a",
       "role": null,
-      "text": "1 comment",
+      "text": "txrx0000",
       "bbox": {
-        "x": 370.453125,
-        "y": 796,
-        "width": 53.03125,
+        "x": 218.046875,
+        "y": 828,
+        "width": 42.4375,
         "height": 11
       },
       "above_fold": true,
@@ -2803,95 +2803,27 @@
       "ref": "el_164",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "13 hours ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 815,
-        "width": 14,
-        "height": 10
+        "x": 263.765625,
+        "y": 828,
+        "width": 61.828125,
+        "height": 11
       },
       "above_fold": true,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_165",
       "tag": "a",
       "role": null,
-      "text": "Windows 11's built-in Weather app wastes more than 1 GB of RAM",
-      "bbox": {
-        "x": 150.609375,
-        "y": 813.5,
-        "width": 447.1875,
-        "height": 16
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_166",
-      "tag": "a",
-      "role": null,
-      "text": "notebookcheck.net",
-      "bbox": {
-        "x": 606.390625,
-        "y": 815.5,
-        "width": 101.34375,
-        "height": 13
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_167",
-      "tag": "a",
-      "role": null,
-      "text": "akyuu",
-      "bbox": {
-        "x": 212.109375,
-        "y": 831,
-        "width": 28.46875,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_168",
-      "tag": "a",
-      "role": null,
-      "text": "2 hours ago",
-      "bbox": {
-        "x": 243.859375,
-        "y": 831,
-        "width": 55.890625,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_169",
-      "tag": "a",
-      "role": null,
       "text": "hide",
       "bbox": {
-        "x": 310.5625,
-        "y": 831,
+        "x": 336.40625,
+        "y": 828,
         "width": 19.84375,
         "height": 11
       },
@@ -2902,14 +2834,82 @@
       "font_size": 9
     },
     {
+      "ref": "el_166",
+      "tag": "a",
+      "role": null,
+      "text": "35 comments",
+      "bbox": {
+        "x": 367.0625,
+        "y": 828,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_167",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 847,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_168",
+      "tag": "a",
+      "role": null,
+      "text": "A SAT Attack on Tarski's High School Algebra Problem",
+      "bbox": {
+        "x": 150.609375,
+        "y": 845.5,
+        "width": 360.5625,
+        "height": 16
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_169",
+      "tag": "a",
+      "role": null,
+      "text": "arxiv.org",
+      "bbox": {
+        "x": 519.765625,
+        "y": 847.5,
+        "width": 47.109375,
+        "height": 13
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_170",
       "tag": "a",
       "role": null,
-      "text": "79 comments",
+      "text": "matt_d",
       "bbox": {
-        "x": 341.21875,
-        "y": 831,
-        "width": 63.828125,
+        "x": 212.109375,
+        "y": 863,
+        "width": 33.78125,
         "height": 11
       },
       "above_fold": true,
@@ -2922,95 +2922,27 @@
       "ref": "el_171",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "11 hours ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 850,
-        "width": 14,
-        "height": 10
+        "x": 249.171875,
+        "y": 863,
+        "width": 61.828125,
+        "height": 11
       },
       "above_fold": true,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_172",
       "tag": "a",
       "role": null,
-      "text": "Banksy works cost public almost £150k",
-      "bbox": {
-        "x": 150.609375,
-        "y": 848.5,
-        "width": 264.5,
-        "height": 16
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_173",
-      "tag": "a",
-      "role": null,
-      "text": "bbc.co.uk",
-      "bbox": {
-        "x": 423.703125,
-        "y": 850.5,
-        "width": 51.578125,
-        "height": 13
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_174",
-      "tag": "a",
-      "role": null,
-      "text": "alvis",
-      "bbox": {
-        "x": 212.109375,
-        "y": 866,
-        "width": 21.109375,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_175",
-      "tag": "a",
-      "role": null,
-      "text": "1 hour ago",
-      "bbox": {
-        "x": 236.5,
-        "y": 866,
-        "width": 51.03125,
-        "height": 11
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_176",
-      "tag": "a",
-      "role": null,
       "text": "hide",
       "bbox": {
-        "x": 298.34375,
-        "y": 866,
+        "x": 321.8125,
+        "y": 863,
         "width": 19.84375,
         "height": 11
       },
@@ -3021,14 +2953,82 @@
       "font_size": 9
     },
     {
+      "ref": "el_173",
+      "tag": "a",
+      "role": null,
+      "text": "28 comments",
+      "bbox": {
+        "x": 352.46875,
+        "y": 863,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_174",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 882,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_175",
+      "tag": "a",
+      "role": null,
+      "text": "Asus Bike Booster",
+      "bbox": {
+        "x": 150.609375,
+        "y": 880.5,
+        "width": 120.453125,
+        "height": 16
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_176",
+      "tag": "a",
+      "role": null,
+      "text": "asus.com",
+      "bbox": {
+        "x": 279.65625,
+        "y": 882.5,
+        "width": 50.53125,
+        "height": 13
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_177",
       "tag": "a",
       "role": null,
-      "text": "20 comments",
+      "text": "wiradikusuma",
       "bbox": {
-        "x": 329,
-        "y": 866,
-        "width": 63.828125,
+        "x": 218.046875,
+        "y": 898,
+        "width": 64.859375,
         "height": 11
       },
       "above_fold": true,
@@ -3041,113 +3041,113 @@
       "ref": "el_178",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "21 hours ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 885,
-        "width": 14,
-        "height": 10
+        "x": 286.1875,
+        "y": 898,
+        "width": 61.828125,
+        "height": 11
       },
       "above_fold": true,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_179",
       "tag": "a",
       "role": null,
-      "text": "Show HN: Airy – Free, fast, and simple voice content creation",
+      "text": "hide",
       "bbox": {
-        "x": 150.609375,
-        "y": 883.5,
-        "width": 415.09375,
-        "height": 16
+        "x": 358.828125,
+        "y": 898,
+        "width": 19.84375,
+        "height": 11
       },
       "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_180",
+      "tag": "a",
+      "role": null,
+      "text": "410 comments",
+      "bbox": {
+        "x": 389.484375,
+        "y": 898,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_181",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 917,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
       "font_size": 13
     },
     {
-      "ref": "el_180",
+      "ref": "el_182",
       "tag": "a",
       "role": null,
-      "text": "airy.so",
+      "text": "Stripe Clinches over $7B Deal to Buy AI Firm OpenRouter",
       "bbox": {
-        "x": 574.296875,
-        "y": 885.5,
-        "width": 35.109375,
+        "x": 150.609375,
+        "y": 915.5,
+        "width": 385.84375,
+        "height": 16
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_183",
+      "tag": "a",
+      "role": null,
+      "text": "bloomberg.com",
+      "bbox": {
+        "x": 545.046875,
+        "y": 917.5,
+        "width": 83.328125,
         "height": 13
       },
-      "above_fold": true,
+      "above_fold": false,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
       "font_size": 11
     },
     {
-      "ref": "el_181",
-      "tag": "a",
-      "role": null,
-      "text": "login588",
-      "bbox": {
-        "x": 212.109375,
-        "y": 901,
-        "width": 40.296875,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_182",
-      "tag": "a",
-      "role": null,
-      "text": "8 hours ago",
-      "bbox": {
-        "x": 255.6875,
-        "y": 901,
-        "width": 55.890625,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_183",
-      "tag": "a",
-      "role": null,
-      "text": "hide",
-      "bbox": {
-        "x": 322.390625,
-        "y": 901,
-        "width": 19.84375,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
       "ref": "el_184",
       "tag": "a",
       "role": null,
-      "text": "12 comments",
+      "text": "zacharyozer",
       "bbox": {
-        "x": 353.046875,
-        "y": 901,
-        "width": 63.828125,
+        "x": 212.109375,
+        "y": 933,
+        "width": 56.359375,
         "height": 11
       },
       "above_fold": false,
@@ -3160,95 +3160,27 @@
       "ref": "el_185",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "37 minutes ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 920,
-        "width": 14,
-        "height": 10
+        "x": 271.75,
+        "y": 933,
+        "width": 73.046875,
+        "height": 11
       },
       "above_fold": false,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_186",
       "tag": "a",
       "role": null,
-      "text": "We replaced Redis with MySQL for inventory reservations and it scaled",
-      "bbox": {
-        "x": 150.609375,
-        "y": 918.5,
-        "width": 473.5,
-        "height": 16
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_187",
-      "tag": "a",
-      "role": null,
-      "text": "shopify.engineering",
-      "bbox": {
-        "x": 632.703125,
-        "y": 920.5,
-        "width": 104.203125,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_188",
-      "tag": "a",
-      "role": null,
-      "text": "adletbalzhanov",
-      "bbox": {
-        "x": 218.046875,
-        "y": 936,
-        "width": 70.625,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_189",
-      "tag": "a",
-      "role": null,
-      "text": "19 hours ago",
-      "bbox": {
-        "x": 291.953125,
-        "y": 936,
-        "width": 61.828125,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_190",
-      "tag": "a",
-      "role": null,
       "text": "hide",
       "bbox": {
-        "x": 364.59375,
-        "y": 936,
+        "x": 355.609375,
+        "y": 933,
         "width": 19.84375,
         "height": 11
       },
@@ -3259,14 +3191,82 @@
       "font_size": 9
     },
     {
+      "ref": "el_187",
+      "tag": "a",
+      "role": null,
+      "text": "7 comments",
+      "bbox": {
+        "x": 386.265625,
+        "y": 933,
+        "width": 57.890625,
+        "height": 11
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_188",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 952,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_189",
+      "tag": "a",
+      "role": null,
+      "text": "The deep history behind the Road to Nowhere inside the Great Smoky Mountains",
+      "bbox": {
+        "x": 150.609375,
+        "y": 950.5,
+        "width": 543.890625,
+        "height": 16
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_190",
+      "tag": "a",
+      "role": null,
+      "text": "wunc.org",
+      "bbox": {
+        "x": 703.09375,
+        "y": 952.5,
+        "width": 49.3125,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_191",
       "tag": "a",
       "role": null,
-      "text": "208 comments",
+      "text": "yareally",
       "bbox": {
-        "x": 395.25,
-        "y": 936,
-        "width": 69.75,
+        "x": 212.109375,
+        "y": 968,
+        "width": 36.734375,
         "height": 11
       },
       "above_fold": false,
@@ -3279,95 +3279,27 @@
       "ref": "el_192",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "4 hours ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 955,
-        "width": 14,
-        "height": 10
+        "x": 252.125,
+        "y": 968,
+        "width": 55.890625,
+        "height": 11
       },
       "above_fold": false,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_193",
       "tag": "a",
       "role": null,
-      "text": "Making difficulty curves in games",
-      "bbox": {
-        "x": 150.609375,
-        "y": 953.5,
-        "width": 223.375,
-        "height": 16
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_194",
-      "tag": "a",
-      "role": null,
-      "text": "davetech.co.uk",
-      "bbox": {
-        "x": 382.578125,
-        "y": 955.5,
-        "width": 81.109375,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_195",
-      "tag": "a",
-      "role": null,
-      "text": "hakkikonu",
-      "bbox": {
-        "x": 218.046875,
-        "y": 971,
-        "width": 48.015625,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_196",
-      "tag": "a",
-      "role": null,
-      "text": "20 hours ago",
-      "bbox": {
-        "x": 269.34375,
-        "y": 971,
-        "width": 61.828125,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_197",
-      "tag": "a",
-      "role": null,
       "text": "hide",
       "bbox": {
-        "x": 341.984375,
-        "y": 971,
+        "x": 318.828125,
+        "y": 968,
         "width": 19.84375,
         "height": 11
       },
@@ -3378,14 +3310,82 @@
       "font_size": 9
     },
     {
+      "ref": "el_194",
+      "tag": "a",
+      "role": null,
+      "text": "5 comments",
+      "bbox": {
+        "x": 349.484375,
+        "y": 968,
+        "width": 57.890625,
+        "height": 11
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_195",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 987,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_196",
+      "tag": "a",
+      "role": null,
+      "text": "Research papers using \"kidney disappointment\" instead of \"kidney failure\"",
+      "bbox": {
+        "x": 150.609375,
+        "y": 985.5,
+        "width": 498.96875,
+        "height": 16
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_197",
+      "tag": "a",
+      "role": null,
+      "text": "scholar.google.com",
+      "bbox": {
+        "x": 658.171875,
+        "y": 987.5,
+        "width": 102.34375,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_198",
       "tag": "a",
       "role": null,
-      "text": "75 comments",
+      "text": "Alifatisk",
       "bbox": {
-        "x": 372.640625,
-        "y": 971,
-        "width": 63.828125,
+        "x": 218.046875,
+        "y": 1003,
+        "width": 37.015625,
         "height": 11
       },
       "above_fold": false,
@@ -3398,95 +3398,27 @@
       "ref": "el_199",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "8 hours ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 990,
-        "width": 14,
-        "height": 10
+        "x": 258.34375,
+        "y": 1003,
+        "width": 55.890625,
+        "height": 11
       },
       "above_fold": false,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_200",
       "tag": "a",
       "role": null,
-      "text": "TheoremDB – A public workspace for machine mathematics",
-      "bbox": {
-        "x": 150.609375,
-        "y": 988.5,
-        "width": 400.328125,
-        "height": 16
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_201",
-      "tag": "a",
-      "role": null,
-      "text": "theoremdb.org",
-      "bbox": {
-        "x": 559.53125,
-        "y": 990.5,
-        "width": 79.765625,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_202",
-      "tag": "a",
-      "role": null,
-      "text": "frozenseven",
-      "bbox": {
-        "x": 212.109375,
-        "y": 1006,
-        "width": 56.5625,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_203",
-      "tag": "a",
-      "role": null,
-      "text": "16 hours ago",
-      "bbox": {
-        "x": 271.953125,
-        "y": 1006,
-        "width": 61.828125,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_204",
-      "tag": "a",
-      "role": null,
       "text": "hide",
       "bbox": {
-        "x": 344.59375,
-        "y": 1006,
+        "x": 325.046875,
+        "y": 1003,
         "width": 19.84375,
         "height": 11
       },
@@ -3497,14 +3429,82 @@
       "font_size": 9
     },
     {
+      "ref": "el_201",
+      "tag": "a",
+      "role": null,
+      "text": "115 comments",
+      "bbox": {
+        "x": 355.703125,
+        "y": 1003,
+        "width": 69.75,
+        "height": 11
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_202",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 1022,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_203",
+      "tag": "a",
+      "role": null,
+      "text": "GPS and the Lost Art of Getting Lost",
+      "bbox": {
+        "x": 150.609375,
+        "y": 1020.5,
+        "width": 244.09375,
+        "height": 16
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_204",
+      "tag": "a",
+      "role": null,
+      "text": "newyorker.com",
+      "bbox": {
+        "x": 403.296875,
+        "y": 1022.5,
+        "width": 80.921875,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_205",
       "tag": "a",
       "role": null,
-      "text": "13 comments",
+      "text": "karakoram",
       "bbox": {
-        "x": 375.25,
-        "y": 1006,
-        "width": 63.828125,
+        "x": 212.109375,
+        "y": 1038,
+        "width": 50.140625,
         "height": 11
       },
       "above_fold": false,
@@ -3517,95 +3517,27 @@
       "ref": "el_206",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "6 hours ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 1025,
-        "width": 14,
-        "height": 10
+        "x": 265.53125,
+        "y": 1038,
+        "width": 55.890625,
+        "height": 11
       },
       "above_fold": false,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_207",
       "tag": "a",
       "role": null,
-      "text": "Open-source interactive map for the Aug 12 total solar eclipse",
-      "bbox": {
-        "x": 150.609375,
-        "y": 1023.5,
-        "width": 417.921875,
-        "height": 16
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_208",
-      "tag": "a",
-      "role": null,
-      "text": "eclipsefan.org",
-      "bbox": {
-        "x": 577.125,
-        "y": 1025.5,
-        "width": 74.75,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_209",
-      "tag": "a",
-      "role": null,
-      "text": "MarcoDewey",
-      "bbox": {
-        "x": 218.046875,
-        "y": 1041,
-        "width": 59.4375,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_210",
-      "tag": "a",
-      "role": null,
-      "text": "21 hours ago",
-      "bbox": {
-        "x": 280.765625,
-        "y": 1041,
-        "width": 61.828125,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_211",
-      "tag": "a",
-      "role": null,
       "text": "hide",
       "bbox": {
-        "x": 353.40625,
-        "y": 1041,
+        "x": 332.234375,
+        "y": 1038,
         "width": 19.84375,
         "height": 11
       },
@@ -3616,14 +3548,82 @@
       "font_size": 9
     },
     {
+      "ref": "el_208",
+      "tag": "a",
+      "role": null,
+      "text": "51 comments",
+      "bbox": {
+        "x": 362.890625,
+        "y": 1038,
+        "width": 63.828125,
+        "height": 11
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 9
+    },
+    {
+      "ref": "el_209",
+      "tag": "a",
+      "role": null,
+      "text": "",
+      "bbox": {
+        "x": 136.609375,
+        "y": 1057,
+        "width": 14,
+        "height": 10
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_210",
+      "tag": "a",
+      "role": null,
+      "text": "The Trumps' Crypto Project Just Got One Step Closer to Becoming a Bank",
+      "bbox": {
+        "x": 150.609375,
+        "y": 1055.5,
+        "width": 494.515625,
+        "height": 16
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 13
+    },
+    {
+      "ref": "el_211",
+      "tag": "a",
+      "role": null,
+      "text": "motherjones.com",
+      "bbox": {
+        "x": 653.71875,
+        "y": 1057.5,
+        "width": 93.75,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
       "ref": "el_212",
       "tag": "a",
       "role": null,
-      "text": "61 comments",
+      "text": "rib3ye",
       "bbox": {
-        "x": 384.0625,
-        "y": 1041,
-        "width": 63.828125,
+        "x": 212.109375,
+        "y": 1073,
+        "width": 29.296875,
         "height": 11
       },
       "above_fold": false,
@@ -3636,95 +3636,27 @@
       "ref": "el_213",
       "tag": "a",
       "role": null,
-      "text": "",
+      "text": "1 hour ago",
       "bbox": {
-        "x": 136.609375,
-        "y": 1060,
-        "width": 14,
-        "height": 10
+        "x": 244.6875,
+        "y": 1073,
+        "width": 51.03125,
+        "height": 11
       },
       "above_fold": false,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 13
+      "font_size": 9
     },
     {
       "ref": "el_214",
       "tag": "a",
       "role": null,
-      "text": "Should you stop cracking your knuckles?",
-      "bbox": {
-        "x": 150.609375,
-        "y": 1058.5,
-        "width": 273.390625,
-        "height": 16
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 13
-    },
-    {
-      "ref": "el_215",
-      "tag": "a",
-      "role": null,
-      "text": "bbc.com",
-      "bbox": {
-        "x": 432.59375,
-        "y": 1060.5,
-        "width": 45.109375,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_216",
-      "tag": "a",
-      "role": null,
-      "text": "tchalla",
-      "bbox": {
-        "x": 212.109375,
-        "y": 1076,
-        "width": 30.78125,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_217",
-      "tag": "a",
-      "role": null,
-      "text": "19 hours ago",
-      "bbox": {
-        "x": 246.171875,
-        "y": 1076,
-        "width": 61.828125,
-        "height": 11
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 9
-    },
-    {
-      "ref": "el_218",
-      "tag": "a",
-      "role": null,
       "text": "hide",
       "bbox": {
-        "x": 318.8125,
-        "y": 1076,
+        "x": 306.53125,
+        "y": 1073,
         "width": 19.84375,
         "height": 11
       },
@@ -3735,14 +3667,14 @@
       "font_size": 9
     },
     {
-      "ref": "el_219",
+      "ref": "el_215",
       "tag": "a",
       "role": null,
-      "text": "104 comments",
+      "text": "17 comments",
       "bbox": {
-        "x": 349.46875,
-        "y": 1076,
-        "width": 69.75,
+        "x": 337.1875,
+        "y": 1073,
+        "width": 63.828125,
         "height": 11
       },
       "above_fold": false,
@@ -3752,13 +3684,13 @@
       "font_size": 9
     },
     {
-      "ref": "el_220",
+      "ref": "el_216",
       "tag": "a",
       "role": null,
       "text": "More",
       "bbox": {
         "x": 150.609375,
-        "y": 1102,
+        "y": 1099,
         "width": 32.96875,
         "height": 16
       },
@@ -3769,14 +3701,82 @@
       "font_size": 13
     },
     {
-      "ref": "el_221",
+      "ref": "el_217",
       "tag": "a",
       "role": null,
       "text": "Guidelines",
       "bbox": {
         "x": 529.65625,
-        "y": 1146,
+        "y": 1143,
         "width": 55.4375,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
+      "ref": "el_218",
+      "tag": "a",
+      "role": null,
+      "text": "FAQ",
+      "bbox": {
+        "x": 597.4375,
+        "y": 1143,
+        "width": 21.296875,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
+      "ref": "el_219",
+      "tag": "a",
+      "role": null,
+      "text": "Lists",
+      "bbox": {
+        "x": 631.078125,
+        "y": 1143,
+        "width": 24.171875,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
+      "ref": "el_220",
+      "tag": "a",
+      "role": null,
+      "text": "API",
+      "bbox": {
+        "x": 667.59375,
+        "y": 1143,
+        "width": 18.203125,
+        "height": 13
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 11
+    },
+    {
+      "ref": "el_221",
+      "tag": "a",
+      "role": null,
+      "text": "Security",
+      "bbox": {
+        "x": 698.140625,
+        "y": 1143,
+        "width": 43.875,
         "height": 13
       },
       "above_fold": false,
@@ -3789,11 +3789,11 @@
       "ref": "el_222",
       "tag": "a",
       "role": null,
-      "text": "FAQ",
+      "text": "Legal",
       "bbox": {
-        "x": 597.4375,
-        "y": 1146,
-        "width": 21.296875,
+        "x": 754.359375,
+        "y": 1143,
+        "width": 28.265625,
         "height": 13
       },
       "above_fold": false,
@@ -3806,11 +3806,11 @@
       "ref": "el_223",
       "tag": "a",
       "role": null,
-      "text": "Lists",
+      "text": "Apply to YC",
       "bbox": {
-        "x": 631.078125,
-        "y": 1146,
-        "width": 24.171875,
+        "x": 794.96875,
+        "y": 1143,
+        "width": 61.984375,
         "height": 13
       },
       "above_fold": false,
@@ -3823,78 +3823,10 @@
       "ref": "el_224",
       "tag": "a",
       "role": null,
-      "text": "API",
-      "bbox": {
-        "x": 667.59375,
-        "y": 1146,
-        "width": 18.203125,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_225",
-      "tag": "a",
-      "role": null,
-      "text": "Security",
-      "bbox": {
-        "x": 698.140625,
-        "y": 1146,
-        "width": 43.875,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_226",
-      "tag": "a",
-      "role": null,
-      "text": "Legal",
-      "bbox": {
-        "x": 754.359375,
-        "y": 1146,
-        "width": 28.265625,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_227",
-      "tag": "a",
-      "role": null,
-      "text": "Apply to YC",
-      "bbox": {
-        "x": 794.96875,
-        "y": 1146,
-        "width": 61.984375,
-        "height": 13
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 11
-    },
-    {
-      "ref": "el_228",
-      "tag": "a",
-      "role": null,
       "text": "Contact",
       "bbox": {
         "x": 869.296875,
-        "y": 1146,
+        "y": 1143,
         "width": 41.03125,
         "height": 13
       },
@@ -3905,13 +3837,13 @@
       "font_size": 11
     },
     {
-      "ref": "el_229",
+      "ref": "el_225",
       "tag": "form",
       "role": null,
       "text": "Search:",
       "bbox": {
         "x": 114.796875,
-        "y": 1175,
+        "y": 1172,
         "width": 1210.390625,
         "height": 21
       },
@@ -3922,13 +3854,13 @@
       "font_size": 13
     },
     {
-      "ref": "el_230",
+      "ref": "el_226",
       "tag": "input",
       "role": null,
       "text": "",
       "bbox": {
         "x": 674.421875,
-        "y": 1175,
+        "y": 1172,
         "width": 148,
         "height": 21
       },
@@ -3939,8 +3871,8 @@
       "font_size": 13
     }
   ],
-  "elements_total": 231,
-  "text_excerpt": "Hacker News new | past | comments | ask | show | jobs | submit login 1. Mea Culpa – Dark Hours ( terrygodier.com ) 333 points by satvikpendem 4 hours ago | hide | 139 comments 2. Criminal Deception in Silicon Valley ( informs.org ) 65 points by iamnothere 2 hours ago | hide | 20 comments 3. Cool URIs Don't Change (1998) ( w3.org ) 49 points by Klaster_1 3 hours ago | hide | 4 comments 4. Show HN: A Project Oberon System version running on RISC-V instead of RISC-5 ( github.com/rochus-keller ) 67 points by Rochus 4 hours ago | hide | 15 comments 5. John C. Lilly on solid state intelligence and the elimination of man (1978) ( kibotronics.net ) 54 points by Kiboneu 3 hours ago | hide | 21 comments 6. Human vs. AI – Diff-based line-level provenance for text under agentic editing ( github.com/eighttrigrams ) 12 points by eighttrigrams 2 hours ago | hide | 1 comment 7. Every fast write moves work somewhere else ( shayon.dev ) 17 points by shayonj 2 hours ago | hide | 3 comments 8. There Are Magic Hexagons of Every Order ( gukov.dev ) 147 points by gukoff 10 hours ago | hide | 21 comments 9. Crickets as Pets ( wikipedia.org ) 13 points by Michelangelo11 2 hours ago | hide | 2 comments 10. My server is a phone now ( seg6.space ) 457 points by seg6 18 hours ago | hide | 215 comments 11. Silicon Valley misreads science fiction and undermines democracy ( techcrunch.com ) 129 points by evo_9 2 hours ago | hide | 95 comments 12. Tom Stanton's supersonic trebuchet breaks sound barrier with gravity alone ( techeblog.com ) 73 points by Thorondor 2 hours ago | hide | 21 comments 13. Microsoft Word for Windows 1.1a, Native X64 Port ( github.com/jmarshall23 ) 137 points by BruceEel 12 hours ago | hide | 59 comments 14. Os8088: A powerful Mac-like OS for the IBM XT, 286, 386 ( os8088.com ) 231 points by jggonz 18 hours ago | hide | 150 comments 15. Dithered QR Codes ( andrewt.net ) 330 points by jmusall 18 hours ago | hide | 36 comments 16. Taxi drivers rarely die of Alzheimer's ( theconversation.com ) 33 points by jader201 2 hours ago | hide | 25 comments 17. Show HN: Today's cities on a globe of Earth's tectonic past and future ( douwe.com ) 10 points by dosinga 3 hours ago | hide | discuss 18. The Alpha 21264 CPU: NT's Greatest RISC (1998) ( halfhill.com ) 58 points by Lammy 7 hours ago | hide | 41 comments 19. The Grid That Doubles the Strength of the Ground ( practical.engineering ) 101 points by michaefe 10 hours ago | hide | 29 comments 20. Literary Sins ( thedial.world ) 3 points by lermontov 1 hour ago | hide | discuss 21. FCC moves to ban Lidar-equipped foreign drones from US ( tomshardware.com ) 21 points by f-serif 1 hour ago | hide | 2 comments 22. A partial digestion of the HRT counterexample ( terrytao.wordpress.com ) 8 points by ijustlovemath 3 hours ago | hide | 1 comment 23. Windows 11's built-in Weather app wastes more than 1 GB of RAM ( notebookcheck.net ) 88 points by akyuu 2 hours ago | hide | 79 comments 24. Banksy works cost public almost £150k ( bbc.co.uk ) 11 points by alvis 1 hour ago | hide | 20 comments 25. Show HN: Airy – Free, fast, and simple voice content creation ( airy.so ) 24 points by login588 8 hours ago | hide | 12 comments 26. We replaced Redis with MySQL for inventory reservations and it scaled ( shopify.engineering ) 310 points by adletbalzhanov 19 hours ago | hide | 208 comments 27. Making difficulty curves in games ( davetech.co.uk ) 156 points by hakkikonu 20 hours ago | hide | 75 comments 28. TheoremDB – A public workspace for machine mathematics ( theoremdb.org ) 81 points by frozenseven 16 hours ago | hide | 13 comments 29. Open-source interactive map for the Aug 12 total solar eclipse ( eclipsefan.org ) 190 points by MarcoDewey 21 hours ago | hide | 61 comments 30. Should you stop cracking your knuckles? ( bbc.com ) 98 points by tchalla 19 hours ago | hide | 104 comments More Guidelines | FAQ | Lists | API | Security | Legal | Apply to YC | Contact Search:",
-  "text_total_chars": 3956,
+  "elements_total": 227,
+  "text_excerpt": "Hacker News new | past | comments | ask | show | jobs | submit login 1. A 3rd World Embedded Engineer Responds to \"RISC-V They Should Have Known Better\" ( rvembedded.com ) 221 points by Narishma 4 hours ago | hide | 119 comments 2. The Case Against Formal Verification, 50 Years Later ( ivan-gavran.github.io ) 16 points by ghuntley 29 minutes ago | hide | 4 comments 3. Claude: System Prompts ( claude.com ) 435 points by tosh 8 hours ago | hide | 190 comments 4. Protobuf has LSP support. You're welcome ( buf.build ) 48 points by theanonymousone 2 hours ago | hide | 18 comments 5. Models Are Getting Dumber on Purpose ( w4g1.dev ) 145 points by hruvhwe 2 hours ago | hide | 91 comments 6. SIMD in the 90s: Programming Intel's Pentium MMX ( pikuma.com ) 19 points by ibobev 2 hours ago | hide | 1 comment 7. The AI Credit Resale Economy ( vectoral.com ) 187 points by mlenhard 6 hours ago | hide | 69 comments 8. Low-Tech Ceramic Water Filter ( lowtechlab.org ) 22 points by Bluestein 3 hours ago | hide | 6 comments 9. St Lucie Nuclear Reactor Unit 1 manually shutdown, 3 control rods drop into core ( wptv.com ) 125 points by toomuchtodo 5 hours ago | hide | 89 comments 10. MathCode, Mathematical Coding Agent ( math-ai-org.github.io ) 30 points by homarp 2 hours ago | hide | 9 comments 11. NIH is ending a key grant for budding clinical researchers ( science.org ) 110 points by brandonb 4 hours ago | hide | 53 comments 12. Anton Chekhov played at love most of his life ( wustl.edu ) 44 points by lermontov 5 hours ago | hide | 6 comments 13. Clamiga: Common Lisp for the Amiga ( nnamgreb.de ) 60 points by emptybits 6 hours ago | hide | 4 comments 14. Firefox for iOS now has a native adblocker ( support.mozilla.org ) 441 points by pentagrama 8 hours ago | hide | 189 comments 15. Plastic mechanical computer from 1963: The Digi-Comp 1 [video] ( youtube.com ) 26 points by tobr 4 hours ago | hide | 6 comments 16. Tell HN: Cloudflare silently injects its analytics when you switch nameservers 142 points by stagas 3 hours ago | hide | 38 comments 17. ICE Shot a Journalist and Threw Him in Detention. He's Approaching 300 Days ( theintercept.com ) 51 points by Jimmc414 1 hour ago | hide | 16 comments 18. Before Rightmove, there was the Cosmorama ( ianvisits.co.uk ) 18 points by brod_ie 5 hours ago | hide | 2 comments 19. Archie G. Norcross' Maine Forest Fire Maps (1918–22) ( publicdomainreview.org ) 20 points by samclemens 5 hours ago | hide | 3 comments 20. The weekend is 100 years old ( theguardian.com ) 148 points by lentil_soup 5 hours ago | hide | 82 comments 21. Tasklet (YC P26) Is Hiring a Head of Design Engineering ( tasklet.ai ) 7 hours ago | hide 22. A True Telnet BBS on a Casio Calculator ( ei3lh.eu ) 71 points by austinallegro 8 hours ago | hide | 9 comments 23. Chestnut – eGPU dock with open-source firmware ( hwbusters.com ) 121 points by txrx0000 13 hours ago | hide | 35 comments 24. A SAT Attack on Tarski's High School Algebra Problem ( arxiv.org ) 72 points by matt_d 11 hours ago | hide | 28 comments 25. Asus Bike Booster ( asus.com ) 586 points by wiradikusuma 21 hours ago | hide | 410 comments 26. Stripe Clinches over $7B Deal to Buy AI Firm OpenRouter ( bloomberg.com ) 14 points by zacharyozer 37 minutes ago | hide | 7 comments 27. The deep history behind the Road to Nowhere inside the Great Smoky Mountains ( wunc.org ) 15 points by yareally 4 hours ago | hide | 5 comments 28. Research papers using \"kidney disappointment\" instead of \"kidney failure\" ( scholar.google.com ) 319 points by Alifatisk 8 hours ago | hide | 115 comments 29. GPS and the Lost Art of Getting Lost ( newyorker.com ) 61 points by karakoram 6 hours ago | hide | 51 comments 30. The Trumps' Crypto Project Just Got One Step Closer to Becoming a Bank ( motherjones.com ) 21 points by rib3ye 1 hour ago | hide | 17 comments More Guidelines | FAQ | Lists | API | Security | Legal | Apply to YC | Contact Search:",
+  "text_total_chars": 3935,
   "captured_at": "frozen"
 }

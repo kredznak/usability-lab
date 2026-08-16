@@ -13,23 +13,6 @@
   "elements": [
     {
       "ref": "el_0",
-      "tag": "a",
-      "role": null,
-      "text": "Jump to content",
-      "bbox": {
-        "x": -1,
-        "y": -1,
-        "width": 1,
-        "height": 1
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 16
-    },
-    {
-      "ref": "el_1",
       "tag": "header",
       "role": null,
       "text": "Search Donate Create account Log in",
@@ -46,7 +29,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_2",
+      "ref": "el_1",
       "tag": "nav",
       "role": null,
       "text": "",
@@ -63,7 +46,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_3",
+      "ref": "el_2",
       "tag": "label",
       "role": null,
       "text": "",
@@ -80,7 +63,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_4",
+      "ref": "el_3",
       "tag": "a",
       "role": null,
       "text": "",
@@ -97,7 +80,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_5",
+      "ref": "el_4",
       "tag": "form",
       "role": null,
       "text": "Search",
@@ -114,7 +97,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_6",
+      "ref": "el_5",
       "tag": "input",
       "role": null,
       "text": "",
@@ -131,7 +114,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_7",
+      "ref": "el_6",
       "tag": "button",
       "role": null,
       "text": "Search",
@@ -148,7 +131,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_8",
+      "ref": "el_7",
       "tag": "nav",
       "role": null,
       "text": "Donate Create account Log in",
@@ -165,7 +148,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_9",
+      "ref": "el_8",
       "tag": "a",
       "role": null,
       "text": "Donate",
@@ -182,7 +165,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_10",
+      "ref": "el_9",
       "tag": "a",
       "role": null,
       "text": "Create account",
@@ -199,7 +182,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_11",
+      "ref": "el_10",
       "tag": "a",
       "role": null,
       "text": "Log in",
@@ -216,7 +199,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_12",
+      "ref": "el_11",
       "tag": "nav",
       "role": null,
       "text": "Contents hide (Top) Lists Main lists Additional lists See also Further reading External links",
@@ -233,7 +216,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_13",
+      "ref": "el_12",
       "tag": "h2",
       "role": null,
       "text": "Contents",
@@ -250,7 +233,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_14",
+      "ref": "el_13",
       "tag": "button",
       "role": null,
       "text": "hide",
@@ -267,7 +250,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_15",
+      "ref": "el_14",
       "tag": "a",
       "role": null,
       "text": "(Top)",
@@ -284,7 +267,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_16",
+      "ref": "el_15",
       "tag": "a",
       "role": null,
       "text": "Lists",
@@ -301,7 +284,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_17",
+      "ref": "el_16",
       "tag": "button",
       "role": null,
       "text": "",
@@ -318,7 +301,7 @@
       "font_size": 11
     },
     {
-      "ref": "el_18",
+      "ref": "el_17",
       "tag": "a",
       "role": null,
       "text": "Main lists",
@@ -335,7 +318,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_19",
+      "ref": "el_18",
       "tag": "a",
       "role": null,
       "text": "Additional lists",
@@ -352,7 +335,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_20",
+      "ref": "el_19",
       "tag": "a",
       "role": null,
       "text": "See also",
@@ -369,7 +352,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_21",
+      "ref": "el_20",
       "tag": "a",
       "role": null,
       "text": "Further reading",
@@ -386,7 +369,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_22",
+      "ref": "el_21",
       "tag": "a",
       "role": null,
       "text": "External links",
@@ -403,7 +386,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_23",
+      "ref": "el_22",
       "tag": "header",
       "role": null,
       "text": "List of common misconceptions 23 languages",
@@ -420,7 +403,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_24",
+      "ref": "el_23",
       "tag": "h1",
       "role": null,
       "text": "List of common misconceptions",
@@ -437,7 +420,7 @@
       "font_size": 29
     },
     {
-      "ref": "el_25",
+      "ref": "el_24",
       "tag": "label",
       "role": null,
       "text": "23 languages",
@@ -454,7 +437,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_26",
+      "ref": "el_25",
       "tag": "nav",
       "role": null,
       "text": "Article Talk",
@@ -471,7 +454,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_27",
+      "ref": "el_26",
       "tag": "a",
       "role": null,
       "text": "Article",
@@ -488,7 +471,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_28",
+      "ref": "el_27",
       "tag": "a",
       "role": null,
       "text": "Talk",
@@ -505,7 +488,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_29",
+      "ref": "el_28",
       "tag": "nav",
       "role": null,
       "text": "Read Edit View history",
@@ -522,7 +505,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_30",
+      "ref": "el_29",
       "tag": "a",
       "role": null,
       "text": "Read",
@@ -539,7 +522,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_31",
+      "ref": "el_30",
       "tag": "a",
       "role": null,
       "text": "Edit",
@@ -556,7 +539,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_32",
+      "ref": "el_31",
       "tag": "a",
       "role": null,
       "text": "View history",
@@ -573,7 +556,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_33",
+      "ref": "el_32",
       "tag": "nav",
       "role": null,
       "text": "",
@@ -590,7 +573,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_34",
+      "ref": "el_33",
       "tag": "label",
       "role": null,
       "text": "",
@@ -607,7 +590,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_35",
+      "ref": "el_34",
       "tag": "nav",
       "role": null,
       "text": "Appearance hide Text Small Standard Large Width Standard Wide Color Automatic Light Dark",
@@ -624,7 +607,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_36",
+      "ref": "el_35",
       "tag": "button",
       "role": null,
       "text": "hide",
@@ -641,7 +624,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_37",
+      "ref": "el_36",
       "tag": "form",
       "role": null,
       "text": "Small Standard Large",
@@ -658,7 +641,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_38",
+      "ref": "el_37",
       "tag": "label",
       "role": null,
       "text": "Small",
@@ -675,7 +658,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_39",
+      "ref": "el_38",
       "tag": "label",
       "role": null,
       "text": "Standard",
@@ -692,7 +675,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_40",
+      "ref": "el_39",
       "tag": "label",
       "role": null,
       "text": "Large",
@@ -709,7 +692,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_41",
+      "ref": "el_40",
       "tag": "form",
       "role": null,
       "text": "Standard Wide",
@@ -726,7 +709,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_42",
+      "ref": "el_41",
       "tag": "label",
       "role": null,
       "text": "Standard",
@@ -743,7 +726,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_43",
+      "ref": "el_42",
       "tag": "label",
       "role": null,
       "text": "Wide",
@@ -760,7 +743,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_44",
+      "ref": "el_43",
       "tag": "form",
       "role": null,
       "text": "Automatic Light Dark",
@@ -777,7 +760,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_45",
+      "ref": "el_44",
       "tag": "label",
       "role": null,
       "text": "Automatic",
@@ -794,7 +777,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_46",
+      "ref": "el_45",
       "tag": "label",
       "role": null,
       "text": "Light",
@@ -811,7 +794,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_47",
+      "ref": "el_46",
       "tag": "label",
       "role": null,
       "text": "Dark",
@@ -828,7 +811,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_48",
+      "ref": "el_47",
       "tag": "a",
       "role": null,
       "text": "conventional wisdom",
@@ -845,7 +828,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_49",
+      "ref": "el_48",
       "tag": "a",
       "role": null,
       "text": "stereotypes",
@@ -862,7 +845,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_50",
+      "ref": "el_49",
       "tag": "a",
       "role": null,
       "text": "superstitions",
@@ -879,7 +862,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_51",
+      "ref": "el_50",
       "tag": "a",
       "role": null,
       "text": "logical fallacies",
@@ -896,7 +879,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_52",
+      "ref": "el_51",
       "tag": "a",
       "role": null,
       "text": "pseudoscience",
@@ -913,7 +896,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_53",
+      "ref": "el_52",
       "tag": "a",
       "role": null,
       "text": "pseudohistory",
@@ -930,7 +913,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_54",
+      "ref": "el_53",
       "tag": "a",
       "role": null,
       "text": "urban legends",
@@ -947,7 +930,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_55",
+      "ref": "el_54",
       "tag": "a",
       "role": null,
       "text": "moral panics",
@@ -964,7 +947,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_56",
+      "ref": "el_55",
       "tag": "h2",
       "role": null,
       "text": "Lists",
@@ -981,7 +964,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_57",
+      "ref": "el_56",
       "tag": "h3",
       "role": null,
       "text": "Main lists",
@@ -998,7 +981,7 @@
       "font_size": 19
     },
     {
-      "ref": "el_58",
+      "ref": "el_57",
       "tag": "a",
       "role": null,
       "text": "List of common misconceptions about arts and culture",
@@ -1015,7 +998,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_59",
+      "ref": "el_58",
       "tag": "a",
       "role": null,
       "text": "List of common misconceptions about history",
@@ -1032,7 +1015,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_60",
+      "ref": "el_59",
       "tag": "a",
       "role": null,
       "text": "List of common misconceptions about science, technology, and mathematics",
@@ -1049,30 +1032,13 @@
       "font_size": 16
     },
     {
-      "ref": "el_61",
-      "tag": "h3",
-      "role": null,
-      "text": "Additional lists",
-      "bbox": {
-        "x": 264,
-        "y": 628.953125,
-        "width": 137.609375,
-        "height": 22
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 19
-    },
-    {
-      "ref": "el_62",
+      "ref": "el_60",
       "tag": "a",
       "role": null,
       "text": "List of common misconceptions about language learning",
       "bbox": {
         "x": 289.59375,
-        "y": 664.46875,
+        "y": 616.15625,
         "width": 399.359375,
         "height": 18
       },
@@ -1083,13 +1049,13 @@
       "font_size": 16
     },
     {
-      "ref": "el_63",
+      "ref": "el_61",
       "tag": "a",
       "role": null,
       "text": "List of common misconceptions about the Middle Ages",
       "bbox": {
         "x": 289.59375,
-        "y": 692.0625,
+        "y": 643.75,
         "width": 386,
         "height": 18
       },
@@ -1100,7 +1066,24 @@
       "font_size": 16
     },
     {
-      "ref": "el_64",
+      "ref": "el_62",
+      "tag": "h3",
+      "role": null,
+      "text": "Additional lists",
+      "bbox": {
+        "x": 264,
+        "y": 684.140625,
+        "width": 137.609375,
+        "height": 22
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_63",
       "tag": "a",
       "role": null,
       "text": "Common English usage misconceptions",
@@ -1117,7 +1100,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_65",
+      "ref": "el_64",
       "tag": "a",
       "role": null,
       "text": "Misconceptions about HIV/AIDS",
@@ -1134,7 +1117,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_66",
+      "ref": "el_65",
       "tag": "a",
       "role": null,
       "text": "Tornado myths",
@@ -1151,7 +1134,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_67",
+      "ref": "el_66",
       "tag": "a",
       "role": null,
       "text": "Common misunderstandings of genetics",
@@ -1168,7 +1151,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_68",
+      "ref": "el_67",
       "tag": "h2",
       "role": null,
       "text": "See also",
@@ -1185,7 +1168,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_69",
+      "ref": "el_68",
       "tag": "a",
       "role": null,
       "text": "False memory",
@@ -1202,7 +1185,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_70",
+      "ref": "el_69",
       "tag": "a",
       "role": null,
       "text": "Illusory truth effect",
@@ -1219,7 +1202,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_71",
+      "ref": "el_70",
       "tag": "a",
       "role": null,
       "text": "Legends and myths regarding the Titanic",
@@ -1236,7 +1219,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_72",
+      "ref": "el_71",
       "tag": "a",
       "role": null,
       "text": "List of cognitive biases",
@@ -1253,7 +1236,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_73",
+      "ref": "el_72",
       "tag": "a",
       "role": null,
       "text": "List of common false etymologies of English words",
@@ -1270,7 +1253,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_74",
+      "ref": "el_73",
       "tag": "a",
       "role": null,
       "text": "List of conspiracy theories",
@@ -1287,7 +1270,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_75",
+      "ref": "el_74",
       "tag": "a",
       "role": null,
       "text": "List of fallacies",
@@ -1304,7 +1287,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_76",
+      "ref": "el_75",
       "tag": "a",
       "role": null,
       "text": "List of pseudoscience topics",
@@ -1321,7 +1304,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_77",
+      "ref": "el_76",
       "tag": "a",
       "role": null,
       "text": "List of urban legends",
@@ -1338,7 +1321,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_78",
+      "ref": "el_77",
       "tag": "a",
       "role": null,
       "text": "Mondegreen",
@@ -1355,7 +1338,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_79",
+      "ref": "el_78",
       "tag": "a",
       "role": null,
       "text": "Outline of public relations",
@@ -1372,7 +1355,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_80",
+      "ref": "el_79",
       "tag": "a",
       "role": null,
       "text": "Pseudodoxia Epidemica",
@@ -1389,7 +1372,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_81",
+      "ref": "el_80",
       "tag": "a",
       "role": null,
       "text": "QI",
@@ -1406,7 +1389,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_82",
+      "ref": "el_81",
       "tag": "a",
       "role": null,
       "text": "Scientific misconceptions",
@@ -1423,7 +1406,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_83",
+      "ref": "el_82",
       "tag": "a",
       "role": null,
       "text": "Superseded theories in science",
@@ -1440,7 +1423,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_84",
+      "ref": "el_83",
       "tag": "a",
       "role": null,
       "text": "The Straight Dope",
@@ -1457,7 +1440,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_85",
+      "ref": "el_84",
       "tag": "h2",
       "role": null,
       "text": "Further reading",
@@ -1474,7 +1457,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_86",
+      "ref": "el_85",
       "tag": "a",
       "role": null,
       "text": "Amazing... But False!: Hundreds of \"Facts\" You Thought Were True, But Aren't",
@@ -1491,7 +1474,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_87",
+      "ref": "el_86",
       "tag": "a",
       "role": null,
       "text": "ISBN",
@@ -1508,7 +1491,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_88",
+      "ref": "el_87",
       "tag": "a",
       "role": null,
       "text": "978-1-4027-3791-6",
@@ -1525,7 +1508,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_89",
+      "ref": "el_88",
       "tag": "a",
       "role": null,
       "text": "ISBN",
@@ -1542,7 +1525,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_90",
+      "ref": "el_89",
       "tag": "a",
       "role": null,
       "text": "978-0-7679-1992-0",
@@ -1559,7 +1542,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_91",
+      "ref": "el_90",
       "tag": "a",
       "role": null,
       "text": "The Encyclopedia of Popular Misconceptions: The Ultimate Debunker's Guide to Widely Accepted Fallacies",
@@ -1576,7 +1559,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_92",
+      "ref": "el_91",
       "tag": "a",
       "role": null,
       "text": "ISBN",
@@ -1593,7 +1576,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_93",
+      "ref": "el_92",
       "tag": "a",
       "role": null,
       "text": "978-0-8065-1556-4",
@@ -1610,7 +1593,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_94",
+      "ref": "el_93",
       "tag": "a",
       "role": null,
       "text": "Great Mythconceptions: The Science Behind the Myths",
@@ -1627,7 +1610,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_95",
+      "ref": "el_94",
       "tag": "a",
       "role": null,
       "text": "ISBN",
@@ -1644,7 +1627,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_96",
+      "ref": "el_95",
       "tag": "a",
       "role": null,
       "text": "978-0-7407-5364-0",
@@ -1661,7 +1644,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_97",
+      "ref": "el_96",
       "tag": "a",
       "role": null,
       "text": "The Book of General Ignorance",
@@ -1678,7 +1661,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_98",
+      "ref": "el_97",
       "tag": "a",
       "role": null,
       "text": "ISBN",
@@ -1695,7 +1678,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_99",
+      "ref": "el_98",
       "tag": "a",
       "role": null,
       "text": "978-0-307-39491-0",
@@ -1712,7 +1695,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_100",
+      "ref": "el_99",
       "tag": "a",
       "role": null,
       "text": "ISBN",
@@ -1729,7 +1712,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_101",
+      "ref": "el_100",
       "tag": "a",
       "role": null,
       "text": "978-0-571-26965-5",
@@ -1746,7 +1729,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_102",
+      "ref": "el_101",
       "tag": "a",
       "role": null,
       "text": "\"The science myths that will not die\"",
@@ -1763,7 +1746,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_103",
+      "ref": "el_102",
       "tag": "a",
       "role": null,
       "text": "Bibcode",
@@ -1780,7 +1763,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_104",
+      "ref": "el_103",
       "tag": "a",
       "role": null,
       "text": "2015Natur.528..322S",
@@ -1797,7 +1780,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_105",
+      "ref": "el_104",
       "tag": "a",
       "role": null,
       "text": "doi",
@@ -1814,7 +1797,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_106",
+      "ref": "el_105",
       "tag": "a",
       "role": null,
       "text": "10.1038/528322a",
@@ -1831,7 +1814,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_107",
+      "ref": "el_106",
       "tag": "a",
       "role": null,
       "text": "PMID",
@@ -1848,7 +1831,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_108",
+      "ref": "el_107",
       "tag": "a",
       "role": null,
       "text": "26672537",
@@ -1865,7 +1848,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_109",
+      "ref": "el_108",
       "tag": "a",
       "role": null,
       "text": "Fabulous Fallacies: More Than 300 Popular Beliefs That Are Not True",
@@ -1882,7 +1865,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_110",
+      "ref": "el_109",
       "tag": "a",
       "role": null,
       "text": "ISBN",
@@ -1899,7 +1882,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_111",
+      "ref": "el_110",
       "tag": "a",
       "role": null,
       "text": "978-1-57866-065-0",
@@ -1916,7 +1899,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_112",
+      "ref": "el_111",
       "tag": "h2",
       "role": null,
       "text": "External links",
@@ -1933,7 +1916,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_113",
+      "ref": "el_112",
       "tag": "a",
       "role": null,
       "text": "List of children's misconceptions about science",
@@ -1950,7 +1933,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_114",
+      "ref": "el_113",
       "tag": "a",
       "role": null,
       "text": "Misconceptions taught by science textbooks",
@@ -1967,7 +1950,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_115",
+      "ref": "el_114",
       "tag": "a",
       "role": null,
       "text": "Bad Science",
@@ -1984,7 +1967,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_116",
+      "ref": "el_115",
       "tag": "a",
       "role": null,
       "text": "Portals",
@@ -2001,7 +1984,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_117",
+      "ref": "el_116",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2018,7 +2001,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_118",
+      "ref": "el_117",
       "tag": "a",
       "role": null,
       "text": "The arts",
@@ -2035,7 +2018,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_119",
+      "ref": "el_118",
       "tag": "a",
       "role": null,
       "text": "History of science",
@@ -2052,7 +2035,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_120",
+      "ref": "el_119",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2069,7 +2052,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_121",
+      "ref": "el_120",
       "tag": "a",
       "role": null,
       "text": "Science",
@@ -2086,7 +2069,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_122",
+      "ref": "el_121",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2103,7 +2086,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_123",
+      "ref": "el_122",
       "tag": "a",
       "role": null,
       "text": "Society",
@@ -2120,7 +2103,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_124",
+      "ref": "el_123",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2137,7 +2120,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_125",
+      "ref": "el_124",
       "tag": "a",
       "role": null,
       "text": "Technology",
@@ -2154,7 +2137,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_126",
+      "ref": "el_125",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2171,7 +2154,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_127",
+      "ref": "el_126",
       "tag": "a",
       "role": null,
       "text": "list of lists",
@@ -2188,7 +2171,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_128",
+      "ref": "el_127",
       "tag": "a",
       "role": null,
       "text": "Categories",
@@ -2205,7 +2188,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_129",
+      "ref": "el_128",
       "tag": "a",
       "role": null,
       "text": "Lists of lists",
@@ -2222,7 +2205,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_130",
+      "ref": "el_129",
       "tag": "a",
       "role": null,
       "text": "Lists of common misconceptions",
@@ -2239,7 +2222,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_131",
+      "ref": "el_130",
       "tag": "a",
       "role": null,
       "text": "Society-related lists",
@@ -2256,7 +2239,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_132",
+      "ref": "el_131",
       "tag": "a",
       "role": null,
       "text": "Misconceptions",
@@ -2273,10 +2256,10 @@
       "font_size": 16
     },
     {
-      "ref": "el_133",
+      "ref": "el_132",
       "tag": "footer",
       "role": null,
-      "text": "This page was last edited on 28 July 2026, at 20:52 (UTC) . Page was rendered with Parsoid . Text is available under the Creative Commons Attribution-ShareAlike 4.0 License ; additional terms may appl",
+      "text": "This page was last edited on 13 August 2026, at 10:52 (UTC) . Page was rendered with Parsoid . Text is available under the Creative Commons Attribution-ShareAlike 4.0 License ; additional terms may ap",
       "bbox": {
         "x": 44,
         "y": 1867.859375,
@@ -2290,12 +2273,12 @@
       "font_size": 16
     },
     {
-      "ref": "el_134",
+      "ref": "el_133",
       "tag": "a",
       "role": null,
       "text": "Parsoid",
       "bbox": {
-        "x": 493.390625,
+        "x": 508.765625,
         "y": 1887.859375,
         "width": 40.6875,
         "height": 14
@@ -2307,7 +2290,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_135",
+      "ref": "el_134",
       "tag": "a",
       "role": null,
       "text": "Creative Commons Attribution-ShareAlike 4.0 License",
@@ -2324,7 +2307,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_136",
+      "ref": "el_135",
       "tag": "a",
       "role": null,
       "text": "Terms of Use",
@@ -2341,7 +2324,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_137",
+      "ref": "el_136",
       "tag": "a",
       "role": null,
       "text": "Privacy Policy",
@@ -2358,7 +2341,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_138",
+      "ref": "el_137",
       "tag": "a",
       "role": null,
       "text": "Wikimedia Foundation, Inc.",
@@ -2375,7 +2358,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_139",
+      "ref": "el_138",
       "tag": "a",
       "role": null,
       "text": "Privacy policy",
@@ -2392,7 +2375,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_140",
+      "ref": "el_139",
       "tag": "a",
       "role": null,
       "text": "About Wikipedia",
@@ -2409,7 +2392,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_141",
+      "ref": "el_140",
       "tag": "a",
       "role": null,
       "text": "Disclaimers",
@@ -2426,7 +2409,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_142",
+      "ref": "el_141",
       "tag": "a",
       "role": null,
       "text": "Contact Wikipedia",
@@ -2443,7 +2426,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_143",
+      "ref": "el_142",
       "tag": "a",
       "role": null,
       "text": "Legal & safety contacts",
@@ -2460,7 +2443,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_144",
+      "ref": "el_143",
       "tag": "a",
       "role": null,
       "text": "Code of Conduct",
@@ -2477,7 +2460,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_145",
+      "ref": "el_144",
       "tag": "a",
       "role": null,
       "text": "Developers",
@@ -2494,7 +2477,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_146",
+      "ref": "el_145",
       "tag": "a",
       "role": null,
       "text": "Statistics",
@@ -2511,7 +2494,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_147",
+      "ref": "el_146",
       "tag": "a",
       "role": null,
       "text": "Cookie statement",
@@ -2528,7 +2511,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_148",
+      "ref": "el_147",
       "tag": "a",
       "role": null,
       "text": "Mobile view",
@@ -2545,7 +2528,7 @@
       "font_size": 12
     },
     {
-      "ref": "el_149",
+      "ref": "el_148",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2562,7 +2545,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_150",
+      "ref": "el_149",
       "tag": "a",
       "role": null,
       "text": "",
@@ -2580,7 +2563,7 @@
     }
   ],
   "elements_total": 151,
-  "text_excerpt": "Search Donate Create account Log in Contents hide (Top) Lists Main lists Additional lists See also Further reading External links List of common misconceptions 23 languages Article Talk Read Edit View history Appearance hide Text Small Standard Large Width Standard Wide Color Automatic Light Dark From Wikipedia, the free encyclopedia Each entry on these lists of common misconceptions is phrased as a correction; the misconceptions themselves are implied rather than explicitly stated. These entries are concise summaries, and the main subject articles contain more detail. Common misconceptions are widely accepted viewpoints or factoids that are actually false. They often arise from conventional wisdom (such as old wives' tales), stereotypes , superstitions , logical fallacies , misunderstandings of science, or the popularization of pseudoscience and pseudohistory . Some misconceptions are also considered urban legends and may contribute to moral panics . Lists edit In order to manage page size and loading time, this long article has been split into multiple articles. Main lists edit List of common misconceptions about arts and culture List of common misconceptions about history List of common misconceptions about science, technology, and mathematics Additional lists edit List of common misconceptions about language learning List of common misconceptions about the Middle Ages Common English usage misconceptions Misconceptions about HIV/AIDS Tornado myths Common misunderstandings of genetics See also edit False memory Illusory truth effect Legends and myths regarding the Titanic List of cognitive biases List of common false etymologies of English words List of conspiracy theories List of fallacies List of pseudoscience topics List of urban legends Mondegreen Outline of public relations Pseudodoxia Epidemica QI Scientific misconceptions Superseded theories in science The Straight Dope Further reading edit Diefendorf, David (2007). Amazing... But False!: Hundreds of \"Facts\" You Thought Were True, But Aren't . Sterling. ISBN 978-1-4027-3791-6 . Green, Joey (2005). Contrary to Popular Belief: More than 250 False Facts Revealed . Broadway. ISBN 978-0-7679-1992-0 . Johnsen, Ferris (1994). The Encyclopedia of Popular Misconceptions: The Ultimate Debunker's Guide to Widely Accepted Fallacies . Carol Publishing Group. ISBN 978-0-8065-1556-4 . Kruszelnicki, Karl; Adam Yazxhi (2006). Great Mythconceptions: The Science Behind the Myths (2008 ed.). Andrews McMeel Publishing. ISBN 978-0-7407-5364-0 . Lloyd, John; John Mitchinson (2006). The Book of General Ignorance . Harmony Books. ISBN 978-0-307-39491-0 . Lloyd, John; John Mitchinson (2010). The Second Book Of General Ignorance . Faber and Faber. ISBN 978-0-571-26965-5 . Scudellari, Megan (December 17, 2015). \"The science myths that will not die\" . Nature . 528 (7582): 322– 25. Bibcode : 2015Natur.528..322S . doi : 10.1038/528322a . PMID 26672537 . Tuleja, Tad (1999). Fabulous Fallacies: More Than 300 Popular Beliefs That Are Not True . Galahad Books. ISBN 978-1-57866-065-0 . External links edit List of children's misconceptions about science Misconceptions taught by science textbooks Bad Science Portals : The arts History of science Science Society Technology This article includes a list of lists . <img src=\"https://en.wikipedia.org/wiki/Special:CentralAutoLogin/start?useformat=desktop&amp;type=1x1&amp;usesul3=1\" alt=\"\" width=\"1\" height=\"1\" style=\"border: none; position: absolute;\"> Categories : Lists of lists Lists of common misconceptions Society-related lists Misconceptions This page was last edited on 28 July 2026, at 20:52 (UTC) . Page was rendered with Parsoid . Text is available under the Creative Commons Attribution-ShareAlike 4.0 License ; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy . Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc. , a non-profit organization. Privacy policy About Wikipedia Disclaimers Contac",
-  "text_total_chars": 4102,
+  "text_excerpt": "Search Donate Create account Log in Contents hide (Top) Lists Main lists Additional lists See also Further reading External links List of common misconceptions 23 languages Article Talk Read Edit View history Appearance hide Text Small Standard Large Width Standard Wide Color Automatic Light Dark From Wikipedia, the free encyclopedia Each entry on these lists of common misconceptions is phrased as a correction; the misconceptions themselves are implied rather than explicitly stated. These entries are concise summaries, and the main subject articles contain more detail. Common misconceptions are widely accepted viewpoints or factoids that are actually false. They often arise from conventional wisdom (such as old wives' tales), stereotypes , superstitions , logical fallacies , misunderstandings of science, or the popularization of pseudoscience and pseudohistory . Some misconceptions are also considered urban legends and may contribute to moral panics . Lists edit In order to manage page size and loading time, this long article has been split into multiple articles. Main lists edit List of common misconceptions about arts and culture List of common misconceptions about history List of common misconceptions about science, technology, and mathematics List of common misconceptions about language learning List of common misconceptions about the Middle Ages Additional lists edit Common English usage misconceptions Misconceptions about HIV/AIDS Tornado myths Common misunderstandings of genetics See also edit False memory Illusory truth effect Legends and myths regarding the Titanic List of cognitive biases List of common false etymologies of English words List of conspiracy theories List of fallacies List of pseudoscience topics List of urban legends Mondegreen Outline of public relations Pseudodoxia Epidemica QI Scientific misconceptions Superseded theories in science The Straight Dope Further reading edit Diefendorf, David (2007). Amazing... But False!: Hundreds of \"Facts\" You Thought Were True, But Aren't . Sterling. ISBN 978-1-4027-3791-6 . Green, Joey (2005). Contrary to Popular Belief: More than 250 False Facts Revealed . Broadway. ISBN 978-0-7679-1992-0 . Johnsen, Ferris (1994). The Encyclopedia of Popular Misconceptions: The Ultimate Debunker's Guide to Widely Accepted Fallacies . Carol Publishing Group. ISBN 978-0-8065-1556-4 . Kruszelnicki, Karl; Adam Yazxhi (2006). Great Mythconceptions: The Science Behind the Myths (2008 ed.). Andrews McMeel Publishing. ISBN 978-0-7407-5364-0 . Lloyd, John; John Mitchinson (2006). The Book of General Ignorance . Harmony Books. ISBN 978-0-307-39491-0 . Lloyd, John; John Mitchinson (2010). The Second Book Of General Ignorance . Faber and Faber. ISBN 978-0-571-26965-5 . Scudellari, Megan (December 17, 2015). \"The science myths that will not die\" . Nature . 528 (7582): 322– 25. Bibcode : 2015Natur.528..322S . doi : 10.1038/528322a . PMID 26672537 . Tuleja, Tad (1999). Fabulous Fallacies: More Than 300 Popular Beliefs That Are Not True . Galahad Books. ISBN 978-1-57866-065-0 . External links edit List of children's misconceptions about science Misconceptions taught by science textbooks Bad Science Portals : The arts History of science Science Society Technology This article includes a list of lists . Categories : Lists of lists Lists of common misconceptions Society-related lists Misconceptions This page was last edited on 13 August 2026, at 10:52 (UTC) . Page was rendered with Parsoid . Text is available under the Creative Commons Attribution-ShareAlike 4.0 License ; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy . Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc. , a non-profit organization. Privacy policy About Wikipedia Disclaimers Contact Wikipedia Legal & safety contacts Code of Conduct Developers Statistics Cookie statement Mobile view",
+  "text_total_chars": 3916,
   "captured_at": "frozen"
 }

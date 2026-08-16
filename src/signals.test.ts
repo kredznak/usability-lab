@@ -58,14 +58,23 @@ describe("signals: each threshold keeps fixtures on both sides", () => {
   });
 
   test("a11y_signal grades unnamed elements on proportion, not count", () => {
-    firesOn("a11y_signal", ["hn", "signup", "stripe"]);
-    // stripe_pricing has unnamed interactives too, but as a trivial share of a
-    // very large page — the case that motivated the proportional threshold.
-    assert.ok(
-      signals.stripe_pricing!.unnamed_interactive_share < 0.1,
-      "stripe_pricing must stay below the share threshold",
-    );
-    assert.ok(signals.stripe!.unnamed_interactive_share >= 0.1);
+    // stripe left this list on 2026-08-16, and the reason is the point of the
+    // test. It fired at 28 unnamed interactives of 198 (14.1%) — but 21 of
+    // those 28 were in an off-canvas nav no visitor can reach. With the capture
+    // no longer collecting them it sits at 8 of 168 (4.8%), and R3 stops
+    // spending a scarce reviewer slot on a page that never needed one.
+    firesOn("a11y_signal", ["hn", "signup"]);
+
+    // Both sides of the threshold are still held, and more sharply than before:
+    // stripe and wikipedia each carry MORE unnamed interactives than the floor
+    // of 5 and still do not fire, which is exactly what "proportion, not count"
+    // has to mean.
+    for (const name of ["stripe", "wikipedia"] as const) {
+      assert.ok(signals[name]!.unnamed_interactives >= 5, `${name} clears the count floor`);
+      assert.ok(signals[name]!.unnamed_interactive_share < 0.1, `${name} stays under the share`);
+      assert.equal(signals[name]!.a11y_signal, false, `${name} must not fire on count alone`);
+    }
+    assert.ok(signals.hn!.unnamed_interactive_share >= 0.1, "hn holds the firing side");
   });
 
   test("a field named only by its placeholder is enough on its own", () => {

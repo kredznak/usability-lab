@@ -111,11 +111,19 @@ const CASES: Case[] = [
     proves: "with nothing stated, page signals alone fill the cap in a deterministic order",
   },
   {
+    // Moved off `stripe` 2026-08-16. It relied on stripe carrying a bare a11y
+    // page signal — which it did only because 21 of its 28 unnamed interactive
+    // elements were in an off-canvas nav a visitor never sees. Once the capture
+    // stopped collecting those, stripe fell to 8 unnamed of 168 (4.8%, under the
+    // 10% threshold) and the case had no bare signal left to outrank.
+    //
+    // `hn` proves the same ordering and one thing more: a fourth rule is dropped
+    // here, so the case now covers displacement as well as precedence.
     name: "UC-3 post-redesign, first impressions",
-    fixture: "stripe",
+    fixture: "hn",
     profile: profile({ site_kind: "saas", concerns: ["first_impressions"], goal: "signup" }),
     spawn: ["heuristics", "visual-hierarchy", "conversion-cta", "a11y"],
-    dropped: [],
+    dropped: ["copy"],
     proves: "a stated concern outranks the goal, which outranks a bare page signal",
   },
   {
@@ -190,12 +198,21 @@ const CASES: Case[] = [
       "genuinely loses to what the visitor asked about, and the drop is visible",
   },
   {
-    name: "signal-only firings tie-break deterministically",
+    // Was "signal-only firings tie-break deterministically" on this fixture,
+    // which worked only while stripe carried a phantom a11y signal from its
+    // off-canvas nav. Lane-order tie-breaking is still proven, by "UC-2
+    // pre-launch" — three signal-only rules competing for two slots on `hn`.
+    //
+    // Repointed at what stripe is now good for, which is the regression this
+    // whole episode is about: one weak signal spawns two agents and stops. The
+    // cap is a ceiling, not a quota, and the old behaviour spent a scarce slot
+    // on an accessibility review the page did not warrant.
+    name: "a page with one weak signal does not pad the spawn set to the cap",
     fixture: "stripe",
     profile: profile({ site_kind: "other", concerns: [], goal: "unknown" }),
-    spawn: ["heuristics", "a11y", "visual-hierarchy"],
+    spawn: ["heuristics", "visual-hierarchy"],
     dropped: [],
-    proves: "two rules firing for equally weak reasons resolve by lane order, not by chance",
+    proves: "the spawn cap is a ceiling, not a quota — a quiet page gets a small team",
   },
 ];
 

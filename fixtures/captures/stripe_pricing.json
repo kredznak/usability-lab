@@ -13,6 +13,40 @@
   "elements": [
     {
       "ref": "el_0",
+      "tag": "header",
+      "role": null,
+      "text": "Stripe logo Products Solutions Developers Resources Pricing Guide me Sign in Contact sales",
+      "bbox": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 78
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_1",
+      "tag": "h1",
+      "role": null,
+      "text": "Stripe logo",
+      "bbox": {
+        "x": 196,
+        "y": 26,
+        "width": 60,
+        "height": 26
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 32
+    },
+    {
+      "ref": "el_2",
       "tag": "a",
       "role": null,
       "text": "Stripe logo",
@@ -29,7 +63,7 @@
       "font_size": 32
     },
     {
-      "ref": "el_1",
+      "ref": "el_3",
       "tag": "button",
       "role": null,
       "text": "Products",
@@ -46,7 +80,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_2",
+      "ref": "el_4",
       "tag": "button",
       "role": null,
       "text": "Solutions",
@@ -63,7 +97,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_3",
+      "ref": "el_5",
       "tag": "button",
       "role": null,
       "text": "Developers",
@@ -80,7 +114,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_4",
+      "ref": "el_6",
       "tag": "button",
       "role": null,
       "text": "Resources",
@@ -97,7 +131,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_5",
+      "ref": "el_7",
       "tag": "a",
       "role": null,
       "text": "Pricing",
@@ -114,7 +148,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_6",
+      "ref": "el_8",
       "tag": "a",
       "role": null,
       "text": "Guide me",
@@ -131,7 +165,7 @@
       "font_size": 14
     },
     {
-      "ref": "el_7",
+      "ref": "el_9",
       "tag": "a",
       "role": null,
       "text": "Sign in",
@@ -148,7 +182,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_8",
+      "ref": "el_10",
       "tag": "a",
       "role": null,
       "text": "Contact sales",
@@ -165,1486 +199,41 @@
       "font_size": 15
     },
     {
-      "ref": "el_9",
-      "tag": "a",
-      "role": null,
-      "text": "Payments Online payments",
-      "bbox": {
-        "x": 120,
-        "y": 150,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_10",
-      "tag": "a",
-      "role": null,
-      "text": "Managed Payments Merchant of record solution",
-      "bbox": {
-        "x": 120,
-        "y": 203.59375,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
       "ref": "el_11",
-      "tag": "a",
+      "tag": "h1",
       "role": null,
-      "text": "Payment links No-code payments",
+      "text": "Pricing built for businesses of all sizes",
       "bbox": {
-        "x": 120,
-        "y": 257.1875,
-        "width": 203.5,
-        "height": 41.59375
+        "x": 196,
+        "y": 162,
+        "width": 682,
+        "height": 136
       },
       "above_fold": true,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 14
+      "font_size": 56
     },
     {
       "ref": "el_12",
-      "tag": "a",
+      "tag": "h1",
       "role": null,
-      "text": "Checkout Prebuilt payment UIs",
+      "text": "Standard",
       "bbox": {
-        "x": 120,
-        "y": 310.78125,
-        "width": 203.5,
-        "height": 41.59375
+        "x": 212,
+        "y": 394,
+        "width": 107.78125,
+        "height": 35.984375
       },
       "above_fold": true,
       "input_type": null,
       "accessible_name": null,
       "name_source": null,
-      "font_size": 14
+      "font_size": 26
     },
     {
       "ref": "el_13",
-      "tag": "a",
-      "role": null,
-      "text": "Elements Flexible UI components",
-      "bbox": {
-        "x": 120,
-        "y": 364.375,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_14",
-      "tag": "a",
-      "role": null,
-      "text": "Payment methods Access to 125+",
-      "bbox": {
-        "x": 120,
-        "y": 417.96875,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_15",
-      "tag": "a",
-      "role": null,
-      "text": "Terminal In-person payments",
-      "bbox": {
-        "x": 120,
-        "y": 471.5625,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_16",
-      "tag": "a",
-      "role": null,
-      "text": "Authorization Boost Acceptance optimizations",
-      "bbox": {
-        "x": 120,
-        "y": 525.15625,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_17",
-      "tag": "a",
-      "role": null,
-      "text": "Link Accelerated checkout",
-      "bbox": {
-        "x": 120,
-        "y": 578.75,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_18",
-      "tag": "a",
-      "role": null,
-      "text": "Financial Connections Linked financial account data",
-      "bbox": {
-        "x": 120,
-        "y": 632.34375,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_19",
-      "tag": "a",
-      "role": null,
-      "text": "Billing Recurring revenue",
-      "bbox": {
-        "x": 363.5,
-        "y": 150,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_20",
-      "tag": "a",
-      "role": null,
-      "text": "Metronome Usage-based billing",
-      "bbox": {
-        "x": 363.5,
-        "y": 203.59375,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_21",
-      "tag": "a",
-      "role": null,
-      "text": "Subscriptions Subscription management",
-      "bbox": {
-        "x": 363.5,
-        "y": 257.1875,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_22",
-      "tag": "a",
-      "role": null,
-      "text": "Invoicing One-time or recurring",
-      "bbox": {
-        "x": 363.5,
-        "y": 310.78125,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_23",
-      "tag": "a",
-      "role": null,
-      "text": "Tax Sales tax & VAT automation",
-      "bbox": {
-        "x": 363.5,
-        "y": 364.375,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_24",
-      "tag": "a",
-      "role": null,
-      "text": "Revenue Recognition Accounting automation",
-      "bbox": {
-        "x": 363.5,
-        "y": 417.96875,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_25",
-      "tag": "a",
-      "role": null,
-      "text": "Stripe Sigma Custom reports",
-      "bbox": {
-        "x": 363.5,
-        "y": 471.5625,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_26",
-      "tag": "a",
-      "role": null,
-      "text": "Data Pipeline Data sync",
-      "bbox": {
-        "x": 363.5,
-        "y": 525.15625,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_27",
-      "tag": "a",
-      "role": null,
-      "text": "Treasury Business finances",
-      "bbox": {
-        "x": 607,
-        "y": 150,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_28",
-      "tag": "a",
-      "role": null,
-      "text": "Global Payouts Payouts to third parties",
-      "bbox": {
-        "x": 607,
-        "y": 203.59375,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_29",
-      "tag": "a",
-      "role": null,
-      "text": "Capital Business financing",
-      "bbox": {
-        "x": 607,
-        "y": 257.1875,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_30",
-      "tag": "a",
-      "role": null,
-      "text": "Crypto Wallet, stablecoin issuing, and card infrastructure",
-      "bbox": {
-        "x": 607,
-        "y": 310.78125,
-        "width": 203.5,
-        "height": 61.1875
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_31",
-      "tag": "a",
-      "role": null,
-      "text": "Crypto Onramp Embeddable crypto purchases",
-      "bbox": {
-        "x": 607,
-        "y": 383.96875,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_32",
-      "tag": "a",
-      "role": null,
-      "text": "Connect Payments for platforms",
-      "bbox": {
-        "x": 850.5,
-        "y": 150,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_33",
-      "tag": "a",
-      "role": null,
-      "text": "Capital for platforms Customer financing",
-      "bbox": {
-        "x": 850.5,
-        "y": 203.59375,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_34",
-      "tag": "a",
-      "role": null,
-      "text": "Treasury for platforms Embedded financial services",
-      "bbox": {
-        "x": 850.5,
-        "y": 257.1875,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_35",
-      "tag": "a",
-      "role": null,
-      "text": "Issuing Physical and virtual cards",
-      "bbox": {
-        "x": 850.5,
-        "y": 310.78125,
-        "width": 203.5,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_36",
-      "tag": "a",
-      "role": null,
-      "text": "Product roadmap See what’s ahead",
-      "bbox": {
-        "x": 1127,
-        "y": 149,
-        "width": 193,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_37",
-      "tag": "a",
-      "role": null,
-      "text": "Radar Fraud prevention",
-      "bbox": {
-        "x": 1127,
-        "y": 202.59375,
-        "width": 193,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_38",
-      "tag": "a",
-      "role": null,
-      "text": "Atlas Startup incorporation",
-      "bbox": {
-        "x": 1127,
-        "y": 256.1875,
-        "width": 193,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_39",
-      "tag": "a",
-      "role": null,
-      "text": "Climate Carbon removal",
-      "bbox": {
-        "x": 1127,
-        "y": 309.78125,
-        "width": 193,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_40",
-      "tag": "a",
-      "role": null,
-      "text": "Identity Online identity verification",
-      "bbox": {
-        "x": 1127,
-        "y": 363.375,
-        "width": 193,
-        "height": 41.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_41",
-      "tag": "a",
-      "role": null,
-      "text": "Watch now",
-      "bbox": {
-        "x": 1144,
-        "y": 709.9375,
-        "width": 159,
-        "height": 19.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_42",
-      "tag": "a",
-      "role": null,
-      "text": "Find what's right for you",
-      "bbox": {
-        "x": 887.8125,
-        "y": 732.9375,
-        "width": 166.1875,
-        "height": 28.59375
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_43",
-      "tag": "a",
-      "role": null,
-      "text": "Enterprises",
-      "bbox": {
-        "x": 120,
-        "y": 144.796875,
-        "width": 252,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_44",
-      "tag": "a",
-      "role": null,
-      "text": "Startups",
-      "bbox": {
-        "x": 120,
-        "y": 174.796875,
-        "width": 252,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_45",
-      "tag": "a",
-      "role": null,
-      "text": "Agentic commerce",
-      "bbox": {
-        "x": 437,
-        "y": 144.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_46",
-      "tag": "a",
-      "role": null,
-      "text": "Crypto",
-      "bbox": {
-        "x": 437,
-        "y": 174.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_47",
-      "tag": "a",
-      "role": null,
-      "text": "Ecommerce",
-      "bbox": {
-        "x": 437,
-        "y": 204.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_48",
-      "tag": "a",
-      "role": null,
-      "text": "Embedded finance",
-      "bbox": {
-        "x": 437,
-        "y": 234.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_49",
-      "tag": "a",
-      "role": null,
-      "text": "Finance automation",
-      "bbox": {
-        "x": 437,
-        "y": 264.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_50",
-      "tag": "a",
-      "role": null,
-      "text": "Global businesses",
-      "bbox": {
-        "x": 437,
-        "y": 294.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_51",
-      "tag": "a",
-      "role": null,
-      "text": "In-app payments",
-      "bbox": {
-        "x": 437,
-        "y": 324.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_52",
-      "tag": "a",
-      "role": null,
-      "text": "Marketplaces",
-      "bbox": {
-        "x": 437,
-        "y": 354.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_53",
-      "tag": "a",
-      "role": null,
-      "text": "Money management",
-      "bbox": {
-        "x": 437,
-        "y": 384.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_54",
-      "tag": "a",
-      "role": null,
-      "text": "Platforms",
-      "bbox": {
-        "x": 437,
-        "y": 414.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_55",
-      "tag": "a",
-      "role": null,
-      "text": "SaaS",
-      "bbox": {
-        "x": 437,
-        "y": 444.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_56",
-      "tag": "a",
-      "role": null,
-      "text": "AI companies",
-      "bbox": {
-        "x": 753,
-        "y": 144.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_57",
-      "tag": "a",
-      "role": null,
-      "text": "Creator economy",
-      "bbox": {
-        "x": 753,
-        "y": 174.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_58",
-      "tag": "a",
-      "role": null,
-      "text": "Gaming",
-      "bbox": {
-        "x": 753,
-        "y": 204.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_59",
-      "tag": "a",
-      "role": null,
-      "text": "Hospitality, travel, and leisure",
-      "bbox": {
-        "x": 753,
-        "y": 234.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_60",
-      "tag": "a",
-      "role": null,
-      "text": "Insurance",
-      "bbox": {
-        "x": 753,
-        "y": 264.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_61",
-      "tag": "a",
-      "role": null,
-      "text": "Media and entertainment",
-      "bbox": {
-        "x": 753,
-        "y": 294.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_62",
-      "tag": "a",
-      "role": null,
-      "text": "Nonprofits",
-      "bbox": {
-        "x": 753,
-        "y": 324.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_63",
-      "tag": "a",
-      "role": null,
-      "text": "Professional services",
-      "bbox": {
-        "x": 753,
-        "y": 354.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_64",
-      "tag": "a",
-      "role": null,
-      "text": "Public sector",
-      "bbox": {
-        "x": 753,
-        "y": 384.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_65",
-      "tag": "a",
-      "role": null,
-      "text": "Retail",
-      "bbox": {
-        "x": 753,
-        "y": 414.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_66",
-      "tag": "a",
-      "role": null,
-      "text": "Partners",
-      "bbox": {
-        "x": 1069,
-        "y": 144.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_67",
-      "tag": "a",
-      "role": null,
-      "text": "Stripe App Marketplace",
-      "bbox": {
-        "x": 1069,
-        "y": 174.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_68",
-      "tag": "a",
-      "role": null,
-      "text": "Stripe docs",
-      "bbox": {
-        "x": 120,
-        "y": 144.796875,
-        "width": 357.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_69",
-      "tag": "a",
-      "role": null,
-      "text": "API reference",
-      "bbox": {
-        "x": 120,
-        "y": 174.796875,
-        "width": 357.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_70",
-      "tag": "a",
-      "role": null,
-      "text": "Libraries and SDKs",
-      "bbox": {
-        "x": 120,
-        "y": 204.796875,
-        "width": 357.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_71",
-      "tag": "a",
-      "role": null,
-      "text": "Stripe Apps",
-      "bbox": {
-        "x": 120,
-        "y": 234.796875,
-        "width": 357.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_72",
-      "tag": "a",
-      "role": null,
-      "text": "Accept online payments",
-      "bbox": {
-        "x": 542.328125,
-        "y": 144.796875,
-        "width": 356.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_73",
-      "tag": "a",
-      "role": null,
-      "text": "Implement a prebuilt checkout",
-      "bbox": {
-        "x": 542.328125,
-        "y": 174.796875,
-        "width": 356.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_74",
-      "tag": "a",
-      "role": null,
-      "text": "Build a platform or marketplace",
-      "bbox": {
-        "x": 542.328125,
-        "y": 204.796875,
-        "width": 356.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_75",
-      "tag": "a",
-      "role": null,
-      "text": "Manage subscriptions",
-      "bbox": {
-        "x": 542.328125,
-        "y": 234.796875,
-        "width": 356.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_76",
-      "tag": "a",
-      "role": null,
-      "text": "Offer usage-based billing",
-      "bbox": {
-        "x": 542.328125,
-        "y": 264.796875,
-        "width": 356.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_77",
-      "tag": "a",
-      "role": null,
-      "text": "Issue stablecoin-backed cards",
-      "bbox": {
-        "x": 542.328125,
-        "y": 294.796875,
-        "width": 356.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_78",
-      "tag": "a",
-      "role": null,
-      "text": "Provision and manage services with agents",
-      "bbox": {
-        "x": 542.328125,
-        "y": 324.796875,
-        "width": 356.328125,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_79",
-      "tag": "a",
-      "role": null,
-      "text": "App integrations",
-      "bbox": {
-        "x": 963.65625,
-        "y": 144.796875,
-        "width": 356.34375,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_80",
-      "tag": "a",
-      "role": null,
-      "text": "Code samples",
-      "bbox": {
-        "x": 963.65625,
-        "y": 174.796875,
-        "width": 356.34375,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_81",
-      "tag": "a",
-      "role": null,
-      "text": "Developers blog",
-      "bbox": {
-        "x": 963.65625,
-        "y": 204.796875,
-        "width": 356.34375,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_82",
-      "tag": "a",
-      "role": null,
-      "text": "API status",
-      "bbox": {
-        "x": 963.65625,
-        "y": 234.796875,
-        "width": 356.34375,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_83",
-      "tag": "a",
-      "role": null,
-      "text": "Blog",
-      "bbox": {
-        "x": 120,
-        "y": 144.796875,
-        "width": 252,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_84",
-      "tag": "a",
-      "role": null,
-      "text": "Customer stories",
-      "bbox": {
-        "x": 120,
-        "y": 174.796875,
-        "width": 252,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_85",
-      "tag": "a",
-      "role": null,
-      "text": "Guides",
-      "bbox": {
-        "x": 120,
-        "y": 204.796875,
-        "width": 252,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_86",
-      "tag": "a",
-      "role": null,
-      "text": "Get support",
-      "bbox": {
-        "x": 437,
-        "y": 144.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_87",
-      "tag": "a",
-      "role": null,
-      "text": "Managed support plans",
-      "bbox": {
-        "x": 437,
-        "y": 174.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_88",
-      "tag": "a",
-      "role": null,
-      "text": "Professional services",
-      "bbox": {
-        "x": 437,
-        "y": 204.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_89",
-      "tag": "a",
-      "role": null,
-      "text": "Product roadmap",
-      "bbox": {
-        "x": 753,
-        "y": 144.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_90",
-      "tag": "a",
-      "role": null,
-      "text": "Sessions annual conference",
-      "bbox": {
-        "x": 753,
-        "y": 174.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_91",
-      "tag": "a",
-      "role": null,
-      "text": "Careers",
-      "bbox": {
-        "x": 753,
-        "y": 204.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_92",
-      "tag": "a",
-      "role": null,
-      "text": "Newsroom",
-      "bbox": {
-        "x": 753,
-        "y": 234.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_93",
-      "tag": "a",
-      "role": null,
-      "text": "Stripe Press",
-      "bbox": {
-        "x": 753,
-        "y": 264.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_94",
-      "tag": "a",
-      "role": null,
-      "text": "Contact sales",
-      "bbox": {
-        "x": 1069,
-        "y": 144.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_95",
-      "tag": "a",
-      "role": null,
-      "text": "Become a partner",
-      "bbox": {
-        "x": 1069,
-        "y": 174.796875,
-        "width": 251,
-        "height": 18
-      },
-      "above_fold": true,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 14
-    },
-    {
-      "ref": "el_96",
       "tag": "a",
       "role": null,
       "text": "Get started",
@@ -1661,7 +250,41 @@
       "font_size": 15
     },
     {
-      "ref": "el_97",
+      "ref": "el_14",
+      "tag": "h2",
+      "role": null,
+      "text": "2.9% + $0.30",
+      "bbox": {
+        "x": 501.5,
+        "y": 461.5,
+        "width": 151,
+        "height": 35.984375
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 26
+    },
+    {
+      "ref": "el_15",
+      "tag": "h1",
+      "role": null,
+      "text": "Custom",
+      "bbox": {
+        "x": 760,
+        "y": 394,
+        "width": 91.46875,
+        "height": 35.984375
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 26
+    },
+    {
+      "ref": "el_16",
       "tag": "a",
       "role": null,
       "text": "Contact sales",
@@ -1678,7 +301,721 @@
       "font_size": 15
     },
     {
-      "ref": "el_98",
+      "ref": "el_17",
+      "tag": "a",
+      "role": null,
+      "text": "Standard pricing",
+      "bbox": {
+        "x": 570.984375,
+        "y": 707.984375,
+        "width": 111.78125,
+        "height": 28
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_18",
+      "tag": "a",
+      "role": null,
+      "text": "Custom pricing",
+      "bbox": {
+        "x": 706.765625,
+        "y": 707.984375,
+        "width": 102.5625,
+        "height": 28
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_19",
+      "tag": "a",
+      "role": null,
+      "text": "FAQs",
+      "bbox": {
+        "x": 833.328125,
+        "y": 707.984375,
+        "width": 35.6875,
+        "height": 28
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_20",
+      "tag": "h1",
+      "role": null,
+      "text": "Features available out of the box:",
+      "bbox": {
+        "x": 196,
+        "y": 839.8125,
+        "width": 682,
+        "height": 35.984375
+      },
+      "above_fold": true,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 26
+    },
+    {
+      "ref": "el_21",
+      "tag": "h1",
+      "role": null,
+      "text": "Global access",
+      "bbox": {
+        "x": 196,
+        "y": 995.796875,
+        "width": 222,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_22",
+      "tag": "button",
+      "role": null,
+      "text": "195 countries Accept payments around the world with cardholder support in 195+ countries.",
+      "bbox": {
+        "x": 220,
+        "y": 1031.796875,
+        "width": 89,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_23",
+      "tag": "button",
+      "role": null,
+      "text": "135+ currencies Process charges and display prices in your customer’s preferred currency to increase conversion.",
+      "bbox": {
+        "x": 220,
+        "y": 1059.796875,
+        "width": 105.421875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_24",
+      "tag": "button",
+      "role": null,
+      "text": "100+ payment methods From Alipay to iDEAL, seamlessly support popular payment methods.",
+      "bbox": {
+        "x": 220,
+        "y": 1087.796875,
+        "width": 158.15625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_25",
+      "tag": "button",
+      "role": null,
+      "text": "1 integration Accept payments globally through a single integration.",
+      "bbox": {
+        "x": 220,
+        "y": 1115.796875,
+        "width": 81.8125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_26",
+      "tag": "h1",
+      "role": null,
+      "text": "Built-in fraud prevention",
+      "bbox": {
+        "x": 466,
+        "y": 995.796875,
+        "width": 222,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_27",
+      "tag": "button",
+      "role": null,
+      "text": "Powerful machine learning Detect and block fraud using machine learning trained on data across millions of companies.",
+      "bbox": {
+        "x": 490,
+        "y": 1031.796875,
+        "width": 176.6875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_28",
+      "tag": "button",
+      "role": null,
+      "text": "Adapts to new fraud patterns Adapt faster to the latest trends with Radar’s machine learning.",
+      "bbox": {
+        "x": 490,
+        "y": 1059.796875,
+        "width": 193.171875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_29",
+      "tag": "button",
+      "role": null,
+      "text": "No integration required Get started with zero code thanks to Stripe’s built-in fraud protection.",
+      "bbox": {
+        "x": 490,
+        "y": 1087.796875,
+        "width": 155.21875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_30",
+      "tag": "button",
+      "role": null,
+      "text": "Fraud analytics Monitor your fraud performance with advanced analytics and alerting.",
+      "bbox": {
+        "x": 490,
+        "y": 1115.796875,
+        "width": 101.078125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_31",
+      "tag": "h1",
+      "role": null,
+      "text": "Tools to optimize your checkout",
+      "bbox": {
+        "x": 736,
+        "y": 995.796875,
+        "width": 222,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_32",
+      "tag": "button",
+      "role": null,
+      "text": "Flexible UI components Use UI building blocks to design a secure payments experience that perfectly matches your site.",
+      "bbox": {
+        "x": 760,
+        "y": 1031.796875,
+        "width": 156.359375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_33",
+      "tag": "button",
+      "role": null,
+      "text": "Pre-built payment forms Embed a prebuilt payments form into your website or direct customers to a Stripe-hosted page.",
+      "bbox": {
+        "x": 760,
+        "y": 1059.796875,
+        "width": 162.25,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_34",
+      "tag": "button",
+      "role": null,
+      "text": "Accelerated checkout Autofill your customers’ saved cards to deliver a frictionless checkout experience.",
+      "bbox": {
+        "x": 760,
+        "y": 1087.796875,
+        "width": 145.84375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_35",
+      "tag": "button",
+      "role": null,
+      "text": "No-code payments Accept payments in minutes by generating no-code links.",
+      "bbox": {
+        "x": 760,
+        "y": 1115.796875,
+        "width": 128.109375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_36",
+      "tag": "h1",
+      "role": null,
+      "text": "Payments optimizations to boost revenue",
+      "bbox": {
+        "x": 1006,
+        "y": 995.796875,
+        "width": 222,
+        "height": 48
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_37",
+      "tag": "button",
+      "role": null,
+      "text": "Real-time retries Increase revenue with selective retries powered by machine learning.",
+      "bbox": {
+        "x": 1030,
+        "y": 1055.796875,
+        "width": 110.875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_38",
+      "tag": "button",
+      "role": null,
+      "text": "Auto-updated cards Update card information in real-time, improving customer experience and increasing revenue.",
+      "bbox": {
+        "x": 1030,
+        "y": 1083.796875,
+        "width": 134.5625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_39",
+      "tag": "button",
+      "role": null,
+      "text": "Customer authentication Verify a customer’s identity using 3D Secure, an authentication method for card transactions",
+      "bbox": {
+        "x": 1030,
+        "y": 1111.796875,
+        "width": 165.546875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_40",
+      "tag": "h1",
+      "role": null,
+      "text": "Embedded payments for platforms & marketplaces",
+      "bbox": {
+        "x": 196,
+        "y": 1231.796875,
+        "width": 222,
+        "height": 48
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_41",
+      "tag": "button",
+      "role": null,
+      "text": "Seamless onboarding Onboard and verify users with conversion-optimized UIs.",
+      "bbox": {
+        "x": 220,
+        "y": 1291.796875,
+        "width": 144.8125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_42",
+      "tag": "button",
+      "role": null,
+      "text": "Platform management Manage payment operations with tools for your platform and your users.",
+      "bbox": {
+        "x": 220,
+        "y": 1319.796875,
+        "width": 149.328125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_43",
+      "tag": "button",
+      "role": null,
+      "text": "Embedded components Embed and white label payment workflows for your users.",
+      "bbox": {
+        "x": 220,
+        "y": 1347.796875,
+        "width": 160.890625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_44",
+      "tag": "button",
+      "role": null,
+      "text": "Risk tools Access tools to help you mitigate risk for your connected accounts.",
+      "bbox": {
+        "x": 220,
+        "y": 1375.796875,
+        "width": 64.65625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_45",
+      "tag": "h1",
+      "role": null,
+      "text": "Fast, predictable payouts to your bank accounts",
+      "bbox": {
+        "x": 466,
+        "y": 1231.796875,
+        "width": 222,
+        "height": 48
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_46",
+      "tag": "button",
+      "role": null,
+      "text": "Flexible payout options Opt to receive transfers on a rolling basis, weekly, or monthly.",
+      "bbox": {
+        "x": 490,
+        "y": 1291.796875,
+        "width": 154.234375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_47",
+      "tag": "button",
+      "role": null,
+      "text": "Like-for-like settlement In select regions, get paid out in your preferred currencies.",
+      "bbox": {
+        "x": 490,
+        "y": 1319.796875,
+        "width": 155.5625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_48",
+      "tag": "button",
+      "role": null,
+      "text": "Payout transparency See upcoming payouts, expected deposit dates, payout history, and more in the Dashboard.",
+      "bbox": {
+        "x": 490,
+        "y": 1347.796875,
+        "width": 137.3125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_49",
+      "tag": "h1",
+      "role": null,
+      "text": "Phone, chat, and email support",
+      "bbox": {
+        "x": 736,
+        "y": 1231.796875,
+        "width": 222,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_50",
+      "tag": "button",
+      "role": null,
+      "text": "24x7 support Our team is here to help over email, phone, or chat. You can even get email support in 6 languages.",
+      "bbox": {
+        "x": 760,
+        "y": 1267.796875,
+        "width": 90.3125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_51",
+      "tag": "button",
+      "role": null,
+      "text": "Industry-leading documentation Build using our robust technical docs. Sample code in 8+ languages.",
+      "bbox": {
+        "x": 760,
+        "y": 1295.796875,
+        "width": 214,
+        "height": 48
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_52",
+      "tag": "button",
+      "role": null,
+      "text": "Technical support on Discord Chat with our technical team on the official Stripe Developer Discord server.",
+      "bbox": {
+        "x": 760,
+        "y": 1347.796875,
+        "width": 194.4375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_53",
+      "tag": "h1",
+      "role": null,
+      "text": "Security, reliability and compliance",
+      "bbox": {
+        "x": 1006,
+        "y": 1231.796875,
+        "width": 222,
+        "height": 48
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_54",
+      "tag": "button",
+      "role": null,
+      "text": "99.999% average historical uptime Maximize your revenue with a platform that handles 250 million+ API requests a day, while maintaining 99.999% uptime.",
+      "bbox": {
+        "x": 1030,
+        "y": 1291.796875,
+        "width": 214,
+        "height": 48
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_55",
+      "tag": "button",
+      "role": null,
+      "text": "PCI compliant Use our libraries to collect payment information without sensitive data ever hitting your servers.",
+      "bbox": {
+        "x": 1030,
+        "y": 1343.796875,
+        "width": 93.125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_56",
+      "tag": "button",
+      "role": null,
+      "text": "Regulatory licenses globally Stripe is certified to the highest industry standards and has obtained regulatory licenses around the world.",
+      "bbox": {
+        "x": 1030,
+        "y": 1371.796875,
+        "width": 186.4375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_57",
+      "tag": "h2",
+      "role": null,
+      "text": "Standard pricing for all products",
+      "bbox": {
+        "x": 196,
+        "y": 1659.796875,
+        "width": 730,
+        "height": 28
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_58",
+      "tag": "h1",
+      "role": null,
+      "text": "Explore pricing for the full Stripe platform",
+      "bbox": {
+        "x": 196,
+        "y": 1711.796875,
+        "width": 730,
+        "height": 48
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 38
+    },
+    {
+      "ref": "el_59",
       "tag": "a",
       "role": null,
       "text": "Global payments",
@@ -1695,7 +1032,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_99",
+      "ref": "el_60",
       "tag": "a",
       "role": null,
       "text": "Payments",
@@ -1712,7 +1049,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_100",
+      "ref": "el_61",
       "tag": "a",
       "role": null,
       "text": "Link",
@@ -1729,7 +1066,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_101",
+      "ref": "el_62",
       "tag": "a",
       "role": null,
       "text": "Payment Links",
@@ -1746,7 +1083,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_102",
+      "ref": "el_63",
       "tag": "a",
       "role": null,
       "text": "Checkout",
@@ -1763,7 +1100,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_103",
+      "ref": "el_64",
       "tag": "a",
       "role": null,
       "text": "Managed Payments",
@@ -1780,7 +1117,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_104",
+      "ref": "el_65",
       "tag": "a",
       "role": null,
       "text": "Terminal",
@@ -1797,7 +1134,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_105",
+      "ref": "el_66",
       "tag": "a",
       "role": null,
       "text": "Financial Connections",
@@ -1814,7 +1151,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_106",
+      "ref": "el_67",
       "tag": "a",
       "role": null,
       "text": "Money management",
@@ -1831,7 +1168,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_107",
+      "ref": "el_68",
       "tag": "a",
       "role": null,
       "text": "Connect",
@@ -1848,7 +1185,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_108",
+      "ref": "el_69",
       "tag": "a",
       "role": null,
       "text": "Treasury",
@@ -1865,7 +1202,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_109",
+      "ref": "el_70",
       "tag": "a",
       "role": null,
       "text": "Global Payouts",
@@ -1882,7 +1219,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_110",
+      "ref": "el_71",
       "tag": "a",
       "role": null,
       "text": "Issuing",
@@ -1899,7 +1236,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_111",
+      "ref": "el_72",
       "tag": "a",
       "role": null,
       "text": "Revenue and finance automation",
@@ -1916,7 +1253,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_112",
+      "ref": "el_73",
       "tag": "a",
       "role": null,
       "text": "Billing",
@@ -1933,7 +1270,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_113",
+      "ref": "el_74",
       "tag": "a",
       "role": null,
       "text": "Metronome",
@@ -1950,7 +1287,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_114",
+      "ref": "el_75",
       "tag": "a",
       "role": null,
       "text": "Invoicing",
@@ -1967,7 +1304,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_115",
+      "ref": "el_76",
       "tag": "a",
       "role": null,
       "text": "Tax",
@@ -1984,7 +1321,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_116",
+      "ref": "el_77",
       "tag": "a",
       "role": null,
       "text": "Stripe Sigma",
@@ -2001,7 +1338,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_117",
+      "ref": "el_78",
       "tag": "a",
       "role": null,
       "text": "Data Pipeline",
@@ -2018,7 +1355,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_118",
+      "ref": "el_79",
       "tag": "a",
       "role": null,
       "text": "Revenue Recognition",
@@ -2035,7 +1372,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_119",
+      "ref": "el_80",
       "tag": "a",
       "role": null,
       "text": "More",
@@ -2052,7 +1389,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_120",
+      "ref": "el_81",
       "tag": "a",
       "role": null,
       "text": "Radar",
@@ -2069,7 +1406,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_121",
+      "ref": "el_82",
       "tag": "a",
       "role": null,
       "text": "Identity",
@@ -2086,7 +1423,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_122",
+      "ref": "el_83",
       "tag": "a",
       "role": null,
       "text": "Atlas",
@@ -2103,7 +1440,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_123",
+      "ref": "el_84",
       "tag": "a",
       "role": null,
       "text": "Climate",
@@ -2120,7 +1457,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_124",
+      "ref": "el_85",
       "tag": "a",
       "role": null,
       "text": "Workflows",
@@ -2137,7 +1474,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_125",
+      "ref": "el_86",
       "tag": "a",
       "role": null,
       "text": "Custom pricing",
@@ -2154,7 +1491,41 @@
       "font_size": 15
     },
     {
-      "ref": "el_126",
+      "ref": "el_87",
+      "tag": "h1",
+      "role": null,
+      "text": "Global payments",
+      "bbox": {
+        "x": 466,
+        "y": 1897.796875,
+        "width": 627,
+        "height": 35.984375
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 26
+    },
+    {
+      "ref": "el_88",
+      "tag": "h1",
+      "role": null,
+      "text": "Payments",
+      "bbox": {
+        "x": 474,
+        "y": 2037.78125,
+        "width": 359.875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_89",
       "tag": "a",
       "role": null,
       "text": "Sign up with Payments",
@@ -2171,7 +1542,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_127",
+      "ref": "el_90",
       "tag": "a",
       "role": null,
       "text": "manually entered cards",
@@ -2188,7 +1559,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_128",
+      "ref": "el_91",
       "tag": "a",
       "role": null,
       "text": "currency conversion",
@@ -2205,7 +1576,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_129",
+      "ref": "el_92",
       "tag": "a",
       "role": null,
       "text": "See more payment methods",
@@ -2222,7 +1593,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_130",
+      "ref": "el_93",
       "tag": "a",
       "role": null,
       "text": "See more payment methods",
@@ -2239,7 +1610,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_131",
+      "ref": "el_94",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -2256,7 +1627,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_132",
+      "ref": "el_95",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -2273,7 +1644,177 @@
       "font_size": 15
     },
     {
-      "ref": "el_133",
+      "ref": "el_96",
+      "tag": "a",
+      "role": null,
+      "text": "Learn more",
+      "bbox": {
+        "x": 919.5,
+        "y": 3047.59375,
+        "width": 316.5,
+        "height": 33
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_97",
+      "tag": "a",
+      "role": null,
+      "text": "Learn more",
+      "bbox": {
+        "x": 919.5,
+        "y": 3243.59375,
+        "width": 316.5,
+        "height": 33
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_98",
+      "tag": "a",
+      "role": null,
+      "text": "Dispute deflection lookups",
+      "bbox": {
+        "x": 919.5,
+        "y": 3330.59375,
+        "width": 183.703125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_99",
+      "tag": "a",
+      "role": null,
+      "text": "Visa resolution",
+      "bbox": {
+        "x": 946.046875,
+        "y": 3397.59375,
+        "width": 102.359375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_100",
+      "tag": "a",
+      "role": null,
+      "text": "Visa Compelling Evidence 3.0 block",
+      "bbox": {
+        "x": 946.046875,
+        "y": 3464.59375,
+        "width": 244,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_101",
+      "tag": "a",
+      "role": null,
+      "text": "Mastercard resolution",
+      "bbox": {
+        "x": 946.046875,
+        "y": 3531.59375,
+        "width": 151.125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_102",
+      "tag": "button",
+      "role": null,
+      "text": "Payment optimizations",
+      "bbox": {
+        "x": 474,
+        "y": 3586.59375,
+        "width": 419.09375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_103",
+      "tag": "button",
+      "role": null,
+      "text": "Included at no additional charge for businesses on standard payments pricing",
+      "bbox": {
+        "x": 1089.484375,
+        "y": 3590.59375,
+        "width": 16,
+        "height": 16
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_104",
+      "tag": "button",
+      "role": null,
+      "text": "More features",
+      "bbox": {
+        "x": 474,
+        "y": 3643.59375,
+        "width": 419.09375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_105",
+      "tag": "header",
+      "role": null,
+      "text": "Link",
+      "bbox": {
+        "x": 474,
+        "y": 3731.59375,
+        "width": 535.140625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_106",
       "tag": "h1",
       "role": null,
       "text": "Link",
@@ -2290,7 +1831,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_134",
+      "ref": "el_107",
       "tag": "a",
       "role": null,
       "text": "Sign up with Link",
@@ -2307,7 +1848,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_135",
+      "ref": "el_108",
+      "tag": "header",
+      "role": null,
+      "text": "Cards",
+      "bbox": {
+        "x": 474,
+        "y": 3996.59375,
+        "width": 289.53125,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_109",
       "tag": "h1",
       "role": null,
       "text": "Cards",
@@ -2324,7 +1882,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_136",
+      "ref": "el_110",
+      "tag": "header",
+      "role": null,
+      "text": "Stablecoins",
+      "bbox": {
+        "x": 474,
+        "y": 4114.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_111",
       "tag": "h1",
       "role": null,
       "text": "Stablecoins",
@@ -2341,7 +1916,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_137",
+      "ref": "el_112",
+      "tag": "header",
+      "role": null,
+      "text": "Pix and UPI",
+      "bbox": {
+        "x": 474,
+        "y": 4243.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_113",
       "tag": "h1",
       "role": null,
       "text": "Pix and UPI",
@@ -2358,7 +1950,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_138",
+      "ref": "el_114",
       "tag": "h1",
       "role": null,
       "text": "Instant bank payments",
@@ -2375,7 +1967,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_139",
+      "ref": "el_115",
       "tag": "h1",
       "role": null,
       "text": "Klarna",
@@ -2392,7 +1984,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_140",
+      "ref": "el_116",
       "tag": "h1",
       "role": null,
       "text": "Payment Links",
@@ -2409,7 +2001,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_141",
+      "ref": "el_117",
       "tag": "a",
       "role": null,
       "text": "Sign up with Payment Links",
@@ -2426,7 +2018,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_142",
+      "ref": "el_118",
       "tag": "h1",
       "role": null,
       "text": "Accept payments",
@@ -2443,7 +2035,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_143",
+      "ref": "el_119",
       "tag": "button",
       "role": null,
       "text": "Included at no additional charge for businesses on standard payments pricing",
@@ -2460,7 +2052,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_144",
+      "ref": "el_120",
       "tag": "h1",
       "role": null,
       "text": "Custom domain",
@@ -2477,7 +2069,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_145",
+      "ref": "el_121",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -2494,7 +2086,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_146",
+      "ref": "el_122",
       "tag": "h1",
       "role": null,
       "text": "Post-payment invoices",
@@ -2511,7 +2103,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_147",
+      "ref": "el_123",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -2528,7 +2120,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_148",
+      "ref": "el_124",
       "tag": "h1",
       "role": null,
       "text": "Checkout",
@@ -2545,7 +2137,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_149",
+      "ref": "el_125",
       "tag": "a",
       "role": null,
       "text": "Sign up with Checkout",
@@ -2562,7 +2154,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_150",
+      "ref": "el_126",
+      "tag": "h1",
+      "role": null,
+      "text": "Accept payments",
+      "bbox": {
+        "x": 474,
+        "y": 5398.59375,
+        "width": 300.390625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_127",
       "tag": "button",
       "role": null,
       "text": "Included at no additional charge for businesses on standard payments pricing",
@@ -2579,7 +2188,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_151",
+      "ref": "el_128",
+      "tag": "h1",
+      "role": null,
+      "text": "Custom domain",
+      "bbox": {
+        "x": 474,
+        "y": 5479.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_129",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -2596,7 +2222,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_152",
+      "ref": "el_130",
+      "tag": "header",
+      "role": null,
+      "text": "Post-payment invoices",
+      "bbox": {
+        "x": 474,
+        "y": 5588.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_131",
       "tag": "h1",
       "role": null,
       "text": "Post-payment invoices",
@@ -2613,7 +2256,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_153",
+      "ref": "el_132",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -2630,7 +2273,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_154",
+      "ref": "el_133",
+      "tag": "header",
+      "role": null,
+      "text": "Managed Payments",
+      "bbox": {
+        "x": 474,
+        "y": 5795.59375,
+        "width": 440.765625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_134",
       "tag": "h1",
       "role": null,
       "text": "Managed Payments",
@@ -2647,7 +2307,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_155",
+      "ref": "el_135",
       "tag": "a",
       "role": null,
       "text": "Sign up with Managed Payments",
@@ -2664,7 +2324,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_156",
+      "ref": "el_136",
       "tag": "h1",
       "role": null,
       "text": "Merchant of record services",
@@ -2681,7 +2341,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_157",
+      "ref": "el_137",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -2698,7 +2358,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_158",
+      "ref": "el_138",
       "tag": "h1",
       "role": null,
       "text": "Terminal",
@@ -2715,7 +2375,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_159",
+      "ref": "el_139",
       "tag": "a",
       "role": null,
       "text": "Sign up with Terminal",
@@ -2732,7 +2392,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_160",
+      "ref": "el_140",
       "tag": "h1",
       "role": null,
       "text": "Cards and wallets",
@@ -2749,7 +2409,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_161",
+      "ref": "el_141",
       "tag": "a",
       "role": null,
       "text": "Tap to Pay",
@@ -2766,7 +2426,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_162",
+      "ref": "el_142",
       "tag": "button",
       "role": null,
       "text": "Accept contactless payments without additional hardware using compatible iPhone or Android devices.",
@@ -2783,7 +2443,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_163",
+      "ref": "el_143",
       "tag": "a",
       "role": null,
       "text": "point-to-point-encryption",
@@ -2800,7 +2460,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_164",
+      "ref": "el_144",
       "tag": "button",
       "role": null,
       "text": "Access PCI-certified point-to-point-encryption (P2PE) required in certain industries. All Terminal transactions are end-to-end encrypted by default.",
@@ -2817,7 +2477,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_165",
+      "ref": "el_145",
       "tag": "h1",
       "role": null,
       "text": "Card readers",
@@ -2834,7 +2494,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_166",
+      "ref": "el_146",
       "tag": "h1",
       "role": null,
       "text": "Cellular",
@@ -2851,7 +2511,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_167",
+      "ref": "el_147",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -2868,7 +2528,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_168",
+      "ref": "el_148",
+      "tag": "h1",
+      "role": null,
+      "text": "Financial Connections",
+      "bbox": {
+        "x": 474,
+        "y": 7034.59375,
+        "width": 290.234375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_149",
       "tag": "a",
       "role": null,
       "text": "Sign up with Financial Connections",
@@ -2885,7 +2562,58 @@
       "font_size": 15
     },
     {
-      "ref": "el_169",
+      "ref": "el_150",
+      "tag": "h1",
+      "role": null,
+      "text": "Instant bank account verifications",
+      "bbox": {
+        "x": 474,
+        "y": 7227.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_151",
+      "tag": "h1",
+      "role": null,
+      "text": "Balances",
+      "bbox": {
+        "x": 474,
+        "y": 7356.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_152",
+      "tag": "header",
+      "role": null,
+      "text": "Account owners",
+      "bbox": {
+        "x": 474,
+        "y": 7485.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_153",
       "tag": "h1",
       "role": null,
       "text": "Account owners",
@@ -2902,7 +2630,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_170",
+      "ref": "el_154",
+      "tag": "header",
+      "role": null,
+      "text": "Transactions",
+      "bbox": {
+        "x": 474,
+        "y": 7590.59375,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_155",
       "tag": "h1",
       "role": null,
       "text": "Transactions",
@@ -2919,7 +2664,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_171",
+      "ref": "el_156",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -2936,7 +2681,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_172",
+      "ref": "el_157",
       "tag": "h1",
       "role": null,
       "text": "Money management",
@@ -2953,7 +2698,7 @@
       "font_size": 26
     },
     {
-      "ref": "el_173",
+      "ref": "el_158",
       "tag": "h1",
       "role": null,
       "text": "Connect",
@@ -2970,7 +2715,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_174",
+      "ref": "el_159",
       "tag": "a",
       "role": null,
       "text": "Sign up with Connect",
@@ -2987,7 +2732,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_175",
+      "ref": "el_160",
       "tag": "h1",
       "role": null,
       "text": "Stripe handles pricing for your users",
@@ -3004,7 +2749,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_176",
+      "ref": "el_161",
       "tag": "a",
       "role": null,
       "text": "revenue share",
@@ -3021,7 +2766,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_177",
+      "ref": "el_162",
       "tag": "button",
       "role": null,
       "text": "Included at no additional charge for businesses on standard payments pricing",
@@ -3038,7 +2783,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_178",
+      "ref": "el_163",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -3055,7 +2800,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_179",
+      "ref": "el_164",
       "tag": "h1",
       "role": null,
       "text": "Treasury",
@@ -3072,7 +2817,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_180",
+      "ref": "el_165",
       "tag": "a",
       "role": null,
       "text": "Sign up with Treasury",
@@ -3089,7 +2834,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_181",
+      "ref": "el_166",
       "tag": "h1",
       "role": null,
       "text": "Treasury",
@@ -3106,7 +2851,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_182",
+      "ref": "el_167",
       "tag": "a",
       "role": null,
       "text": "Learn More",
@@ -3123,7 +2868,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_183",
+      "ref": "el_168",
+      "tag": "h1",
+      "role": null,
+      "text": "Instant currency conversion",
+      "bbox": {
+        "x": 474,
+        "y": 8795.578125,
+        "width": 394.359375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_169",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -3140,7 +2902,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_184",
+      "ref": "el_170",
+      "tag": "h1",
+      "role": null,
+      "text": "Global Payouts (Domestic)",
+      "bbox": {
+        "x": 474,
+        "y": 8904.578125,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_171",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -3157,7 +2936,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_185",
+      "ref": "el_172",
+      "tag": "h1",
+      "role": null,
+      "text": "Global Payouts (International)",
+      "bbox": {
+        "x": 474,
+        "y": 9164.578125,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_173",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -3174,7 +2970,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_186",
+      "ref": "el_174",
+      "tag": "header",
+      "role": null,
+      "text": "Cards",
+      "bbox": {
+        "x": 474,
+        "y": 9315.578125,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_175",
       "tag": "h1",
       "role": null,
       "text": "Cards",
@@ -3191,7 +3004,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_187",
+      "ref": "el_176",
       "tag": "a",
       "role": null,
       "text": "Learn More",
@@ -3208,7 +3021,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_188",
+      "ref": "el_177",
+      "tag": "header",
+      "role": null,
+      "text": "Global Payouts",
+      "bbox": {
+        "x": 474,
+        "y": 9476.578125,
+        "width": 325.1875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_178",
       "tag": "h1",
       "role": null,
       "text": "Global Payouts",
@@ -3225,7 +3055,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_189",
+      "ref": "el_179",
       "tag": "a",
       "role": null,
       "text": "Sign up with Global Payouts",
@@ -3242,7 +3072,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_190",
+      "ref": "el_180",
       "tag": "h1",
       "role": null,
       "text": "Domestic payouts",
@@ -3259,7 +3089,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_191",
+      "ref": "el_181",
       "tag": "h1",
       "role": null,
       "text": "International payouts",
@@ -3276,7 +3106,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_192",
+      "ref": "el_182",
       "tag": "button",
       "role": null,
       "text": "Cross-border fees depend on recipient country.",
@@ -3293,7 +3123,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_193",
+      "ref": "el_183",
       "tag": "button",
       "role": null,
       "text": "FX fees vary by merchant country.",
@@ -3310,7 +3140,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_194",
+      "ref": "el_184",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -3327,7 +3157,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_195",
+      "ref": "el_185",
       "tag": "h1",
       "role": null,
       "text": "Issuing",
@@ -3344,7 +3174,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_196",
+      "ref": "el_186",
       "tag": "a",
       "role": null,
       "text": "Get in touch",
@@ -3361,7 +3191,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_197",
+      "ref": "el_187",
       "tag": "h1",
       "role": null,
       "text": "Card creation",
@@ -3378,7 +3208,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_198",
+      "ref": "el_188",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -3395,7 +3225,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_199",
+      "ref": "el_189",
       "tag": "h1",
       "role": null,
       "text": "Disputes",
@@ -3412,7 +3242,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_200",
+      "ref": "el_190",
+      "tag": "h1",
+      "role": null,
+      "text": "International payments",
+      "bbox": {
+        "x": 474,
+        "y": 10661.578125,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_191",
       "tag": "a",
       "role": null,
       "text": "Contact sales",
@@ -3429,7 +3276,41 @@
       "font_size": 15
     },
     {
-      "ref": "el_201",
+      "ref": "el_192",
+      "tag": "h1",
+      "role": null,
+      "text": "Revenue and finance automation",
+      "bbox": {
+        "x": 466,
+        "y": 10879.578125,
+        "width": 627,
+        "height": 35.984375
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 26
+    },
+    {
+      "ref": "el_193",
+      "tag": "h1",
+      "role": null,
+      "text": "Billing",
+      "bbox": {
+        "x": 474,
+        "y": 11019.5625,
+        "width": 557.671875,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_194",
       "tag": "a",
       "role": null,
       "text": "Sign up with Billing",
@@ -3446,7 +3327,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_202",
+      "ref": "el_195",
+      "tag": "header",
+      "role": null,
+      "text": "Pay monthly",
+      "bbox": {
+        "x": 474,
+        "y": 11266.5625,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_196",
       "tag": "h1",
       "role": null,
       "text": "Pay monthly",
@@ -3463,7 +3361,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_203",
+      "ref": "el_197",
       "tag": "button",
       "role": null,
       "text": "Subscription and cancellation terms apply .",
@@ -3480,7 +3378,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_204",
+      "ref": "el_198",
+      "tag": "header",
+      "role": null,
+      "text": "Pay as you go",
+      "bbox": {
+        "x": 474,
+        "y": 11371.5625,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_199",
       "tag": "h1",
       "role": null,
       "text": "Pay as you go",
@@ -3497,7 +3412,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_205",
+      "ref": "el_200",
       "tag": "button",
       "role": null,
       "text": "Includes Billing transactions processed on and off Stripe. Excludes one-off invoices.",
@@ -3514,7 +3429,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_206",
+      "ref": "el_201",
       "tag": "a",
       "role": null,
       "text": "Compare plans",
@@ -3531,7 +3446,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_207",
+      "ref": "el_202",
       "tag": "h1",
       "role": null,
       "text": "Metronome",
@@ -3548,7 +3463,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_208",
+      "ref": "el_203",
       "tag": "a",
       "role": null,
       "text": "Sign up with Metronome",
@@ -3565,7 +3480,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_209",
+      "ref": "el_204",
       "tag": "h1",
       "role": null,
       "text": "Startup",
@@ -3582,7 +3497,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_210",
+      "ref": "el_205",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -3599,7 +3514,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_211",
+      "ref": "el_206",
       "tag": "h1",
       "role": null,
       "text": "Custom",
@@ -3616,7 +3531,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_212",
+      "ref": "el_207",
       "tag": "a",
       "role": null,
       "text": "Contact Metronome",
@@ -3633,7 +3548,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_213",
+      "ref": "el_208",
       "tag": "h1",
       "role": null,
       "text": "Invoicing",
@@ -3650,7 +3565,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_214",
+      "ref": "el_209",
       "tag": "a",
       "role": null,
       "text": "Sign up with Invoicing",
@@ -3667,7 +3582,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_215",
+      "ref": "el_210",
+      "tag": "h1",
+      "role": null,
+      "text": "Starter",
+      "bbox": {
+        "x": 474,
+        "y": 12273.5625,
+        "width": 272.859375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_211",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -3684,7 +3616,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_216",
+      "ref": "el_212",
+      "tag": "h1",
+      "role": null,
+      "text": "Tax",
+      "bbox": {
+        "x": 474,
+        "y": 12413.5625,
+        "width": 340.4375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_213",
       "tag": "a",
       "role": null,
       "text": "Sign up with Tax",
@@ -3701,7 +3650,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_217",
+      "ref": "el_214",
+      "tag": "h1",
+      "role": null,
+      "text": "Tax Complete",
+      "bbox": {
+        "x": 474,
+        "y": 12664.5625,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_215",
       "tag": "button",
       "role": null,
       "text": "Subscription and cancellation terms apply .",
@@ -3718,7 +3684,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_218",
+      "ref": "el_216",
+      "tag": "h1",
+      "role": null,
+      "text": "Tax Basic",
+      "bbox": {
+        "x": 474,
+        "y": 12793.5625,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_217",
       "tag": "button",
       "role": null,
       "text": "Taxes calculated and collected on Billing, Checkout, Invoicing, and Payment Links integrations. Learn more .",
@@ -3735,7 +3718,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_219",
+      "ref": "el_218",
       "tag": "button",
       "role": null,
       "text": "Taxes on transactions created through Stripe’s payment APIs or any payment processor. Each transaction includes 10 calculation API calls. 5¢ per calculation API call above 10. Learn more .",
@@ -3752,7 +3735,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_220",
+      "ref": "el_219",
       "tag": "a",
       "role": null,
       "text": "Compare plans",
@@ -3769,7 +3752,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_221",
+      "ref": "el_220",
       "tag": "h1",
       "role": null,
       "text": "Stripe Sigma",
@@ -3786,7 +3769,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_222",
+      "ref": "el_221",
       "tag": "a",
       "role": null,
       "text": "Sign up with Stripe Sigma",
@@ -3803,7 +3786,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_223",
+      "ref": "el_222",
       "tag": "h1",
       "role": null,
       "text": "Monthly subscription",
@@ -3820,7 +3803,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_224",
+      "ref": "el_223",
       "tag": "button",
       "role": null,
       "text": "Subscription and cancellation terms apply .",
@@ -3837,7 +3820,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_225",
+      "ref": "el_224",
       "tag": "h1",
       "role": null,
       "text": "Annual subscription",
@@ -3854,7 +3837,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_226",
+      "ref": "el_225",
       "tag": "button",
       "role": null,
       "text": "Subscription and cancellation terms apply .",
@@ -3871,7 +3854,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_227",
+      "ref": "el_226",
       "tag": "a",
       "role": null,
       "text": "Compare plans",
@@ -3888,7 +3871,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_228",
+      "ref": "el_227",
       "tag": "h1",
       "role": null,
       "text": "Data Pipeline",
@@ -3905,7 +3888,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_229",
+      "ref": "el_228",
       "tag": "a",
       "role": null,
       "text": "Sign up with Data Pipeline",
@@ -3914,6 +3897,23 @@
         "y": 13671.5625,
         "width": 219.0625,
         "height": 33
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_229",
+      "tag": "h1",
+      "role": null,
+      "text": "Monthly subscription",
+      "bbox": {
+        "x": 474,
+        "y": 13888.5625,
+        "width": 268.046875,
+        "height": 24
       },
       "above_fold": false,
       "input_type": null,
@@ -3940,6 +3940,23 @@
     },
     {
       "ref": "el_231",
+      "tag": "h1",
+      "role": null,
+      "text": "Annual subscription",
+      "bbox": {
+        "x": 474,
+        "y": 14005.5625,
+        "width": 304.9375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_232",
       "tag": "button",
       "role": null,
       "text": "Subscription and cancellation terms apply .",
@@ -3956,7 +3973,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_232",
+      "ref": "el_233",
       "tag": "a",
       "role": null,
       "text": "Compare plans",
@@ -3973,7 +3990,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_233",
+      "ref": "el_234",
+      "tag": "h1",
+      "role": null,
+      "text": "Revenue Recognition",
+      "bbox": {
+        "x": 474,
+        "y": 14219.5625,
+        "width": 433.59375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_235",
       "tag": "a",
       "role": null,
       "text": "Sign up with Revenue Recognition",
@@ -3990,7 +4024,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_234",
+      "ref": "el_236",
+      "tag": "h1",
+      "role": null,
+      "text": "Monthly subscription",
+      "bbox": {
+        "x": 474,
+        "y": 14442.5625,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_237",
       "tag": "button",
       "role": null,
       "text": "Subscription and cancellation terms apply .",
@@ -4007,7 +4058,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_235",
+      "ref": "el_238",
+      "tag": "h1",
+      "role": null,
+      "text": "Annual subscription",
+      "bbox": {
+        "x": 474,
+        "y": 14583.5625,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_239",
       "tag": "button",
       "role": null,
       "text": "Subscription and cancellation terms apply .",
@@ -4024,7 +4092,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_236",
+      "ref": "el_240",
       "tag": "a",
       "role": null,
       "text": "Compare plans",
@@ -4041,7 +4109,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_237",
+      "ref": "el_241",
+      "tag": "header",
+      "role": null,
+      "text": "More",
+      "bbox": {
+        "x": 450,
+        "y": 14837.5625,
+        "width": 675,
+        "height": 35.984375
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_242",
       "tag": "h1",
       "role": null,
       "text": "More",
@@ -4058,7 +4143,24 @@
       "font_size": 26
     },
     {
-      "ref": "el_238",
+      "ref": "el_243",
+      "tag": "header",
+      "role": null,
+      "text": "Radar",
+      "bbox": {
+        "x": 474,
+        "y": 14921.546875,
+        "width": 271.84375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_244",
       "tag": "h1",
       "role": null,
       "text": "Radar",
@@ -4075,7 +4177,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_239",
+      "ref": "el_245",
       "tag": "a",
       "role": null,
       "text": "Sign up with Radar",
@@ -4092,7 +4194,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_240",
+      "ref": "el_246",
       "tag": "h1",
       "role": null,
       "text": "Pay monthly",
@@ -4109,7 +4211,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_241",
+      "ref": "el_247",
       "tag": "h1",
       "role": null,
       "text": "Pay as you go",
@@ -4126,7 +4228,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_242",
+      "ref": "el_248",
       "tag": "a",
       "role": null,
       "text": "Compare plans",
@@ -4143,7 +4245,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_243",
+      "ref": "el_249",
       "tag": "h1",
       "role": null,
       "text": "Identity",
@@ -4160,7 +4262,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_244",
+      "ref": "el_250",
       "tag": "a",
       "role": null,
       "text": "Sign up with Identity",
@@ -4177,7 +4279,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_245",
+      "ref": "el_251",
       "tag": "h1",
       "role": null,
       "text": "ID document and selfie verification",
@@ -4194,7 +4296,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_246",
+      "ref": "el_252",
       "tag": "button",
       "role": null,
       "text": "Charged when a user completes verification. Learn more",
@@ -4211,7 +4313,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_247",
+      "ref": "el_253",
       "tag": "h1",
       "role": null,
       "text": "ID number lookup",
@@ -4228,7 +4330,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_248",
+      "ref": "el_254",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -4245,7 +4347,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_249",
+      "ref": "el_255",
+      "tag": "h1",
+      "role": null,
+      "text": "Atlas",
+      "bbox": {
+        "x": 474,
+        "y": 16051.546875,
+        "width": 304.140625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_256",
       "tag": "a",
       "role": null,
       "text": "Sign up with Atlas",
@@ -4262,7 +4381,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_250",
+      "ref": "el_257",
+      "tag": "h1",
+      "role": null,
+      "text": "Incorporate your company",
+      "bbox": {
+        "x": 474,
+        "y": 16244.546875,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_258",
       "tag": "a",
       "role": null,
       "text": "See pricing details",
@@ -4279,7 +4415,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_251",
+      "ref": "el_259",
+      "tag": "h1",
+      "role": null,
+      "text": "Climate",
+      "bbox": {
+        "x": 474,
+        "y": 16432.546875,
+        "width": 346.359375,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 18
+    },
+    {
+      "ref": "el_260",
       "tag": "a",
       "role": null,
       "text": "Sign up with Climate",
@@ -4296,7 +4449,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_252",
+      "ref": "el_261",
+      "tag": "header",
+      "role": null,
+      "text": "Orders",
+      "bbox": {
+        "x": 474,
+        "y": 16597.546875,
+        "width": 396.5,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_262",
       "tag": "h1",
       "role": null,
       "text": "Orders",
@@ -4313,7 +4483,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_253",
+      "ref": "el_263",
       "tag": "a",
       "role": null,
       "text": "Frontier’s portfolio",
@@ -4330,7 +4500,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_254",
+      "ref": "el_264",
       "tag": "a",
       "role": null,
       "text": "See inventory details",
@@ -4347,7 +4517,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_255",
+      "ref": "el_265",
+      "tag": "header",
+      "role": null,
+      "text": "Workflows",
+      "bbox": {
+        "x": 474,
+        "y": 16737.546875,
+        "width": 426.90625,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_266",
       "tag": "h1",
       "role": null,
       "text": "Workflows",
@@ -4364,7 +4551,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_256",
+      "ref": "el_267",
       "tag": "a",
       "role": null,
       "text": "Sign up with Workflows",
@@ -4381,7 +4568,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_257",
+      "ref": "el_268",
       "tag": "h1",
       "role": null,
       "text": "Pay as you go",
@@ -4398,7 +4585,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_258",
+      "ref": "el_269",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -4415,7 +4602,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_259",
+      "ref": "el_270",
       "tag": "h2",
       "role": null,
       "text": "Custom pricing",
@@ -4432,7 +4619,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_260",
+      "ref": "el_271",
       "tag": "h1",
       "role": null,
       "text": "Join leading enterprises on Stripe",
@@ -4449,7 +4636,7 @@
       "font_size": 38
     },
     {
-      "ref": "el_261",
+      "ref": "el_272",
       "tag": "a",
       "role": null,
       "text": "more",
@@ -4466,7 +4653,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_262",
+      "ref": "el_273",
       "tag": "a",
       "role": null,
       "text": "Contact sales",
@@ -4483,7 +4670,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_263",
+      "ref": "el_274",
       "tag": "h1",
       "role": null,
       "text": "Build your custom package",
@@ -4500,7 +4687,7 @@
       "font_size": 18
     },
     {
-      "ref": "el_264",
+      "ref": "el_275",
       "tag": "h1",
       "role": null,
       "text": "Get the support you need",
@@ -4517,7 +4704,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_265",
+      "ref": "el_276",
       "tag": "a",
       "role": null,
       "text": "Technical account management",
@@ -4534,7 +4721,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_266",
+      "ref": "el_277",
       "tag": "a",
       "role": null,
       "text": "Professional Services",
@@ -4551,7 +4738,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_267",
+      "ref": "el_278",
       "tag": "a",
       "role": null,
       "text": "Certified implementation partners",
@@ -4568,7 +4755,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_268",
+      "ref": "el_279",
       "tag": "h1",
       "role": null,
       "text": "Flexible structures",
@@ -4585,7 +4772,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_269",
+      "ref": "el_280",
       "tag": "h1",
       "role": null,
       "text": "Volume-based discounts",
@@ -4602,7 +4789,58 @@
       "font_size": 15
     },
     {
-      "ref": "el_270",
+      "ref": "el_281",
+      "tag": "h1",
+      "role": null,
+      "text": "Global single rates",
+      "bbox": {
+        "x": 736,
+        "y": 17925.125,
+        "width": 222,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_282",
+      "tag": "h1",
+      "role": null,
+      "text": "Cost transparency",
+      "bbox": {
+        "x": 1006,
+        "y": 17925.125,
+        "width": 222,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_283",
+      "tag": "h1",
+      "role": null,
+      "text": "Integrating Stripe provides a 326% return on investment",
+      "bbox": {
+        "x": 237,
+        "y": 18213.640625,
+        "width": 530,
+        "height": 71.96875
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 26
+    },
+    {
+      "ref": "el_284",
       "tag": "a",
       "role": null,
       "text": "Read the report",
@@ -4619,7 +4857,58 @@
       "font_size": 15
     },
     {
-      "ref": "el_271",
+      "ref": "el_285",
+      "tag": "h2",
+      "role": null,
+      "text": "Report",
+      "bbox": {
+        "x": 958,
+        "y": 18212.125,
+        "width": 222,
+        "height": 28
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_286",
+      "tag": "h1",
+      "role": null,
+      "text": "The Total Economic Impact™ Of Stripe",
+      "bbox": {
+        "x": 958,
+        "y": 18250.125,
+        "width": 222,
+        "height": 56
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 23
+    },
+    {
+      "ref": "el_287",
+      "tag": "header",
+      "role": null,
+      "text": "100+ category leaders each process more than $1 billion per year on Stripe.",
+      "bbox": {
+        "x": 180,
+        "y": 18607.125,
+        "width": 810,
+        "height": 71.96875
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_288",
       "tag": "h1",
       "role": null,
       "text": "100+ category leaders each process more than $1 billion per year on Stripe.",
@@ -4636,7 +4925,24 @@
       "font_size": 26
     },
     {
-      "ref": "el_272",
+      "ref": "el_289",
+      "tag": "header",
+      "role": null,
+      "text": "Millions",
+      "bbox": {
+        "x": 180,
+        "y": 18727.09375,
+        "width": 238,
+        "height": 31.90625
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_290",
       "tag": "h1",
       "role": null,
       "text": "Millions",
@@ -4653,7 +4959,24 @@
       "font_size": 24
     },
     {
-      "ref": "el_273",
+      "ref": "el_291",
+      "tag": "header",
+      "role": null,
+      "text": "350+",
+      "bbox": {
+        "x": 180,
+        "y": 18863,
+        "width": 238,
+        "height": 31.90625
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_292",
       "tag": "h1",
       "role": null,
       "text": "350+",
@@ -4670,7 +4993,24 @@
       "font_size": 24
     },
     {
-      "ref": "el_274",
+      "ref": "el_293",
+      "tag": "header",
+      "role": null,
+      "text": "Products used",
+      "bbox": {
+        "x": 180,
+        "y": 18974.90625,
+        "width": 238,
+        "height": 24
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_294",
       "tag": "h1",
       "role": null,
       "text": "Products used",
@@ -4687,7 +5027,41 @@
       "font_size": 15
     },
     {
-      "ref": "el_275",
+      "ref": "el_295",
+      "tag": "footer",
+      "role": null,
+      "text": "Payments Connect",
+      "bbox": {
+        "x": 180,
+        "y": 19006.90625,
+        "width": 238,
+        "height": 70
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_296",
+      "tag": "header",
+      "role": null,
+      "text": "5+",
+      "bbox": {
+        "x": 450,
+        "y": 18727.09375,
+        "width": 238,
+        "height": 31.90625
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 16
+    },
+    {
+      "ref": "el_297",
       "tag": "h1",
       "role": null,
       "text": "5+",
@@ -4704,7 +5078,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_276",
+      "ref": "el_298",
       "tag": "h1",
       "role": null,
       "text": "50+",
@@ -4721,7 +5095,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_277",
+      "ref": "el_299",
       "tag": "h1",
       "role": null,
       "text": "Products used",
@@ -4738,7 +5112,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_278",
+      "ref": "el_300",
       "tag": "h1",
       "role": null,
       "text": "130",
@@ -4755,7 +5129,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_279",
+      "ref": "el_301",
       "tag": "h1",
       "role": null,
       "text": "$10B+",
@@ -4772,7 +5146,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_280",
+      "ref": "el_302",
       "tag": "h1",
       "role": null,
       "text": "Products used",
@@ -4789,7 +5163,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_281",
+      "ref": "el_303",
       "tag": "h1",
       "role": null,
       "text": "+5.5%",
@@ -4806,7 +5180,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_282",
+      "ref": "el_304",
       "tag": "h1",
       "role": null,
       "text": "+1%",
@@ -4823,7 +5197,7 @@
       "font_size": 24
     },
     {
-      "ref": "el_283",
+      "ref": "el_305",
       "tag": "h1",
       "role": null,
       "text": "Products used",
@@ -4840,7 +5214,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_284",
+      "ref": "el_306",
       "tag": "a",
       "role": null,
       "text": "BMW logo Learn why BMW chose Stripe to power ecommerce and payments",
@@ -4857,7 +5231,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_285",
+      "ref": "el_307",
       "tag": "h1",
       "role": null,
       "text": "Learn why BMW chose Stripe to power ecommerce and payments",
@@ -4874,7 +5248,7 @@
       "font_size": 26
     },
     {
-      "ref": "el_286",
+      "ref": "el_308",
       "tag": "a",
       "role": null,
       "text": "Amazon logo See how Amazon simplified cross-border payments with Stripe",
@@ -4891,7 +5265,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_287",
+      "ref": "el_309",
       "tag": "h1",
       "role": null,
       "text": "See how Amazon simplified cross-border payments with Stripe",
@@ -4908,75 +5282,7 @@
       "font_size": 26
     },
     {
-      "ref": "el_288",
-      "tag": "a",
-      "role": null,
-      "text": "Maersk logo See how Maersk tapped into new technology to make it easier to ship around the world",
-      "bbox": {
-        "x": 2070,
-        "y": 18727.09375,
-        "width": 810,
-        "height": 410
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 16
-    },
-    {
-      "ref": "el_289",
-      "tag": "h1",
-      "role": null,
-      "text": "See how Maersk tapped into new technology to make it easier to ship around the world",
-      "bbox": {
-        "x": 2094,
-        "y": 19005.09375,
-        "width": 468,
-        "height": 108
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 26
-    },
-    {
-      "ref": "el_290",
-      "tag": "a",
-      "role": null,
-      "text": "Twilio logo See how Twilio increased authorization rates by 10% with Stripe",
-      "bbox": {
-        "x": 2880,
-        "y": 18727.09375,
-        "width": 810,
-        "height": 410
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 16
-    },
-    {
-      "ref": "el_291",
-      "tag": "h1",
-      "role": null,
-      "text": "See how Twilio increased authorization rates by 10% with Stripe",
-      "bbox": {
-        "x": 2904,
-        "y": 19041.09375,
-        "width": 468,
-        "height": 72
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 26
-    },
-    {
-      "ref": "el_292",
+      "ref": "el_310",
       "tag": "button",
       "role": null,
       "text": "BMW logo",
@@ -4993,7 +5299,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_293",
+      "ref": "el_311",
       "tag": "button",
       "role": null,
       "text": "Amazon logo",
@@ -5010,7 +5316,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_294",
+      "ref": "el_312",
       "tag": "button",
       "role": null,
       "text": "Maersk logo",
@@ -5027,7 +5333,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_295",
+      "ref": "el_313",
       "tag": "button",
       "role": null,
       "text": "Twilio logo",
@@ -5044,7 +5350,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_296",
+      "ref": "el_314",
       "tag": "h1",
       "role": null,
       "text": "FAQs",
@@ -5061,7 +5367,24 @@
       "font_size": 38
     },
     {
-      "ref": "el_297",
+      "ref": "el_315",
+      "tag": "h3",
+      "role": null,
+      "text": "How are payment fees calculated?",
+      "bbox": {
+        "x": 180,
+        "y": 19678.09375,
+        "width": 1079,
+        "height": 60
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_316",
       "tag": "button",
       "role": null,
       "text": "How are payment fees calculated?",
@@ -5078,7 +5401,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_298",
+      "ref": "el_317",
+      "tag": "h3",
+      "role": null,
+      "text": "Will I be charged tax?",
+      "bbox": {
+        "x": 180,
+        "y": 19739.09375,
+        "width": 1079,
+        "height": 60
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_318",
       "tag": "button",
       "role": null,
       "text": "Will I be charged tax?",
@@ -5095,7 +5435,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_299",
+      "ref": "el_319",
+      "tag": "h3",
+      "role": null,
+      "text": "Are there additional fees for refunds?",
+      "bbox": {
+        "x": 180,
+        "y": 19800.09375,
+        "width": 1079,
+        "height": 60
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_320",
       "tag": "button",
       "role": null,
       "text": "Are there additional fees for refunds?",
@@ -5112,7 +5469,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_300",
+      "ref": "el_321",
+      "tag": "h3",
+      "role": null,
+      "text": "Do you have setup fees or monthly fees?",
+      "bbox": {
+        "x": 180,
+        "y": 19861.09375,
+        "width": 1079,
+        "height": 60
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_322",
       "tag": "button",
       "role": null,
       "text": "Do you have setup fees or monthly fees?",
@@ -5129,7 +5503,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_301",
+      "ref": "el_323",
+      "tag": "h3",
+      "role": null,
+      "text": "Do you offer any discounts?",
+      "bbox": {
+        "x": 180,
+        "y": 19922.09375,
+        "width": 1079,
+        "height": 60
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 19
+    },
+    {
+      "ref": "el_324",
       "tag": "button",
       "role": null,
       "text": "Do you offer any discounts?",
@@ -5146,7 +5537,24 @@
       "font_size": 15
     },
     {
-      "ref": "el_302",
+      "ref": "el_325",
+      "tag": "h1",
+      "role": null,
+      "text": "Ready to get started? Get in touch or create an account.",
+      "bbox": {
+        "x": 196,
+        "y": 20239.09375,
+        "width": 412,
+        "height": 71.96875
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 26
+    },
+    {
+      "ref": "el_326",
       "tag": "a",
       "role": null,
       "text": "Start now",
@@ -5163,7 +5571,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_303",
+      "ref": "el_327",
       "tag": "a",
       "role": null,
       "text": "Contact sales",
@@ -5180,7 +5588,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_304",
+      "ref": "el_328",
       "tag": "a",
       "role": null,
       "text": "Learn more",
@@ -5197,7 +5605,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_305",
+      "ref": "el_329",
       "tag": "a",
       "role": null,
       "text": "Read the docs",
@@ -5214,7 +5622,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_306",
+      "ref": "el_330",
       "tag": "a",
       "role": null,
       "text": "Basic usage-based billing",
@@ -5231,7 +5639,7 @@
       "font_size": 13
     },
     {
-      "ref": "el_307",
+      "ref": "el_331",
       "tag": "a",
       "role": null,
       "text": "Stripe logo",
@@ -5248,7 +5656,7 @@
       "font_size": 16
     },
     {
-      "ref": "el_308",
+      "ref": "el_332",
       "tag": "button",
       "role": null,
       "text": "United States (English)",
@@ -5265,1316 +5673,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_309",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20319.265625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_310",
-      "tag": "a",
-      "role": null,
-      "text": "Deutsch",
-      "bbox": {
-        "x": 225,
-        "y": 20368.25,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_311",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 277.59375,
-        "y": 20368.25,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_312",
-      "tag": "a",
-      "role": null,
-      "text": "Nederlands",
-      "bbox": {
-        "x": 225,
-        "y": 20417.234375,
-        "width": 62.140625,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_313",
-      "tag": "a",
-      "role": null,
-      "text": "Français",
-      "bbox": {
-        "x": 295.140625,
-        "y": 20417.234375,
-        "width": 45,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_314",
-      "tag": "a",
-      "role": null,
-      "text": "Deutsch",
-      "bbox": {
-        "x": 348.140625,
-        "y": 20417.234375,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_315",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20434.21875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_316",
-      "tag": "a",
-      "role": null,
-      "text": "Português",
-      "bbox": {
-        "x": 225,
-        "y": 20483.203125,
-        "width": 55.5,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_317",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 288.5,
-        "y": 20483.203125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_318",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20532.1875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_319",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20581.171875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_320",
-      "tag": "a",
-      "role": null,
-      "text": "Français",
-      "bbox": {
-        "x": 272.28125,
-        "y": 20581.171875,
-        "width": 45,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_321",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20630.15625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_322",
-      "tag": "a",
-      "role": null,
-      "text": "Italiano",
-      "bbox": {
-        "x": 272.28125,
-        "y": 20630.15625,
-        "width": 39,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_323",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20679.140625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_324",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20728.125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_325",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20777.109375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_326",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20826.09375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_327",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 225,
-        "y": 20875.078125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_328",
-      "tag": "a",
-      "role": null,
-      "text": "Svenska",
-      "bbox": {
-        "x": 272.28125,
-        "y": 20875.078125,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_329",
-      "tag": "a",
-      "role": null,
-      "text": "Français",
-      "bbox": {
-        "x": 495,
-        "y": 20319.265625,
-        "width": 45,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_330",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 548,
-        "y": 20319.265625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_331",
-      "tag": "a",
-      "role": null,
-      "text": "Deutsch",
-      "bbox": {
-        "x": 495,
-        "y": 20368.25,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_332",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 547.59375,
-        "y": 20368.25,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
       "ref": "el_333",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 495,
-        "y": 20417.234375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_334",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 495,
-        "y": 20466.21875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_335",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 495,
-        "y": 20515.203125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_336",
-      "tag": "a",
-      "role": null,
-      "text": "简体中文",
-      "bbox": {
-        "x": 542.28125,
-        "y": 20515.203125,
-        "width": 48,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_337",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 495,
-        "y": 20564.1875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_338",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 495,
-        "y": 20613.171875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_339",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 495,
-        "y": 20662.15625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_340",
-      "tag": "a",
-      "role": null,
-      "text": "Italiano",
-      "bbox": {
-        "x": 495,
-        "y": 20711.140625,
-        "width": 39,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_341",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 542,
-        "y": 20711.140625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_342",
-      "tag": "a",
-      "role": null,
-      "text": "日本語",
-      "bbox": {
-        "x": 495,
-        "y": 20760.125,
-        "width": 36,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_343",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 539,
-        "y": 20760.125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_344",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 495,
-        "y": 20809.109375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_345",
-      "tag": "a",
-      "role": null,
-      "text": "Deutsch",
-      "bbox": {
-        "x": 495,
-        "y": 20858.09375,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_346",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 547.59375,
-        "y": 20858.09375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_347",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 765,
-        "y": 20319.265625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_348",
-      "tag": "a",
-      "role": null,
-      "text": "Français",
-      "bbox": {
-        "x": 765,
-        "y": 20368.25,
-        "width": 45,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_349",
-      "tag": "a",
-      "role": null,
-      "text": "Deutsch",
-      "bbox": {
-        "x": 818,
-        "y": 20368.25,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_350",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 870.59375,
-        "y": 20368.25,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_351",
-      "tag": "a",
-      "role": null,
-      "text": "简体中文",
-      "bbox": {
-        "x": 765,
-        "y": 20417.234375,
-        "width": 48,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_352",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 821,
-        "y": 20417.234375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_353",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 765,
-        "y": 20466.21875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_354",
-      "tag": "a",
-      "role": null,
-      "text": "简体中文",
-      "bbox": {
-        "x": 812.28125,
-        "y": 20466.21875,
-        "width": 48,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_355",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 765,
-        "y": 20515.203125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_356",
-      "tag": "a",
-      "role": null,
-      "text": "Español",
-      "bbox": {
-        "x": 765,
-        "y": 20564.1875,
-        "width": 42.75,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_357",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 815.75,
-        "y": 20564.1875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_358",
-      "tag": "a",
-      "role": null,
-      "text": "Nederlands",
-      "bbox": {
-        "x": 765,
-        "y": 20613.171875,
-        "width": 62.140625,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_359",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 835.140625,
-        "y": 20613.171875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_360",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 765,
-        "y": 20662.15625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_361",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 765,
-        "y": 20711.140625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_362",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 765,
-        "y": 20760.125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_363",
-      "tag": "a",
-      "role": null,
-      "text": "Português",
-      "bbox": {
-        "x": 765,
-        "y": 20809.109375,
-        "width": 55.5,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_364",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 828.5,
-        "y": 20809.109375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_365",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 765,
-        "y": 20858.09375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_366",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1035,
-        "y": 20319.265625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_367",
-      "tag": "a",
-      "role": null,
-      "text": "简体中文",
-      "bbox": {
-        "x": 1082.28125,
-        "y": 20319.265625,
-        "width": 48,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_368",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1035,
-        "y": 20368.25,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_369",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1035,
-        "y": 20417.234375,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_370",
-      "tag": "a",
-      "role": null,
-      "text": "Italiano",
-      "bbox": {
-        "x": 1082.28125,
-        "y": 20417.234375,
-        "width": 39,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_371",
-      "tag": "a",
-      "role": null,
-      "text": "Español",
-      "bbox": {
-        "x": 1035,
-        "y": 20466.21875,
-        "width": 42.75,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_372",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1085.75,
-        "y": 20466.21875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_373",
-      "tag": "a",
-      "role": null,
-      "text": "Svenska",
-      "bbox": {
-        "x": 1035,
-        "y": 20515.203125,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_374",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1087.59375,
-        "y": 20515.203125,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_375",
-      "tag": "a",
-      "role": null,
-      "text": "Deutsch",
-      "bbox": {
-        "x": 1035,
-        "y": 20564.1875,
-        "width": 44.59375,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_376",
-      "tag": "a",
-      "role": null,
-      "text": "Français",
-      "bbox": {
-        "x": 1087.59375,
-        "y": 20564.1875,
-        "width": 45,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_377",
-      "tag": "a",
-      "role": null,
-      "text": "Italiano",
-      "bbox": {
-        "x": 1140.59375,
-        "y": 20564.1875,
-        "width": 39,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_378",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1187.59375,
-        "y": 20564.1875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_379",
-      "tag": "a",
-      "role": null,
-      "text": "ไทย",
-      "bbox": {
-        "x": 1035,
-        "y": 20613.171875,
-        "width": 20.625,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_380",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1063.625,
-        "y": 20613.171875,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_381",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1035,
-        "y": 20662.15625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_382",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1035,
-        "y": 20711.140625,
-        "width": 39.28125,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_383",
-      "tag": "a",
-      "role": null,
-      "text": "English",
-      "bbox": {
-        "x": 1035,
-        "y": 20760.125,
-        "width": 39.46875,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_384",
-      "tag": "a",
-      "role": null,
-      "text": "Español",
-      "bbox": {
-        "x": 1082.46875,
-        "y": 20760.125,
-        "width": 42.75,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_385",
-      "tag": "a",
-      "role": null,
-      "text": "简体中文",
-      "bbox": {
-        "x": 1133.21875,
-        "y": 20760.125,
-        "width": 48,
-        "height": 15
-      },
-      "above_fold": false,
-      "input_type": null,
-      "accessible_name": null,
-      "name_source": null,
-      "font_size": 12
-    },
-    {
-      "ref": "el_386",
       "tag": "a",
       "role": null,
       "text": "Pricing",
@@ -6591,7 +5690,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_387",
+      "ref": "el_334",
       "tag": "a",
       "role": null,
       "text": "Atlas",
@@ -6608,7 +5707,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_388",
+      "ref": "el_335",
       "tag": "a",
       "role": null,
       "text": "Authorization Boost",
@@ -6625,7 +5724,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_389",
+      "ref": "el_336",
       "tag": "a",
       "role": null,
       "text": "Billing",
@@ -6642,7 +5741,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_390",
+      "ref": "el_337",
       "tag": "a",
       "role": null,
       "text": "Capital",
@@ -6659,7 +5758,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_391",
+      "ref": "el_338",
       "tag": "a",
       "role": null,
       "text": "Checkout",
@@ -6676,7 +5775,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_392",
+      "ref": "el_339",
       "tag": "a",
       "role": null,
       "text": "Climate",
@@ -6693,7 +5792,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_393",
+      "ref": "el_340",
       "tag": "a",
       "role": null,
       "text": "Connect",
@@ -6710,7 +5809,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_394",
+      "ref": "el_341",
       "tag": "a",
       "role": null,
       "text": "Crypto",
@@ -6727,7 +5826,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_395",
+      "ref": "el_342",
       "tag": "a",
       "role": null,
       "text": "Data Pipeline",
@@ -6744,7 +5843,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_396",
+      "ref": "el_343",
       "tag": "a",
       "role": null,
       "text": "Elements",
@@ -6761,7 +5860,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_397",
+      "ref": "el_344",
       "tag": "a",
       "role": null,
       "text": "Financial Connections",
@@ -6778,7 +5877,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_398",
+      "ref": "el_345",
       "tag": "a",
       "role": null,
       "text": "Identity",
@@ -6795,7 +5894,7 @@
       "font_size": 15
     },
     {
-      "ref": "el_399",
+      "ref": "el_346",
       "tag": "a",
       "role": null,
       "text": "Invoicing",
@@ -6810,10 +5909,911 @@
       "accessible_name": null,
       "name_source": null,
       "font_size": 15
+    },
+    {
+      "ref": "el_347",
+      "tag": "a",
+      "role": null,
+      "text": "Issuing",
+      "bbox": {
+        "x": 466,
+        "y": 21314.0625,
+        "width": 49.265625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_348",
+      "tag": "a",
+      "role": null,
+      "text": "Link",
+      "bbox": {
+        "x": 466,
+        "y": 21342.0625,
+        "width": 29.15625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_349",
+      "tag": "a",
+      "role": null,
+      "text": "Managed Payments",
+      "bbox": {
+        "x": 466,
+        "y": 21370.0625,
+        "width": 135.640625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_350",
+      "tag": "a",
+      "role": null,
+      "text": "Payment links",
+      "bbox": {
+        "x": 466,
+        "y": 21398.0625,
+        "width": 95.8125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_351",
+      "tag": "a",
+      "role": null,
+      "text": "Payments",
+      "bbox": {
+        "x": 466,
+        "y": 21426.0625,
+        "width": 68.046875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_352",
+      "tag": "a",
+      "role": null,
+      "text": "Payouts",
+      "bbox": {
+        "x": 466,
+        "y": 21454.0625,
+        "width": 54.859375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_353",
+      "tag": "a",
+      "role": null,
+      "text": "Radar",
+      "bbox": {
+        "x": 466,
+        "y": 21482.0625,
+        "width": 40.828125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_354",
+      "tag": "a",
+      "role": null,
+      "text": "Revenue Recognition",
+      "bbox": {
+        "x": 466,
+        "y": 21510.0625,
+        "width": 145.546875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_355",
+      "tag": "a",
+      "role": null,
+      "text": "Stripe Sigma",
+      "bbox": {
+        "x": 466,
+        "y": 21538.0625,
+        "width": 87.96875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_356",
+      "tag": "a",
+      "role": null,
+      "text": "Tax",
+      "bbox": {
+        "x": 466,
+        "y": 21566.0625,
+        "width": 23.8125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_357",
+      "tag": "a",
+      "role": null,
+      "text": "Terminal",
+      "bbox": {
+        "x": 466,
+        "y": 21594.0625,
+        "width": 59.421875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_358",
+      "tag": "a",
+      "role": null,
+      "text": "Treasury",
+      "bbox": {
+        "x": 466,
+        "y": 21622.0625,
+        "width": 59.78125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_359",
+      "tag": "a",
+      "role": null,
+      "text": "Enterprises",
+      "bbox": {
+        "x": 736,
+        "y": 20922.0625,
+        "width": 78.9375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_360",
+      "tag": "a",
+      "role": null,
+      "text": "Startups",
+      "bbox": {
+        "x": 736,
+        "y": 20950.0625,
+        "width": 58.8125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_361",
+      "tag": "a",
+      "role": null,
+      "text": "Agentic commerce",
+      "bbox": {
+        "x": 736,
+        "y": 20978.0625,
+        "width": 130.1875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_362",
+      "tag": "a",
+      "role": null,
+      "text": "Crypto",
+      "bbox": {
+        "x": 736,
+        "y": 21006.0625,
+        "width": 46.8125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_363",
+      "tag": "a",
+      "role": null,
+      "text": "Ecommerce",
+      "bbox": {
+        "x": 736,
+        "y": 21034.0625,
+        "width": 82.0625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_364",
+      "tag": "a",
+      "role": null,
+      "text": "Embedded finance",
+      "bbox": {
+        "x": 736,
+        "y": 21062.0625,
+        "width": 128.84375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_365",
+      "tag": "a",
+      "role": null,
+      "text": "Finance automation",
+      "bbox": {
+        "x": 736,
+        "y": 21090.0625,
+        "width": 135.765625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_366",
+      "tag": "a",
+      "role": null,
+      "text": "Global businesses",
+      "bbox": {
+        "x": 736,
+        "y": 21118.0625,
+        "width": 124.671875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_367",
+      "tag": "a",
+      "role": null,
+      "text": "In-app payments",
+      "bbox": {
+        "x": 736,
+        "y": 21146.0625,
+        "width": 115.953125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_368",
+      "tag": "a",
+      "role": null,
+      "text": "Marketplaces",
+      "bbox": {
+        "x": 736,
+        "y": 21174.0625,
+        "width": 93.09375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_369",
+      "tag": "a",
+      "role": null,
+      "text": "Money management",
+      "bbox": {
+        "x": 736,
+        "y": 21202.0625,
+        "width": 140.578125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_370",
+      "tag": "a",
+      "role": null,
+      "text": "Platforms",
+      "bbox": {
+        "x": 736,
+        "y": 21230.0625,
+        "width": 66.390625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_371",
+      "tag": "a",
+      "role": null,
+      "text": "SaaS",
+      "bbox": {
+        "x": 736,
+        "y": 21258.0625,
+        "width": 34.203125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_372",
+      "tag": "a",
+      "role": null,
+      "text": "AI companies",
+      "bbox": {
+        "x": 736,
+        "y": 21286.0625,
+        "width": 93.34375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_373",
+      "tag": "a",
+      "role": null,
+      "text": "Creator economy",
+      "bbox": {
+        "x": 736,
+        "y": 21314.0625,
+        "width": 118.328125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_374",
+      "tag": "a",
+      "role": null,
+      "text": "Gaming",
+      "bbox": {
+        "x": 736,
+        "y": 21342.0625,
+        "width": 53.875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_375",
+      "tag": "a",
+      "role": null,
+      "text": "Hospitality, travel, and leisure",
+      "bbox": {
+        "x": 736,
+        "y": 21370.0625,
+        "width": 200.28125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_376",
+      "tag": "a",
+      "role": null,
+      "text": "Insurance",
+      "bbox": {
+        "x": 736,
+        "y": 21398.0625,
+        "width": 67.453125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_377",
+      "tag": "a",
+      "role": null,
+      "text": "Media and entertainment",
+      "bbox": {
+        "x": 736,
+        "y": 21426.0625,
+        "width": 172.453125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_378",
+      "tag": "a",
+      "role": null,
+      "text": "Nonprofits",
+      "bbox": {
+        "x": 736,
+        "y": 21454.0625,
+        "width": 73.0625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_379",
+      "tag": "a",
+      "role": null,
+      "text": "Professional services",
+      "bbox": {
+        "x": 736,
+        "y": 21482.0625,
+        "width": 145.015625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_380",
+      "tag": "a",
+      "role": null,
+      "text": "Public sector",
+      "bbox": {
+        "x": 736,
+        "y": 21510.0625,
+        "width": 89.640625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_381",
+      "tag": "a",
+      "role": null,
+      "text": "Retail",
+      "bbox": {
+        "x": 736,
+        "y": 21538.0625,
+        "width": 39.046875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_382",
+      "tag": "a",
+      "role": null,
+      "text": "Stripe App Marketplace",
+      "bbox": {
+        "x": 736,
+        "y": 21618.0625,
+        "width": 162.4375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_383",
+      "tag": "a",
+      "role": null,
+      "text": "Stripe Partner ecosystem",
+      "bbox": {
+        "x": 736,
+        "y": 21646.0625,
+        "width": 173.578125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_384",
+      "tag": "a",
+      "role": null,
+      "text": "Professional services",
+      "bbox": {
+        "x": 736,
+        "y": 21674.0625,
+        "width": 145.015625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_385",
+      "tag": "a",
+      "role": null,
+      "text": "Documentation",
+      "bbox": {
+        "x": 736,
+        "y": 21754.0625,
+        "width": 106.015625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_386",
+      "tag": "a",
+      "role": null,
+      "text": "API reference",
+      "bbox": {
+        "x": 736,
+        "y": 21782.0625,
+        "width": 93.0625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_387",
+      "tag": "a",
+      "role": null,
+      "text": "API status",
+      "bbox": {
+        "x": 736,
+        "y": 21810.0625,
+        "width": 69.78125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_388",
+      "tag": "a",
+      "role": null,
+      "text": "API changelog",
+      "bbox": {
+        "x": 736,
+        "y": 21838.0625,
+        "width": 99.875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_389",
+      "tag": "a",
+      "role": null,
+      "text": "Libraries and SDKs",
+      "bbox": {
+        "x": 736,
+        "y": 21866.0625,
+        "width": 129.953125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_390",
+      "tag": "a",
+      "role": null,
+      "text": "Stripe Projects",
+      "bbox": {
+        "x": 736,
+        "y": 21894.0625,
+        "width": 101.1875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_391",
+      "tag": "a",
+      "role": null,
+      "text": "Developer blog",
+      "bbox": {
+        "x": 736,
+        "y": 21922.0625,
+        "width": 104.46875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_392",
+      "tag": "a",
+      "role": null,
+      "text": "Guides",
+      "bbox": {
+        "x": 1006,
+        "y": 20922.0625,
+        "width": 48.390625,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_393",
+      "tag": "a",
+      "role": null,
+      "text": "Customer stories",
+      "bbox": {
+        "x": 1006,
+        "y": 20950.0625,
+        "width": 117.671875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_394",
+      "tag": "a",
+      "role": null,
+      "text": "Blog",
+      "bbox": {
+        "x": 1006,
+        "y": 20978.0625,
+        "width": 31.359375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_395",
+      "tag": "a",
+      "role": null,
+      "text": "Community",
+      "bbox": {
+        "x": 1006,
+        "y": 21006.0625,
+        "width": 79.484375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_396",
+      "tag": "a",
+      "role": null,
+      "text": "Sessions annual conference",
+      "bbox": {
+        "x": 1006,
+        "y": 21034.0625,
+        "width": 190.75,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_397",
+      "tag": "a",
+      "role": null,
+      "text": "Privacy & terms",
+      "bbox": {
+        "x": 1006,
+        "y": 21062.0625,
+        "width": 107.859375,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_398",
+      "tag": "a",
+      "role": null,
+      "text": "Prohibited & restricted businesses",
+      "bbox": {
+        "x": 1006,
+        "y": 21090.0625,
+        "width": 235.96875,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
+    },
+    {
+      "ref": "el_399",
+      "tag": "a",
+      "role": null,
+      "text": "Licenses",
+      "bbox": {
+        "x": 1006,
+        "y": 21118.0625,
+        "width": 60.53125,
+        "height": 20
+      },
+      "above_fold": false,
+      "input_type": null,
+      "accessible_name": null,
+      "name_source": null,
+      "font_size": 15
     }
   ],
-  "elements_total": 724,
-  "text_excerpt": "Stripe logo Products Solutions Developers Resources Pricing Guide me Sign in Contact sales Pricing built for businesses of all sizes Standard Access a complete payments platform with simple, pay-as-you-go pricing. No setup fees, monthly fees, or hidden fees. Get started 2.9% + 30¢ per successful transaction for domestic cards Custom Design a custom package— available for businesses with large payments volume or unique business models. Contact sales IC+ pricing Volume discounts Multi-product discounts Country-specific rates Standard pricing Custom pricing FAQs Features available out of the box: Global access 195 countries Accept payments around the world with cardholder support in 195+ countries. 135+ currencies Process charges and display prices in your customer’s preferred currency to increase conversion. 100+ payment methods From Alipay to iDEAL, seamlessly support popular payment methods. 1 integration Accept payments globally through a single integration. Built-in fraud prevention Powerful machine learning Detect and block fraud using machine learning trained on data across millions of companies. Adapts to new fraud patterns Adapt faster to the latest trends with Radar’s machine learning. No integration required Get started with zero code thanks to Stripe’s built-in fraud protection. Fraud analytics Monitor your fraud performance with advanced analytics and alerting. Tools to optimize your checkout Flexible UI components Use UI building blocks to design a secure payments experience that perfectly matches your site. Pre-built payment forms Embed a prebuilt payments form into your website or direct customers to a Stripe-hosted page. Accelerated checkout Autofill your customers’ saved cards to deliver a frictionless checkout experience. No-code payments Accept payments in minutes by generating no-code links. Payments optimizations to boost revenue Real-time retries Increase revenue with selective retries powered by machine learning. Auto-updated cards Update card information in real-time, improving customer experience and increasing revenue. Customer authentication Verify a customer’s identity using 3D Secure, an authentication method for card transactions Embedded payments for platforms & marketplaces Seamless onboarding Onboard and verify users with conversion-optimized UIs. Platform management Manage payment operations with tools for your platform and your users. Embedded components Embed and white label payment workflows for your users. Risk tools Access tools to help you mitigate risk for your connected accounts. Fast, predictable payouts to your bank accounts Flexible payout options Opt to receive transfers on a rolling basis, weekly, or monthly. Like-for-like settlement In select regions, get paid out in your preferred currencies. Payout transparency See upcoming payouts, expected deposit dates, payout history, and more in the Dashboard. Phone, chat, and email support 24x7 support Our team is here to help over email, phone, or chat. You can even get email support in 6 languages. Industry-leading documentation Build using our robust technical docs. Sample code in 8+ languages. Technical support on Discord Chat with our technical team on the official Stripe Developer Discord server. Security, reliability and compliance 99.999% average historical uptime Maximize your revenue with a platform that handles 250 million+ API requests a day, while maintaining 99.999% uptime. PCI compliant Use our libraries to collect payment information without sensitive data ever hitting your servers. Regulatory licenses globally Stripe is certified to the highest industry standards and has obtained regulatory licenses around the world. Standard pricing for all products Explore pricing for the full Stripe platform Online and in-person payments, recurring billing, embedded payments, and much more. Global payments Payments Link Payment Links Checkout Managed Payments Terminal Financial Connections Money management Connect Treasury Global Payouts",
-  "text_total_chars": 28086,
+  "elements_total": 551,
+  "text_excerpt": "Stripe logo Products Solutions Developers Resources Pricing Guide me Sign in Contact sales Pricing built for businesses of all sizes Standard Access a complete payments platform with simple, pay-as-you-go pricing. No setup fees, monthly fees, or hidden fees. Get started 2.9% + $0.30 per successful transaction for domestic cards Custom Design a custom package— available for businesses with large payments volume or unique business models. Contact sales IC+ pricing Volume discounts Multi-product discounts Country-specific rates Standard pricing Custom pricing FAQs Features available out of the box: Global access 195 countries Accept payments around the world with cardholder support in 195+ countries. 135+ currencies Process charges and display prices in your customer’s preferred currency to increase conversion. 100+ payment methods From Alipay to iDEAL, seamlessly support popular payment methods. 1 integration Accept payments globally through a single integration. Built-in fraud prevention Powerful machine learning Detect and block fraud using machine learning trained on data across millions of companies. Adapts to new fraud patterns Adapt faster to the latest trends with Radar’s machine learning. No integration required Get started with zero code thanks to Stripe’s built-in fraud protection. Fraud analytics Monitor your fraud performance with advanced analytics and alerting. Tools to optimize your checkout Flexible UI components Use UI building blocks to design a secure payments experience that perfectly matches your site. Pre-built payment forms Embed a prebuilt payments form into your website or direct customers to a Stripe-hosted page. Accelerated checkout Autofill your customers’ saved cards to deliver a frictionless checkout experience. No-code payments Accept payments in minutes by generating no-code links. Payments optimizations to boost revenue Real-time retries Increase revenue with selective retries powered by machine learning. Auto-updated cards Update card information in real-time, improving customer experience and increasing revenue. Customer authentication Verify a customer’s identity using 3D Secure, an authentication method for card transactions Embedded payments for platforms & marketplaces Seamless onboarding Onboard and verify users with conversion-optimized UIs. Platform management Manage payment operations with tools for your platform and your users. Embedded components Embed and white label payment workflows for your users. Risk tools Access tools to help you mitigate risk for your connected accounts. Fast, predictable payouts to your bank accounts Flexible payout options Opt to receive transfers on a rolling basis, weekly, or monthly. Like-for-like settlement In select regions, get paid out in your preferred currencies. Payout transparency See upcoming payouts, expected deposit dates, payout history, and more in the Dashboard. Phone, chat, and email support 24x7 support Our team is here to help over email, phone, or chat. You can even get email support in 6 languages. Industry-leading documentation Build using our robust technical docs. Sample code in 8+ languages. Technical support on Discord Chat with our technical team on the official Stripe Developer Discord server. Security, reliability and compliance 99.999% average historical uptime Maximize your revenue with a platform that handles 250 million+ API requests a day, while maintaining 99.999% uptime. PCI compliant Use our libraries to collect payment information without sensitive data ever hitting your servers. Regulatory licenses globally Stripe is certified to the highest industry standards and has obtained regulatory licenses around the world. Standard pricing for all products Explore pricing for the full Stripe platform Online and in-person payments, recurring billing, embedded payments, and much more. Global payments Payments Link Payment Links Checkout Managed Payments Terminal Financial Connections Money management Connect Treasury Global Payouts Issuing Revenue and finance automation Billing Metronome Invoicing Tax Stripe Sigma Data Pipeline Revenue Recognition More Radar Identity Atlas Climate Workflows Custom pricing Global payments Optimize checkout conversion, accept local payment methods, and increase acceptance rates. Payments An online payments platform engineered for growth. Sign up with Payments Increase customer acquisition with 100+ payment methods. Improve conversion with Link, Stripe’s accelerated checkout. Get AI-powered fraud protection for card payments with Radar Lite. Save engineering time with pre-built UIs. Cards and wallets Accept widely used credit and debit cards, prepaid cards, and digital wallets for online payments. 2.9% + 30¢ per successful transaction for domestic cards + 0.5% for manually entered cards + 1.5% for international cards + 1% if currency conversion is required Buy Now Pay Later Let your customers buy something and pay for it in installments over time. 5.99% + 30¢ per successful transaction for Klarna See more payment methods Bank-based and other payment methods Offer bank debits, bank transfers, and other locally relevant payment methods. 0.8% ACH Direct Debit $5.00 cap See more payment methods Stablecoins Enable customers globally to pay with stablecoins. 1.5% of the transaction amount in USD Included: conversion to fiat, wallet and AML screening, fraud prevention, gas sponsorship Learn more Disputes Respond to card payment disputes, also known as chargebacks. Learn more Dispute received fee $15.00 for each dispute you receive. In rare cases, network fees also apply. Dispute countered fee $15.00 for each dispute you respond to manually. You get this fee back for won disputes. You don't get this fee back for lost disputes. Learn more Smart Disputes Respond to disputes with evidence that Stripe's AI prepares for you. You can also add your own evidence. Smart Disputes fee 30% of the disputed amount for each dispute you win. There's no Smart Dispute fee for lost disputes. The dispute received fee still applies. Learn more Dispute prevention Help reduce dispute rates with dispute prevention tools powered by Verifi from Visa and Ethoca from Mastercard. Included Dispute deflection lookups $15.00 per Visa resolution $15.00 per Visa Compelling Evidence 3.0 block $29.00 per Mastercard resolution Payment optimizations Included with Payments Included at no additional charge for businesses on standard payments pricing More features Link Increase global conversion and reduce costs with built-in payment methods and faster checkout. Sign up with Link Reach over 300M consumers worldwide. Enable your customers to check out in seconds with the optimized Link experience, 3x faster than non-Link customers. Increase conversion, businesses with a large repeat customer base have seen an average returning user conversion increase of 14%. Cards Accept widely used credit and debit cards. 2.9% + 30¢ per successful transaction + 1.5% for international transactions + 1% if currency conversion is required Stablecoins Reach more global customers, reduce costs, and minimize cross-border exchange fees by offering stablecoins. 0.8% per successful transaction Promotional rate through January 1, 2027; + 0.2% thereafter Pix and UPI Convert buyers globally by offering the payment methods they prefer in their market. 1.8% + 30¢ per successful transaction + 1.5% for international transactions + 1% if currency conversion is required Instant bank payments Reduce processing costs with frictionless bank payments with the confirmation speed of cards. 2.6% + 30¢ per successful transaction Klarna Offer flexible buy now, pay later options to reach new buyers. 5.99% + 30¢ per successful transaction + 1.5% for international transactions + 1% if currency conversion is required Payment Links No-code links to sell online without a website. Sign up with Payment Links Accept payments in minutes by generating no-code links. Sell products, offer subscriptions, and more. Create at scale via our API to automate marketing campaigns and sales operations. Accept payments Accept payments made using a payment link. Included with Payments Included at no additional charge for businesses on standard payments pricing Custom domain Use your own domain while hosting your payments page or customer portal on Stripe. $10.00 per month Learn more Post-payment invoices Automatically generate an invoice after a one-time purchase. 0.4% on transaction total $2.00 cap per invoice Learn more Checkout Prebuilt payment form optimized for conversion. Sign up with Checkout Save engineering time and get started quickly. Reduce friction with features designed to improve conversion. Customize with your branding. Accept payments Accept payments made on Stripe Checkout. Included with Payments Included at no additional charge for businesses on standard payments pricing Custom domain Use your own domain while hosting your payments page or customer portal on Stripe. $10.00 per month Learn more Post-payment invoices Automatically generate an invoice after a one-time purchase. 0.4% on transaction total $2.00 cap per invoice Learn more Managed Payments Stripe’s merchant of record solution that simplifies global selling. Sign up with Managed Payments Quickly launch or expand your businesses worldwide with no additional setup. Offload tax compliance, fraud, disputes, and customer support responsibilities. Use Managed Payments for all your transactions or just for specific markets and products. Merchant of record services A complete merchant of record solution for global digital commerce. Includes indirect tax compliance (sales tax, VAT, GST) and remittance in more than 75 countries, along with fraud prevention, dispute management, invoicing, and customer support globally. 3.5% per successful Managed Payments transaction in addition to Payments fees Learn more Terminal Tools to accept in-person payments and unify commerce. Sign up with Terminal Build a custom checkout or integrate with hundreds of third-party POS systems. Streamline hardware logistics with pre-certified Stripe or select 3P card readers. Unify online and in-person payments to create a cohesive customer experience. Scale globally with one integration. Cards and wallets Accept widely used credit cards, debit cards, and digital wallets for in-person payments. 2.7% + 5¢ per successful transaction for domestic cards + 1.5% for international cards + $0.10 per authorization for Tap to Pay Accept contactless payments without additional hardware using compatible iPhone or Android devices. + $0.05 per authorization for optional point-to-point-encryption Access PCI-certified point-to-point-encryption (P2PE) required in certain industries. All Terminal transactions are end-to-end encrypted by default. Card readers Use pre-certified card readers with cloud-based fleet management that streamlines device logistics and management at scale. $59.00 Stripe Reader M2 $299.00 Stripe Reader S710 Excl. VAT $299.00 Stripe Reader S700 Cellular Unlimited cellular data usage on enabled readers. Apps on Device data usage limited to 10 GB per reader per month. $10.00 per reader per month See pricing details Financial Connections Secure access to users’ financial accounts. Sign up with Financial Connections Maximize conversion with an embedded authentication flow. Instantly verify bank accounts from 5,000 financial institutions. Reduce development time with a single integration. Instant bank account verifications Retrieve tokenized account numbers to instantly verify bank accounts for ACH Direct Debit, payouts, and other types of money movement. $1.50 per successful instant verification Micro-deposit verifications are free Balances Retrieve account balances for underwriting, financial management, or preventing payment failures due to insufficient funds. $0.10 per successful API call Account owners Verify bank account ownership to minimize fraud when making payouts or accepting payments. $1.50 per successful API call Transactions Subscribe to an automatically updated feed of account transactions. $0.30 per institution per account holder per month See pricing details Money management Enhance your platform by embedding financial services—set-up financial accounts, issue cards, and offer financing. Connect Embedded payments for platforms and marketplaces. Sign up with Connect Launch faster with Stripe-hosted or prebuilt embedded components. Save time by using tooling from Stripe for onboarding, risk, tax forms and more. Grow revenue by monetizing payments. Stripe handles pricing for your users Stripe sets and collects processing fees from your users, so you don’t have to. Learn more about how to qualify for a revenue share from Stripe. Included with Payments Included at no additional charge for businesses on standard payments pricing 0.25% starting fee for platforms that deploy their own payments pricing to earn revenue on each transaction. See pricing details Treasury Manage business finances in one place Sign up with Treasury Open an account in minutes and access funds instantly Reduce FX costs with multicurrency accounts and stablecoin access Mitigate risk by insuring your funds Treasury Unify your finances with one business account. Included No storage fees or minimum balance required. Included funding through ACH $2.00 per wire funding through wire Learn More Instant currency conversion Convert currencies instantly within your financial account. Starting at 0.5% of the converted amount Learn more Global Payouts (Domestic) Send money domestically to a recipient with your choice of payment rail and speed. Local bank payout $1.50 per payout Debit card payout $1.50 per payout + 0.75% of amount Minimum fee of 50¢ See pricing details Global Payouts (International) Send money directly to recipients in 50+ countries with your choice of payment rail and speed. $1.50 per payout cross-border fees starting at + 0.25% FX fees starting at + 0.5% See pricing details Cards Manage expenses with virtual and physical cards for your business. Included with Treasury No cross-border or FX fees Learn More Global Payouts Securely send money to third parties in minutes Sign up with Global Payouts Save time with no-code and hosted solutions. Provide Dashboard access to developers and support teams. Get reporting and analytics to track payouts success globally. Domestic payouts Send money domestically to a recipient with your choice of payment rail and speed. Local bank payout $1.50 per payout Debit card payout $1.50 per payout + 0.75% of amount Minimum fee of 50¢ International payouts Send money directly to recipients in 50+ countries with your choice of payment rail and speed. $1.50 per payout cross-border fees starting at + 0.25% Cross-border fees depend on recipient country. FX fees starting at + 0.5% FX fees vary by merchant country. See pricing details Issuing Infrastructure to create and manage virtual and physical cards. Get in touch Instantly issue cards using Stripe’s bank partners and compliance team. Control expenses and help prevent fraud with spending limits and custom rules. Earn a share of interchange revenue. Card creation Create and issue cards instantly and get branded physical cards shipped in just two days. $0.10 per virtual card $3.50 per standard, physical card Custom cards subject to additional pricing. Shipping rates not included. Learn more Disputes Understand and effectively respond to disputes on card transactions (also known as chargebacks) through a guided process. $15.00 per dispute* *Exclusions apply, subject to applicable Law. Connect users may not pass dispute fees to Connected Accounts. International payments Support international card payments for your business or your customers. 1% + 30¢ for cross-border transactions. + 1% if currency conversion is required Contact sales Revenue and finance automation Streamline critical business processes with modular billing, tax, revenue reporting, and data analysis tools that work",
+  "text_total_chars": 27915,
   "captured_at": "frozen"
 }
