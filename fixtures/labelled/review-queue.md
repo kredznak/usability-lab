@@ -1,6 +1,6 @@
 # Review queue
 
-75 findings await a human label. The fastest way through this is
+76 findings await a human label. The fastest way through this is
 `npm run label`, which asks one question at a time and saves as it goes.
 
 The machine has already checked what it can: cited elements exist, quotes appear
@@ -906,3 +906,15 @@ on a true statement — that is the question below.
 > Giving the reject option equal visual weight to accept respects visitor choice and avoids steering consent through design bias, which supports trust in the site.
 
 **Question:** would a founder change something because of this?
+
+## e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f2
+
+- **forms+heuristics** · severity 2 · high confidence · el_3
+- https://asana.com/create-account
+- mechanical: **contradicted** — quotes "Create Account", which is NOT on the page
+
+> The form and surrounding page show no step counter, progress bar, or text indicating this is step 1 of a multi-step signup, despite the page title being "Create Account".
+
+> Without a sense of how many steps remain, visitors cannot gauge the commitment required and may abandon partway through an unseen sequence of steps.
+
+**Question:** the check above says this contradicts the capture. Is the check right?

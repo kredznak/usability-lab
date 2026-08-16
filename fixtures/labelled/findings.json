@@ -34,6 +34,11 @@
       "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
       "url": "https://www.gov.uk/",
       "findings": 12
+    },
+    {
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "findings": 12
     }
   ],
   "skipped": [
@@ -2404,6 +2409,272 @@
       "human_useful": null,
       "human_note": null,
       "review_keep": null
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f1",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "forms+heuristics",
+      "heuristic": "Visibility of system status",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_3",
+      "observation": "The visible page text reads \"Google Microsoft or Work email Continue\", implying two additional sign-up options (Google, Microsoft), but no button or link element for either is present in the captured element list — only the email input (el_5) and Continue button (el_6) exist.",
+      "impact_note": "If these options are not rendered as functioning controls, visitors expecting one-click SSO sign-up may attempt to interact with plain text and get no response, stalling the signup task entirely.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f2",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "forms+heuristics",
+      "heuristic": "Forms & Flow - progress indication",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_3",
+      "observation": "The form and surrounding page show no step counter, progress bar, or text indicating this is step 1 of a multi-step signup, despite the page title being \"Create Account\".",
+      "impact_note": "Without a sense of how many steps remain, visitors cannot gauge the commitment required and may abandon partway through an unseen sequence of steps.",
+      "source_type": "paper",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "quotes \"Create Account\", which is NOT on the page"
+        ]
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": false
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f3",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "conversion-cta+heuristics",
+      "heuristic": "Visibility of next step / CTA clarity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_6",
+      "observation": "The primary call-to-action button reads only \"Continue\", with no indication of what follows — account creation, a verification step, or another form.",
+      "impact_note": "A visitor entering their work email cannot tell whether one click finishes signup or starts a longer process, which can create hesitation before committing an email address.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f4",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "conversion-cta",
+      "heuristic": "Trust before commitment",
+      "severity": 3,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "No pricing, plan tiers, or trial length are shown anywhere on the page; the only cost-related statement is \"No credit card required.\"",
+      "impact_note": "Visitors are asked to hand over a work email for a business tool without knowing what the eventual price or plan structure is, which can suppress signups from cost-conscious evaluators.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f5",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "visual-hierarchy",
+      "heuristic": "Visual Hierarchy — heading structure",
+      "severity": 3,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The visible page text includes what functions as a main headline, \"You're one click away from less busywork\", and a subhead \"Try Asana for free. No credit card required.\" but no element in the capture carries a heading tag (h1–h6) or any distinct font-size measurement for this text; the largest measured elements are 16px form/nav pieces.",
+      "impact_note": "Without a heading-level element sized apart from body text, the page's single most important message has no measured visual weight above the interactive controls around it, so the eye has no clear starting point that matches the intended subject of the page.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": null,
+      "review_keep": false
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f6",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "conversion-cta",
+      "heuristic": "Motivation before request",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The only value statement on the page is the single line \"You're one click away from less busywork\"; no supporting detail, use case, or evidence accompanies it.",
+      "impact_note": "A visitor who is not already convinced of Asana's value has little additional reason offered before being asked to enter an email, which can weaken the case for continuing.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": null,
+      "review_keep": false
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f10",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "visual-hierarchy",
+      "heuristic": "Visual Hierarchy — footer proportion",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "The footer (el_10) occupies a 1440x109px box — roughly 12% of the full 900px page height — to hold only a globe icon, \"English\", and \"Terms & Privacy\" text at 14px, duplicated again as separate 13px links (el_11, el_12, el_13).",
+      "impact_note": "A large area of a short, single-screen page is allocated to low-priority utility links, competing for space and eye time with the signup task above it.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f12",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "conversion-cta+heuristics",
+      "heuristic": "Access to a human / support path",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "No contact link, chat option, or support reference is visible outside of \"Terms of Service\" and \"Privacy Statement\" links.",
+      "impact_note": "A visitor with a question before signing up (e.g., about the free offer's terms) has no obvious way to reach a person, which can stall an otherwise motivated signup.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": null,
+      "review_keep": false
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f7",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "forms+heuristics",
+      "heuristic": "Forms & Flow - minimal data collection",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_3",
+      "observation": "The account-creation form asks for exactly one field, \"Work email\", before the \"Continue\" button.",
+      "impact_note": "Asking for a single field before the next step lowers the barrier to starting the signup, which typically helps completion rates for this first step.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f8",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "conversion-cta",
+      "heuristic": "Reduce perceived risk / friction",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The page states \"Try Asana for free. No credit card required.\" directly above the signup form.",
+      "impact_note": "Removing the payment-detail barrier at the point of asking for an email is a concrete trust signal that lowers the perceived commitment of signing up.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f9",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "forms",
+      "heuristic": "Forms & Flow - persistent label",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_4",
+      "observation": "\"Work email\" is a true `<label>` element paired with the input, not placeholder-only text.",
+      "impact_note": "The field's purpose stays visible after the visitor starts typing, avoiding the common problem where placeholder-only labels vanish and leave the field meaning unclear.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f11",
+      "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
+      "url": "https://asana.com/create-account",
+      "agent": "conversion-cta+visual-hierarchy",
+      "heuristic": "Visual Hierarchy — primary action prominence",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_6",
+      "observation": "The email input (el_5, 251x50px) and \"Continue\" button (el_6, 174x50px) are both sized at 50px tall, noticeably larger than the 13-16px surrounding nav, label, and footer text.",
+      "impact_note": "Giving the input/CTA pair the largest box size on the page helps them read as the primary interactive target even though their font size matches surrounding text.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
     }
   ]
 }

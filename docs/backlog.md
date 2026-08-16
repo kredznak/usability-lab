@@ -127,6 +127,37 @@ the other new tests do go red when their fixes are reverted; that one does not.
 
 ---
 
+## B6. Nothing can quote the page title, so findings about it read as false
+
+**What happened.** 2026-08-16, at the asana gate. Finding `f2` observed that a
+page titled "Create Account" carries no step indicator, and `claims.ts` marked it
+**contradicted** — *quotes "Create Account", which is NOT on the page*. The
+finding was right. `capture.title` is `Create Account - Try Asana for free •
+Asana`, captured and stored.
+
+**The cause.** [`pageSources()`](../src/confidence.ts) builds the checker's
+ground truth from `text_excerpt`, element `text`, and `accessible_name`. It never
+includes `capture.title`. We capture the title and then let nothing quote it, so
+every finding that reasons about a page title is mechanically false by
+construction.
+
+**Why it was not fixed on the spot.** Kelly cut `f2` instead, at the gate, with
+the trade-off stated. Recording the fix here rather than shipping it alongside a
+publish was deliberate — it changes what the truth checker considers true, and
+that should not ride along with a page going out.
+
+**The trade-off to decide.** Adding `capture.title` to `pageSources` is one line.
+It widens what counts as quotable: a finding could quote the browser-tab title
+while implying it is visible body copy, and the checker would pass it. The
+narrower alternative is a separate `title` source that only the quote check
+consults, so a title match never satisfies a claim about visible text.
+
+**Cost.** One line plus a test for the wide version; ~20 lines for the narrow
+one. **What it distorts until fixed:** one finding in the corpus is labelled
+contradicted when it is true, and the asana audit reports 12 findings / 1 false.
+
+---
+
 ## The deeper problem behind B3
 
 Two of the seventeen findings were false, and neither was a wrong fact:
