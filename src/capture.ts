@@ -176,6 +176,21 @@ async function extractElements(
             ) {
               continue;
             }
+
+            // Off-canvas, the same rule the element list applies below.
+            //
+            // Filtering only the element list was a half-fix: Cotopaxi's second
+            // run still produced a finding about "Check Out" appearing near the
+            // subtotal, because the drawer's text was in text_excerpt even
+            // though its elements were gone. Reviewers read that text.
+            //
+            // Guarded on a real width so a zero-width inline wrapper at x=0 is
+            // not read as "left of the viewport" and does not take its whole
+            // subtree with it.
+            const textX = r.left + window.scrollX;
+            if (r.width > 0 && (textX >= window.innerWidth || textX + r.width <= 0)) {
+              continue;
+            }
           }
 
           // Pushed in reverse so the stack pops them in document order.

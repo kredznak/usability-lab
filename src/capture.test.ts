@@ -108,6 +108,33 @@ describe("what must still be captured", () => {
   });
 });
 
+describe("drawer text stays out of the page text too", () => {
+  /**
+   * Filtering the element list alone was a half-fix. Cotopaxi's second run
+   * still produced "the visible page text includes a Check Out label near the
+   * item/subtotal line" — the drawer's elements were gone, its words were not,
+   * and a reviewer read them out of text_excerpt. Reviewers are given that
+   * string wholesale, so it is as much a visibility surface as the bboxes.
+   */
+  test("text_excerpt does not carry the right-hand drawer's words", () => {
+    assert.ok(
+      !cap.text_excerpt.includes("Cart drawer heading"),
+      `drawer text leaked into text_excerpt: ${cap.text_excerpt}`,
+    );
+    assert.ok(!cap.text_excerpt.includes("Check Out"), "drawer's checkout label leaked");
+  });
+
+  test("text_excerpt does not carry the left-hand drawer's words either", () => {
+    assert.ok(!cap.text_excerpt.includes("Shop all"));
+  });
+
+  test("on-screen words are still there — this is a filter, not a purge", () => {
+    assert.ok(cap.text_excerpt.includes("Your cart is empty"));
+    assert.ok(cap.text_excerpt.includes("Continue to Checkout"));
+    assert.ok(cap.text_excerpt.includes("Partly on screen"), "straddling text is visible text");
+  });
+});
+
 describe("the exclusion is data, not silence", () => {
   test("elements_total counts what the page had, so the drop is visible", () => {
     // If total silently equalled the kept count, a page whose entire content
