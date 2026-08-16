@@ -158,6 +158,63 @@ contradicted when it is true, and the asana audit reports 12 findings / 1 false.
 
 ---
 
+## B8. The page text truncates silently, and a reviewer read the silence as absence
+
+**Found by** the rank-agreement diagnosis, 2026-08-16. This is the root cause of
+one of only two free-three cuts in the whole corpus.
+
+**What happened.** basecamp `4f8f1271` rank 1, severity 2, high confidence,
+mechanically **verified**: *"The six large tool tiles (Message Board, Docs &
+Files, To-dos, Chat, Schedule, Card Table) carry no visible text on the page —
+their labels exist only as accessible names, not as rendered captions."* Kelly
+cut it. The screenshot settles it: every one of those labels is rendered as a
+red heading directly above its tile. The finding is false.
+
+**Why the reviewer believed it.** `text_excerpt` is `fullText.slice(0, 4000)`.
+basecamp's page text is 6753 characters, so the reviewer saw **59% of the
+page** — and the labels are in the missing 41%.
+
+**The part that makes it a defect rather than a limit.**
+[`runner.ts`](../src/agents/runner.ts) already solves this problem for the other
+truncation. When the element list is cut it appends: *"this list is TRUNCATED.
+Do not claim anything is missing from the page; you are only seeing part of
+it."* The page text is handed over under the heading `VISIBLE PAGE TEXT` with
+no warning at all. We taught the reviewer to distrust one truncated input and
+not the other.
+
+**Cost.** Small — mirror the existing warning, and consider raising the 4000
+limit, which is a budget choice nothing has re-examined since Slice 1. **What it
+distorts until fixed:** every absence claim on any page over 4000 characters of
+text, which is most real pages. Related: B3 (absence claims).
+
+---
+
+## B9. `<noscript>` markup is being served to reviewers as visible page text
+
+**Found by** the same diagnosis. Measured, not suspected.
+
+**What happened.** 47% of asana's "visible page text" (273 of 576 characters) is
+raw tracking-iframe markup:
+`<iframe src="//b.yjtag.jp/iframe?c=st0IEwU" width="1" height="1" ...>`.
+
+**The mechanism, probed rather than assumed.** When scripting is enabled, a
+`<noscript>` element's contents are **not parsed into elements** — they are one
+text node holding the literal markup. And in Chromium under Playwright,
+`<noscript>` computes `display: inline`, `visibility: visible`, `opacity: 1`
+with a 0x0 rect. `visibleText`'s clip rule needs `overflow: hidden` to fire, so
+nothing catches it.
+
+**Why it matters.** Reviewers are asked to reason about the words a visitor
+reads. On a short page like asana's signup, nearly half of what we called page
+text is tracking markup — and it is exactly the kind of thing a model will
+happily draw a conclusion from.
+
+**Cost.** Small — skip `script`, `style`, `noscript`, `template` and `head` by
+tag in `visibleText`, rather than hoping their computed style gives them away.
+A tag check is a fact; a style check turned out to be a request.
+
+---
+
 ## The deeper problem behind B3
 
 Two of the seventeen findings were false, and neither was a wrong fact:
