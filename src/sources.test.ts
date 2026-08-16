@@ -1,7 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { SOURCES, sourceById, sourcesFor, resolveCitation } from "./sources.js";
-import { applyResearch } from "./agents/researcher.js";
+import { applyResearch, tokenBudget } from "./agents/researcher.js";
 import { Finding } from "./types.js";
 import { ALL_RUBRICS } from "./agents/rubrics.js";
 
@@ -183,6 +183,54 @@ describe("applyResearch: what a drifting model cannot achieve", () => {
     const { citation: _a, ...restAfter } = findings[0]!;
     const { citation: _b, ...restBefore } = before;
     assert.deepEqual(restAfter, restBefore, "everything but the citation is identical");
+  });
+});
+
+/**
+ * The output budget, which failed a live audit by being a constant.
+ *
+ * `max_tokens: 4000` fit 12 findings (3581 output tokens) and 13 (3372), then
+ * a 14-finding audit was cut mid-string and the whole research step died on
+ * unterminated JSON. Measured worst case is 298 output tokens per finding, so
+ * these assert real headroom over the numbers `model_calls` actually recorded
+ * rather than over a guess.
+ */
+describe("the research token budget scales with the work", () => {
+  test("the audit that broke it now has room to spare", () => {
+    // 14 findings at the observed worst case is ~4172 tokens.
+    assert.ok(
+      tokenBudget(14) > 4172 * 2,
+      `14 findings got ${tokenBudget(14)} tokens, which is not enough headroom`,
+    );
+  });
+
+  test("every size we have actually run clears its recorded usage", () => {
+    for (const [count, recorded] of [
+      [12, 3581],
+      [13, 3372],
+    ] as const) {
+      assert.ok(
+        tokenBudget(count) > recorded * 1.5,
+        `${count} findings used ${recorded} tokens and would get ${tokenBudget(count)}`,
+      );
+    }
+  });
+
+  test("a tiny audit still gets room for a thinking block", () => {
+    // The slope must not starve the floor — one finding is not one finding's
+    // worth of tokens, because adaptive thinking is charged to the same budget.
+    assert.ok(tokenBudget(1) >= 2000);
+    assert.ok(tokenBudget(0) >= 2000);
+  });
+
+  test("it is bounded, so a runaway finding count cannot ask for the moon", () => {
+    assert.equal(tokenBudget(10_000), 32_000);
+  });
+
+  test("more findings never means fewer tokens", () => {
+    for (let n = 1; n < 60; n++) {
+      assert.ok(tokenBudget(n) >= tokenBudget(n - 1), `budget dipped at ${n}`);
+    }
   });
 });
 

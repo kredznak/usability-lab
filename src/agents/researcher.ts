@@ -87,6 +87,26 @@ function outputSchema(sources: Source[]) {
   });
 }
 
+/**
+ * Output budget, derived from the work rather than fixed.
+ *
+ * This was `max_tokens: 4000` and it broke a live audit on 2026-08-16. Every
+ * finding costs one citation object — a finding id, a source id, and a `why`
+ * sentence — plus adaptive thinking, and `model_calls` puts the real figure at
+ * 259-298 output tokens per finding (12 findings -> 3581, 13 -> 3372). A
+ * fourteen-finding audit crossed 4000 and the response was cut mid-string, so
+ * the whole step failed on unterminated JSON and shipped 14 uncited findings.
+ *
+ * The floor matters as much as the slope: a two-finding audit still has to fit
+ * a thinking block. The ceiling is a runaway guard, not a target.
+ *
+ * Generous on purpose. Billing is on tokens produced, not tokens allowed, so
+ * headroom is free and truncation costs an entire step.
+ */
+export function tokenBudget(findingCount: number): number {
+  return Math.min(32_000, 2_000 + findingCount * 800);
+}
+
 export interface ResearchResult {
   /** Findings with citations attached. Same objects, same order, same text. */
   findings: Finding[];
@@ -146,7 +166,7 @@ export async function runResearcher(
   try {
     const response = await client.messages.parse({
       model: MODEL,
-      max_tokens: 4000,
+      max_tokens: tokenBudget(findings.length),
       thinking: { type: "adaptive" },
       output_config: { effort: "high", format: zodOutputFormat(outputSchema(shortlist)) },
       system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
