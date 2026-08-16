@@ -258,6 +258,84 @@ fact with a wrong conclusion.
 
 ---
 
+## B11. The quote check has never caught a fabrication, and has flagged five true findings
+
+**Found while verifying B10**, 2026-08-16, by reading every flag it has ever
+raised rather than trusting the count.
+
+`claims.ts` asserts that quoted text appears in the page text. It exists to
+catch the worst thing this product can publish: a finding that puts words in a
+page's mouth. Across 186 corpus findings it has raised **five** flags. **All
+five are false positives**, each by a different mechanism:
+
+| audit | quoted | why the flag is wrong |
+|---|---|---|
+| gov.uk | `"Includes X, Y, Z"` | an *abstraction* of the real pattern, not a quotation |
+| cotopaxi | `"United States"` | quoted precisely because it is **absent** from a list |
+| basecamp | `"Reserve a seat"` | a *hypothetical* — what a better label could say |
+| asana | `"Create Account"` | the page **title**, which nothing can quote (B6) |
+| basecamp | `"You're juggling…This all has to happen somewhere."` | an **elided** quote; every fragment is on the page, the string as written is not contiguous |
+
+**Two readings, and they are not the same.** Either reviewers do not fabricate
+quotes — in which case the check is a deterrent doing its job and its precision
+is beside the point — or it cannot detect fabrication and the flags are noise.
+What is certain either way: its current precision is **0/5**, and every flag
+becomes a `contradicted` row that drags on the precision metric and routes a
+correct finding to a human for adjudication it does not need.
+
+**What a fix would have to distinguish.** A quotation *of* the page from: an
+illustration, a counterfactual, an absence, a title, and an elision. Four of
+those five are signalled in the sentence around the quote ("such as", "no label
+like", "does not list"), which is a judgement about language rather than a
+string comparison — so the honest options are to narrow the check hard (skip any
+quote preceded by such-as/like/e.g., skip anything containing an ellipsis) or to
+downgrade the verdict from `contradicted` to `unverifiable` and stop treating a
+missing quote as proof of anything.
+
+**Cost.** Small either way. **What it distorts until fixed:** precision reads
+low by roughly five findings, and the review queue carries five items that need
+no review. Related: B6, B10.
+
+---
+
+## B12. The image cache does not work, because caching matches prefixes
+
+**Measured 2026-08-16**, immediately after shipping screenshots to reviewers.
+
+Sending the page to reviewers cost **+$0.188 per audit (+40%)**, against the
+~$0.10 estimated in the plan. The estimate assumed the images would be written
+to the cache once and read by the remaining reviewers. `model_calls` says
+otherwise — for the same basecamp page:
+
+    heuristics       cache_write 17177   cache_read 0
+    copy             cache_write 17238   cache_read 0
+    conversion-cta   cache_write 14823   cache_read 2416
+
+Every reviewer **writes** the images; none reads them. The 2416 tokens that were
+read are `SHARED_RULES` alone.
+
+**Why.** Prompt caching matches on a *prefix* of the whole request. Our system
+array is `[SHARED_RULES, rubric.lane]`, so the prefix diverges at the lane block
+— and everything after it, including the images in the user message, is a
+different prefix for every agent. The cache breakpoint on the user content is
+working exactly as designed and buying nothing, because no two reviewers ever
+share that prefix. `rubrics.ts` documents the ordering that makes SHARED_RULES
+cacheable; the same reasoning was not carried through to the images.
+
+**The fix, and its cost.** Move `rubric.lane` out of `system` and into the user
+message *after* the page content. The prefix becomes shared rules → images and
+capture (identical for all reviewers, cached once) → lane (differs). That should
+take the image cost from roughly 3.75x base to 1.45x.
+
+**The trade-off, which is why this is not already done.** It puts our
+instructions *after* untrusted page content. Today every instruction precedes
+every byte of third-party data, which is the cleanest possible arrangement
+against prompt injection. Moving the lane block below the capture weakens that
+ordering to save about $0.11 an audit. **Not obviously worth it**, and not a
+call to make while measuring a different change.
+
+---
+
 ## The deeper problem behind B3
 
 Two of the seventeen findings were false, and neither was a wrong fact:
