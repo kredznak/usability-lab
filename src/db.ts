@@ -200,6 +200,21 @@ export class AuditStore {
       .all(`${prefix}%`) as AuditRow[];
   }
 
+  /**
+   * Which reviewer lanes actually ran on an audit.
+   *
+   * Read from `model_calls` rather than from the findings, because a lane that
+   * ran and found nothing is still a lane that ran — and a re-audit pinned to
+   * the findings would quietly stop sending it. `agent` also carries merged
+   * lane names like `copy+heuristics` on findings; the call log does not.
+   */
+  lanesOf(auditId: string, known: readonly string[]): string[] {
+    const rows = this.db
+      .prepare(`SELECT DISTINCT agent FROM model_calls WHERE audit_id = ? AND ok = 1`)
+      .all(auditId) as { agent: string }[];
+    return rows.map((r) => r.agent).filter((a) => known.includes(a));
+  }
+
   list(status?: AuditStatus): AuditRow[] {
     return (
       status

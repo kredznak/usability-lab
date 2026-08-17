@@ -5,6 +5,7 @@ import path from "node:path";
 import { Capture } from "../types.js";
 import { deriveSignals } from "../signals.js";
 import { decideSpawnSet, SPAWN_CAP } from "./rules.js";
+import { orchestrate } from "./index.js";
 import { ContextProfile, type Concern, type Goal, type SiteKind } from "../profile.js";
 
 /**
@@ -306,5 +307,69 @@ describe("trajectory: invariants hold for every fixture and profile", () => {
       });
       assert.deepEqual(decideSpawnSet(p, signals), decideSpawnSet(p, signals), name);
     }
+  });
+});
+
+/**
+ * Pinning — the prerequisite for a finding diff.
+ *
+ * Measured 2026-08-17: duolingo audited twice, two hours apart, on identical
+ * prompt versions. The first run drew heuristics + visual-hierarchy; the second
+ * drew those plus copy. Ten of the second run's twelve findings came from the
+ * lane that had not run before, so a diff would have called every one of them
+ * new. Matching findings cannot recover a reviewer that was never sent.
+ */
+describe("a re-audit reuses the baseline's reviewers", () => {
+  const signals = deriveSignals(load("checkout"));
+  const p = profile({ site_kind: "ecommerce", concerns: ["conversion"], goal: "purchase" });
+  const client = null as unknown as Parameters<typeof orchestrate>[0];
+  const log = { record: () => {} } as unknown as Parameters<typeof orchestrate>[4];
+
+  test("the pinned lanes are what gets spawned, whatever the rules say", async () => {
+    const pinned = ["heuristics", "copy"];
+    const plan = await orchestrate(client, p, signals, "audit-1", log, {
+      auditId: "baseline-0",
+      lanes: pinned,
+    });
+    assert.deepEqual(plan.spawn, pinned);
+  });
+
+  test("no model is called, so a pin cannot be overridden or cost anything", async () => {
+    // `client` is null: any attempt to reach the API throws rather than
+    // silently succeeding against a mock that agrees with us.
+    const plan = await orchestrate(client, p, signals, "audit-1", log, {
+      auditId: "baseline-0",
+      lanes: ["heuristics"],
+    });
+    assert.equal(plan.costUsd, 0);
+  });
+
+  test("drift from the rules is recorded, not hidden", async () => {
+    const rules = decideSpawnSet(p, signals);
+    const plan = await orchestrate(client, p, signals, "audit-1", log, {
+      auditId: "baseline-0",
+      lanes: ["heuristics"],
+    });
+    for (const dropped of rules.spawn.filter((a) => a !== "heuristics")) {
+      assert.match(
+        plan.rationale,
+        new RegExp(`\\+${dropped}`),
+        `the rules would now send ${dropped}; the rationale must say so`,
+      );
+    }
+  });
+
+  test("an empty pin falls through to the rules, never to no reviewers", async () => {
+    // A baseline whose lanes we failed to resolve must not silently audit a
+    // page with nobody looking at it. The model call fails here (null client)
+    // and `orchestrate` degrades to the rule-derived set, which is the
+    // pre-existing contract — so the empty pin lands on the safe path.
+    const plan = await orchestrate(client, p, signals, "audit-1", log, {
+      auditId: "baseline-0",
+      lanes: [],
+    });
+    assert.deepEqual(plan.spawn, decideSpawnSet(p, signals).spawn);
+    assert.ok(plan.spawn.length > 0);
+    assert.ok(plan.spawn.includes("heuristics"), "heuristics is the baseline review on every audit");
   });
 });

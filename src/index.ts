@@ -7,7 +7,7 @@ import path from "node:path";
 import { capture, CaptureFailed } from "./capture.js";
 import { runSubAgent } from "./agents/runner.js";
 import { pageTiles } from "./agents/tiles.js";
-import { rubricFor } from "./agents/rubrics.js";
+import { rubricFor, RUBRICS } from "./agents/rubrics.js";
 import { runProfiler } from "./agents/profiler.js";
 import { runSynthesizer, identify } from "./agents/synthesizer.js";
 import { runResearcher } from "./agents/researcher.js";
@@ -117,7 +117,9 @@ const EMPTY_PROFILE: ContextProfile = {
 async function main(): Promise<void> {
   const url = process.argv[2];
   if (!url || url.startsWith("--")) {
-    console.error("usage: npm run audit -- <url> [--answers answers.json]");
+    console.error(
+      "usage: npm run audit -- <url> [--answers answers.json] [--pin-to <audit-id>]",
+    );
     process.exit(2);
   }
   try {
@@ -152,6 +154,34 @@ async function main(): Promise<void> {
   audits.create(auditId, url);
 
   /**
+   * `--pin-to <audit>` reuses that audit's reviewer lanes instead of deciding
+   * fresh ones. See the note on `orchestrate`: two runs of the same page on the
+   * same prompts drew two different lane sets, and a diff cannot tell "this is
+   * new" from "nobody looked last time".
+   *
+   * Resolved before the run so an unknown id fails immediately, rather than
+   * after a capture and a profile call have been paid for.
+   */
+  const pinFlag = process.argv.indexOf("--pin-to");
+  let pinnedTo: { auditId: string; lanes: string[] } | undefined;
+  if (pinFlag !== -1) {
+    const prefix = process.argv[pinFlag + 1];
+    const matches = prefix ? audits.find(prefix) : [];
+    if (matches.length !== 1) {
+      console.error(
+        `--pin-to "${prefix ?? ""}" matched ${matches.length} audits; need exactly one.`,
+      );
+      process.exit(2);
+    }
+    const lanes = audits.lanesOf(matches[0]!.audit_id, Object.keys(RUBRICS));
+    if (lanes.length === 0) {
+      console.error(`${matches[0]!.audit_id.slice(0, 8)} ran no reviewers; nothing to pin to.`);
+      process.exit(2);
+    }
+    pinnedTo = { auditId: matches[0]!.audit_id, lanes };
+  }
+
+  /**
    * Status is bookkeeping; the audit is the work. If the state machine refuses
    * an edge we want to hear about it loudly, but not by losing a $0.50 run that
    * already produced findings — so a failed transition is reported and the
@@ -181,7 +211,7 @@ async function main(): Promise<void> {
       : EMPTY_PROFILE;
 
     const plan = await timed("orchestrate", timings, () =>
-      orchestrate(client, profile, signals, auditId, log),
+      orchestrate(client, profile, signals, auditId, log, pinnedTo),
     );
     if (plan.override_rejected) degraded.push(`orchestrator: ${plan.override_rejected}`);
 

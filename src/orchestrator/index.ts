@@ -112,9 +112,46 @@ export async function orchestrate(
   signals: CaptureSignals,
   auditId: string,
   log: CallLog,
+  /**
+   * Lanes to reuse from a baseline audit, for a re-audit — §1's finding diffs.
+   *
+   * Measured 2026-08-17: the same page, audited twice two hours apart on
+   * identical prompt versions, was reviewed by two lanes the first time and
+   * three the second. Ten of the second run's twelve findings came from the
+   * lane that had not run before, so a diff would have called them all new.
+   * **Nothing about matching findings can recover a reviewer that was never
+   * sent.** A diff compares two answers to the same question; re-deriving the
+   * spawn set asks a different question.
+   *
+   * So a re-audit reuses the baseline's lanes and does not call the model at
+   * all. The rules still run, and what they *would* have chosen is recorded
+   * rather than discarded — a pin that has drifted from the rules is a fact
+   * about the site worth seeing, not something to hide.
+   */
+  pinnedTo?: { auditId: string; lanes: string[] },
 ): Promise<OrchestrationResult> {
   const base = decideSpawnSet(profile, signals);
   const started = Date.now();
+
+  if (pinnedTo && pinnedTo.lanes.length > 0) {
+    const drifted = [
+      ...base.spawn.filter((a) => !pinnedTo.lanes.includes(a)).map((a) => `+${a}`),
+      ...pinnedTo.lanes.filter((a) => !base.spawn.includes(a)).map((a) => `-${a}`),
+    ];
+    return {
+      ...base,
+      spawn: pinnedTo.lanes,
+      rationale:
+        `Pinned to ${pinnedTo.auditId.slice(0, 8)} so the diff compares like with like. ` +
+        (drifted.length > 0
+          ? `The rules would now choose a different set (${drifted.join(", ")}), which is ` +
+            `recorded and not acted on.`
+          : `The rules would choose the same set.`),
+      override_rejected: null,
+      latencyMs: Date.now() - started,
+      costUsd: 0,
+    };
+  }
 
   const fallback = (rationale: string, rejected: string | null, cost = 0): OrchestrationResult => ({
     ...base,
