@@ -385,12 +385,63 @@ out of three, and both were kept at the gate after being flagged — so the corp
 now carries them as true and useful. Precision reads 94.3% and the honest
 number is 93.1%.
 
+**Verified 2026-08-17, and the first attempt was wrong.** Reading
+`style.position` off each element recorded position on **zero** elements of
+duolingo — its header is a `position: static` <nav> inside a `position: fixed`
+<div>, and the <div> is not in the capture selector. The opacity bug's exact
+shape, four days later, with green tests because the fixture had been written to
+match the implementation. `pinnedBy` walks the chain (`f8e0cf9`); the live page
+now returns 3 of 98 elements pinned.
+
+**The reviewer half is still unproven.** Two audits since — one without the data
+and one with — and neither reproduced the false claim. That means the fix has
+not been contradicted; it does not mean it was used. No finding in either run
+mentions the fixed header at all. **Absence of the bug in two runs is not
+evidence the data changed anything**, and the honest next step is the third fix
+below, not a claim of success.
+
 **What the fixes do not do.** Neither one has been seen working on a live page.
 The tests prove the capture records `position: fixed` and the request carries
 the date; nothing yet proves a reviewer *uses* either, and the failure mode was
 never that the data was wrong — it was that a reviewer filled a gap with
 confidence. The next audit on a page with a fixed header is the evidence. Until
 then this is a fix by construction, not by measurement.
+
+---
+
+## B14. One synthesizer call took 27 minutes and reported success
+
+**2026-08-17**, the second B13 verification run on duolingo (`58c9cfe5`).
+
+    capture     38.1s
+    review     106.5s
+    synthesize  1618.6s   <- 27 minutes
+    research    29.1s
+    total       1799.9s   $0.6460
+
+`model_calls` logged it `ok=1`, 4334 output tokens, one row. Every other
+synthesizer call we have ever made:
+
+    8226 / 40489 / 24071 / 36143 / 34559 ms
+
+**The number is suspiciously structured.** 1618.6s is close to 3 x 540s, and
+the SDK's default non-streaming timeout for `max_tokens: 8000` is 600s with two
+retries. **Hypothesis: the call timed out twice and succeeded on the third
+attempt**, and we paid for three generations while `model_calls` recorded one.
+Unverified — the retries happen inside the SDK and leave no row of their own.
+
+**Why it matters beyond the money.** The definition of done says under 8
+minutes. This run took thirty. Nothing in the pipeline has a wall-clock budget,
+so a step that hangs takes the audit with it and still reports success. F9 is
+the timeout family in §7 and is in v0's list; this is the case it exists for and
+the case it does not currently cover.
+
+**Before fixing, measure.** One occurrence, one hypothesis, no proof. The cheap
+probe is to log `_request_id` and attempt count, or set an explicit
+`maxRetries: 0` on the synthesizer once and see whether a 9-minute failure
+replaces the 27-minute success. Streaming the synthesizer would sidestep the
+timeout entirely — the SDK recommends it for long outputs — but that is a change
+to make on evidence, not on a single slow run.
 
 ---
 
