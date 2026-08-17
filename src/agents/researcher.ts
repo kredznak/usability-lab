@@ -88,24 +88,35 @@ function outputSchema(sources: Source[]) {
 }
 
 /**
- * Output budget, derived from the work rather than fixed.
+ * Output budget — a flat ceiling, because the thing it has to cover does not
+ * scale with anything we can see.
  *
- * This was `max_tokens: 4000` and it broke a live audit on 2026-08-16. Every
- * finding costs one citation object — a finding id, a source id, and a `why`
- * sentence — plus adaptive thinking, and `model_calls` puts the real figure at
- * 259-298 output tokens per finding (12 findings -> 3581, 13 -> 3372). A
- * fourteen-finding audit crossed 4000 and the response was cut mid-string, so
- * the whole step failed on unterminated JSON and shipped 14 uncited findings.
+ * This was `max_tokens: 4000`, which broke a 14-finding audit on 2026-08-16. It
+ * then became `2000 + 800 * findings`, indexed on the idea that output grows
+ * with the number of citations to write. On 2026-08-17 an *8*-finding audit
+ * (duolingo) truncated against that formula's 8400 — half the findings of the
+ * original failure, twice the budget, same death.
  *
- * The floor matters as much as the slope: a two-finding audit still has to fit
- * a thinking block. The ceiling is a runaway guard, not a target.
+ * Measured, four calls on that exact request with the ceiling opened to 32k:
  *
- * Generous on purpose. Billing is on tokens produced, not tokens allowed, so
- * headroom is free and truncation costs an entire step.
+ *     2308 / 4615 / 2468 output tokens, identical input, 2x spread
+ *     run 2 billed 4615 tokens for an answer of ~670 tokens of JSON
+ *
+ * So ~85% of what this call costs is produced and never returned — adaptive
+ * thinking, charged to the same budget and invisible in `content`. It varies
+ * 2x between identical requests and does not move with finding count. A formula
+ * over findings is a formula over the wrong variable, so there is no formula.
+ *
+ * The number is bounded by the SDK, not by us. `calculateNonstreamingTimeout`
+ * refuses any non-streaming request whose `max_tokens` implies over ten minutes
+ * — the cutoff is 21,334 — and the old ceiling of 32,000 was above it. At 25
+ * findings the runaway guard would have thrown client-side and killed the step
+ * before a request was sent. `sources.test.ts` asks the SDK itself rather than
+ * copying its arithmetic.
+ *
+ * Headroom is free: billing is on tokens produced, not tokens allowed.
  */
-export function tokenBudget(findingCount: number): number {
-  return Math.min(32_000, 2_000 + findingCount * 800);
-}
+export const RESEARCH_MAX_TOKENS = 20_000;
 
 export interface ResearchResult {
   /** Findings with citations attached. Same objects, same order, same text. */
@@ -163,12 +174,27 @@ export async function runResearcher(
   const shortlist = sourcesFor(lenses);
   if (shortlist.length === 0) return uncited(findings, "no sources match this audit's lenses", started, 0);
 
+  const schema = outputSchema(shortlist);
+
   try {
-    const response = await client.messages.parse({
+    /**
+     * `create`, not `parse`, and the difference is diagnosis.
+     *
+     * `messages.parse()` is `create().then(parseMessage)`, and `parseMessage`
+     * throws on malformed JSON. The usage figures are on the response object
+     * that throw discards — so when duolingo's research died mid-string, the
+     * row it wrote to `model_calls` read 0 input, 0 output. The one call we
+     * most needed to read recorded nothing about itself.
+     *
+     * Parsing here instead means the response is logged before anything can go
+     * wrong with its contents, and `stop_reason` — which says outright whether
+     * we hit the ceiling — is read rather than inferred from a JSON error.
+     */
+    const response = await client.messages.create({
       model: MODEL,
-      max_tokens: tokenBudget(findings.length),
+      max_tokens: RESEARCH_MAX_TOKENS,
       thinking: { type: "adaptive" },
-      output_config: { effort: "high", format: zodOutputFormat(outputSchema(shortlist)) },
+      output_config: { effort: "high", format: zodOutputFormat(schema) },
       system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
       messages: [{ role: "user", content: render(findings, shortlist) }],
     });
@@ -196,12 +222,37 @@ export async function runResearcher(
     if (response.stop_reason === "refusal") {
       return uncited(findings, `model refused: ${response.stop_details?.category}`, started, costUsd);
     }
-    if (!response.parsed_output) {
+    // Named, not inferred. Truncation used to reach us as "Unterminated string
+    // in JSON at position 1616", which describes the symptom and hides the
+    // cause; the API says plainly that it ran out of room.
+    if (response.stop_reason === "max_tokens") {
+      return uncited(
+        findings,
+        `output hit the ${RESEARCH_MAX_TOKENS}-token ceiling (${response.usage.output_tokens} produced)`,
+        started,
+        costUsd,
+      );
+    }
+
+    const text = response.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("");
+
+    const parsed = ((): z.infer<typeof schema> | null => {
+      try {
+        return schema.parse(JSON.parse(text));
+      } catch {
+        return null;
+      }
+    })();
+
+    if (!parsed) {
       return uncited(findings, "no schema-valid output", started, costUsd);
     }
 
     return {
-      ...applyResearch(findings, response.parsed_output.citations, shortlist),
+      ...applyResearch(findings, parsed.citations, shortlist),
       latencyMs: Date.now() - started,
       costUsd,
     };

@@ -1,7 +1,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { SOURCES, sourceById, sourcesFor, resolveCitation } from "./sources.js";
-import { applyResearch, tokenBudget } from "./agents/researcher.js";
+import Anthropic from "@anthropic-ai/sdk";
+import { applyResearch, RESEARCH_MAX_TOKENS } from "./agents/researcher.js";
 import { Finding } from "./types.js";
 import { ALL_RUBRICS } from "./agents/rubrics.js";
 
@@ -187,50 +188,50 @@ describe("applyResearch: what a drifting model cannot achieve", () => {
 });
 
 /**
- * The output budget, which failed a live audit by being a constant.
+ * The output budget, which has now failed a live audit twice.
  *
- * `max_tokens: 4000` fit 12 findings (3581 output tokens) and 13 (3372), then
- * a 14-finding audit was cut mid-string and the whole research step died on
- * unterminated JSON. Measured worst case is 298 output tokens per finding, so
- * these assert real headroom over the numbers `model_calls` actually recorded
- * rather than over a guess.
+ * `max_tokens: 4000` fit 12 findings (3581 output tokens) and 13 (3372), then a
+ * 14-finding audit was cut mid-string. The replacement scaled with finding
+ * count — and an *8*-finding audit truncated against its 8400, on twice the
+ * budget and half the findings. Measured on that request with the ceiling
+ * opened: 2308 / 4615 / 2468 tokens for identical input, where run 2 billed
+ * 4615 for roughly 670 tokens of returned JSON. What this budget mostly buys is
+ * invisible and varies 2x, so it is a flat number, and these assert the two
+ * things that are actually true of it.
  */
-describe("the research token budget scales with the work", () => {
-  test("the audit that broke it now has room to spare", () => {
-    // 14 findings at the observed worst case is ~4172 tokens.
-    assert.ok(
-      tokenBudget(14) > 4172 * 2,
-      `14 findings got ${tokenBudget(14)} tokens, which is not enough headroom`,
-    );
-  });
-
-  test("every size we have actually run clears its recorded usage", () => {
-    for (const [count, recorded] of [
-      [12, 3581],
-      [13, 3372],
-    ] as const) {
+describe("the research output ceiling", () => {
+  test("it clears every usage we have ever recorded, with room over the worst", () => {
+    // 12 and 13 from model_calls; 4615 is the measured high on 8 findings.
+    for (const recorded of [3581, 3372, 4615]) {
       assert.ok(
-        tokenBudget(count) > recorded * 1.5,
-        `${count} findings used ${recorded} tokens and would get ${tokenBudget(count)}`,
+        RESEARCH_MAX_TOKENS > recorded * 3,
+        `${recorded} tokens were produced and the ceiling is ${RESEARCH_MAX_TOKENS}`,
       );
     }
   });
 
-  test("a tiny audit still gets room for a thinking block", () => {
-    // The slope must not starve the floor — one finding is not one finding's
-    // worth of tokens, because adaptive thinking is charged to the same budget.
-    assert.ok(tokenBudget(1) >= 2000);
-    assert.ok(tokenBudget(0) >= 2000);
+  /**
+   * The upper bound is the SDK's, so the SDK is what gets asked.
+   *
+   * `calculateNonstreamingTimeout` throws for any non-streaming request whose
+   * max_tokens implies over ten minutes. The previous ceiling of 32,000 was
+   * past it: a 25-finding audit would have thrown client-side, before a request
+   * was sent, and lost the step to the guard meant to protect it. Copying the
+   * threshold into this file would leave us pinned to arithmetic that can
+   * change under us on an SDK bump.
+   */
+  test("the ceiling is one the SDK will actually send without streaming", () => {
+    const client = new Anthropic({ apiKey: "test-key-not-used" });
+    assert.doesNotThrow(() => client.calculateNonstreamingTimeout(RESEARCH_MAX_TOKENS));
   });
 
-  test("it is bounded, so a runaway finding count cannot ask for the moon", () => {
-    assert.equal(tokenBudget(10_000), 32_000);
-  });
-
-  test("more findings never means fewer tokens", () => {
-    for (let n = 1; n < 60; n++) {
-      assert.ok(tokenBudget(n) >= tokenBudget(n - 1), `budget dipped at ${n}`);
-    }
+  test("and that check has teeth — the ceiling we replaced does throw", () => {
+    const client = new Anthropic({ apiKey: "test-key-not-used" });
+    assert.throws(
+      () => client.calculateNonstreamingTimeout(32_000),
+      /Streaming is required/,
+      "if this stops throwing, the limit moved and the comment above is stale",
+    );
   });
 });
 

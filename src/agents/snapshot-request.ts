@@ -36,14 +36,15 @@ class Captured extends Error {
  * the holder, snapshotting one of those would report "never called the model".
  */
 export function recordingClient(seen: { request?: unknown } = {}): Anthropic {
-  return {
-    messages: {
-      parse: async (request: unknown) => {
-        seen.request = request;
-        throw new Captured(request);
-      },
-    },
-  } as unknown as Anthropic;
+  // Both entry points, because agents legitimately use both: `parse` where the
+  // SDK's own validation is wanted, `create` where the response has to be read
+  // before anything can throw over its contents (see researcher.ts). Recording
+  // only one made a real request look like no request at all.
+  const record = async (request: unknown) => {
+    seen.request = request;
+    throw new Captured(request);
+  };
+  return { messages: { parse: record, create: record } } as unknown as Anthropic;
 }
 
 /** A CallLog that swallows the failure row the agent writes on its way out. */
@@ -63,7 +64,7 @@ export async function requestFor(
     throw err;
   }
   if (seen.request !== undefined) return seen.request;
-  throw new Error("agent returned without calling messages.parse");
+  throw new Error("agent returned without calling the model");
 }
 
 export function loadCapture(name: string): Capture {

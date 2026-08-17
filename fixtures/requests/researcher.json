@@ -1,6 +1,6 @@
 {
   "model": "claude-sonnet-5",
-  "max_tokens": 3600,
+  "max_tokens": 20000,
   "thinking": {
     "type": "adaptive"
   },
