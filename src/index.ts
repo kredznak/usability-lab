@@ -18,6 +18,7 @@ import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
 import { CallLog, AuditStore, type AuditStatus } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
+import { countingFetch } from "./http.js";
 import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
 import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
 
@@ -198,7 +199,10 @@ async function main(): Promise<void> {
   console.error(`\naudit ${auditId}\n${url}\n`);
 
   try {
-    const client = new Anthropic();
+    // The counting fetch is the only reason B14 will explain itself next time:
+    // SDK retries are invisible from the outside, and a step that silently
+    // tried three times looks exactly like one slow call.
+    const client = new Anthropic({ fetch: countingFetch() });
 
     setStatus("CAPTURING");
     const captured = await timed("capture", timings, () => capture(url, auditId, outDir));

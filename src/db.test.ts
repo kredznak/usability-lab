@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { AuditStore, IllegalTransition, type AuditStatus } from "./db.js";
+import Database from "better-sqlite3";
+import { AuditStore, CallLog, IllegalTransition, type AuditStatus } from "./db.js";
 
 /**
  * The state machine is the whole point of the review gate, so the test that
@@ -127,5 +128,72 @@ describe("audits: the state machine", () => {
       assert.equal(s.find("1e6d5d13")[0]?.url, "https://allbirds.com");
       assert.equal(s.find("zzzz").length, 0);
     });
+  });
+});
+
+/**
+ * B14's column, and the migration that has to come with it.
+ *
+ * `CREATE TABLE IF NOT EXISTS` does nothing to a table that already exists, so
+ * shipping a new column without an ALTER means every insert fails against the
+ * database we have been writing to all week — the one holding every audit and
+ * every cost row this project has produced.
+ */
+describe("model_calls records how many HTTP attempts a call took", () => {
+  test("a database created before the column gains it, keeping its rows", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-attempts-"));
+    const file = path.join(dir, "old.db");
+
+    const old = new Database(file);
+    old.exec(`
+      CREATE TABLE model_calls (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        audit_id TEXT NOT NULL, agent TEXT NOT NULL, model TEXT NOT NULL,
+        prompt_version TEXT NOT NULL, input_tokens INTEGER NOT NULL,
+        output_tokens INTEGER NOT NULL, cache_read_tokens INTEGER NOT NULL DEFAULT 0,
+        cache_write_tokens INTEGER NOT NULL DEFAULT 0, latency_ms INTEGER NOT NULL,
+        cost_usd REAL NOT NULL, ok INTEGER NOT NULL, error TEXT,
+        created_at TEXT NOT NULL
+      );
+      INSERT INTO model_calls VALUES
+        (1,'a1','synthesizer','claude-opus-5','synthesizer-v2',10,20,0,0,1618602,0.14,1,NULL,'2026-08-17');
+    `);
+    old.close();
+
+    const log = new CallLog(file);
+    log.record({
+      audit_id: "a2", agent: "researcher", model: "claude-sonnet-5",
+      prompt_version: "researcher-v1", input_tokens: 1, output_tokens: 2,
+      cache_read_tokens: 0, cache_write_tokens: 0, latency_ms: 3, cost_usd: 0.01,
+      ok: true, error: null, attempts: 3,
+    });
+    log.close();
+
+    const check = new Database(file);
+    const rows = check.prepare(`SELECT audit_id, attempts FROM model_calls ORDER BY id`).all() as
+      { audit_id: string; attempts: number | null }[];
+    check.close();
+    rmSync(dir, { recursive: true, force: true });
+
+    assert.equal(rows.length, 2, "the pre-existing row must survive the migration");
+    assert.equal(rows[0]!.attempts, null, "a call made before we counted is unknown, not 1");
+    assert.equal(rows[1]!.attempts, 3);
+  });
+
+  test("a call with no count recorded stores null rather than a guess", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-attempts2-"));
+    const log = new CallLog(path.join(dir, "new.db"));
+    log.record({
+      audit_id: "a3", agent: "profiler", model: "claude-haiku-4-5",
+      prompt_version: "profiler-v1", input_tokens: 1, output_tokens: 2,
+      cache_read_tokens: 0, cache_write_tokens: 0, latency_ms: 3, cost_usd: 0.01,
+      ok: true, error: null,
+    });
+    log.close();
+    const check = new Database(path.join(dir, "new.db"));
+    const row = check.prepare(`SELECT attempts FROM model_calls`).get() as { attempts: number | null };
+    check.close();
+    rmSync(dir, { recursive: true, force: true });
+    assert.equal(row.attempts, null);
   });
 });

@@ -4,6 +4,8 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { Finding } from "../types.js";
 import { CallLog, estimateCost } from "../db.js";
 import { SOURCES, sourcesFor, resolveCitation, type Source } from "../sources.js";
+import { counted, attemptsHere } from "../http.js";
+import { BUDGETS } from "../budgets.js";
 
 /**
  * Research — docs/design.md §2, §5. Sonnet.
@@ -190,14 +192,19 @@ export async function runResearcher(
      * wrong with its contents, and `stop_reason` — which says outright whether
      * we hit the ceiling — is read rather than inferred from a JSON error.
      */
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: RESEARCH_MAX_TOKENS,
-      thinking: { type: "adaptive" },
-      output_config: { effort: "high", format: zodOutputFormat(schema) },
-      system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-      messages: [{ role: "user", content: render(findings, shortlist) }],
-    });
+    const { result: response, attempts } = await counted(() =>
+      client.messages.create(
+        {
+          model: MODEL,
+          max_tokens: RESEARCH_MAX_TOKENS,
+          thinking: { type: "adaptive" },
+          output_config: { effort: "high", format: zodOutputFormat(schema) },
+          system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
+          messages: [{ role: "user", content: render(findings, shortlist) }],
+        },
+        BUDGETS.researcher,
+      ),
+    );
 
     const usage = {
       input_tokens: response.usage.input_tokens,
@@ -217,6 +224,7 @@ export async function runResearcher(
       cost_usd: costUsd,
       ok: true,
       error: null,
+      attempts,
     });
 
     if (response.stop_reason === "refusal") {
@@ -270,6 +278,7 @@ export async function runResearcher(
       cost_usd: costUsd,
       ok: false,
       error: err instanceof Error ? err.message : String(err),
+      attempts: attemptsHere(),
     });
     // A research failure costs citations, not the audit. Every finding still
     // ships, honestly uncited — §9.3 makes `none` a legal, unpunished output.

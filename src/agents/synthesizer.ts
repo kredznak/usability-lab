@@ -4,6 +4,8 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { RawFinding } from "../types.js";
 import { CallLog, estimateCost } from "../db.js";
 import { rubricFor } from "./rubrics.js";
+import { counted, attemptsHere } from "../http.js";
+import { BUDGETS } from "../budgets.js";
 
 /**
  * Synthesizer — docs/design.md §2, §3. Frontier (Opus 5).
@@ -193,14 +195,19 @@ export async function runSynthesizer(
   if (findings.length === 0) return passThrough(findings, null, started, 0);
 
   try {
-    const response = await client.messages.parse({
-      model: MODEL,
-      max_tokens: 8000,
-      thinking: { type: "adaptive" },
-      output_config: { effort: "high", format: zodOutputFormat(SynthesisOutput) },
-      system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-      messages: [{ role: "user", content: render(findings, concernSummary) }],
-    });
+    const { result: response, attempts } = await counted(() =>
+      client.messages.parse(
+        {
+          model: MODEL,
+          max_tokens: 8000,
+          thinking: { type: "adaptive" },
+          output_config: { effort: "high", format: zodOutputFormat(SynthesisOutput) },
+          system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
+          messages: [{ role: "user", content: render(findings, concernSummary) }],
+        },
+        BUDGETS.synthesizer,
+      ),
+    );
 
     const usage = {
       input_tokens: response.usage.input_tokens,
@@ -220,6 +227,7 @@ export async function runSynthesizer(
       cost_usd: costUsd,
       ok: true,
       error: null,
+      attempts,
     });
 
     if (response.stop_reason === "refusal") {
@@ -244,6 +252,7 @@ export async function runSynthesizer(
       cost_usd: costUsd,
       ok: false,
       error: err instanceof Error ? err.message : String(err),
+      attempts: attemptsHere(),
     });
     return passThrough(
       findings,

@@ -25,6 +25,13 @@ export interface ModelCallRow {
   cost_usd: number;
   ok: boolean;
   error: string | null;
+  /**
+   * HTTP attempts this call took — B14. 1 is clean; more means the SDK retried
+   * and the token columns beside this describe only the attempt that returned.
+   * Null on a call made outside a `counted()` scope, which is honest: unknown,
+   * not one.
+   */
+  attempts?: number | null;
 }
 
 /**
@@ -288,10 +295,20 @@ export class CallLog {
         cost_usd          REAL    NOT NULL,
         ok                INTEGER NOT NULL,
         error             TEXT,
+        attempts          INTEGER,
         created_at        TEXT    NOT NULL
       );
       CREATE INDEX IF NOT EXISTS idx_model_calls_audit ON model_calls(audit_id);
     `);
+
+    // `CREATE TABLE IF NOT EXISTS` does nothing to a table that already exists,
+    // so a database written before B14 keeps its old shape and every insert
+    // fails on the unknown column. Existing rows get NULL, which is the correct
+    // answer for calls made before anything counted.
+    const columns = this.db.prepare(`PRAGMA table_info(model_calls)`).all() as { name: string }[];
+    if (!columns.some((c) => c.name === "attempts")) {
+      this.db.exec(`ALTER TABLE model_calls ADD COLUMN attempts INTEGER`);
+    }
   }
 
   record(row: ModelCallRow): void {
@@ -299,11 +316,16 @@ export class CallLog {
       .prepare(
         `INSERT INTO model_calls
            (audit_id, agent, model, prompt_version, input_tokens, output_tokens,
-            cache_read_tokens, cache_write_tokens, latency_ms, cost_usd, ok, error, created_at)
+            cache_read_tokens, cache_write_tokens, latency_ms, cost_usd, ok, error, attempts, created_at)
          VALUES (@audit_id, @agent, @model, @prompt_version, @input_tokens, @output_tokens,
-            @cache_read_tokens, @cache_write_tokens, @latency_ms, @cost_usd, @ok, @error, @created_at)`,
+            @cache_read_tokens, @cache_write_tokens, @latency_ms, @cost_usd, @ok, @error, @attempts, @created_at)`,
       )
-      .run({ ...row, ok: row.ok ? 1 : 0, created_at: new Date().toISOString() });
+      .run({
+        ...row,
+        ok: row.ok ? 1 : 0,
+        attempts: row.attempts ?? null,
+        created_at: new Date().toISOString(),
+      });
   }
 
   totalCost(auditId: string): number {

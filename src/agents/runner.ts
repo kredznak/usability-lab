@@ -4,6 +4,8 @@ import { SubAgentOutput, type Capture, type RawFinding } from "../types.js";
 import { CallLog, estimateCost } from "../db.js";
 import { SHARED_RULES, type Rubric } from "./rubrics.js";
 import type { PageTiles } from "./tiles.js";
+import { counted, attemptsHere } from "../http.js";
+import { BUDGETS } from "../budgets.js";
 
 /**
  * The one call every sub-agent makes — docs/design.md §2.
@@ -199,7 +201,9 @@ export async function runSubAgent(
   const started = Date.now();
 
   try {
-    const response = await client.messages.parse(buildRequest(rubric, capture, tiles));
+    const { result: response, attempts } = await counted(() =>
+      client.messages.parse(buildRequest(rubric, capture, tiles), BUDGETS.subAgent),
+    );
 
     const latencyMs = Date.now() - started;
     const usage = {
@@ -220,6 +224,7 @@ export async function runSubAgent(
       cost_usd: costUsd,
       ok: true,
       error: null,
+      attempts,
     });
 
     if (response.stop_reason === "refusal") {
@@ -251,6 +256,7 @@ export async function runSubAgent(
       cost_usd: 0,
       ok: false,
       error: err instanceof Error ? err.message : String(err),
+      attempts: attemptsHere(),
     });
     throw err;
   }
