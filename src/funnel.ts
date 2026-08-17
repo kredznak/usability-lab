@@ -70,6 +70,58 @@ export function stepStats(
     .sort((a, b) => b.p95 - a.p95);
 }
 
+export interface Stage {
+  label: string;
+  n: number;
+  /** Percent of the audits this log actually saw start. Null for the first stage. */
+  pct: number | null;
+}
+
+/**
+ * The funnel, counting audits rather than events.
+ *
+ * It first read `reviewed at the gate 4 — 200% of requested`, which was two
+ * true numbers over each other. `review.decided` fires once per *sitting*, and
+ * both audits were gated twice: once answering "not yet", once publishing. A
+ * funnel stage counts things that got somewhere, not actions taken.
+ *
+ * The denominator has its own trap. Events are not backfilled, so an audit
+ * started before this log existed can still be reviewed after it — arriving at
+ * a later stage without ever entering the first. Those are excluded from the
+ * percentages and reported separately, because silently counting them would
+ * put a stage above 100% again, and silently dropping them would hide work
+ * that happened.
+ */
+export function funnelStages(
+  events: { type: string; audit_id: string | null }[],
+): { stages: Stage[]; outside: number } {
+  const idsFor = (type: string) =>
+    new Set(events.filter((e) => e.type === type && e.audit_id).map((e) => e.audit_id!));
+
+  const requested = idsFor("audit.requested");
+  const stageTypes = [
+    ["completed", "audit.completed"],
+    ["reviewed at the gate", "review.decided"],
+    ["published", "audit.published"],
+  ] as const;
+
+  const outside = new Set<string>();
+  const stages: Stage[] = [{ label: "audit requested", n: requested.size, pct: null }];
+
+  for (const [label, type] of stageTypes) {
+    const ids = idsFor(type);
+    for (const id of ids) if (!requested.has(id)) outside.add(id);
+    const counted = [...ids].filter((id) => requested.has(id)).length;
+    stages.push({
+      label,
+      n: counted,
+      pct: requested.size > 0 ? (counted / requested.size) * 100 : null,
+    });
+  }
+
+  return { stages, outside: outside.size };
+}
+
 const secs = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
 
 function main(): void {
@@ -85,17 +137,14 @@ function main(): void {
   for (const r of rows) byStatus.set(r.status, (byStatus.get(r.status) ?? 0) + 1);
 
   const stats = stepStats(all);
-  const requested = byType.get("audit.requested") ?? 0;
-  const completed = byType.get("audit.completed") ?? 0;
+  const { stages, outside } = funnelStages(all);
   const failed = byType.get("audit.failed") ?? 0;
-  const reviewed = byType.get("review.decided") ?? 0;
-  const published = byType.get("audit.published") ?? 0;
   const reaudits = all.filter((e) => e.type === "reaudit.checked");
   const quiet = reaudits.filter((e) => e.data.quiet === true).length;
 
-  const stage = (label: string, n: number, of: number) =>
-    `  ${label.padEnd(22)} ${String(n).padStart(4)}` +
-    (of > 0 ? `   ${((n / of) * 100).toFixed(0)}% of requested` : "");
+  const stageLine = (s: Stage) =>
+    `  ${s.label.padEnd(22)} ${String(s.n).padStart(4)}` +
+    (s.pct === null ? "" : `   ${s.pct.toFixed(0)}% of requested`);
 
   const lines = [
     ``,
@@ -104,10 +153,11 @@ function main(): void {
       ? `\n  No events yet. The log starts empty and is not backfilled, so audits\n` +
         `  run before this existed are absent — not a quiet week.\n`
       : ``,
-    stage("audit requested", requested, 0),
-    stage("completed", completed, requested),
-    stage("reviewed at the gate", reviewed, requested),
-    stage("published", published, requested),
+    ...stages.map(stageLine),
+    outside > 0
+      ? `\n  ${outside} audit(s) reached a later stage without a recorded start —\n` +
+        `  they began before this log existed, and are left out of the percentages.`
+      : ``,
     ``,
     `  email captured         NOT BUILT`,
     `  subscribed             NOT BUILT`,

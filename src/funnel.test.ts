@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import Database from "better-sqlite3";
 import { EventLog } from "./db.js";
-import { percentile, stepStats } from "./funnel.js";
+import { funnelStages, percentile, stepStats } from "./funnel.js";
 
 /**
  * §0's last unbuilt clause: "every step's events visible in the funnel
@@ -104,5 +104,58 @@ describe("percentiles at the sample sizes we actually have", () => {
 
   test("no runs is zero, not a crash", () => {
     assert.equal(percentile([], 95), 0);
+  });
+});
+
+/**
+ * The funnel counts audits, not actions.
+ *
+ * It shipped reading `reviewed at the gate 4 — 200% of requested`: two true
+ * numbers over each other. `review.decided` fires once per sitting, and both
+ * audits were gated twice — once answering "not yet", once publishing. A
+ * percentage over 100 on the dashboard built to catch wrong numbers is the
+ * same class of error this project spent a week finding in findings.
+ */
+describe("funnel stages count audits that got somewhere", () => {
+  const requested = (id: string) => ({ type: "audit.requested", audit_id: id });
+  const reviewed = (id: string) => ({ type: "review.decided", audit_id: id });
+  const published = (id: string) => ({ type: "audit.published", audit_id: id });
+
+  test("two sittings on one audit are one audit reviewed", () => {
+    const { stages } = funnelStages([requested("a"), reviewed("a"), reviewed("a")]);
+    const gate = stages.find((s) => s.label === "reviewed at the gate")!;
+    assert.equal(gate.n, 1);
+    assert.equal(gate.pct, 100);
+  });
+
+  test("no stage can exceed the audits that started", () => {
+    // The property that failed. Whatever the events say, a funnel that reports
+    // more arrivals than departures is describing two populations at once.
+    const { stages } = funnelStages([
+      requested("a"),
+      reviewed("a"), reviewed("a"), reviewed("b"), reviewed("c"),
+      published("a"), published("b"),
+    ]);
+    for (const s of stages) assert.ok((s.pct ?? 0) <= 100, `${s.label} reported ${s.pct}%`);
+  });
+
+  test("audits that predate the log are disclosed, not counted or hidden", () => {
+    // Events are not backfilled, so an audit started last week can be reviewed
+    // today and arrive at a later stage without ever entering the first.
+    // Counting it breaks the percentage; dropping it silently hides real work.
+    const { stages, outside } = funnelStages([requested("new"), reviewed("new"), reviewed("old")]);
+    assert.equal(outside, 1);
+    assert.equal(stages.find((s) => s.label === "reviewed at the gate")!.n, 1);
+  });
+
+  test("the first stage has no percentage of itself", () => {
+    const { stages } = funnelStages([requested("a")]);
+    assert.equal(stages[0]!.pct, null);
+  });
+
+  test("an empty log is zero stages, not a division by zero", () => {
+    const { stages } = funnelStages([]);
+    assert.equal(stages[0]!.n, 0);
+    for (const s of stages.slice(1)) assert.equal(s.pct, null);
   });
 });
