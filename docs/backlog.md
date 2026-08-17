@@ -445,6 +445,50 @@ to make on evidence, not on a single slow run.
 
 ---
 
+## B15. The audit agrees with itself about a third of the time
+
+**Measured 2026-08-17.** duolingo.com, three runs, same answers, same prompt
+versions, reviewers pinned to the same three lanes, ~$2.11 all in. The page did
+not change between them. This is the noise floor for any finding diff, and it is
+also a fact about the product a customer would notice.
+
+    findings per run          14, 12, 15
+    in all three runs          6 distinct issues
+    in at least one run       17
+    in exactly one run         7   <- 41% of everything said was said once
+
+Best key (`polarity + element text`), pairwise, on a page that did not change:
+
+    run1 v run2    5 fixed / 5 new / 6 unchanged
+    run1 v run3    2 fixed / 2 new / 9 unchanged
+    run2 v run3    4 fixed / 4 new / 7 unchanged
+
+**"3 fixed, 1 new" is inside the noise.** A diff cannot make that claim on one
+run per side, whatever the matching key does.
+
+**Pinning the lanes worked and is worth keeping** (`1c16f94`): the same page
+unpinned gave 7 fixed / 10 new / 2 unchanged, so reusing the baseline's
+reviewers roughly halved the churn. It did not get near zero.
+
+**Where the variance is, and where it is not.** The reviewers produced 23, 23
+and 24 raw findings — remarkably stable. Synthesis then kept 14, 13 and 16, and
+*which* ones it kept moved. So the instability is concentrated in dedupe/rank
+and in wording drift, not in what the reviewers see.
+
+**This is bigger than the diff.** A customer who re-runs an unchanged page gets
+a materially different report, and `precision` is measured over one sample of a
+distribution we have never characterised. Three candidate directions, none
+costed yet:
+
+1. **Weaken the claim** to "no longer reported" and show both lists. Honest,
+   cheap, smaller product.
+2. **Make synthesis reproducible** — it is the step where the variance enters.
+3. **Use repetition as evidence**: run twice, report what recurs, treat
+   recurrence as a confidence input. Doubles cost, and fits "confidence is
+   derived, not declared" better than anything we currently do.
+
+---
+
 ## The deeper problem behind B3
 
 Two of the seventeen findings were false, and neither was a wrong fact:
