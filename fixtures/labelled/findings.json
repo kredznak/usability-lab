@@ -1,6 +1,11 @@
 {
   "built_from": [
     {
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "findings": 13
+    },
+    {
       "audit_id": "1e6d5d13-638e-4d58-8b78-9aad1f68cb72",
       "url": "https://www.allbirds.com/",
       "findings": 17
@@ -76,6 +81,10 @@
       "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
     },
     {
+      "audit_id": "1b66539a-8b3c-439d-a161-1dcf46dec5b4",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
       "audit_id": "205b2f83-eec7-42b0-844e-e2ac272e2d77",
       "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
     },
@@ -84,15 +93,39 @@
       "reason": "FAILED — retired by the state machine, not scored"
     },
     {
+      "audit_id": "3a492228-7f6c-43d0-b29d-86307803a1d9",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
       "audit_id": "4a3e4939-749e-471d-b492-884ca11faa35",
       "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
+      "audit_id": "5112587d-87e7-49b5-804c-a951e3bbc4ad",
+      "reason": "re-audit of 8ae363d2 — monitoring, not eval data"
     },
     {
       "audit_id": "57cface2-4b74-421c-a9d5-d7df65b25e5b",
       "reason": "FAILED — retired by the state machine, not scored"
     },
     {
+      "audit_id": "58c9cfe5-bf97-45bc-9704-e333e4e4d247",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
+      "audit_id": "5f3f9801-41a5-4918-946b-b7a3472cebc5",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
       "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
+      "audit_id": "aabd9441-845e-4e38-ad32-037007646c40",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
+      "audit_id": "c7b05f67-d4ac-471b-8e67-950ea702b20b",
       "reason": "FAILED — retired by the state machine, not scored"
     },
     {
@@ -101,6 +134,10 @@
     },
     {
       "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
+      "audit_id": "d93bdae4-c727-4820-8045-221890381e35",
       "reason": "FAILED — retired by the state machine, not scored"
     },
     {
@@ -117,6 +154,292 @@
     }
   ],
   "findings": [
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f1",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "heuristics",
+      "heuristic": "Consistency and Standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_32",
+      "observation": "The pricing cards near the top of the page label the unit price as 'per member / month' (e.g. '$10 per member / month'), while the 'Plans and features' comparison table further down labels the same prices as 'per seat/month' (e.g. '$10 per seat/month').",
+      "impact_note": "Using two different terms for the same billing unit on one page can make a visitor pause to confirm whether 'member' and 'seat' mean the same thing, adding friction to a price-sensitive decision.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f2",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "conversion-cta+forms",
+      "heuristic": "Consistency of primary action",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The sticky header offers \"Get Notion free\" (el_10) while the pricing cards below use different labels: \"Sign up\" (el_20), \"Get started\" (el_22, el_25), and \"Contact Sales\" (el_27).",
+      "impact_note": "Four different phrasings for what is functionally the same family of decision points can make the page feel like it has several unrelated goals rather than one guided path.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f3",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "conversion-cta",
+      "heuristic": "Cost disclosure timing",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_28",
+      "observation": "The Custom Agents feature card states \"Free to try, then $10 per 1,000 monthly Notion credits\" in a small secondary panel separate from the main pricing cards and their CTAs.",
+      "impact_note": "A recurring usage-based cost sitting away from the primary buy decision can surprise a visitor who commits based on the headline per-seat prices alone.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f4",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "conversion-cta",
+      "heuristic": "Trust before commitment",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_26",
+      "observation": "The Enterprise tier shows \"Custom pricing\" with no numeric anchor, and its only action is \"Contact Sales\" (el_27).",
+      "impact_note": "A visitor evaluating Enterprise has no sense of scale before starting a sales conversation, which can feel like a bigger ask than the other tiers that show a price up front.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f5",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "heuristics",
+      "heuristic": "Aesthetic and Minimalist Design",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "Plan names, prices, short descriptions, and calls to action for Free, Plus, Business, and Enterprise appear twice on the page: once as the four pricing cards near the top, and again as column headers at the start of the long 'Plans and features' table.",
+      "impact_note": "Repeating the same summary information in two formats extends the page and can create a moment of uncertainty about whether the two presentations are meant to differ.",
+      "source_type": "none",
+      "auto": {
+        "status": "unverifiable",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f6",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "conversion-cta+heuristics",
+      "heuristic": "Trust information placement",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_37",
+      "observation": "Refund policy, cancellation steps, and payment-failure handling are only available inside collapsed accordion items under \"Questions & answers\", far below the pricing cards and their CTAs.",
+      "impact_note": "Placing commitment-related reassurance (refunds, cancellation) well after the buy buttons means a cautious visitor may commit, or abandon, without ever seeing it.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f8",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "copy",
+      "heuristic": "Copy - Jargon on First Use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_29",
+      "observation": "The Workers panel text reads: \"Extend Notion with custom code to build agent tools, sync external data, and trigger Notion workflows from anywhere. Free to try now. Starts using credits on October 15.\"",
+      "impact_note": "The date \"October 15\" has no year attached and \"credits\" is used as if already familiar, so a visitor cannot be certain when the change takes effect or exactly what it will cost them.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f9",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "copy",
+      "heuristic": "Copy - Acronym on First Use",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The Enterprise tier lists \"User provisioning (SCIM)\" with no expansion or explanation of the acronym anywhere near it.",
+      "impact_note": "Visitors evaluating Enterprise who are not IT specialists may not know what SCIM does, leaving them unable to judge whether this feature matters to their purchase decision.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f10",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "copy",
+      "heuristic": "Copy - Clarity/Specificity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "The main headline reads \"One tool to run your company.\"",
+      "impact_note": "The claim is broad enough to describe almost any all-in-one work tool; a first-time visitor still does not know what Notion specifically does after reading it, which can delay understanding on the most important line of the page.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f11",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "forms",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The page offers both a \"Request a demo\" link in the top navigation and a \"Contact Sales\" button on the Enterprise card, with no text distinguishing what each leads to.",
+      "impact_note": "Visitors evaluating enterprise options are given two unlabeled paths to what may be the same conversation, which can cause hesitation about which to use.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f7",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "conversion-cta",
+      "heuristic": "Decision support",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_24",
+      "observation": "The Business plan card carries a \"Recommended\" badge next to its heading, distinguishing it from the other three tiers.",
+      "impact_note": "Flagging a suggested option helps reduce choice difficulty across four otherwise similarly-presented plans.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f12",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "heuristics",
+      "heuristic": "Recognition Rather Than Recall",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_33",
+      "observation": "As the visitor scrolls down the long 'Plans and features' comparison table, a condensed header row with the plan names and their 'Sign up' / 'Get started' / 'Contact us' actions (el_33-el_36) stays pinned near the top of the viewport.",
+      "impact_note": "Keeping plan identity and the conversion action visible removes the need to scroll back up to remember which column is which, reducing effort during a long comparison task.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f13",
+      "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
+      "url": "https://www.notion.com/pricing",
+      "agent": "conversion-cta",
+      "heuristic": "Social proof / trust signals",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The page displays recognizable customer logos (OpenAI, Figma, Volvo, Ramp, Cursor) under \"Trusted by teams at\" directly beneath the headline, followed further down by a named testimonial from Nick Erdenberger, GTM at OpenAI.",
+      "impact_note": "Naming a specific person and company alongside a quote gives a visitor a credible reason to trust the product before being asked to choose a plan.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
     {
       "key": "1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f1",
       "audit_id": "1e6d5d13-638e-4d58-8b78-9aad1f68cb72",

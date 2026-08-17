@@ -230,6 +230,32 @@ function retiredAudits(): Map<string, string> {
   return out;
 }
 
+/**
+ * Re-audits, which are excluded from the eval set. Kelly's call, 2026-08-17.
+ *
+ * The eval set should be one page, one vote. A re-audit is a monitoring
+ * artifact: it exists because a customer is watching a page, not because that
+ * page is a good test of the pipeline. Counting them means the metrics drift
+ * toward whichever site gets monitored most — basecamp was already 3 of 9
+ * published audits and 40% of all published findings before anyone chose this.
+ *
+ * The cost, stated because it is real: re-audit findings are still judged by a
+ * person at the gate, and that labour no longer reaches the numbers.
+ */
+function reauditedAudits(): Map<string, string> {
+  const out = new Map<string, string>();
+  try {
+    const store = new AuditStore();
+    for (const row of store.list()) {
+      if (row.baseline_audit_id) out.set(row.audit_id, row.baseline_audit_id);
+    }
+    store.close();
+  } catch {
+    // As above.
+  }
+  return out;
+}
+
 export function buildCorpus(): Corpus {
   // Human labels survive a rebuild; that work is expensive and must not be
   // thrown away because a claim check was refined.
@@ -237,9 +263,19 @@ export function buildCorpus(): Corpus {
 
   const built: Corpus = { built_from: [], skipped: [], findings: [] };
   const retired = retiredAudits();
+  const reaudits = reauditedAudits();
 
   for (const auditId of completedAudits()) {
     const dir = path.join(OUT_ROOT, auditId);
+
+    const baseline = reaudits.get(auditId);
+    if (baseline) {
+      built.skipped.push({
+        audit_id: auditId,
+        reason: `re-audit of ${baseline.slice(0, 8)} — monitoring, not eval data`,
+      });
+      continue;
+    }
 
     const retiredAs = retired.get(auditId);
     if (retiredAs) {

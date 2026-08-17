@@ -197,3 +197,61 @@ describe("model_calls records how many HTTP attempts a call took", () => {
     assert.equal(row.attempts, null);
   });
 });
+
+/**
+ * Re-audits have to be distinguishable from first audits.
+ *
+ * Before this column there was nothing anywhere that told them apart:
+ * `reaudit.checked` is logged against the *baseline*, so the audit a re-audit
+ * produces carried no link back. basecamp was 3 of 9 published audits and 40%
+ * of all published findings, and no query could have said so.
+ */
+describe("audits record the baseline they were compared against", () => {
+  test("a first audit has no baseline", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-baseline-"));
+    const store = new AuditStore(path.join(dir, "a.db"));
+    store.create("a1", "https://example.com");
+    const row = store.get("a1")!;
+    store.close();
+    rmSync(dir, { recursive: true, force: true });
+    assert.equal(row.baseline_audit_id, null);
+  });
+
+  test("a re-audit records which audit it followed", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-baseline2-"));
+    const store = new AuditStore(path.join(dir, "a.db"));
+    store.create("a2", "https://example.com", "a1");
+    const row = store.get("a2")!;
+    store.close();
+    rmSync(dir, { recursive: true, force: true });
+    assert.equal(row.baseline_audit_id, "a1");
+  });
+
+  test("a database written before the column gains it, keeping its rows", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-baseline3-"));
+    const file = path.join(dir, "old.db");
+    const old = new Database(file);
+    old.exec(`
+      CREATE TABLE audits (
+        audit_id TEXT PRIMARY KEY, url TEXT NOT NULL, final_url TEXT, title TEXT,
+        status TEXT NOT NULL, profile_summary TEXT, findings_total INTEGER NOT NULL DEFAULT 0,
+        findings_published INTEGER NOT NULL DEFAULT 0, cost_usd REAL NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL, updated_at TEXT NOT NULL, published_at TEXT
+      );
+      INSERT INTO audits (audit_id, url, status, created_at, updated_at)
+        VALUES ('old1', 'https://example.com', 'PUBLISHED', '2026-08-11', '2026-08-11');
+    `);
+    old.close();
+
+    const store = new AuditStore(file);
+    store.create("new1", "https://example.com", "old1");
+    const before = store.get("old1")!;
+    const after = store.get("new1")!;
+    store.close();
+    rmSync(dir, { recursive: true, force: true });
+
+    assert.equal(before.status, "PUBLISHED", "the pre-existing row must survive");
+    assert.equal(before.baseline_audit_id, null, "an old audit is a first audit, not unknown-shaped");
+    assert.equal(after.baseline_audit_id, "old1");
+  });
+});

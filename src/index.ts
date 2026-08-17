@@ -142,7 +142,8 @@ async function main(): Promise<void> {
   const url = process.argv[2];
   if (!url || url.startsWith("--")) {
     console.error(
-      "usage: npm run audit -- <url> [--answers answers.json] [--pin-to <audit-id>]",
+      "usage: npm run audit -- <url> [--answers answers.json] [--pin-to <audit-id>]\n" +
+        "                            [--reaudit-of <audit-id>]",
     );
     process.exit(2);
   }
@@ -176,7 +177,18 @@ async function main(): Promise<void> {
   /** §7: DEGRADED is a logged, visible state — never a quiet one. */
   const degraded: string[] = [];
 
-  audits.create(auditId, url);
+  /**
+   * `--reaudit-of` records which audit this one is a re-audit of.
+   *
+   * Deliberately separate from `--pin-to`, which they always travel together
+   * with in practice. Pinning reviewer lanes and being a re-audit are two
+   * different facts, and inferring one from the other would silently drop a
+   * manually pinned experiment out of the eval set.
+   */
+  const reauditFlag = process.argv.indexOf("--reaudit-of");
+  const baselineAuditId = reauditFlag === -1 ? null : (process.argv[reauditFlag + 1] ?? null);
+
+  audits.create(auditId, url, baselineAuditId);
   events.record({ audit_id: auditId, type: "audit.requested", data: { url } });
 
   /**

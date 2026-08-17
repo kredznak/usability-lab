@@ -154,7 +154,14 @@ async function main(): Promise<void> {
   console.log(`\nThe page changed:\n${summarise(diff).map((l) => `  ${l}`).join("\n")}\n`);
 
   const answersFile = path.join(baselineDir, "answers.json");
-  const args = ["run", "audit", "--", url, "--pin-to", baseline.audit_id];
+  const args = [
+    "run", "audit", "--", url,
+    "--pin-to", baseline.audit_id,
+    // Marks the row, so the corpus can tell a re-audit from a first audit.
+    // Without it basecamp is 3 of 9 published audits and 40% of the findings,
+    // and every metric drifts toward whichever page gets monitored most.
+    "--reaudit-of", baseline.audit_id,
+  ];
   if (existsSync(answersFile)) args.push("--answers", answersFile);
   else console.error(`  no answers.json on the baseline; auditing without the original brief\n`);
 

@@ -148,6 +148,20 @@ export interface AuditRow {
   created_at: string;
   updated_at: string;
   published_at: string | null;
+  /**
+   * The audit this one was compared against, when a re-audit produced it.
+   *
+   * Null for a first audit. Set explicitly by `npm run reaudit` rather than
+   * inferred from `--pin-to`: pinning the reviewer lanes and being a re-audit
+   * are two different facts that happen to travel together, and conflating
+   * them means a manually pinned experiment would silently be excluded from
+   * the eval set.
+   *
+   * The corpus needs this because there was previously nothing anywhere that
+   * distinguished a re-audit from a first audit — `reaudit.checked` is logged
+   * against the *baseline*, so the new audit carried no link back.
+   */
+  baseline_audit_id: string | null;
 }
 
 /**
@@ -172,6 +186,7 @@ export class AuditStore {
         title              TEXT,
         status             TEXT NOT NULL,
         profile_summary    TEXT,
+        baseline_audit_id  TEXT,
         findings_total     INTEGER NOT NULL DEFAULT 0,
         findings_published INTEGER NOT NULL DEFAULT 0,
         cost_usd           REAL    NOT NULL DEFAULT 0,
@@ -181,17 +196,27 @@ export class AuditStore {
       );
       CREATE INDEX IF NOT EXISTS idx_audits_status ON audits(status);
     `);
+
+    // Same reason as model_calls.attempts: CREATE TABLE IF NOT EXISTS does
+    // nothing to a table that already exists, and this database holds every
+    // audit the project has produced. Existing rows get NULL, which is correct
+    // — they were all first audits, and the one re-audit among them is
+    // backfilled by hand in the commit that adds this.
+    const columns = this.db.prepare(`PRAGMA table_info(audits)`).all() as { name: string }[];
+    if (!columns.some((c) => c.name === "baseline_audit_id")) {
+      this.db.exec(`ALTER TABLE audits ADD COLUMN baseline_audit_id TEXT`);
+    }
   }
 
   /** Opens an audit at REQUESTED — the only state that may be created. */
-  create(auditId: string, url: string): void {
+  create(auditId: string, url: string, baselineAuditId: string | null = null): void {
     const now = new Date().toISOString();
     this.db
       .prepare(
-        `INSERT INTO audits (audit_id, url, status, created_at, updated_at)
-         VALUES (?, ?, 'REQUESTED', ?, ?)`,
+        `INSERT INTO audits (audit_id, url, status, baseline_audit_id, created_at, updated_at)
+         VALUES (?, ?, 'REQUESTED', ?, ?, ?)`,
       )
-      .run(auditId, url, now, now);
+      .run(auditId, url, baselineAuditId, now, now);
   }
 
   get(auditId: string): AuditRow | null {

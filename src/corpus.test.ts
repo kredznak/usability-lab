@@ -83,7 +83,13 @@ function finding(id: string) {
 }
 
 /** An audit on disk, optionally with a row in the database. */
-function seedAudit(fx: Fixture, id: string, url: string, status: string | null) {
+function seedAudit(
+  fx: Fixture,
+  id: string,
+  url: string,
+  status: string | null,
+  baseline: string | null = null,
+) {
   const dir = path.join(fx.outRoot, id);
   mkdirSync(dir, { recursive: true });
   writeFileSync(path.join(dir, "capture.json"), JSON.stringify(capture(url)));
@@ -91,7 +97,7 @@ function seedAudit(fx: Fixture, id: string, url: string, status: string | null) 
   if (status === null) return; // predates the audits table
 
   const store = new AuditStore(fx.dbPath);
-  store.create(id, url);
+  store.create(id, url, baseline);
   store.transition(id, "CAPTURING");
   store.transition(id, "AUDITING");
   if (status === "FAILED") {
@@ -177,6 +183,60 @@ describe("a retired audit is not scored", () => {
       seedAudit(fx, "dddddddd-0000-4000-8000-000000000004", "https://nodb.example", null);
       const corpus = build(fx);
       assert.equal(corpus.built_from.length, 1);
+    } finally {
+      rmSync(fx.root, { recursive: true, force: true });
+    }
+  });
+});
+
+/**
+ * Re-audits are monitoring artifacts, not eval data — Kelly's call, 2026-08-17.
+ *
+ * A re-audit exists because a customer is watching a page, not because that
+ * page is a good test of the pipeline. Counting them drifts every metric
+ * toward whichever site gets monitored most: basecamp was 3 of 9 published
+ * audits and 40% of all published findings before this rule existed.
+ */
+describe("a re-audit is monitoring, not eval data", () => {
+  test("it is skipped, and the skip names the audit it followed", () => {
+    const fx = fixture();
+    try {
+      seedAudit(fx, "first", "https://example.com", "REVIEW_PENDING");
+      seedAudit(fx, "again", "https://example.com", "REVIEW_PENDING", "first");
+      const corpus = build(fx);
+
+      assert.deepEqual(corpus.built_from.map((b) => b.audit_id).sort(), ["first"]);
+      const skip = corpus.skipped.find((s) => s.audit_id === "again");
+      assert.match(skip!.reason, /re-audit of first/);
+      assert.match(skip!.reason, /monitoring, not eval data/);
+    } finally {
+      rmSync(fx.root, { recursive: true, force: true });
+    }
+  });
+
+  test("its findings do not reach the metrics", () => {
+    // The number that matters. A skip that still contributed findings would
+    // look like a policy while changing nothing.
+    const fx = fixture();
+    try {
+      seedAudit(fx, "first", "https://example.com", "REVIEW_PENDING");
+      seedAudit(fx, "again", "https://example.com", "REVIEW_PENDING", "first");
+      const corpus = build(fx);
+      assert.equal(corpus.findings.length, 1);
+    } finally {
+      rmSync(fx.root, { recursive: true, force: true });
+    }
+  });
+
+  test("a first audit of the same page is untouched", () => {
+    // The rule is about provenance, not about duplicate URLs. Two independent
+    // first audits of one page are both legitimate eval data.
+    const fx = fixture();
+    try {
+      seedAudit(fx, "one", "https://example.com", "REVIEW_PENDING");
+      seedAudit(fx, "two", "https://example.com", "REVIEW_PENDING");
+      const corpus = build(fx);
+      assert.equal(corpus.built_from.length, 2);
     } finally {
       rmSync(fx.root, { recursive: true, force: true });
     }
