@@ -364,14 +364,18 @@ of evidence becomes evidence of absence, at high confidence, and every
 downstream check passes because the *element* is real and the *quote* is
 present. `claims.ts` scored both audits `0 false`.
 
-**Two candidate fixes, cheap and independent:**
+**Two fixes, both shipped 2026-08-17 (`1124834`):**
 
-1. Carry `position` on captured elements when it is `fixed` or `sticky`, and
-   render it. One line in `capture.ts`, one in `renderElement`. Makes the fact
-   available instead of guessable.
-2. Put the capture date in the prompt, next to the URL.
+1. ~~Carry `position` on captured elements when it is `fixed` or `sticky`.~~
+   Done. Nullish, so older captures still parse, and the renderer says nothing
+   when it is null — never "static", because silence has to keep meaning
+   "unknown".
+2. ~~Put the capture date in the prompt.~~ Done, and *outside*
+   `<captured_page_data>`: read from inside it would be page content, and a page
+   that wanted to look freshly updated could write it.
 
-And a third, larger: **name what the screenshot cannot show** — stickiness,
+**Still open**, and the larger one: **name what the screenshot cannot show** —
+stickiness,
 scroll and hover behaviour, animation, anything time-dependent — in
 SHARED_RULES, the way the truncation warnings name what is missing. That is a
 prompt change and should be measured, not assumed.
@@ -380,6 +384,13 @@ prompt change and should be measured, not assumed.
 out of three, and both were kept at the gate after being flagged — so the corpus
 now carries them as true and useful. Precision reads 94.3% and the honest
 number is 93.1%.
+
+**What the fixes do not do.** Neither one has been seen working on a live page.
+The tests prove the capture records `position: fixed` and the request carries
+the date; nothing yet proves a reviewer *uses* either, and the failure mode was
+never that the data was wrong — it was that a reviewer filled a gap with
+confidence. The next audit on a page with a fixed header is the evidence. Until
+then this is a fix by construction, not by measurement.
 
 ---
 
