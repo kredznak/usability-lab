@@ -376,3 +376,48 @@ describe("the internal review copy", () => {
     assert.match(html, /forms: timed out/);
   });
 });
+
+/**
+ * The evidence has to be visible on the finding that has it.
+ *
+ * notion.com/pricing was published on 2026-08-17 with three resolved citations
+ * and displayed none of them: all three sat on positive findings, and the
+ * positive card rendered the heuristic and observation only. Meanwhile the
+ * footer told the reader that findings without a source say so — true of every
+ * visible issue on that page, and quietly false of the positives.
+ */
+describe("citations appear on the findings that carry them", () => {
+  const cited = (n: number, over: Partial<Finding> = {}) =>
+    finding(n, 1, {
+      positive: true,
+      citation: { source_type: "paper", url: "https://www.nngroup.com/articles/x/" },
+      ...over,
+    });
+
+  test("a cited positive shows its source, and links to it", async () => {
+    const html = await publish([finding(1, 3), cited(2)]);
+    assert.match(html, /What&#39;s already working|What's already working/);
+    assert.match(html, /https:\/\/www\.nngroup\.com\/articles\/x\//);
+  });
+
+  test("an uncited positive says so rather than staying silent", async () => {
+    // Scoped to the positive card on purpose. Asserting on the whole page
+    // matched text coming from an issue card and passed with this fix reverted
+    // — a test that agrees with any implementation.
+    const html = await publish([finding(1, 3), finding(2, 1, { positive: true })]);
+    const card = html.slice(html.indexOf(`<div class="positive">`));
+    assert.match(card, /Based on our evaluation/);
+  });
+
+  test("a citation on a withheld issue is not leaked onto the page", async () => {
+    // The free three are what a visitor sees. A source attached to a finding
+    // they have not been shown must not appear, or the page implies evidence
+    // for a claim it never made.
+    const shown = [finding(1, 3), finding(2, 3), finding(3, 3)];
+    const withheld = finding(4, 4, {
+      citation: { source_type: "paper", url: "https://example.test/secret-source" },
+    });
+    const html = await publish([...shown, withheld]);
+    assert.doesNotMatch(html, /secret-source/);
+  });
+});

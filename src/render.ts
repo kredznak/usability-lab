@@ -478,8 +478,16 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
       ? `<h2>What's already working</h2>${positives
           .map(
             (f) =>
+              // The citation belongs here as much as on an issue. On
+              // notion.com/pricing every one of the three sources we resolved
+              // sat on a positive, so the published page carried three
+              // citations and displayed none of them — while the footer
+              // promised the reader that unsourced findings say so. A page
+              // that hides its evidence on the findings that have it is
+              // strictly worse than one with no evidence at all.
               `<div class="positive"><p><strong>${escapeHtml(f.heuristic)}</strong></p>` +
-              `<p>${escapeHtml(f.observation)}</p></div>`,
+              `<p>${escapeHtml(f.observation)}</p>` +
+              `<p class="citation">${citationLabel(f)}</p></div>`,
           )
           .join("")}`
       : ""
