@@ -6,9 +6,14 @@
       "findings": 17
     },
     {
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "findings": 16
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
+      "findings": 7
+    },
+    {
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
+      "findings": 8
     },
     {
       "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
@@ -26,9 +31,9 @@
       "findings": 14
     },
     {
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "findings": 15
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "findings": 13
     },
     {
       "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
@@ -49,11 +54,6 @@
       "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
       "url": "https://linear.app/",
       "findings": 16
-    },
-    {
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "findings": 9
     },
     {
       "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
@@ -80,6 +80,10 @@
       "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
     },
     {
+      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
       "audit_id": "4a3e4939-749e-471d-b492-884ca11faa35",
       "reason": "FAILED — retired by the state machine, not scored"
     },
@@ -88,8 +92,16 @@
       "reason": "FAILED — retired by the state machine, not scored"
     },
     {
+      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
       "audit_id": "d442ae2e-9255-48cc-b9cf-3300224e3dbc",
       "reason": "capture predates the current schema (missing elements.0.input_type, elements.0.accessible_name, elements.0.name_source, elements.0.font_size)"
+    },
+    {
+      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
+      "reason": "FAILED — retired by the state machine, not scored"
     },
     {
       "audit_id": "dcc8c35a-e890-438d-a1de-85039fe25c4a",
@@ -480,356 +492,334 @@
       "review_keep": null
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f1",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "copy",
-      "heuristic": "Specificity of value proposition",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_11",
-      "observation": "The h1 reads \"The refreshingly straightforward project management system that's rock-solid and easy to use.\" \"Rock-solid\" and \"easy to use\" are the same adjectives most project-management competitors use about themselves.",
-      "impact_note": "A generic-sounding headline gives a first-time visitor no distinct reason to remember or prefer this product over alternatives.",
-      "source_type": "none",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f2",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
+      "key": "25567a70-a903-4ed7-8a79-ac63656e4c75:25567a70-a903-4ed7-8a79-ac63656e4c75-f1",
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
       "agent": "conversion-cta",
-      "heuristic": "Conversion - single clear action",
+      "heuristic": "Competing calls to action",
       "severity": 3,
       "confidence": "high",
       "positive": false,
-      "element_ref": "el_12",
-      "observation": "Above the fold there are two calls to action with similar visual weight competing for attention: \"Sign up free\" (el_2) in the nav and \"Take a 3 minute tour of Basecamp\" (el_12), a much larger button, in the hero area.",
-      "impact_note": "When two different first steps are presented without a stated relationship between them, visitors may default to the lower-commitment option (the tour) and never reach the primary conversion action, or hesitate over which to choose.",
+      "element_ref": "el_23",
+      "observation": "The Business tier shows two buttons of the same visual prominence side by side: 'Get started' (el_23) and 'Contact sales' (el_24), repeated again at the bottom of the page for the same tier.",
+      "impact_note": "Presenting two paths with no stated criterion for choosing between them forces the visitor to guess which applies to their situation, which can stall the decision entirely.",
       "source_type": "paper",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f3",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "conversion-cta",
-      "heuristic": "Conversion - CTA placement",
-      "severity": 2,
-      "confidence": "high",
+      "key": "25567a70-a903-4ed7-8a79-ac63656e4c75:25567a70-a903-4ed7-8a79-ac63656e4c75-f2",
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
+      "agent": "copy+heuristics",
+      "heuristic": "Jargon / unexplained terminology",
+      "severity": 3,
+      "confidence": "medium",
       "positive": false,
-      "element_ref": "el_87",
-      "observation": "After roughly 4,500px of testimonials, statistics, FAQs, and class listings, the footer's only account-related link is \"Sign in\" (el_87); no \"Sign up free\" or equivalent action appears anywhere below the hero.",
-      "impact_note": "Visitors who read through the full page and arrive convinced have to scroll back to the top to find the conversion action, adding friction at the moment of highest interest.",
+      "element_ref": null,
+      "observation": "The feature comparison table lists single-word or short feature names such as \"Pulse\", \"Diffs\", \"Loops\", and \"Guided reviews\" as checklist rows, with no description of what each does.",
+      "impact_note": "A visitor comparing plans cannot judge whether a feature they don't recognize matters to them, which undermines the table's purpose of helping people choose a tier based on value rather than price alone.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f4",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "heuristics",
-      "heuristic": "Recognition rather than recall",
+      "key": "25567a70-a903-4ed7-8a79-ac63656e4c75:25567a70-a903-4ed7-8a79-ac63656e4c75-f3",
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
+      "agent": "copy+heuristics",
+      "heuristic": "Jargon / undefined term",
       "severity": 2,
-      "confidence": "high",
+      "confidence": "medium",
       "positive": false,
-      "element_ref": "el_14",
-      "observation": "Six large 206x206px tool tiles (aria-labeled \"Tool: Message Board\", \"Tool: Docs & Files\", \"Tool: To-dos\", \"Tool: Chat\", \"Tool: Schedule\", \"Tool: Card Table\") show no visible caption text on the page.",
-      "impact_note": "Visitors have to guess or hover to learn what each tool tile represents, adding effort to understanding the product's core feature set.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f5",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "copy",
-      "heuristic": "Get to the point / conciseness",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_26",
-      "observation": "The section under \"Tell me if this sounds about right.\" opens with \"Hey there— There's a good chance we know why you're here. You're juggling people, projects, and expectations. There are tasks to do, discussions to have, decisions to make, files to share, deadlines to hit, relationships to manage, and work to deliver.\" before arriving at the actual point that Basecamp consolidates all of this.",
-      "impact_note": "Readers scanning for what the product does have to get through several sentences of scene-setting before reaching the payoff, increasing the chance they leave before the point lands.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f6",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "copy",
-      "heuristic": "Match between system and the real world (jargon)",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_8",
-      "observation": "Nav item reads \"API, CLI, Skills — Developer tools, AI Agent-ready\". None of \"CLI\", \"Skills\", or \"AI Agent-ready\" is defined anywhere in the visible copy.",
-      "impact_note": "A visitor unfamiliar with these terms cannot tell what capability is being offered, which weakens the pitch to exactly the technical audience this link targets.",
+      "element_ref": null,
+      "observation": "A footnote reads \"** Requires AI credits\" attached to the \"Coding sessions\" and \"Loops\" rows, but \"AI credits\" is not defined or explained anywhere on the page.",
+      "impact_note": "The footnote is meant to clarify a limitation but introduces a second undefined term, leaving the visitor with a question rather than an answer about how the feature is metered.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f7",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "conversion-cta",
-      "heuristic": "Conversion - cost transparency",
+      "key": "25567a70-a903-4ed7-8a79-ac63656e4c75:25567a70-a903-4ed7-8a79-ac63656e4c75-f4",
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
+      "agent": "copy",
+      "heuristic": "Copy clarity — headline specificity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_35",
+      "observation": "The closing section headline reads \"Built for the future. Available today.\"",
+      "impact_note": "This phrasing carries no concrete claim about what Linear does or who it serves; it could be swapped onto almost any software company's pricing page without change, so it does little to reinforce value at the point a visitor is deciding to convert.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "25567a70-a903-4ed7-8a79-ac63656e4c75:25567a70-a903-4ed7-8a79-ac63656e4c75-f5",
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
+      "agent": "copy",
+      "heuristic": "Clear cumulative structure in copy",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "Each paid plan's feature list opens with an inheritance statement — \"All Free features +\" on Basic, \"All Basic features +\" on Business, \"All Business features +\" on Enterprise — rather than repeating the full list.",
+      "impact_note": "This phrasing communicates the tier hierarchy efficiently in a single short line, reducing the reading burden for visitors comparing plans.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "25567a70-a903-4ed7-8a79-ac63656e4c75:25567a70-a903-4ed7-8a79-ac63656e4c75-f6",
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
+      "agent": "conversion-cta+heuristics",
+      "heuristic": "Consistency and standards",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_36",
+      "observation": "The 'Get started' action is repeated identically at the top of the pricing tiles, again below the full feature-comparison table, and a third time in the closing 'Built for the future' section (el_36).",
+      "impact_note": "A visitor never has to scroll back to find the primary action regardless of how far they read into the comparison table.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "25567a70-a903-4ed7-8a79-ac63656e4c75:25567a70-a903-4ed7-8a79-ac63656e4c75-f7",
+      "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
+      "url": "https://linear.app/pricing",
+      "agent": "copy",
+      "heuristic": "Concrete, verifiable claim",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The page states \"Trusted by more than 40,000 companies\" directly above a row of recognizable customer logos.",
+      "impact_note": "A specific, quantified statement paired with named companies gives visitors something concrete to weigh, which is more persuasive than a vague trust claim.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f1",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Visual weight of primary vs secondary actions",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_5",
+      "observation": "The \"Get started\" button (el_5, 330x50px, 15px) and the \"I already have an account\" button (el_6, 330x50px, 15px) are identical in size and font size, differing only by fill color (solid green vs. white/outline).",
+      "impact_note": "Because the two buttons share the same footprint and type size, the only cue separating primary from secondary action is color, which is a weaker hierarchy signal than size or position alone.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f2",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Competing focal elements above the fold",
       "severity": 2,
       "confidence": "high",
       "positive": false,
       "element_ref": "el_4",
-      "observation": "The nav item reads \"Pricing & sign up — Two paid plans, one free plan\" but no actual price figure appears anywhere in the captured content; a click-through is required to learn cost.",
-      "impact_note": "Delaying the price to a later page can cost qualified visitors who want to gauge affordability before investing more time, and it invites drop-off deeper in the funnel.",
+      "observation": "The hero illustration of characters and coins sits directly to the left of the h1 (el_4) and occupies a comparable amount of horizontal space in the above-the-fold area.",
+      "impact_note": "A large decorative graphic of similar visual weight to the headline can split the eye's first landing point between illustration and text rather than directing it clearly to the message.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f8",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "heuristics",
-      "heuristic": "Match between system and the real world",
-      "severity": 2,
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f3",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Typographic hierarchy",
+      "severity": 3,
       "confidence": "high",
       "positive": false,
       "element_ref": "el_4",
-      "observation": "Top navigation items combine a short label with a marketing tagline in one link, for example \"Pricing & sign up — Two paid plans, one free plan\" and \"Basecamp 5 is here — Major upgrade for 2026\".",
-      "impact_note": "Navigation entries read like ad copy rather than conventional short wayfinding labels, which can slow down visitors trying to quickly scan for a destination.",
-      "source_type": "paper",
+      "observation": "The page's <h1> (\"The most fun way to learn languages, chess, and more!\") is set at 32px, while five separate <h2> headings further down the page (\"free. fun. effective.\", \"backed by science\", \"stay motivated\", \"personalized learning\", \"duolingo english test\") are all set at 48px — larger than the h1.",
+      "impact_note": "A visitor scanning by size cues would read the secondary section titles as more important than the page's own top-level heading, working against the intended top-to-bottom emphasis.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f9",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f4",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
+      "agent": "heuristics",
+      "heuristic": "Recognition over recall",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_7",
+      "observation": "The course carousel (el_7) listing English, Chess, Math, Spanish, French, German, Italian, and Portuguese is flanked by small pale-gray chevron arrows that sit close to the page's white background.",
+      "impact_note": "Faint arrow controls next to a light background may not register as interactive, so visitors could assume only the courses currently visible exist rather than realizing the list scrolls further.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f6",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
       "agent": "heuristics",
       "heuristic": "Visibility of system status",
       "severity": 2,
       "confidence": "high",
       "positive": false,
-      "element_ref": "el_10",
-      "observation": "A navigation item reads \"people are working in Basecamp right now!\" with no numeral or count actually shown before the phrase.",
-      "impact_note": "The claim depends on a live number that appears to be missing, which undermines the real-time social-proof message it is trying to send.",
-      "source_type": "paper",
+      "element_ref": "el_0",
+      "observation": "Across the screenshot slices, the header with the logo, language switcher, and course carousel (el_0) is only visible in the first slice; no fixed or sticky version of it reappears in any of the later slices covering the remaining page content.",
+      "impact_note": "Visitors partway through the page have no persistent way to reach the language switcher or the top sign-up controls without scrolling all the way back up, adding friction on a page this long.",
+      "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f10",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "conversion-cta",
-      "heuristic": "Conversion - action clarity",
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f7",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Document structure / heading hierarchy",
       "severity": 2,
       "confidence": "high",
       "positive": false,
-      "element_ref": "el_36",
-      "observation": "A prominent button reads \"Meet Chase, our Head of Support\" with no accompanying text indicating whether this opens a video, a bio page, or a contact form.",
-      "impact_note": "An ambiguous next step reduces the likelihood a visitor clicks, since they cannot judge the time or purpose of the action before committing.",
+      "element_ref": "el_4",
+      "observation": "Three elements on the page are tagged <h1>: el_4 (32px, above the fold), el_23 \"learn anytime, anywhere\" (64px), and el_29 \"learn a language with duolingo\" (64px).",
+      "impact_note": "Multiple top-level headings dilute the page's claim to a single subject and can make scanning by heading level unreliable for sighted users skimming quickly.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f14",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "conversion-cta",
-      "heuristic": "Conversion - motivation before ask",
-      "severity": 1,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_35",
-      "observation": "The link text \"Our customers do it all the time\" gives no indication of what it leads to (a review page, a case study, a form).",
-      "impact_note": "Vague link labels reduce click-through because the visitor cannot predict the value of following them.",
-      "source_type": "none",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f15",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f5",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
       "agent": "heuristics",
-      "heuristic": "Aesthetic and minimalist design",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_46",
-      "observation": "The footer packs roughly thirty links together with no visible section headings separating them, e.g. \"Where we came from\", \"Come small, come all\", \"We stand with the underdogs\", \"Kill overkill\" sit alongside \"Support\", \"Privacy\", and \"Security\".",
-      "impact_note": "A dense, uncategorized list of links forces extra scanning effort and lets frequently needed links like support or security policies get lost among essay-title links.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f11",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "copy",
-      "heuristic": "Engaging, concrete headline copy",
+      "heuristic": "User control and freedom",
       "severity": 1,
       "confidence": "high",
       "positive": true,
-      "element_ref": "el_38",
-      "observation": "The section heading reads \"All these questions have the same answer: Yes!\" followed by a long list of specific, concrete questions like \"Can I hide unfinished work from clients?\" and \"Can Basecamp keep my team accountable?\"",
-      "impact_note": "Framing capabilities as answers to the reader's own likely questions makes the feature list easy to scan and self-relevant, which supports comprehension better than a plain feature list would.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f12",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "conversion-cta+copy",
-      "heuristic": "Trust - social proof",
-      "severity": 1,
-      "confidence": "high",
-      "positive": true,
-      "element_ref": "el_24",
-      "observation": "The page surfaces individually attributed testimonials (e.g. \"Patrick Sheffield, Moore Communications Group\") throughout the body and links to \"Check out over 1,000 more customer testimonials…\".",
-      "impact_note": "Named, attributed testimonials at this volume are a strong trust signal that can reduce hesitation before signing up.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f13",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "conversion-cta",
-      "heuristic": "Conversion - low-commitment framing",
-      "severity": 1,
-      "confidence": "high",
-      "positive": true,
-      "element_ref": "el_2",
-      "observation": "The primary nav CTA explicitly reads \"Sign up free\" rather than a generic \"Sign up\".",
-      "impact_note": "Stating the no-cost nature of the action directly in the label removes a common point of hesitation before a visitor even considers clicking.",
+      "element_ref": "el_6",
+      "observation": "Directly beneath the solid green 'Get started' button (el_5), the page offers a separate outlined 'I ALREADY HAVE AN ACCOUNT' button (el_6) as an alternate path.",
+      "impact_note": "Giving new and returning visitors two clearly separate entry points right at the top removes the need for either group to hunt for the right action.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "3469647d-857d-4b85-83fe-22c03a2cec11:3469647d-857d-4b85-83fe-22c03a2cec11-f16",
-      "audit_id": "3469647d-857d-4b85-83fe-22c03a2cec11",
-      "url": "https://basecamp.com/",
-      "agent": "conversion-cta",
-      "heuristic": "Trust - human accessibility",
+      "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f8",
+      "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
+      "url": "https://www.duolingo.com/",
+      "agent": "heuristics",
+      "heuristic": "User control and freedom",
       "severity": 1,
       "confidence": "high",
       "positive": true,
-      "element_ref": "el_29",
-      "observation": "The letter from the co-founder ends with a direct personal email address, \"jason@basecamp.com\", rather than a generic contact form.",
-      "impact_note": "Offering a named executive's direct email is an unusually strong trust and accessibility signal that can reassure prospects a human is reachable.",
+      "element_ref": "el_30",
+      "observation": "The 'Get started' call to action shown at the top of the page (el_5) is repeated with identical wording near the bottom (el_30), after several long content sections.",
+      "impact_note": "Repeating the primary action lets a visitor who has scrolled through the whole page act immediately rather than scrolling back to the top, reducing effort on a long page.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f1",
@@ -1786,334 +1776,290 @@
       "review_keep": true
     },
     {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f1",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "conversion-cta+forms+heuristics",
-      "heuristic": "Forms & Flow — required vs. optional ambiguity",
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f1",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "copy",
+      "heuristic": "Recognition over recall / jargon",
       "severity": 3,
       "confidence": "high",
       "positive": false,
-      "element_ref": "el_22",
-      "observation": "A toggle switch labeled \"Donate today and help end extreme poverty in our lifetime.\" sits directly above the Continue to Checkout link, with no visible indication of its current on/off state, no donation amount shown, and no marking of whether it is on by default.",
-      "impact_note": "Visitors cannot tell from the capture whether this charge is already applied to their order total; an ambiguous default state on a monetary add-on risks an unwanted charge or cart abandonment when discovered later.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f2",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "conversion-cta+forms+heuristics",
-      "heuristic": "Match between system and real world",
-      "severity": 3,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_23",
-      "observation": "The primary call to action \"Continue to Checkout\" is displayed prominently above the fold at the same time the page states \"Your cart is empty\" and shows a $0.00 total.",
-      "impact_note": "A visitor is invited to check out with nothing to buy, which is confusing and gives no clear next step toward completing a purchase.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f3",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "conversion-cta+heuristics",
-      "heuristic": "Consistency and standards / Trust",
-      "severity": 2,
-      "confidence": "medium",
-      "positive": false,
-      "element_ref": null,
-      "observation": "The page simultaneously shows \"Spend $99.00 more to qualify for free shipping\" and \"Items in your cart are not reserved, checkout soon to get your gear!\" alongside \"Your cart is empty\".",
-      "impact_note": "Messages written for a populated cart appear on an empty cart, which undermines confidence that the page state shown is accurate.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f4",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "forms",
-      "heuristic": "Forms & Flow — progress indication",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_23",
-      "observation": "The only forward-flow control visible on the cart is the single link \"Continue to Checkout\" (el_23); there is no numbered step list or progress indicator showing how many steps (e.g. shipping, payment) follow.",
-      "impact_note": "Without signposting of what comes next, visitors have no way to gauge how much effort remains before completing a purchase, which can increase perceived friction.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f5",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "a11y",
-      "heuristic": "WCAG 1.3.1 Info and Relationships / 4.1.2 Name, Role, Value",
-      "severity": 3,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_22",
-      "observation": "The switch input el_22 sits next to a <label> (el_21) reading \"Donate today and help end extreme poverty in our lifetime,\" but el_22 itself is reported with no accessible name, indicating the label text is not programmatically associated with the control.",
-      "impact_note": "A screen reader announces this donation toggle as an unlabeled switch, so a visitor could enable or disable a charge to their order without understanding what the control does.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f6",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "a11y",
-      "heuristic": "WCAG 4.1.2 Name, Role, Value",
-      "severity": 3,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_3",
-      "observation": "Buttons el_3 and el_4 (22x18px, above the fold near the search/nav area) have no visible text and no accessible name attribute of any kind.",
-      "impact_note": "A screen reader user hears only \"button\" with no indication of function, making these controls unusable without trial and error.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f7",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "a11y",
-      "heuristic": "WCAG 4.1.2 Name, Role, Value",
-      "severity": 3,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_7",
-      "observation": "The link el_7 (114x37px, above the fold, positioned where a logo/home link typically sits) has no visible text and no accessible name.",
-      "impact_note": "Without a name, this is likely the primary way to return home from the cart, and it is invisible to screen reader navigation.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f8",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "a11y+forms",
-      "heuristic": "WCAG 3.3.2 Labels or Instructions",
-      "severity": 3,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_27",
-      "observation": "The email input el_27 in the footer signup form has no associated label; its only accessible name comes from the placeholder text \"Your Email...\".",
-      "impact_note": "Placeholder text disappears once typing begins and is not a substitute for a label, so screen reader users lose the field's purpose and low-vision users lose the cue once they start typing.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f9",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "conversion-cta",
-      "heuristic": "Single clear primary action",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_26",
-      "observation": "A second, unrelated call to action (\"NEXT STEP\" email/SMS signup for 20% off) appears on the same page as the checkout CTA, both competing for attention.",
-      "impact_note": "Two differently-purposed actions on one page can split attention between completing checkout and signing up for marketing.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f10",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "forms+heuristics",
-      "heuristic": "Forms & Flow — field count vs. stated purpose",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_26",
-      "observation": "The signup heading and body text state \"Sign up with your email and phone number\" but the form (el_26) contains only a single input, of type email (el_27); no phone field is present in the captured elements.",
-      "impact_note": "A visitor who expects to also provide a phone number based on the copy may be confused about whether the phone step happens later or was omitted, undermining trust in the form's completeness.",
+      "element_ref": "el_68",
+      "observation": "The payment plan types are listed as \"simple, streamlined, in-business trust fund express, guaranteed and partial payment installment agreements\" with no definitions given alongside the list.",
+      "impact_note": "Terms like \"in-business trust fund express\" are internal program names rather than everyday language; a visitor cannot tell which type applies to them without leaving the page to research each term.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f11",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "conversion-cta",
-      "heuristic": "Recognition over vague labeling",
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f2",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "a11y",
+      "heuristic": "WCAG 4.1.2 Name, Role, Value",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_116",
+      "observation": "A link in the footer area, 80x21px, has no visible text and no accessible name (aria-label, title, or alt) supplying one.",
+      "impact_note": "A screen reader announces this as an unlabeled link, giving no clue to its destination or purpose, forcing the visitor to guess or skip it.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f3",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "a11y",
+      "heuristic": "WCAG 2.5.3 Label in Name",
       "severity": 2,
       "confidence": "high",
       "positive": false,
-      "element_ref": "el_28",
-      "observation": "The email signup button is labeled \"NEXT STEP\" rather than describing what happens after submission (e.g. receiving a discount code).",
-      "impact_note": "A generic label leaves the visitor guessing whether submitting the form immediately grants the offer, sends an email, or starts another form.",
+      "element_ref": "el_46",
+      "observation": "The link's visible text reads \"Now accepting payments on additional forms\" but its accessible name is sourced from a title attribute reading \"Direct Pay help\", which does not contain the visible words.",
+      "impact_note": "Screen reader users hear a name unrelated to what is printed on screen, and voice-control users saying the visible phrase will not be able to activate the link.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f12",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f4",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
       "agent": "heuristics",
-      "heuristic": "Aesthetic and Minimalist Design",
+      "heuristic": "Recognition rather than recall",
       "severity": 2,
       "confidence": "high",
       "positive": false,
-      "element_ref": "el_0",
-      "observation": "The promotional banner (\"Summer Send Off Sale Up To 40% Off\", \"Free Standard Shipping On Orders $99+\", \"Easy U.S. Returns & Exchanges\") and a full category navigation row remain fixed above an otherwise empty cart page.",
-      "impact_note": "Persistent marketing chrome on a transactional page adds visual load unrelated to the cart task and competes with the checkout action for attention.",
+      "element_ref": "el_34",
+      "observation": "The left-hand list (\"Bank account (Direct Pay)\", \"Debit or credit card\", \"Payment plan\", etc.) sits beside headings on the same page with matching titles, but nothing distinguishes whether clicking jumps to a section below or navigates to a separate page.",
+      "impact_note": "Visitors cannot predict the result of a click without trying it, which can cause hesitation or unnecessary page reloads when a same-page jump would have sufficed.",
       "source_type": "none",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f13",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "conversion-cta",
-      "heuristic": "Trust signals near commitment",
-      "severity": 1,
-      "confidence": "medium",
-      "positive": true,
-      "element_ref": null,
-      "observation": "\"Guaranteed for Good™\", \"Easy U.S. Returns & Exchanges\", \"Lifetime Warranty + Repairs\", and \"Trade-In for Gift Cards\" are listed directly beneath the order summary, just before the checkout button.",
-      "impact_note": "Placing reassurance about returns and warranty right before the commitment point is a positive pattern that can reduce pre-checkout hesitation.",
-      "source_type": "none",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f14",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
-      "agent": "forms+heuristics",
-      "heuristic": "Forms & Flow — visible way back",
-      "severity": 1,
-      "confidence": "high",
-      "positive": true,
-      "element_ref": "el_20",
-      "observation": "A \"< Back to shopping\" link (el_20) sits above the cart contents, offering a direct route back to browsing.",
-      "impact_note": "A clearly visible return path lets visitors continue shopping without relying on the browser back button, reducing the chance of accidental cart exit.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "6324441a-c786-46c6-8334-e5eaca1b0822:6324441a-c786-46c6-8334-e5eaca1b0822-f15",
-      "audit_id": "6324441a-c786-46c6-8334-e5eaca1b0822",
-      "url": "https://www.cotopaxi.com/cart",
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f5",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
       "agent": "a11y",
-      "heuristic": "WCAG 4.1.2 Name, Role, Value (positive)",
-      "severity": 1,
+      "heuristic": "WCAG 2.5.8 Target Size (Minimum)",
+      "severity": 2,
       "confidence": "high",
-      "positive": true,
-      "element_ref": "el_13",
-      "observation": "Button el_13, an icon-only control (26x56px) in the header, carries an explicit aria-label of \"Open Side Cart\".",
-      "impact_note": "This gives screen reader users a clear, specific name for an otherwise visual-only control, which is the correct pattern to follow for the other unlabeled icon buttons on the page.",
+      "positive": false,
+      "element_ref": "el_2",
+      "observation": "The \"Here's how you know\" toggle button measures 140x17px, with a height well under common minimum target guidance.",
+      "impact_note": "Visitors with limited fine motor control or using touch input may find this control difficult to activate reliably.",
       "source_type": "paper",
       "auto": {
         "status": "verified",
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f6",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "copy+heuristics",
+      "heuristic": "Clarity of link text",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_73",
+      "observation": "The sidebar box reads \"Pay Taxes\" followed by a single link labeled \"Transcript\", with no visible text stating that this is a transcript of a video.",
+      "impact_note": "Out of context, \"Transcript\" reads as an unrelated tax document (such as a tax return transcript), which could mislead a visitor about what the link provides.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f7",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "copy",
+      "heuristic": "Plain language / clarity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_46",
+      "observation": "The link text reads \"Now accepting payments on additional forms\" with no indication of which forms are meant.",
+      "impact_note": "A visitor checking whether their specific form is supported has no way to tell from the sentence itself and must click through to find out, adding an extra step to a simple lookup.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f8",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "copy",
+      "heuristic": "Acronym on first use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_37",
+      "observation": "The sidebar link reads \"Business tax payment (EFTPS)\" — the acronym EFTPS appears in parentheses without being spelled out at this first occurrence on the page.",
+      "impact_note": "A first-time visitor unfamiliar with IRS terminology has no cue at this point about what the acronym stands for, even though it is expanded later further down the page.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f9",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "copy",
+      "heuristic": "Clarity of labels",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_42",
+      "observation": "The sidebar link \"Tax withholding\" sits among payment-related links (\"Payment plan\", \"Penalties\", \"Interest\") but its wording does not indicate any connection to making a payment.",
+      "impact_note": "A visitor scanning the list for payment options may be uncertain why withholding — normally a paycheck-time setting rather than a bill to pay — is included here.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f10",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "heuristics",
+      "heuristic": "Match between system and the real world",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The footer text reads \"Page Last Reviewed or Updated: 28-Jun-2026\", a date that is in the future relative to when this capture was made.",
+      "impact_note": "A future-dated 'last reviewed' stamp undermines the freshness signal the notice is meant to provide and can make visitors doubt whether the payment instructions are current.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f11",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "heuristics",
+      "heuristic": "Match between system and the real world",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_45",
+      "observation": "Main content is broken into headings such as \"Pay from your bank account\", \"Debit card, credit card or digital wallet\", and \"Pay from your IRS account\", each followed by a short description and a single clear action button.",
+      "impact_note": "Organizing the page by the real-world question 'how do I want to pay' rather than by internal system names helps visitors self-select the right path quickly.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f12",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "a11y",
+      "heuristic": "WCAG 1.3.1 Info and Relationships",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_25",
+      "observation": "The page uses a single h1 (\"Make a payment\") followed by h2 section headings and h3 subsection headings, with no level skipped in the visible structure.",
+      "impact_note": "A logical, unbroken heading outline lets screen reader users navigate the page's sections efficiently by heading level.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "5d121558-e2e9-406c-9bc7-4fa16064285e:5d121558-e2e9-406c-9bc7-4fa16064285e-f13",
+      "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
+      "url": "https://www.irs.gov/payments",
+      "agent": "copy",
+      "heuristic": "Plain language",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_47",
+      "observation": "The instruction \"Pay now or schedule payments up to a year in advance.\" is short, concrete, and states exactly what the action does before the visitor clicks the button.",
+      "impact_note": "Concrete, jargon-free copy like this reduces hesitation before committing to a payment action.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
     },
     {
       "key": "6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f1",
@@ -2533,9 +2479,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f2",
@@ -2555,9 +2501,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f3",
@@ -2577,9 +2523,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f4",
@@ -2599,9 +2545,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f5",
@@ -2621,9 +2567,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f6",
@@ -2643,9 +2589,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f7",
@@ -2665,9 +2611,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f9",
@@ -2687,9 +2633,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f10",
@@ -2709,9 +2655,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f11",
@@ -2731,9 +2677,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f12",
@@ -2755,9 +2701,9 @@
         ]
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f13",
@@ -2777,9 +2723,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f14",
@@ -2799,9 +2745,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f8",
@@ -2821,9 +2767,9 @@
         "contradictions": []
       },
       "human_true": null,
-      "human_useful": null,
+      "human_useful": true,
       "human_note": null,
-      "review_keep": null
+      "review_keep": true
     },
     {
       "key": "9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f1",
@@ -3475,204 +3421,6 @@
       "element_ref": "el_137",
       "observation": "Near the bottom, two CTAs sit side by side: \"Get started\" and \"Contact sales\", offering separate paths for self-serve versus sales-assisted visitors.",
       "impact_note": "Separating self-serve and enterprise intents lets each visitor type find an appropriately-sized commitment, which research suggests can reduce mismatched drop-off.",
-      "source_type": "none",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f1",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "conversion-cta+forms+heuristics",
-      "heuristic": "Unreferenced alternate sign-up options",
-      "severity": 2,
-      "confidence": "medium",
-      "positive": false,
-      "element_ref": null,
-      "observation": "The visible page text lists \"Google Microsoft or Work email\" as sign-up paths, but no corresponding button or link elements for Google or Microsoft appear in the captured element list.",
-      "impact_note": "If these options are not actually present as clickable controls, visitors who prefer social sign-in have no route to it, narrowing the effective path to conversion to email only.",
-      "source_type": "none",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f2",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "heuristics",
-      "heuristic": "Error prevention",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_5",
-      "observation": "The email input (el_5) is captured with only a label \"Work email\" and no visible example format, hint text, or indication of what qualifies as a valid work email.",
-      "impact_note": "Without upfront guidance on the expected format, users are more likely to trigger a validation error after submission rather than avoid one before it.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f3",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "conversion-cta+heuristics",
-      "heuristic": "Clarity of next step",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_6",
-      "observation": "The primary button is labeled simply \"Continue\" with no indication of what follows (account creation, password step, confirmation email, etc.).",
-      "impact_note": "A visitor deciding whether to commit an email address has no stated outcome for clicking, which can add hesitation at the point of conversion.",
-      "source_type": "none",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f4",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "forms+heuristics",
-      "heuristic": "Progress indication in multi-step flow",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_3",
-      "observation": "The form's only action is a button labeled \"Continue\", implying at least one further step, but no step counter, progress bar, or text such as \"step 1 of X\" appears anywhere in the capture.",
-      "impact_note": "Without a sense of how many steps remain, visitors may abandon the flow partway through, unsure how much more is being asked of them.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f5",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "conversion-cta",
-      "heuristic": "Cost/commitment transparency",
-      "severity": 2,
-      "confidence": "medium",
-      "positive": false,
-      "element_ref": null,
-      "observation": "The only cost-related statement on the page is \"Try Asana for free. No credit card required.\" No pricing, trial length, or what happens after the trial is shown anywhere in the captured content.",
-      "impact_note": "Visitors evaluating whether to sign up have no visibility into eventual cost or trial terms, which can be a source of doubt before they hand over an email.",
-      "source_type": "none",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f6",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "visual-hierarchy",
-      "heuristic": "Visual Hierarchy - CTA prominence",
-      "severity": 2,
-      "confidence": "high",
-      "positive": false,
-      "element_ref": "el_6",
-      "observation": "The \"Continue\" button (el_6, 174x50px) is set at 16px, the same font size as the header logo link (el_2), the form label \"Work email\" (el_4), and the email input (el_5).",
-      "impact_note": "Because the primary action shares its type size with surrounding labels and the header, it does not stand out through scale, relying only on its button shape to signal it is the next step.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f7",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "forms+heuristics+visual-hierarchy",
-      "heuristic": "Minimize user input / field necessity",
-      "severity": 1,
-      "confidence": "high",
-      "positive": true,
-      "element_ref": "el_5",
-      "observation": "The visible form asks for exactly one field, \"Work email\", before the visitor can proceed via \"Continue\".",
-      "impact_note": "A single-field entry point keeps the initial commitment low, which typically reduces early drop-off in a signup flow.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f8",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "forms",
-      "heuristic": "Label persistence",
-      "severity": 1,
-      "confidence": "high",
-      "positive": true,
-      "element_ref": "el_4",
-      "observation": "The field has a dedicated \"Work email\" label element (el_4) separate from the input, rather than relying on placeholder text inside el_5.",
-      "impact_note": "A persistent label means the field's purpose remains visible after the visitor starts typing, avoiding the common problem of forgotten context in placeholder-only forms.",
-      "source_type": "paper",
-      "auto": {
-        "status": "verified",
-        "contradictions": []
-      },
-      "human_true": null,
-      "human_useful": null,
-      "human_note": null,
-      "review_keep": null
-    },
-    {
-      "key": "d8613294-e0ad-4f15-9ddc-627c4419d157:d8613294-e0ad-4f15-9ddc-627c4419d157-f9",
-      "audit_id": "d8613294-e0ad-4f15-9ddc-627c4419d157",
-      "url": "https://asana.com/create-account",
-      "agent": "conversion-cta",
-      "heuristic": "Motivation before ask",
-      "severity": 1,
-      "confidence": "medium",
-      "positive": true,
-      "element_ref": null,
-      "observation": "The page text reads: \"You’re one click away from less busywork Try Asana for free. No credit card required.\" This value statement and risk-reducer appear above the email form.",
-      "impact_note": "Giving a reason to act and removing the cost objection before asking for an email is good practice; it primes the visitor to complete the single visible action.",
       "source_type": "none",
       "auto": {
         "status": "verified",

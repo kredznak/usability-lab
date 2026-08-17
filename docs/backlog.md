@@ -336,6 +336,53 @@ call to make while measuring a different change.
 
 ---
 
+## B13. Reviewers assert facts the capture cannot carry, and nothing marks the gap
+
+**Two instances, both found at the gate on 2026-08-17, both verified false by
+going to the live page.**
+
+**duolingo, `2a5a7f87` finding 5, severity 2, high confidence.** "Across the
+screenshot slices, the header ... is only visible in the first slice; no fixed
+or sticky version of it reappears." Probed live:
+
+    DIV  fixed  1440x72  top:0  ::  Site language: English
+
+The header *is* `position: fixed`. A fixed element paints once at the top of a
+full-page screenshot, so its absence from later slices is a property of
+full-page screenshots, not of the page. **This failure mode did not exist before
+we sent reviewers the screenshot** — B10's fix created it.
+
+**irs.gov, `5d121558` finding 10, severity 2, medium confidence.** "Page Last
+Reviewed or Updated: 28-Jun-2026, a date that is in the future relative to when
+this capture was made." The capture was made 2026-08-17. June 28th is seven
+weeks past. The reviewer has no clock and reasoned about time anyway.
+
+**The shape.** Both are B8's pattern — silence read as absence — but neither is
+about truncation. The capture cannot express `position`, and the request carries
+no date. Reviewers do not know which facts are unavailable to them, so absence
+of evidence becomes evidence of absence, at high confidence, and every
+downstream check passes because the *element* is real and the *quote* is
+present. `claims.ts` scored both audits `0 false`.
+
+**Two candidate fixes, cheap and independent:**
+
+1. Carry `position` on captured elements when it is `fixed` or `sticky`, and
+   render it. One line in `capture.ts`, one in `renderElement`. Makes the fact
+   available instead of guessable.
+2. Put the capture date in the prompt, next to the URL.
+
+And a third, larger: **name what the screenshot cannot show** — stickiness,
+scroll and hover behaviour, animation, anything time-dependent — in
+SHARED_RULES, the way the truncation warnings name what is missing. That is a
+prompt change and should be measured, not assumed.
+
+**Do not treat this as rare.** Both landed in the same afternoon, in two audits
+out of three, and both were kept at the gate after being flagged — so the corpus
+now carries them as true and useful. Precision reads 94.3% and the honest
+number is 93.1%.
+
+---
+
 ## The deeper problem behind B3
 
 Two of the seventeen findings were false, and neither was a wrong fact:
