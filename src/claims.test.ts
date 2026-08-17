@@ -48,7 +48,7 @@ function capture(elements: CapturedElement[], text = ""): Capture {
     elements_total: elements.length,
     text_excerpt: text,
     text_total_chars: text.length,
-    captured_at: "frozen",
+    captured_at: "2026-01-01T00:00:00.000Z",
   });
 }
 

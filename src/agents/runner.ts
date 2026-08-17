@@ -48,9 +48,14 @@ function renderElement(e: Capture["elements"][number]): string {
     name = ` name(${e.name_source})="${e.accessible_name}"`;
   }
 
+  // B13. Said only when true. "not sticky" on every other element would be a
+  // claim the capture cannot support for anything captured before 2026-08-17,
+  // and silence is what the rest of this renderer already means.
+  const pinned = e.position ? ` position:${e.position}` : "";
+
   return (
     `${e.ref} <${e.tag}${attrs}> ` +
-    `[${e.above_fold ? "above fold" : "below fold"}] ` +
+    `[${e.above_fold ? "above fold" : "below fold"}]${pinned} ` +
     `${Math.round(e.bbox.width)}x${Math.round(e.bbox.height)}px ${e.font_size}px :: ` +
     `${e.text || "(no text)"}${name}`
   );
@@ -141,7 +146,17 @@ export function buildRequest(rubric: Rubric, capture: Capture, tiles: PageTiles)
       {
         role: "user" as const,
         content: [
-          { type: "text" as const, text: `Review the captured page below.` },
+          {
+            type: "text" as const,
+            // B13, and deliberately on this side of the untrusted boundary: a
+            // reviewer with no clock called a footer stamp of 28-Jun-2026
+            // "in the future" on a page captured seven weeks later. The date
+            // has to be ours. Read from inside the capture block it would be
+            // page content, and a page that wants to look fresh could write it.
+            text:
+              `Review the captured page below. It was captured on ` +
+              `${capture.captured_at.slice(0, 10)}.`,
+          },
           // Images before the measurements, deliberately: the screenshot is the
           // page, and the element list is our description of it. A reviewer that
           // reads the description first anchors on it and treats the picture as

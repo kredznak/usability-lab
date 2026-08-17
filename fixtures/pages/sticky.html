@@ -1,0 +1,30 @@
+<!doctype html>
+<!--
+  B13. A fixed header, a sticky sub-nav, and a static banner that looks like
+  both. A full-page screenshot paints the first two once, at the top, so the
+  picture alone says they scroll away with the rest of the page — which is how
+  duolingo's fixed header was reported as "no sticky version reappears".
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sticky fixture</title>
+    <style>
+      body { margin: 0; font-family: sans-serif; }
+      #site-header { position: fixed; top: 0; width: 100%; height: 60px; background: #eee; }
+      #sub-nav { position: sticky; top: 60px; height: 40px; background: #ddd; }
+      #banner { position: static; height: 40px; background: #ccc; }
+      main { height: 3000px; padding-top: 100px; }
+    </style>
+  </head>
+  <body>
+    <header id="site-header"><a href="/">Home</a></header>
+    <nav id="sub-nav"><a href="#one">Section one</a></nav>
+    <div id="banner"><a href="#two">Announcement</a></div>
+    <main>
+      <h1>A long page</h1>
+      <p>Scrolls far enough that a fixed header matters.</p>
+      <a href="#three">A link near the bottom</a>
+    </main>
+  </body>
+</html>

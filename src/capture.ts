@@ -133,6 +133,7 @@ async function extractElements(
         accessible_name: string | null;
         name_source: "aria-label" | "aria-labelledby" | "label" | "title" | "alt" | "placeholder" | null;
         font_size: number;
+        position: "fixed" | "sticky" | null;
         priority: number;
         order: number;
       }
@@ -413,6 +414,12 @@ async function extractElements(
           accessible_name: accessibleName,
           name_source: nameSource,
           font_size: Math.round(parseFloat(style.fontSize) || 0),
+          // B13. Only the two values that mean "this stays put while the page
+          // scrolls" — the rest is noise the reviewer cannot use. A full-page
+          // screenshot paints a fixed element once, at the top, so the picture
+          // says the opposite of the truth here and nothing else carried it.
+          position:
+            style.position === "fixed" || style.position === "sticky" ? style.position : null,
           priority,
           order: order++,
         });
@@ -490,6 +497,7 @@ async function extractElements(
           accessible_name: c.accessible_name,
           name_source: c.name_source,
           font_size: c.font_size,
+          position: c.position,
         })),
         total,
       };

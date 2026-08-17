@@ -52,6 +52,21 @@ export const CapturedElement = z.object({
     .nullable(),
   /** Computed font-size in px. Hierarchy is a claim about relative size (R5). */
   font_size: z.number(),
+  /**
+   * `fixed` or `sticky`, and null for everything else — B13.
+   *
+   * A fixed header paints once at the top of a full-page screenshot, so a
+   * reviewer looking at the slices sees it in the first one and nowhere else.
+   * One read that as "no sticky version of it reappears" and filed a severity 2
+   * at high confidence; duolingo's header is `position: fixed`, 1440x72 at
+   * top:0. The screenshot cannot show this and the element list did not carry
+   * it, so the reviewer had nothing to be right with.
+   *
+   * Optional so that captures frozen before 2026-08-17 still parse. Null here
+   * means "static, or taken before we recorded it" — which is why the renderer
+   * says nothing at all rather than saying "not sticky".
+   */
+  position: z.enum(["fixed", "sticky"]).nullish(),
 });
 export type CapturedElement = z.infer<typeof CapturedElement>;
 

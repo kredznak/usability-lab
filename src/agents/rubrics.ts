@@ -88,7 +88,7 @@ export const HEURISTICS: Rubric = {
   id: "heuristics",
   label: "Heuristics",
   model: MODEL,
-  prompt_version: "heuristics-v3",
+  prompt_version: "heuristics-v4",
   lane: `## Your lane: Heuristics
 
 You perform a Nielsen-style usability review: visibility of system status, match between the system and the real world, user control and freedom, consistency and standards, error prevention, recognition over recall, flexibility, minimalist design, error recovery, and help.
@@ -102,7 +102,7 @@ export const FORMS: Rubric = {
   id: "forms",
   label: "Forms & Flow",
   model: MODEL,
-  prompt_version: "forms-v2",
+  prompt_version: "forms-v3",
   lane: `## Your lane: Forms & Flow
 
 You review the mechanics of what the page asks a visitor to do: form fields, their labels and input types, how many there are and whether each is necessary, the order they are asked in, how a multi-step flow is signposted, and what happens when something goes wrong.
@@ -118,7 +118,7 @@ export const CONVERSION: Rubric = {
   id: "conversion-cta",
   label: "Conversion & CTA",
   model: MODEL,
-  prompt_version: "conversion-cta-v2",
+  prompt_version: "conversion-cta-v3",
   lane: `## Your lane: Conversion & CTA
 
 You review whether this page moves a visitor toward the action it wants from them. Calls to action: whether one is obvious, whether it is the same one throughout, whether it says what happens next. Trust: the signals a visitor looks for before committing — pricing shown plainly, what the commitment actually is, who else uses this, how to reach a human. Motivation: whether the page gives someone a reason to act before it asks them to.
@@ -132,7 +132,7 @@ export const COPY: Rubric = {
   id: "copy",
   label: "Copy",
   model: MODEL,
-  prompt_version: "copy-v2",
+  prompt_version: "copy-v3",
   lane: `## Your lane: Copy
 
 You review the words. Whether a visitor who has never heard of this company understands what it does, from the page's own sentences. Whether headings say something specific or merely sound impressive. Whether jargon, acronyms, or internal vocabulary appear without explanation. Whether the first screen answers "what is this and who is it for".
@@ -148,7 +148,7 @@ export const A11Y: Rubric = {
   id: "a11y",
   label: "Accessibility",
   model: MODEL,
-  prompt_version: "a11y-v2",
+  prompt_version: "a11y-v3",
   lane: `## Your lane: Accessibility
 
 You review whether people using assistive technology, a keyboard, or low vision can use this page. Work from WCAG, and name the criterion where you can.
@@ -166,7 +166,7 @@ export const VISUAL: Rubric = {
   id: "visual-hierarchy",
   label: "Visual Hierarchy",
   model: MODEL,
-  prompt_version: "visual-hierarchy-v2",
+  prompt_version: "visual-hierarchy-v3",
   lane: `## Your lane: Visual Hierarchy
 
 You review how the page guides the eye. What a visitor notices first, second, third — and whether that order matches what matters. Every element in the capture carries its measured size and font size, so this lane is about relationships between numbers you can actually see.

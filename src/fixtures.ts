@@ -54,8 +54,10 @@ for (const name of wanted) {
     // A fixed audit_id keeps the fixture diff to real capture changes instead of
     // a fresh UUID on every refresh.
     const result = await capture(url, `fixture-${name}`, path.join("out", `fixture-${name}`));
-    // captured_at would churn the diff on every run for no information.
-    const frozen = { ...result, captured_at: "frozen" };
+    // A fixed timestamp, not a sentinel: captured_at reaches the prompt now, and
+    // a fixture whose value cannot be a date would render "captured on frozen"
+    // in the snapshot — hiding the one line the change was made to add.
+    const frozen = { ...result, captured_at: "2026-01-01T00:00:00.000Z" };
     writeFileSync(path.join(OUT, `${name}.json`), JSON.stringify(frozen, null, 2) + "\n");
     console.log(
       `${name.padEnd(15)} ${result.elements.length}/${result.elements_total} elements, ` +

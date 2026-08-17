@@ -48,7 +48,7 @@ function capture(over: Partial<Capture> = {}): Capture {
     elements_total: 1,
     text_excerpt: "Start your free trial. No credit card required for fourteen days.",
     text_total_chars: 65,
-    captured_at: "frozen",
+    captured_at: "2026-01-01T00:00:00.000Z",
     ...over,
   });
 }

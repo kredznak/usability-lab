@@ -206,3 +206,49 @@ describe("the exclusion is data, not silence", () => {
     );
   });
 });
+
+/**
+ * B13. A fixed header paints once, at the top, in a full-page screenshot.
+ *
+ * duolingo's header is `position: fixed`, 1440x72 at top:0, and a reviewer
+ * looking at the eight slices reported "no fixed or sticky version of it
+ * reappears" — severity 2, high confidence, and false. The screenshot cannot
+ * carry this fact and the element list was not carrying it either, so there was
+ * nothing on the reviewer's side of the wall to be right with.
+ */
+describe("elements that stay put while the page scrolls say so", () => {
+  let sticky: Capture;
+  let stickyDir: string;
+
+  before(async () => {
+    stickyDir = mkdtempSync(path.join(tmpdir(), "ulab-sticky-"));
+    sticky = await capture(
+      pathToFileURL(path.resolve("fixtures/pages/sticky.html")).href,
+      "test-sticky",
+      stickyDir,
+    );
+  });
+
+  after(() => {
+    rmSync(stickyDir, { recursive: true, force: true });
+  });
+
+  const find = (needle: string) =>
+    sticky.elements.find((e) => (e.text ?? "").includes(needle));
+
+  test("a fixed header is recorded as fixed", () => {
+    assert.equal(find("Home")?.position, "fixed");
+  });
+
+  test("a sticky sub-nav is recorded as sticky", () => {
+    assert.equal(find("Section one")?.position, "sticky");
+  });
+
+  test("an ordinary element claims nothing", () => {
+    // Null, not "static". The renderer says nothing when this is null, and a
+    // capture taken before 2026-08-17 has null everywhere — so null has to
+    // mean "unknown", never "definitely not sticky".
+    assert.equal(find("Announcement")?.position ?? null, null);
+    assert.equal(find("A link near the bottom")?.position ?? null, null);
+  });
+});

@@ -179,6 +179,51 @@ describe("renderCapture sends every field a rubric promises", () => {
     assert.ok(blocks[blocks.length - 1]!.cache_control, "the breakpoint must be last");
   });
 
+  /**
+   * B13. Two facts a reviewer confidently asserted and could not have known:
+   * that duolingo's header is not sticky (it is `position: fixed`), and that a
+   * footer stamp seven weeks old was "in the future". Neither is truncation —
+   * the capture simply did not carry the fact, and absence of evidence became
+   * evidence of absence at high confidence.
+   */
+  test("an element that stays put while the page scrolls is marked", () => {
+    const header = { ...capture.elements[0]!, ref: "el_test", position: "fixed" as const };
+    assert.match(renderCapture({ ...capture, elements: [header] }), /position:fixed/);
+  });
+
+  test("an ordinary element is not described as anything", () => {
+    // Silence, not "position:static". Every capture taken before 2026-08-17 has
+    // no position at all, and printing "static" on those would be a new claim
+    // the capture cannot support — the exact mistake being fixed here.
+    const plain = { ...capture.elements[0]!, ref: "el_test", position: null };
+    assert.doesNotMatch(renderCapture({ ...capture, elements: [plain] }), /position:/);
+  });
+
+  test("the reviewer is told when the page was captured", () => {
+    const out = buildRequest(
+      RUBRICS.heuristics!,
+      { ...capture, captured_at: "2026-08-17T14:31:02.000Z" },
+      { tiles: [], unshownPx: 0, fullHeightPx: 0 },
+    );
+    assert.match(JSON.stringify(out.messages[0]!.content), /captured on 2026-08-17/);
+  });
+
+  test("the date is ours, not the page's", () => {
+    // It sits outside <captured_page_data>. Read from inside, a page that wants
+    // to look freshly updated could write whatever date it liked and we would
+    // hand it to the reviewer as fact.
+    const blocks = buildRequest(
+      RUBRICS.heuristics!,
+      { ...capture, captured_at: "2026-08-17T14:31:02.000Z" },
+      { tiles: [], unshownPx: 0, fullHeightPx: 0 },
+    ).messages[0]!.content as { type: string; text?: string }[];
+
+    const dated = blocks.findIndex((b) => /captured on 2026-08-17/.test(b.text ?? ""));
+    const untrusted = blocks.findIndex((b) => /<captured_page_data/.test(b.text ?? ""));
+    assert.ok(dated !== -1 && untrusted !== -1);
+    assert.ok(dated < untrusted, "the date must not sit inside the untrusted block");
+  });
+
   test("the two truncation warnings are independent", () => {
     // A page can have a complete element list and a cut page text, or the
     // reverse. Reporting one because the other happened would be a new lie.

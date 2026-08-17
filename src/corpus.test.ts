@@ -61,7 +61,7 @@ function capture(url: string) {
     elements_total: 1,
     text_excerpt: "Continue",
     text_total_chars: 8,
-    captured_at: "frozen",
+    captured_at: "2026-01-01T00:00:00.000Z",
   };
 }
 

@@ -62,7 +62,7 @@ async function pageOf(height: number, name: string): Promise<Capture> {
     elements_total: 1,
     text_excerpt: "Go",
     text_total_chars: 2,
-    captured_at: "frozen",
+    captured_at: "2026-01-01T00:00:00.000Z",
   });
 }
 
