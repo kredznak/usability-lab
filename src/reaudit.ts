@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { capture, CaptureFailed } from "./capture.js";
-import { AuditStore, type AuditRow } from "./db.js";
+import { AuditStore, EventLog, type AuditRow } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
 import { Capture } from "./types.js";
 import { diffCaptures, isQuiet, type CaptureDiff } from "./capture-diff.js";
@@ -82,6 +82,7 @@ async function main(): Promise<void> {
   }
 
   const store = new AuditStore();
+  const events = new EventLog();
   const baseline = chooseBaseline(store.list(), url);
   if (!baseline) {
     console.error(
@@ -118,6 +119,19 @@ async function main(): Promise<void> {
   }
 
   const diff = diffCaptures(baselineCapture, now);
+  events.record({
+    audit_id: baseline.audit_id,
+    type: "reaudit.checked",
+    data: {
+      url,
+      quiet: isQuiet(diff),
+      // The cost story of the whole feature is in these three numbers: how
+      // often a re-audit finds nothing, and how much churn it correctly ignored.
+      changes: summarise(diff).length,
+      rotated: diff.rotated.length,
+      partial: diff.partial.length,
+    },
+  });
   writeFileSync(path.join(baselineDir, CHANGE_FILE), JSON.stringify(diff, null, 2) + "\n");
 
   for (const p of diff.partial) console.error(`  partial: ${p}`);
@@ -133,6 +147,7 @@ async function main(): Promise<void> {
         `  No audit was run and nothing was spent.\n`,
     );
     store.close();
+    events.close();
     return;
   }
 
@@ -145,6 +160,7 @@ async function main(): Promise<void> {
 
   console.error(`  running a fresh audit on the changed page\n`);
   store.close();
+  events.close();
   execFileSync("npm", args, { stdio: "inherit" });
 
   // The audit that just ran created its own row; whether a person reads it is

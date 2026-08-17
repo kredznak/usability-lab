@@ -19,7 +19,8 @@
     "outcome": "node --import tsx src/outcome.ts",
     "label": "node --import tsx src/label.ts",
     "review": "node --import tsx src/review.ts",
-    "reaudit": "node --env-file-if-exists=.env --import tsx src/reaudit.ts"
+    "reaudit": "node --env-file-if-exists=.env --import tsx src/reaudit.ts",
+    "funnel": "node --import tsx src/funnel.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

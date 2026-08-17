@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
 import path from "node:path";
-import { AuditStore } from "./db.js";
+import { AuditStore, EventLog } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
 import {
   Capture,
@@ -60,6 +60,7 @@ function wrap(text: string, width = 74, indent = "  "): string {
 }
 
 const store = new AuditStore();
+const events = new EventLog();
 
 const args = process.argv.slice(2);
 const prefix = args.find((a) => !a.startsWith("--"));
@@ -271,6 +272,17 @@ const record: ReviewRecord = {
 };
 writeFileSync(path.join(dir, "review.json"), JSON.stringify(record, null, 2) + "\n");
 
+/**
+ * The gate is the only step where a person's judgment enters, and until now it
+ * left no trace outside review.json. Kept/cut counts are what "founder-review
+ * reject rate" in §8's quality dashboard is made of.
+ */
+events.record({
+  audit_id: audit.audit_id,
+  type: "review.decided",
+  data: { kept: kept.length, cut, adjusted, findings: findings.length },
+});
+
 // Reuses the one interface rather than opening a second. A fresh readline over
 // an already-ended stdin never resolves, so a piped review would hang here at
 // the last question — after every judgment had been made and none saved.
@@ -299,7 +311,13 @@ const publicPath = await renderPublic(
 );
 
 store.transition(audit.audit_id, "PUBLISHED", { findings_published: kept.length });
+events.record({
+  audit_id: audit.audit_id,
+  type: "audit.published",
+  data: { kept: kept.length, shown: Math.min(FREE_FINDINGS, keptIssues.length), issues: keptIssues.length },
+});
 store.close();
+events.close();
 
 console.log(
   `\n${GREEN}PUBLISHED${RESET}\n` +

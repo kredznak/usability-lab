@@ -339,3 +339,82 @@ export class CallLog {
     this.db.close();
   }
 }
+
+/**
+ * The event log — docs/design.md §8, and the clause of §0's definition of done
+ * that has never been built: "every step's events visible in the funnel
+ * dashboard".
+ *
+ * ## Why this exists beyond the spec line
+ *
+ * Every expensive thing found on 2026-08-17 was found by reading something by
+ * hand. B14 — a synthesizer step that ran 27 minutes and reported success —
+ * was noticed because a step timing scrolled past in a terminal. Timings were
+ * being printed and thrown away; `model_calls` records per-call cost but not
+ * the shape of a run, and nothing at all recorded what a person did at the
+ * gate.
+ *
+ * ## What goes in it, and what deliberately does not
+ *
+ * Step names, durations, outcomes, counts. **Not page content.** §8 makes
+ * events permanent while captures expire at 90 days, so anything written here
+ * outlives the deletion policy that covers the page it came from. Storing
+ * scraped text here would quietly turn a 90-day promise into a permanent one.
+ */
+export interface EventRow {
+  audit_id: string | null;
+  type: string;
+  data: Record<string, unknown>;
+}
+
+export class EventLog {
+  private db: Database.Database;
+
+  constructor(dbPath = DB_PATH) {
+    mkdirSync(path.dirname(dbPath), { recursive: true });
+    this.db = new Database(dbPath);
+    this.db.pragma("journal_mode = WAL");
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS events (
+        id       INTEGER PRIMARY KEY AUTOINCREMENT,
+        audit_id TEXT,
+        type     TEXT NOT NULL,
+        data     TEXT NOT NULL,
+        at       TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_events_audit ON events(audit_id);
+      CREATE INDEX IF NOT EXISTS idx_events_type ON events(type);
+    `);
+  }
+
+  /**
+   * Append-only, and it swallows its own failures.
+   *
+   * §8 calls this append-only; there is no update or delete here to make that
+   * true by construction rather than by intention. And an audit must never die
+   * because its telemetry did — a $0.65 run lost to a logging bug would be the
+   * worst possible trade.
+   */
+  record(row: EventRow): void {
+    try {
+      this.db
+        .prepare(`INSERT INTO events (audit_id, type, data, at) VALUES (?, ?, ?, ?)`)
+        .run(row.audit_id, row.type, JSON.stringify(row.data), new Date().toISOString());
+    } catch {
+      // Deliberately silent: see above.
+    }
+  }
+
+  all(auditId?: string): (EventRow & { at: string; id: number })[] {
+    const rows = (
+      auditId
+        ? this.db.prepare(`SELECT * FROM events WHERE audit_id = ? ORDER BY id`).all(auditId)
+        : this.db.prepare(`SELECT * FROM events ORDER BY id`).all()
+    ) as { id: number; audit_id: string | null; type: string; data: string; at: string }[];
+    return rows.map((r) => ({ ...r, data: JSON.parse(r.data) as Record<string, unknown> }));
+  }
+
+  close(): void {
+    this.db.close();
+  }
+}

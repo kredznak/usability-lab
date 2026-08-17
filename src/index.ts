@@ -16,7 +16,7 @@ import { deriveSignals } from "./signals.js";
 import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
-import { CallLog, AuditStore, type AuditStatus } from "./db.js";
+import { CallLog, AuditStore, EventLog, type AuditStatus } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
 import { countingFetch } from "./http.js";
 import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
@@ -46,17 +46,40 @@ interface Timing {
   ms: number;
 }
 
-async function timed<T>(step: string, timings: Timing[], fn: () => Promise<T>): Promise<T> {
+/**
+ * Every step is timed here, so every step is logged here.
+ *
+ * One call site covers capture, profile, orchestrate, review, synthesize,
+ * research, annotate and render. Emitting from each step individually would
+ * mean eight chances to forget one, and the step nobody remembered to
+ * instrument would be the one that hung.
+ *
+ * The failure path emits too. B14 ran 27 minutes and reported success; the
+ * steps worth seeing on a dashboard are precisely the ones that went wrong.
+ */
+async function timed<T>(
+  step: string,
+  timings: Timing[],
+  fn: () => Promise<T>,
+  events?: { log: EventLog; auditId: string },
+): Promise<T> {
   const started = Date.now();
   process.stderr.write(`  ${step.padEnd(14)} `);
   try {
     const result = await fn();
     const ms = Date.now() - started;
     timings.push({ step, ms });
+    events?.log.record({ audit_id: events.auditId, type: `step.${step}`, data: { ms, ok: true } });
     process.stderr.write(`${(ms / 1000).toFixed(1)}s\n`);
     return result;
   } catch (err) {
-    process.stderr.write(`failed after ${((Date.now() - started) / 1000).toFixed(1)}s\n`);
+    const ms = Date.now() - started;
+    events?.log.record({
+      audit_id: events.auditId,
+      type: `step.${step}`,
+      data: { ms, ok: false, error: err instanceof Error ? err.message : String(err) },
+    });
+    process.stderr.write(`failed after ${(ms / 1000).toFixed(1)}s\n`);
     throw err;
   }
 }
@@ -149,10 +172,12 @@ async function main(): Promise<void> {
   const timings: Timing[] = [];
   const log = new CallLog();
   const audits = new AuditStore();
+  const events = new EventLog();
   /** §7: DEGRADED is a logged, visible state — never a quiet one. */
   const degraded: string[] = [];
 
   audits.create(auditId, url);
+  events.record({ audit_id: auditId, type: "audit.requested", data: { url } });
 
   /**
    * `--pin-to <audit>` reuses that audit's reviewer lanes instead of deciding
@@ -205,7 +230,7 @@ async function main(): Promise<void> {
     const client = new Anthropic({ fetch: countingFetch() });
 
     setStatus("CAPTURING");
-    const captured = await timed("capture", timings, () => capture(url, auditId, outDir));
+    const captured = await timed("capture", timings, () => capture(url, auditId, outDir), { log: events, auditId });
 
     /**
      * The five answers, kept with the audit.
@@ -222,11 +247,12 @@ async function main(): Promise<void> {
 
     const hasAnswers = Object.values(answers).some((a) => a && a.length > 0);
     const profile = hasAnswers
-      ? (await timed("profile", timings, () => runProfiler(client, answers, auditId, log))).profile
+      ? (await timed("profile", timings, () => runProfiler(client, answers, auditId, log), { log: events, auditId })).profile
       : EMPTY_PROFILE;
 
     const plan = await timed("orchestrate", timings, () =>
       orchestrate(client, profile, signals, auditId, log, pinnedTo),
+      { log: events, auditId },
     );
     if (plan.override_rejected) degraded.push(`orchestrator: ${plan.override_rejected}`);
 
@@ -260,6 +286,7 @@ async function main(): Promise<void> {
           return { agent, findings: [] as RawFinding[], latencyMs: 0, costUsd: 0 };
         }
       }),
+      { log: events, auditId },
     );
 
     const identified = identify(runs);
@@ -269,6 +296,7 @@ async function main(): Promise<void> {
 
     const synthesis = await timed("synthesize", timings, () =>
       runSynthesizer(client, identified, profile.summary, auditId, log),
+      { log: events, auditId },
     );
     if (synthesis.degraded) degraded.push(`synthesizer: ${synthesis.degraded}`);
 
@@ -322,6 +350,7 @@ async function main(): Promise<void> {
      */
     const research = await timed("research", timings, () =>
       runResearcher(client, findings, auditId, log),
+      { log: events, auditId },
     );
     if (research.degraded) degraded.push(`research: ${research.degraded}`);
     const cited = research.findings;
@@ -346,6 +375,7 @@ async function main(): Promise<void> {
 
     const annotated = await timed("annotate", timings, () =>
       annotate(captured.screenshot_path, cited, outDir, auditId),
+      { log: events, auditId },
     );
 
     const costUsd = log.totalCost(auditId);
@@ -366,7 +396,19 @@ async function main(): Promise<void> {
         },
         outDir,
       ),
+      { log: events, auditId },
     );
+
+    events.record({
+      audit_id: auditId,
+      type: "audit.completed",
+      data: {
+        findings: findings.length,
+        cost_usd: costUsd,
+        total_ms: timings.reduce((n, t) => n + t.ms, 0),
+        degraded: degraded.length,
+      },
+    });
 
     setStatus("REVIEW_PENDING", {
       profile_summary: profile.summary,
@@ -402,6 +444,16 @@ async function main(): Promise<void> {
       process.exitCode = 1;
     }
   } catch (err) {
+    // An audit that died is the most important row on a dashboard, so it is
+    // recorded before the status transition rather than after.
+    events.record({
+      audit_id: auditId,
+      type: "audit.failed",
+      data: {
+        error: err instanceof Error ? err.message : String(err),
+        at_step: timings.length > 0 ? timings[timings.length - 1]!.step : "capture",
+      },
+    });
     if (err instanceof CaptureFailed) {
       // F1/F2: named state, honest message, never an audit from imagination.
       setStatus("CAPTURE_FAILED");
@@ -415,6 +467,7 @@ async function main(): Promise<void> {
   } finally {
     log.close();
     audits.close();
+    events.close();
   }
 }
 
