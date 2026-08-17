@@ -206,6 +206,17 @@ async function main(): Promise<void> {
 
     setStatus("CAPTURING");
     const captured = await timed("capture", timings, () => capture(url, auditId, outDir));
+
+    /**
+     * The five answers, kept with the audit.
+     *
+     * A re-audit has to ask the same question of the page as the audit it is
+     * compared against, and the profile is built from these. Only
+     * `profile_summary` was stored, which is the model's paraphrase — rebuilding
+     * a profile from it would compare a page against a different brief and call
+     * the difference a change in the site.
+     */
+    await writeFile(path.join(outDir, "answers.json"), JSON.stringify(answers, null, 2), "utf8");
     setStatus("AUDITING", { final_url: captured.final_url, title: captured.title });
     const signals = deriveSignals(captured);
 
