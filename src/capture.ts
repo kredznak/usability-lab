@@ -283,6 +283,47 @@ async function extractElements(
         };
       })();
 
+      /**
+       * Does this element stay put while the page scrolls — B13, second attempt.
+       *
+       * The first attempt read `style.position` off the element itself and
+       * recorded nothing at all on the page it was written for. duolingo's
+       * header is a `position: static` <nav> inside a `position: fixed` <div>,
+       * and the <div> is not in our selector, so asking each element about
+       * itself answered "static" about something that never moves. That is the
+       * same mistake as the opacity bug — asking an element about its own style
+       * instead of asking what the visitor sees — and the fixture page hid it,
+       * because the fixture put `fixed` directly on the <header>.
+       *
+       * A fixed ancestor pins everything inside it, so the whole chain is the
+       * answer. Memoized like `ancestorHidden`, and for the same reason.
+       */
+      const pinnedBy = ((): ((el: HTMLElement) => "fixed" | "sticky" | null) => {
+        const cache = new Map<Element, "fixed" | "sticky" | null>();
+        return (start) => {
+          const chain: Element[] = [];
+          let node: HTMLElement | null = start;
+          let found: "fixed" | "sticky" | null = null;
+          while (node) {
+            const cached = cache.get(node);
+            if (cached !== undefined) {
+              found = cached;
+              break;
+            }
+            const p = window.getComputedStyle(node).position;
+            if (p === "fixed" || p === "sticky") {
+              found = p;
+              cache.set(node, p);
+              break;
+            }
+            chain.push(node);
+            node = node.parentElement;
+          }
+          for (const c of chain) cache.set(c, found);
+          return found;
+        };
+      })();
+
       // Interactive elements are what findings are usually about, so they win a
       // contested slot over a structural wrapper in the same band.
       const INTERACTIVE = ["a", "button", "input", "select", "textarea", "label", "form"];
@@ -418,8 +459,7 @@ async function extractElements(
           // scrolls" — the rest is noise the reviewer cannot use. A full-page
           // screenshot paints a fixed element once, at the top, so the picture
           // says the opposite of the truth here and nothing else carried it.
-          position:
-            style.position === "fixed" || style.position === "sticky" ? style.position : null,
+          position: pinnedBy(el),
           priority,
           order: order++,
         });

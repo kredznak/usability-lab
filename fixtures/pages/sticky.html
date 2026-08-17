@@ -1,9 +1,14 @@
 <!doctype html>
 <!--
-  B13. A fixed header, a sticky sub-nav, and a static banner that looks like
-  both. A full-page screenshot paints the first two once, at the top, so the
-  picture alone says they scroll away with the rest of the page — which is how
+  B13. A full-page screenshot paints a fixed element once, at the top, so the
+  picture alone says it scrolls away with everything else — which is how
   duolingo's fixed header was reported as "no sticky version reappears".
+
+  The important case is #site-header: the thing that is fixed is a plain <div>
+  that our selector never captures, and the <nav> inside it computes
+  `position: static`. That is duolingo's actual shape, and the first version of
+  this fixture did not have it — it put `position: fixed` straight onto the
+  <header>, which every implementation passes, including the broken one.
 -->
 <html lang="en">
   <head>
@@ -18,8 +23,10 @@
     </style>
   </head>
   <body>
-    <header id="site-header"><a href="/">Home</a></header>
-    <nav id="sub-nav"><a href="#one">Section one</a></nav>
+    <div id="site-header">
+      <nav><a href="/">Home</a></nav>
+    </div>
+    <header id="sub-nav"><a href="#one">Section one</a></header>
     <div id="banner"><a href="#two">Announcement</a></div>
     <main>
       <h1>A long page</h1>

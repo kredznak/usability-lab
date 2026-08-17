@@ -236,12 +236,29 @@ describe("elements that stay put while the page scrolls say so", () => {
   const find = (needle: string) =>
     sticky.elements.find((e) => (e.text ?? "").includes(needle));
 
-  test("a fixed header is recorded as fixed", () => {
+  /**
+   * The case the first fix missed entirely.
+   *
+   * "Home" is an <a> inside a <nav> that computes `position: static`; the thing
+   * that is fixed is a <div> our selector never captures. Reading
+   * `style.position` off the element answers "static" about something that
+   * never moves, and on the live page it recorded position on zero elements.
+   * A fixed ancestor pins everything inside it.
+   */
+  test("a link pinned by a fixed ancestor is recorded as fixed", () => {
     assert.equal(find("Home")?.position, "fixed");
   });
 
   test("a sticky sub-nav is recorded as sticky", () => {
     assert.equal(find("Section one")?.position, "sticky");
+  });
+
+  test("the header itself is captured, not only its link", () => {
+    // The <nav> and <header> wrappers are in the selector; they must carry the
+    // same answer as the things inside them, since they are pinned by the same
+    // ancestor.
+    const nav = sticky.elements.find((e) => e.tag === "nav");
+    assert.equal(nav?.position, "fixed", "the nav is static but sits inside a fixed div");
   });
 
   test("an ordinary element claims nothing", () => {
