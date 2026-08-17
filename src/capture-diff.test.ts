@@ -2,7 +2,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { Capture, type CapturedElement } from "./types.js";
-import { diffCaptures, isQuiet, shape } from "./capture-diff.js";
+import { diffCaptures, isDated, isQuiet, shape } from "./capture-diff.js";
 
 /**
  * Capture diffs — the deterministic half of change monitoring.
@@ -167,5 +167,60 @@ describe("elements are compared as a multiset, because refs are positional", () 
     const before = withElements([el({ text: "Pricing" }), el({ text: "Docs" })]);
     const after = withElements([el({ text: "Docs" }), el({ text: "Pricing" })]);
     assert.ok(isQuiet(diffCaptures(before, after)));
+  });
+});
+
+/**
+ * A date going past is not a page changing.
+ *
+ * basecamp twice triggered a ~$0.55 audit because one live-class link expired
+ * with nothing replacing it. Grouped rotation needs a matching shape on both
+ * sides, so a one-way expiry fell through as an ordinary removal — and a daily
+ * scheduler would have billed an audit a day on any site with a calendar.
+ */
+describe("a dated item expiring on its own is not news", () => {
+  test("the exact case that billed twice", () => {
+    const before = withElements([
+      el({ text: "Aug 17 Intro to Basecamp Mon, Aug 17, 1:00pm" }),
+      el({ text: "Try Basecamp free" }),
+    ]);
+    const after = withElements([el({ text: "Try Basecamp free" })]);
+    const d = diffCaptures(before, after);
+    assert.equal(d.interactive.removed.length, 1, "it is still reported");
+    assert.ok(isQuiet(d), "but it must not spend money on its own");
+  });
+
+  test("a real removal alongside an expiry is still loud", () => {
+    // The whole risk of this rule is that it quiets a page that did change.
+    // An expiry must never provide cover for the CTA disappearing with it.
+    const before = withElements([
+      el({ text: "Aug 17 Intro to Basecamp Mon, Aug 17, 1:00pm" }),
+      el({ text: "Try Basecamp free" }),
+    ]);
+    const after = withElements([]);
+    assert.equal(isQuiet(diffCaptures(before, after)), false);
+  });
+
+  test("a price is never treated as a date", () => {
+    const before = withElements([el({ text: "Spend $99.00 more for free shipping" })]);
+    const after = withElements([]);
+    assert.equal(isQuiet(diffCaptures(before, after)), false);
+  });
+
+  test("a form field is never quieted, whatever its label says", () => {
+    // A signup form losing a field is the most consequential thing this can
+    // detect, and a field labelled "Date of birth" must not buy silence.
+    const before = withElements([
+      el({ tag: "input", input_type: "date", accessible_name: "Date of birth Aug" }),
+    ]);
+    const after = withElements([]);
+    assert.equal(isQuiet(diffCaptures(before, after)), false);
+  });
+
+  test("isDated only fires on text carrying a date", () => {
+    assert.equal(isDated({ tag: "a", label: "aug 17 intro to basecamp" }), true);
+    assert.equal(isDated({ tag: "a", label: "try basecamp free" }), false);
+    assert.equal(isDated({ tag: "a", label: "spend $99.00 more" }), false);
+    assert.equal(isDated({ tag: "a", label: "3 seats left" }), false);
   });
 });

@@ -235,15 +235,54 @@ export function diffCaptures(before: Capture, after: Capture): CaptureDiff {
   };
 }
 
-/** True when nothing worth telling anyone about changed. Rotation is not change. */
+/**
+ * Is this item just a date going past?
+ *
+ * `shape` only rewrites text that already contains a month or weekday name, so
+ * a label that shapes differently from itself is one carrying a date. A price,
+ * a count, a plan name and a heading all shape to themselves and are never
+ * caught by this.
+ */
+export function isDated(item: Item): boolean {
+  return shape(item.label) !== item.label;
+}
+
+/**
+ * True when nothing worth telling anyone about changed.
+ *
+ * Rotation is not change, and neither is a dated item expiring on its own.
+ *
+ * basecamp twice triggered a ~$0.55 audit because one live-class link
+ * ("aug 17 intro to basecamp mon, aug 17, 1:00pm") dropped off the schedule
+ * with nothing replacing it. The grouped-rotation rule needs a matching shape
+ * on *both* sides, so a one-way expiry falls through as an ordinary removal. A
+ * scheduler running this daily would bill one audit a day, for ever, on any
+ * site with a calendar on it.
+ *
+ * **The cost of this rule, stated plainly:** a dated item that genuinely
+ * mattered — "Black Friday sale ends Nov 30" disappearing — also goes quiet.
+ * It is still reported in the diff and still written to capture-diff.json; it
+ * simply does not spend the customer's money on a fresh audit by itself. That
+ * trade was Kelly's call on 2026-08-17.
+ */
 export function isQuiet(d: CaptureDiff): boolean {
+  const loud = (c: Change<Item>) => ({
+    added: c.added.filter((i) => !isDated(i)),
+    removed: c.removed.filter((i) => !isDated(i)),
+  });
+  const interactive = loud(d.interactive);
+  const headings = loud(d.headings);
+
   return (
     d.title === null &&
     d.final_url === null &&
-    d.interactive.added.length === 0 &&
-    d.interactive.removed.length === 0 &&
-    d.headings.added.length === 0 &&
-    d.headings.removed.length === 0 &&
+    interactive.added.length === 0 &&
+    interactive.removed.length === 0 &&
+    headings.added.length === 0 &&
+    headings.removed.length === 0 &&
+    // Fields are not filtered. A form field is never a date rolling past, and
+    // a signup form quietly gaining or losing one is the most consequential
+    // change this whole feature can detect.
     d.fields.added.length === 0 &&
     d.fields.removed.length === 0
   );
