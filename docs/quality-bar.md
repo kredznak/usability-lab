@@ -54,7 +54,15 @@ Lead with the evidence, not the visitor's frame. When the stated concern (messag
 [PROPOSED — the smaller sibling case: contradictory question-flow answers (e.g. "e-commerce" + "no purchase goal"). Proceed on best interpretation and state the interpretation on the results page, rather than interrupting the flow to interrogate. Confirm.]
 
 **When it makes a mistake, the AI should:**
-Pre-publish: founder review catches it; rejection reason is logged and fed back as a negative example. Post-publish: [UNRESOLVED — needs decision: a customer replies "finding #2 is wrong — that's an intentional feature." What's the correction path? Options: silently edit the live page / visibly annotate the correction / reply-and-correct with thanks. Kind curiosity suggests the third, but it's unstaffed until decided.]
+Pre-publish: founder review catches it; rejection reason is logged and fed back as a negative example.
+
+Post-publish: **the page is fixed and it says so.** Decided 2026-08-17 (B5). A correction regenerates `results.html` and adds a dated line in our words — "Corrected 18 Aug · the sources behind three findings were missing from this page" — above the findings. `npm run correct -- <audit-id> "<reason>"`; the history is append-only in the event log, and a page corrected twice shows both.
+
+The rejected options and why. *Silent editing* is indistinguishable from the thing this product sells against: a reader who acted on the old page never learns. *A new URL with the old page preserved* is the most honest and was not chosen — pages are files on disk with no hosting, so it is machinery for a guarantee we cannot yet make.
+
+Two things this does not do, recorded so they are not mistaken for solved. **Nobody is notified** — a correction the customer never hears about is half a policy, and there is no email path yet. And a correction **re-renders with today's code**, so it can pick up unrelated rendering changes while the dated line names only the stated reason.
+
+`review.ts` still refuses to re-review a published audit, but now points at the correction path instead of stopping. It had been bypassed twice by throwaway scripts; a guard that can only be stepped around will be stepped around.
 
 ---
 
@@ -164,9 +172,9 @@ Founder reject rate > 30% trailing-10; sampled re-audit review failures; `none`-
 
 ## Metadata
 
-Last updated: 2026-08-07
+Last updated: 2026-08-17
 Updated by: Kelly (facilitated with Claude)
-Version: 0.3 — subscription model (monitoring framing); review commitment amended for re-audits (sampled); one [UNRESOLVED] remains (post-publish correction path) plus [PROPOSED] items pending confirmation
+Version: 0.4 — post-publish correction path decided 2026-08-17 (dated correction on the page; B5); no [UNRESOLVED] items remain. [PROPOSED] items still pending confirmation.
 Approved by: —
 
 ---

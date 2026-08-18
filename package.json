@@ -21,7 +21,8 @@
     "review": "node --import tsx src/review.ts",
     "reaudit": "node --env-file-if-exists=.env --import tsx src/reaudit.ts",
     "funnel": "node --import tsx src/funnel.ts",
-    "redteam": "node --env-file-if-exists=.env --import tsx src/redteam.ts"
+    "redteam": "node --env-file-if-exists=.env --import tsx src/redteam.ts",
+    "correct": "node --import tsx src/correct.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

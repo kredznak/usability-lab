@@ -318,6 +318,16 @@ export interface PublishInput {
    * "other"` — that would have been read as fact the moment this page used them.
    */
   summary: string;
+  /**
+   * Corrections made after publishing, oldest first — B5.
+   *
+   * A published page that turns out to be wrong gets fixed *and says so*.
+   * Twice before this existed, a page was rewritten in place with a throwaway
+   * script that bypassed `review.ts`'s refusal, and nothing anywhere recorded
+   * that what the visitor saw had changed. Silence is the option this product
+   * sells against.
+   */
+  corrections?: { at: string; reason: string }[];
 }
 
 /** quality-bar §7 — three shown free. */
@@ -333,6 +343,7 @@ export const FREE_FINDINGS = 3;
  */
 export async function renderPublic(input: PublishInput, outDir: string): Promise<string> {
   const { capture, kept, allFindings, annotatedImage, summary } = input;
+  const corrections = input.corrections ?? [];
   const imageSrc = path.basename(annotatedImage);
 
   const issues = kept.filter((f) => !f.positive);
@@ -431,6 +442,9 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
           border-radius:4px; padding:18px 20px; margin:32px 0; }
   .gate h2 { margin:0 0 8px; font-size:17px; }
   .gate p { margin:0 0 6px; }
+  .corrections { border-left:3px solid var(--accent); padding:2px 0 2px 14px; margin:0 0 24px;
+                 font-size:14px; color:#444; }
+  .corrections p { margin:0 0 4px; }
   .positive { border-left:3px solid #3c965a; padding-left:14px; margin-bottom:14px; }
   .positive p { margin:0 0 4px; }
   footer { margin-top:44px; padding-top:20px; border-top:1px solid var(--line);
@@ -445,7 +459,19 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
   </header>
 
   <p class="lead">${escapeHtml(summary)}</p>
-
+${
+    corrections.length > 0
+      ? `  <div class="corrections">
+    ${corrections
+      .map(
+        (c) =>
+          `<p><strong>Corrected ${escapeHtml(c.at.slice(0, 10))}</strong> &middot; ${escapeHtml(c.reason)}</p>`,
+      )
+      .join("\n    ")}
+  </div>
+`
+      : ""
+  }
   <figure>
     <img src="${escapeHtml(imageSrc)}" alt="Annotated screenshot of the audited page">
     <figcaption>The number on each finding below is its pin on this screenshot. Findings

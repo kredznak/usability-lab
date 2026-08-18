@@ -103,7 +103,9 @@ if (audit.status !== "REVIEW_PENDING") {
   console.error(
     `\nAudit ${audit.audit_id.slice(0, 8)} is ${audit.status}, not REVIEW_PENDING.` +
       (audit.status === "PUBLISHED"
-        ? `\nIt has already been published. Re-reviewing would rewrite what the visitor saw.\n`
+        ? `\nIt has already been published. Re-reviewing would rewrite what the visitor saw.\n` +
+          `To fix a published page and say so, use the correction path (B5):\n` +
+          `  npm run correct -- ${audit.audit_id.slice(0, 8)} "what changed and why"\n`
         : `\n`),
   );
   store.close();
