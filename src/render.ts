@@ -341,6 +341,15 @@ export interface PublishInput {
     action: string;
     /** Shown instead of the form once this visitor has asked. */
     asked?: boolean;
+    /**
+     * They asked again inside the cooldown, and no second link was sent.
+     *
+     * Worth its own wording rather than repeating "on its way": the honest
+     * thing to say is that the *first* one is still the one to look for. A page
+     * that claims to have sent a second mail when it sent none is the small lie
+     * that makes a customer distrust the mail that did arrive.
+     */
+    again?: boolean;
     /** Set when a submission was rejected, so the reason survives the redirect. */
     error?: string;
   };
@@ -406,8 +415,12 @@ const GATE_CSS = `  .gate-form { margin-top:16px; }
 function gateForm(gate: PublishInput["gate"]): string {
   if (!gate) return "";
   if (gate.asked) {
-    return `<p class="gate-sent">A link to the full results is on its way to that address.
-              It opens this page and no other, and expires in seven days.</p>`;
+    return gate.again
+      ? `<p class="gate-sent">The link we already sent is still the one to look for &mdash;
+            we have not sent another. It opens this page and no other, and expires in
+            seven days.</p>`
+      : `<p class="gate-sent">A link to the full results is on its way to that address.
+            It opens this page and no other, and expires in seven days.</p>`;
   }
   return `<form class="gate-form" method="post" action="${escapeHtml(gate.action)}">
             <label for="gate-email">Email me the rest</label>

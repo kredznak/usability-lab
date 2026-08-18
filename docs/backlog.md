@@ -485,31 +485,62 @@ the next time a metric tempts us to automate the gate away.
 
 ---
 
-## B16. The served surface has no defences a public one would need
+## B16. ~~The served surface has no defences a public one would need~~ — DONE 2026-08-18, one item withdrawn
 
-**What.** `npm run serve` (2026-08-18) has no rate limit, no CSRF token, no
-HTTPS, and no lockout on repeated bad tokens. All four were left out on purpose:
-they are untestable against localhost and unacceptable in front of the public,
-so building them now buys a false sense of having done it.
+**What shipped.** `src/ratelimit.ts` and three limits on `POST /a/:id/email`:
 
-**Why it matters.** The gate is the first thing in this repo a stranger could
-reach. Two of the four are cheap and two are not:
+    cooldown    1 link per (audit, address) per 5 min   → "we have not sent another"
+    per audit   20 requests per hour                    → 429 + retry-after
+    per address  5 requests per hour, across audits     → 429 + retry-after
 
-- **Rate limit** on `POST /a/:id/email` — without it, one address can be mailed
-  a link as fast as a loop can run, from anyone holding a results URL. Small: a
-  counter keyed on audit id.
-- **Bad-token lockout** — the token is HMAC-SHA256 and not guessable, so this is
-  belt-and-braces rather than load-bearing. Smallest of the four.
-- **CSRF** — the only state-changing route is the email form, and the worst a
-  forged POST achieves is sending a link to an address the attacker already
-  typed. Genuinely low, and worth writing down as low rather than doing on
-  reflex.
-- **HTTPS** — not ours to build; it belongs to whatever fronts this. But the
-  magic link is a bearer credential in a URL, so plain HTTP in front of a real
-  customer would be a real leak. **This one is a deploy blocker, not a task.**
+The defended case is **mail-bombing**, not the audit: once a sender exists, an
+unlimited endpoint makes us a relay that mails any address a stranger types,
+from our domain, about a site they have never visited. So the limit that
+matters is keyed on the recipient.
 
-**Cost.** Rate limit and lockout: small, an hour with tests. The other two are
-decisions, not code.
+Plus: the magic link now exchanges itself for an `HttpOnly; SameSite=Lax` cookie
+scoped to `Path=/a/<id>/` and redirects to a clean URL, so a seven-day bearer
+credential stops living in browser history and proxy logs after first use.
+
+### The item withdrawn, and why
+
+**The bad-token lockout was a worse idea than the attack it prevents.** As
+specified — refuse an audit after N failed tokens — it is a denial of service
+that anyone holding the results URL can aim at the customer whose audit it is,
+guarding a 256-bit HMAC against guessing, which is not a thing that happens. A
+defence that is easier to abuse than the attack it stops is not a defence.
+
+Replaced with a `token.rejected` event carrying the reason and **not the token**,
+so an attempt is visible in the funnel and nothing gets locked. There is a test
+asserting the real link still works after twenty-five failures.
+
+### CSRF: inapplicable, not deferred
+
+CSRF needs ambient authority. The only state-changing route is the email form,
+it reads no cookie, and an attacker who wants a link mailed to an address they
+chose can POST it themselves — a victim's browser adds nothing. **The rule to
+keep: if a state-changing route ever reads `ul_full`, it needs a CSRF token that
+day.**
+
+### Still a deploy blocker
+
+**HTTPS.** Not ours to build — it belongs to whatever fronts this. But the token
+is a bearer credential and travels in a URL on first use, so plain HTTP in front
+of a real customer is a real leak. Whatever terminates TLS must also set
+`USABILITY_LAB_SECURE_COOKIES=1`; the server will not guess.
+
+### Two limitations that are real
+
+- **The windows are in memory.** A restart forgets them, and behind more than
+  one process each would enforce the limit separately — the real limit silently
+  doubling per process. Revisit before there is a second process.
+- **The sweep is not a cap.** It reclaims expired keys; a flood arriving inside
+  one window expires nothing. What bounds the maps is the *order* of the checks
+  in `server.ts` — the per-audit allowance is peeked before any other key can be
+  created. That ordering is load-bearing and is commented as such in both files.
+
+**The numbers are guesses.** Nobody has used this. They are set where a real
+visitor cannot plausibly reach them and an automated one hits them in seconds.
 
 ## B17. The funnel cannot tell a customer from us
 

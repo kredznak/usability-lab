@@ -43,7 +43,8 @@ import path from "node:path";
 import { AuditStore, EventLog, EmailCaptureStore, type AuditRow } from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
 import { publicHtml } from "./render.js";
-import { sign, verify, looksLikeEmail } from "./tokens.js";
+import { sign, verify, looksLikeEmail, TOKEN_TTL_MS } from "./tokens.js";
+import { SlidingWindow, inMinutes } from "./ratelimit.js";
 
 const PORT = Number(process.env.PORT || 4000);
 
@@ -59,8 +60,48 @@ function published(audit: AuditRow | null): audit is AuditRow {
   return !!audit && (audit.status === "PUBLISHED" || audit.status === "AUTO_PUBLISHED");
 }
 
-function send(res: ServerResponse, code: number, body: string, type = "text/html; charset=utf-8"): void {
+const COOKIE = "ul_full";
+
+/**
+ * Scoped to one audit's path, so a reader of two audits holds two cookies and
+ * neither can be presented for the other. The audit id is in the signature too;
+ * this is the belt to that braces.
+ *
+ * `Secure` is set from an env flag rather than guessed. Guessing wrong in the
+ * safe direction breaks every cookie on localhost; guessing wrong in the other
+ * puts a bearer credential on the wire in clear. Whatever terminates TLS sets
+ * `USABILITY_LAB_SECURE_COOKIES=1`, and B16 records that as part of the deploy,
+ * not as a thing this file can decide.
+ */
+function setCookie(auditId: string, token: string, expiresAt: number): string {
+  const maxAge = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+  const secure = process.env.USABILITY_LAB_SECURE_COOKIES === "1" ? "; Secure" : "";
+  return `${COOKIE}=${token}; Path=/a/${auditId}/; Max-Age=${maxAge}; HttpOnly; SameSite=Lax${secure}`;
+}
+
+function clearCookie(auditId: string): string {
+  return `${COOKIE}=; Path=/a/${auditId}/; Max-Age=0; HttpOnly; SameSite=Lax`;
+}
+
+function cookie(req: IncomingMessage, name: string): string | null {
+  const header = req.headers.cookie;
+  if (!header) return null;
+  for (const part of header.split(";")) {
+    const eq = part.indexOf("=");
+    if (eq > 0 && part.slice(0, eq).trim() === name) return part.slice(eq + 1).trim();
+  }
+  return null;
+}
+
+function send(
+  res: ServerResponse,
+  code: number,
+  body: string,
+  type = "text/html; charset=utf-8",
+  extra: Record<string, string> = {},
+): void {
   res.writeHead(code, {
+    ...extra,
     "content-type": type,
     // The published page embeds its own CSS and no scripts at all. Saying so in
     // a header costs nothing and means an injected `<script>` — from a page we
@@ -115,8 +156,24 @@ const store = new AuditStore();
 const captures = new EmailCaptureStore();
 const events = new EventLog();
 
+/**
+ * B16's limits. The numbers are guesses and should be read as such — nobody has
+ * used this yet, so they are set where a real visitor cannot plausibly reach
+ * them and an automated one hits them in seconds.
+ */
+const MINUTE = 60_000;
+/** One link per address per audit per five minutes. A double-click is not abuse. */
+const recently = new SlidingWindow(1, 5 * MINUTE);
+/** One results URL cannot mail twenty different people in an hour. */
+const byAudit = new SlidingWindow(20, 60 * MINUTE);
+/** One address cannot be mailed five times in an hour, across every audit. */
+const byEmail = new SlidingWindow(5, 60 * MINUTE);
+
 /** Renders a published audit, gated or revealed. */
-function render(audit: AuditRow, opts: { reveal: boolean; asked?: boolean; error?: string }): string {
+function render(
+  audit: AuditRow,
+  opts: { reveal: boolean; asked?: boolean; again?: boolean; error?: string },
+): string {
   const loaded = loadPublished(audit);
   const corrections = events
     .all(audit.audit_id)
@@ -133,7 +190,12 @@ function render(audit: AuditRow, opts: { reveal: boolean; asked?: boolean; error
     reveal: opts.reveal,
     gate: opts.reveal
       ? undefined
-      : { action: `/a/${audit.audit_id}/email`, asked: opts.asked, error: opts.error },
+      : {
+          action: `/a/${audit.audit_id}/email`,
+          asked: opts.asked,
+          again: opts.again,
+          error: opts.error,
+        },
   });
 }
 
@@ -199,10 +261,67 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     if (body === null) {
       return send(res, 413, render(audit, { reveal: false, error: "That was too long to be an email." }));
     }
-    const email = (new URLSearchParams(body).get("email") ?? "").trim();
+    const email = (new URLSearchParams(body).get("email") ?? "").trim().toLowerCase();
     if (!looksLikeEmail(email)) {
       return send(res, 400, render(audit, { reveal: false, error: "That does not look like an email address." }));
     }
+
+    const now = Date.now();
+
+    const throttle = (verdict: { retryAfterMs: number }, key: string) => {
+      events.record({ audit_id: audit.audit_id, type: "gate.throttled", data: { key } });
+      res.setHeader("retry-after", String(Math.ceil(verdict.retryAfterMs / 1000)));
+      return send(
+        res,
+        429,
+        render(audit, {
+          reveal: false,
+          error: `That is more requests than this page sends. Try again in ${inMinutes(
+            verdict.retryAfterMs,
+          )}.`,
+        }),
+      );
+    };
+
+    /**
+     * The per-audit allowance is checked **first**, and the order is the whole
+     * point.
+     *
+     * The cooldown below is keyed on (audit, address), so every new address
+     * makes a new key. Checked first, it would be an unbounded map that any
+     * stranger with one results URL could grow for free — the limiter becoming
+     * the denial of service it was added to prevent. Peeked here, no map can
+     * gain a key until the audit's twenty-an-hour has been spent, which bounds
+     * all three of them together.
+     *
+     * `peek` rather than `hit`, so a visitor who is only inside the cooldown
+     * does not also spend the audit's allowance.
+     */
+    const gate = byAudit.peek(audit.audit_id, now);
+    if (!gate.allowed) return throttle(gate, "audit");
+
+    /**
+     * The cooldown, and it is the friendly one.
+     *
+     * A visitor who clicks twice has done nothing wrong, and telling them "too
+     * many requests" for it would be both rude and untrue. It also matters that
+     * this path issues **no new link and records no new event** — otherwise a
+     * double-click would put two `email.captured` events in a permanent log for
+     * one person deciding once.
+     */
+    if (!recently.hit(`${audit.audit_id}|${email}`, now).allowed) {
+      return send(res, 200, render(audit, { reveal: false, asked: true, again: true }));
+    }
+
+    /**
+     * Now spend the allowances. Per audit is the mail-bomb defence — one
+     * results URL, ten thousand different recipients. Per address is the
+     * narrower one, the same person targeted through several audits.
+     */
+    const perAudit = byAudit.hit(audit.audit_id, now);
+    if (!perAudit.allowed) return throttle(perAudit, "audit");
+    const perEmail = byEmail.hit(email, now);
+    if (!perEmail.allowed) return throttle(perEmail, "email");
 
     captures.capture(audit.audit_id, email);
     // The address is not in the event. §8 makes events permanent while captures
@@ -222,9 +341,44 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 
   // --- the full results ----------------------------------------------------
   if (rest.length === 1 && rest[0] === "full") {
-    const token = url.searchParams.get("t") ?? "";
+    /**
+     * The query string first, then the cookie.
+     *
+     * A magic link is a bearer credential, and one in a query string lives on
+     * in browser history, in a screenshot of a shared screen, and in the access
+     * log of anything between us and the reader — for the seven days it stays
+     * valid. So the first visit trades it for a cookie and redirects to a clean
+     * URL; every later visit uses the cookie and the link is spent.
+     *
+     * This adds no CSRF surface. The cookie is read by exactly this route,
+     * which changes nothing, and the one route that does change something —
+     * the email form — never reads it. The rule to keep: **if a
+     * state-changing route ever reads this cookie, it needs a CSRF token that
+     * day.**
+     */
+    const fromQuery = url.searchParams.get("t");
+    const token = fromQuery ?? cookie(req, COOKIE) ?? "";
     const check = verify(token, audit.audit_id);
+
     if (!check.ok) {
+      /**
+       * Recorded, not punished — the withdrawn half of B16.
+       *
+       * The entry originally called for locking an audit after N bad tokens.
+       * That is a denial of service anyone holding the results URL could
+       * trigger against the customer whose audit it is, and it would defend a
+       * 256-bit HMAC against guessing, which is not a thing that happens. So
+       * the attempt becomes visible and nothing gets locked.
+       *
+       * The token itself is not in the event — it is a credential, and §8
+       * makes events permanent.
+       */
+      events.record({
+        audit_id: audit.audit_id,
+        type: "token.rejected",
+        data: { reason: check.reason, source: fromQuery ? "link" : "cookie" },
+      });
+
       // The reason is shown because every one of them is the visitor's problem
       // to solve — an expired link needs re-requesting, a wrong-audit link
       // needs the right one. None of them tell a stranger anything they could
@@ -235,6 +389,10 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
         expired: "That link has expired. Links last seven days.",
         "wrong-audit": "That link is for a different audit.",
       };
+      const headers: Record<string, string> = {};
+      // A cookie that no longer verifies is cleared, so a stale one cannot keep
+      // producing this page every time the reader comes back.
+      if (!fromQuery && token) headers["set-cookie"] = clearCookie(audit.audit_id);
       return send(
         res,
         403,
@@ -243,11 +401,24 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
           `<p>${explain[check.reason]}</p>
            <p><a href="/a/${audit.audit_id}">Ask for a new one</a>.</p>`,
         ),
+        "text/html; charset=utf-8",
+        headers,
       );
     }
 
     captures.markVerified(audit.audit_id, check.claims.email);
     events.record({ audit_id: audit.audit_id, type: "full.viewed", data: {} });
+
+    if (fromQuery) {
+      // 303, not 301: the browser must not cache "this URL is a redirect", or a
+      // later visit with a fresh token would skip the exchange.
+      res.writeHead(303, {
+        location: `/a/${audit.audit_id}/full`,
+        "set-cookie": setCookie(audit.audit_id, fromQuery, check.claims.expiresAt),
+      });
+      return void res.end();
+    }
+
     return send(res, 200, render(audit, { reveal: true }));
   }
 
