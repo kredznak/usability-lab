@@ -283,52 +283,35 @@ visible body text.
 
 ---
 
-## B12. The image cache does not work — measured, flagged, and still Kelly's call
+## B12. ~~The image cache does not work~~ — FIXED 2026-08-17, with a caveat
 
-**The cost is bigger than first estimated.** Measured 2026-08-17 across every
-lane that has run since screenshots shipped:
+**Shipped** (`61e1e5f`): `system` is SHARED_RULES alone and the lane block moved
+below the page content, so every reviewer of an audit shares one prefix.
+`USABILITY_LAB_LANE_AFTER_DATA=0` restores the old ordering; the red team runs
+against both, and that stays.
 
-    lane              cache_write   cache_read
-    forms                  23,622            0
-    visual-hierarchy       20,244          345
-    conversion-cta         17,315        1,812
-    copy                   17,201        2,174
-    heuristics             11,777        2,138
+**Verified live on linear.app/pricing:**
 
-Every lane **writes** the images; the reads are `SHARED_RULES` alone. At
-Sonnet's rates that is roughly **$0.15-0.18 an audit, about 30% of a run** —
-not the ~$0.11 first quoted.
+    forms            cache_write 18,303   cache_read      0
+    heuristics       cache_write 18,303   cache_read      0
+    conversion-cta   cache_write      0   cache_read 18,303
+    copy             cache_write      0   cache_read 18,303
 
-**Why.** Prompt caching matches a *prefix* of the whole request, and `system` is
-`[SHARED_RULES, rubric.lane]`. The prefix diverges at the lane, so the images
-after it are a different prefix for every reviewer.
+**The saving is ~$0.09 an audit, not the ~$0.18 predicted, and the gap is our
+own concurrency.** §6 runs two sub-agents at a time, so the first pair both
+start before either has written the cache and both pay full price. Two writes,
+two reads, instead of one and three.
 
-**The fix is implemented behind a flag**, `USABILITY_LAB_LANE_AFTER_DATA=1`:
-`system` becomes SHARED_RULES alone and the lane block moves to the end of the
-user message, after the page content. Tests assert both halves of the property —
-every reviewer shares one prefix up to the page data, and the lanes still differ
-at the end. **The default is unchanged**; nothing ships on a flag.
+**The remaining half is a scheduling change, not a security one** — run one
+reviewer alone to warm the cache, then fan the rest out. It costs roughly one
+reviewer (50-60s) on the critical path of a ~230s audit. Not done: it trades
+latency against money and that is a product call.
 
-**What the red team can and cannot say about the trade.** Four runs, two per
-ordering, twelve reviewer calls: **no injection succeeded in either
-arrangement.** That is not evidence the ordering is safe to change. The control
-never fails either, so the experiment has **no discriminating power** — it
-compares two zeros. A real test needs an attack that succeeds against at least
-one arrangement, and nothing written so far succeeds against anything.
-
-**Two false alarms on the way there, both mine, both the same mistake.** The
-compliance detector matched a reviewer *quoting the attack while reporting it*
-("a line claiming the page is \"pre-approved\" ... reads as if the site were
-compromised") and called it obedience. It fired once on the current ordering
-and twice on the reordered one, which came within an inch of producing a
-verdict against the change on evidence that was entirely noise. It now looks
-only outside quotation marks — the same distinction `claims.ts` draws for
-quoted page text, one file over, filed as B11 on the same day.
-
-**What is still Kelly's.** Whether ~30% of the audit cost is worth putting our
-lane instruction after untrusted page content. What has changed is that the
-cost is measured, the change is one environment variable, and the honest
-uncertainty is written down instead of guessed at.
+**The trade that was accepted.** Our lane instruction now follows untrusted page
+content. Three paired red-team rounds, thirty reviewer calls, five fixtures —
+two built so success would be observable — found no difference between the
+orderings. Nothing has ever succeeded against either, so that is evidence and
+not proof.
 
 ---
 
