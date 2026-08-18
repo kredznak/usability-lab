@@ -617,6 +617,63 @@ written honestly before there is an account to write them against.
 
 ---
 
+## B19. The URL guard resolves once; the browser resolves again
+
+**What.** `src/urlcheck.ts` refuses any hostname that resolves to a private,
+loopback or link-local address, and it does that *before* the request is queued.
+Playwright then resolves the same name again when it navigates. A name whose
+answer changes between the two lookups passes the check and connects somewhere
+else — classic DNS rebinding.
+
+**Why it matters.** The whole point of the guard is that a stranger now chooses
+the URL. `169.254.169.254` is refused; `attacker.example` that answers public
+once and `169.254.169.254` the second time is not. The window is small — the
+queue runner may be minutes or hours behind the form — but a long window is a
+*bigger* one, not a smaller one, because the attacker gets to choose when the
+answer flips.
+
+**What would fix it.** Pin the address we validated and make the browser use
+that one: resolve at request time, store the IP alongside the URL, and have
+`capture.ts` connect to the IP with the `Host` header set. That is a real change
+to the capture path and to how redirects are followed, since every hop needs the
+same treatment.
+
+**Cost.** Medium, and mostly in `capture.ts`. **Do not deploy the question flow
+to a public address before this is done** — on localhost the guard is already
+more than the threat model needs; on the internet it is the difference between a
+refusal and a redirect.
+
+---
+
+## B20. Two queue runners, neither of them tested past "empty"
+
+**What.** `runQueue` in `reaudit.ts` (B18) and `runQueue` in `index.ts` both
+shell out per row. Their stores are tested and their empty case is tested; the
+loop that actually spends money is not, in either file, because exercising it
+means a real capture and a real audit.
+
+**Why it matters.** These are the only two functions in the codebase whose job
+is to spend money, and they are the two with the least coverage. Not because
+they are hard to write, but because they are hard to *observe* — the test would
+have to either mock `execFileSync`, which tests the mock, or spend $0.65 a run,
+which no suite should.
+
+**What has been verified by hand.** Both, on temp databases, 2026-08-18. The
+re-audit runner picked up a request, dispatched, failed cleanly on an
+unresolvable host, marked the row done and reported `0 of 1 completed, 1 failed`.
+The audit runner picked up a form submission, minted and stamped an audit id,
+ran a real basecamp audit ($0.5684, 206.7s, 14 findings), and the visitor's
+status page followed it from "In the queue" to "a person is reading it" to a
+link.
+
+**What would fix it.** A `--dry-run` that prints the command instead of running
+it would make the loop, the claiming and the failure accounting testable while
+leaving the spend untestable — which is the honest split. Small.
+
+**Recorded so the green suite is not read as covering them.**
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
@@ -631,10 +688,20 @@ and memory. Consolidated 2026-08-10; not new decisions.
   would be invented, so `npm run outcome` prints none.
 - **LLM judge for usefulness.** Needs ~50–100 human labels to calibrate against.
   We have 17.
-- **Not built at all:** Content agent, Stripe Checkout, Inngest/Supabase. *(The
-  lint gate, re-audit diffing, the email gate and the subscribe surface have
+- **Not built at all:** Content agent, Stripe Checkout, Inngest/Supabase, the
+  nightly priors job, F11's daily cost ceiling. *(The lint gate, re-audit
+  diffing, the email gate, the subscribe surface and the question flow have
   since shipped; the web app exists as `npm run serve` on localhost only.
   Subscriptions are real rows granted by hand — see B18 for what Stripe still
-  owes.)*
+  owes, B19 before this is served publicly.)*
+- **F7 deviated without being written down.** §0 says "redraft loop (max 2) →
+  PARKED"; `lint.ts` quarantines the finding instead, with no redraft and no
+  park. Quarantine is the better answer — a redraft loop asks a model to try
+  again at the thing it just got wrong — but the doc and the code disagree and
+  nothing records which one won. **Decide and amend §12, or build the loop.**
+- **F11 has nothing at all.** No spend counter anywhere. Not needed while a
+  person runs both queues by hand, which is today's actual spend control; needed
+  the day either becomes a cron. Named here so "five failures handled for real"
+  is not claimed with four.
 - **`docs/quality-bar.md`** still carries one `[UNRESOLVED]` (the post-publish
   correction path) and five `[PROPOSED]` items.

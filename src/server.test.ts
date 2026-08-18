@@ -4,13 +4,16 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import {
   AuditStore,
   EmailCaptureStore,
   EventLog,
   SubscriptionStore,
   ReauditRequestStore,
+  AuditRequestStore,
 } from "./db.js";
+import { QUESTIONS } from "./profile.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches, TOKEN_TTL_MS } from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { AUDITS_PER_MONTH } from "./fairuse.js";
@@ -923,10 +926,237 @@ describe("asking for a re-audit", () => {
   });
 });
 
-describe("the root", () => {
-  test("does not list audits", async () => {
+/**
+ * The question flow — the first route here a stranger can use to make us *do*
+ * something rather than read something.
+ *
+ * Two properties carry this suite. **A submitted URL never reaches a browser
+ * without passing `checkUrl`**, because the alternative is our own network. And
+ * **submitting spends nothing** — the row is a request, and a person runs the
+ * queue.
+ */
+describe("the question flow", () => {
+  /**
+   * A public literal, so `checkUrl` short-circuits before DNS.
+   *
+   * A hostname here would put a real resolver in the middle of a unit test:
+   * slow when it works, red when the network is down, and green for the wrong
+   * reason if something ever resolves it locally.
+   */
+  const OK_URL = "http://93.184.216.34/pricing";
+
+  const submit = (fields: Record<string, string>, base = BASE) =>
+    fetch(`${base}/request`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(fields).toString(),
+      redirect: "manual",
+    });
+
+  function queued(): number {
+    const asks = new AuditRequestStore(dbPath);
+    const n = asks.queue().length;
+    asks.close();
+    return n;
+  }
+
+  test("the homepage asks the same five questions the CLI does", async () => {
+    const html = await (await fetch(`${BASE}/`)).text();
+    for (const q of QUESTIONS) {
+      assert.match(html, new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "&#39;")), q);
+    }
+    assert.match(html, /name="url"/);
+  });
+
+  test("and still lists no audits", async () => {
     const html = await (await fetch(`${BASE}/`)).text();
     assert.doesNotMatch(html, new RegExp(A));
     assert.doesNotMatch(html, /example\.com/);
+  });
+
+  test("a URL pointing at our own network is refused, and queues nothing", async () => {
+    const before = queued();
+    for (const url of ["http://127.0.0.1:4137/", "http://169.254.169.254/", "file:///etc/passwd"]) {
+      const res = await submit({ url });
+      assert.equal(res.status, 400, url);
+      const html = await res.text();
+      // The reason is generic. What the visitor typed comes back in the form
+      // field — escaped, so they need not retype it — but never inside the
+      // sentence explaining the refusal. `urlcheck.test.ts` holds that one.
+      assert.match(html, /private network|http or https/);
+    }
+    assert.equal(queued(), before, "nothing reached the queue");
+  });
+
+  test("a refusal records the reason and never the URL", async () => {
+    await submit({ url: "javascript:alert(1)" });
+    const events = new EventLog(dbPath);
+    const rejected = events.all().filter((e) => e.type === "request.rejected");
+    events.close();
+    assert.ok(rejected.length > 0);
+    const last = rejected[rejected.length - 1]!;
+    assert.equal(last.data.reason, "scheme");
+    assert.deepEqual(Object.keys(last.data), ["reason"], "the URL must not be in a permanent log");
+  });
+
+  test("a good submission queues a request and hands back a private address", async () => {
+    const before = queued();
+    const res = await submit({ url: OK_URL, q0: "A shop", q1: "People bounce" });
+    assert.equal(res.status, 303);
+    const location = res.headers.get("location")!;
+    assert.match(location, /^\/r\/[0-9a-f-]{36}$/);
+    assert.equal(queued(), before + 1);
+
+    const asks = new AuditRequestStore(dbPath);
+    const row = asks.get(location.slice(3))!;
+    asks.close();
+    assert.equal(row.url, "http://93.184.216.34/pricing");
+    assert.equal(row.audit_id, null, "queued, not started — an HTTP request spends nothing");
+    const answers = JSON.parse(row.answers) as Record<string, string>;
+    assert.equal(answers[QUESTIONS[0]], "A shop");
+    assert.equal(answers[QUESTIONS[1]], "People bounce");
+  });
+
+  test("the answers are not written to the permanent event log", async () => {
+    await submit({ url: OK_URL, q0: "we sell artisanal widgets to dentists" });
+    const events = new EventLog(dbPath);
+    const completed = events.all().filter((e) => e.type === "question.completed");
+    events.close();
+    const last = completed[completed.length - 1]!;
+    assert.deepEqual(Object.keys(last.data), ["answered"]);
+    assert.equal(JSON.stringify(last.data).includes("dentists"), false);
+  });
+
+  test("an over-long answer is refused, and what was typed comes back", async () => {
+    const before = queued();
+    const res = await submit({ url: OK_URL, q0: "x".repeat(1001), q1: "keep this" });
+    assert.equal(res.status, 400);
+    const html = await res.text();
+    assert.match(html, /longer than 1000 characters/);
+    assert.match(html, /keep this/, "the other answers survive the mistake");
+    assert.equal(queued(), before);
+  });
+
+  test("what a visitor types is escaped before it is shown back to them", async () => {
+    const res = await submit({ url: "not a url", q0: `<script>alert(1)</script>` });
+    const html = await res.text();
+    assert.doesNotMatch(html, /<script>alert/);
+    assert.match(html, /&lt;script&gt;/);
+  });
+
+  test("the form is POST only", async () => {
+    assert.equal((await fetch(`${BASE}/request`)).status, 404);
+  });
+});
+
+describe("where is my audit", () => {
+  /** A request row, made directly — the status page is what is under test. */
+  function ask(url = "https://example.com/"): string {
+    const asks = new AuditRequestStore(dbPath);
+    const id = randomUUID();
+    asks.create(id, url, { [QUESTIONS[0]]: "A shop" });
+    asks.close();
+    return id;
+  }
+
+  test("a queued request says so, and says nothing about an audit", async () => {
+    const html = await (await fetch(`${BASE}/r/${ask()}`)).text();
+    assert.match(html, /In the queue/);
+  });
+
+  test("a made-up request id is a 404", async () => {
+    assert.equal((await fetch(`${BASE}/r/${randomUUID()}`)).status, 404);
+  });
+
+  test("a prefix of a real request id is not a real request id", async () => {
+    const id = ask();
+    assert.equal((await fetch(`${BASE}/r/${id.slice(0, 8)}`)).status, 404);
+  });
+
+  test("the page follows the audit, and says the honest thing at each step", async () => {
+    const requestId = ask();
+    const auditId = randomUUID();
+    const asks = new AuditRequestStore(dbPath);
+    assert.equal(asks.start(requestId, auditId), true);
+    assert.equal(asks.start(requestId, randomUUID()), false, "a claimed request cannot be claimed twice");
+    asks.close();
+
+    const at = async () => (await fetch(`${BASE}/r/${requestId}`)).text();
+
+    // Claimed, but the audit row does not exist for the moment between the
+    // stamp and the subprocess starting.
+    assert.match(await at(), /Starting now/);
+
+    const store = new AuditStore(dbPath);
+    store.create(auditId, "https://example.com/");
+    store.transition(auditId, "CAPTURING");
+    assert.match(await at(), /Your team is assembling/);
+
+    store.transition(auditId, "AUDITING");
+    store.transition(auditId, "ASSEMBLING");
+    store.transition(auditId, "REVIEW_PENDING");
+    assert.match(await at(), /a person is reading it/);
+
+    store.transition(auditId, "PUBLISHED");
+    const done = await at();
+    assert.match(done, new RegExp(`href="/a/${auditId}/"`));
+    store.close();
+  });
+
+  test("a capture that failed tells the visitor so — F1", async () => {
+    const requestId = ask();
+    const auditId = randomUUID();
+    const asks = new AuditRequestStore(dbPath);
+    asks.start(requestId, auditId);
+    asks.close();
+
+    const store = new AuditStore(dbPath);
+    store.create(auditId, "https://example.com/");
+    store.transition(auditId, "CAPTURING");
+    store.transition(auditId, "CAPTURE_FAILED");
+    store.close();
+
+    const html = await (await fetch(`${BASE}/r/${requestId}`)).text();
+    assert.match(html, /could not load that page/);
+    assert.match(html, /Nothing was published/);
+  });
+});
+
+describe("the question flow under pressure", () => {
+  /**
+   * Driven over IPv6 so this suite has its own client key.
+   *
+   * The per-client limit keys on the connecting socket's address, and every
+   * other test here arrives from `127.0.0.1`. Exhausting that key would starve
+   * them — the same problem the BOMB fixture solves for the per-audit
+   * allowance, and the same solution: give the test that spends an allowance
+   * its own.
+   */
+  const V6 = `http://[::1]:${PORT}`;
+
+  test("one client cannot queue audits without limit", async () => {
+    const submit = () =>
+      fetch(`${V6}/request`, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ url: "http://93.184.216.34/" }).toString(),
+        redirect: "manual",
+      });
+
+    let throttled = 0;
+    for (let i = 0; i < 8; i++) {
+      const res = await submit();
+      if (res.status === 429) throttled += 1;
+      await res.text();
+    }
+    assert.ok(throttled >= 2, `expected the limit to bite; ${throttled} of 8 were refused`);
+  });
+
+  test("and a throttled attempt is recorded", async () => {
+    const events = new EventLog(dbPath);
+    const throttles = events.all().filter((e) => e.type === "request.throttled");
+    events.close();
+    assert.ok(throttles.length > 0);
+    assert.equal(throttles[0]!.data.key, "client");
   });
 });

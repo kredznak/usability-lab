@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { randomUUID } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { readFileSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { writeFile } from "node:fs/promises";
 import { createInterface } from "node:readline/promises";
 import path from "node:path";
@@ -17,7 +19,7 @@ import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
 import { lintAudit, quarantined } from "./lint.js";
-import { CallLog, AuditStore, EventLog, type AuditStatus } from "./db.js";
+import { CallLog, AuditStore, EventLog, AuditRequestStore, type AuditStatus } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
 import { countingFetch } from "./http.js";
 import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
@@ -139,12 +141,85 @@ const EMPTY_PROFILE: ContextProfile = {
   summary: "No context was given, so this is a general review of the page.",
 };
 
+/**
+ * `npm run audit -- --queue` — run what the question flow asked for.
+ *
+ * The other half of "no HTTP request may spend money", and the same shape as
+ * `reaudit --queue`: the form writes a row, a person (or, one day, a cron) runs
+ * this. A stranger can fill the queue; only this can fill the bill.
+ *
+ * ## Why it shells out per request
+ *
+ * One crashed capture takes down one request rather than the queue, and the
+ * definition of "an audit" stays in exactly one place — `main` below — rather
+ * than being partly re-implemented here.
+ *
+ * ## Why the request is claimed before the audit runs
+ *
+ * `start` writes the audit id and returns false if somebody already claimed the
+ * row, so two runners cannot buy the same audit twice. It also means a request
+ * whose run dies is left pointing at the wreckage rather than looking untouched
+ * and being picked up again — a URL that reliably kills a capture would
+ * otherwise be retried on every pass, forever.
+ */
+function runQueue(): void {
+  const asks = new AuditRequestStore();
+  const pending = asks.queue();
+
+  if (pending.length === 0) {
+    console.log(`\nNothing queued. Audits are asked for from the question flow at \`/\`.\n`);
+    asks.close();
+    return;
+  }
+
+  console.error(`\n${pending.length} audit${pending.length === 1 ? "" : "s"} queued.\n`);
+  let failed = 0;
+
+  for (const r of pending) {
+    const auditId = randomUUID();
+    if (!asks.start(r.request_id, auditId)) {
+      console.error(`  ${r.request_id.slice(0, 8)} was claimed by someone else; skipping.`);
+      continue;
+    }
+
+    // The visitor's own words, on disk for as long as one subprocess takes to
+    // read them. 0600 and removed in a `finally`, because "temporary" is a
+    // property of the code that deletes it and not of the directory.
+    const answersFile = path.join(tmpdir(), `ulab-answers-${r.request_id}.json`);
+    writeFileSync(answersFile, r.answers, { mode: 0o600 });
+
+    console.error(`\n─── ${r.request_id.slice(0, 8)}: ${r.url}  (asked ${r.requested_at.slice(0, 10)})\n`);
+    try {
+      execFileSync(
+        "npm",
+        ["run", "audit", "--", r.url, "--answers", answersFile, "--audit-id", auditId],
+        { stdio: "inherit" },
+      );
+    } catch {
+      failed += 1;
+      console.error(`\n  ${r.request_id.slice(0, 8)} did not complete — see above.\n`);
+    } finally {
+      rmSync(answersFile, { force: true });
+    }
+  }
+
+  console.log(
+    `\n${pending.length - failed} of ${pending.length} completed` +
+      (failed > 0 ? `, ${failed} failed.\n` : `.\n`) +
+      `  Published audits still gate on \`npm run review\`.\n`,
+  );
+  asks.close();
+}
+
 async function main(): Promise<void> {
+  if (process.argv[2] === "--queue") return runQueue();
+
   const url = process.argv[2];
   if (!url || url.startsWith("--")) {
     console.error(
       "usage: npm run audit -- <url> [--answers answers.json] [--pin-to <audit-id>]\n" +
-        "                            [--reaudit-of <audit-id>]",
+        "                            [--reaudit-of <audit-id>] [--audit-id <uuid>]\n" +
+        "       npm run audit -- --queue",
     );
     process.exit(2);
   }
@@ -152,6 +227,27 @@ async function main(): Promise<void> {
     new URL(url);
   } catch {
     console.error(`not a valid URL: ${url}`);
+    process.exit(2);
+  }
+
+  /**
+   * `--audit-id <uuid>` lets the caller name the audit before it exists.
+   *
+   * Only the queue runner passes it, and it needs to: a request row is stamped
+   * with the audit id *before* the audit starts, so the visitor's status page
+   * can answer "where is it" while the capture is still running. Minting the id
+   * here and reporting it afterwards would leave that page blank for the two
+   * minutes it matters most, and a runner that died mid-capture would leave a
+   * row that looked untouched.
+   *
+   * Validated as a UUID rather than taken on trust: this becomes a directory
+   * name under `out/` and a primary key, and "whatever the caller said" is not
+   * a thing either of those should be.
+   */
+  const idFlag = process.argv.indexOf("--audit-id");
+  const supplied = idFlag === -1 ? null : (process.argv[idFlag + 1] ?? null);
+  if (supplied !== null && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(supplied)) {
+    console.error(`--audit-id must be a UUID`);
     process.exit(2);
   }
 
@@ -169,7 +265,7 @@ async function main(): Promise<void> {
 
   // UUIDv7 is the correlation key in §8; v4 is a stand-in until we add a v7
   // generator. Either way it is the single ID threaded through every artifact.
-  const auditId = randomUUID();
+  const auditId = supplied ?? randomUUID();
   const outDir = path.join(OUT_ROOT, auditId);
   const timings: Timing[] = [];
   const log = new CallLog();

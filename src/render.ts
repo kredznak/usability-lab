@@ -26,7 +26,11 @@ import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
  * competing against.
  */
 
-function escapeHtml(s: string): string {
+/**
+ * Exported since the question flow, which is the first page here built from
+ * text a stranger typed. One escaper, so there is one thing to be right.
+ */
+export function escapeHtml(s: string): string {
   return s.replace(/[<>&"']/g, (c) =>
     ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&#39;" })[c] as string,
   );

@@ -17,6 +17,12 @@ import { OUT_ROOT } from "./paths.js";
  * zero: a zero in a funnel means people arrived and did not convert, which
  * would be a lie about a stage that does not exist.
  *
+ * The first two stages count **visits, not audits**, and are printed apart from
+ * the rest for that reason. Somebody who opens the form and leaves has produced
+ * no audit to be a distinct count of, so folding them into the block below —
+ * where every row is "how many audits reached here" — would put two different
+ * units in one column.
+ *
  * The re-audit stage that follows it is the thing a subscription buys, and it
  * *is* live — which is why the funnel currently shows a conversion nobody can
  * pay for. That gap is the honest shape of today's work, not a bug in this file.
@@ -153,6 +159,7 @@ function main(): void {
   const byStatus = new Map<string, number>();
   for (const r of rows) byStatus.set(r.status, (byStatus.get(r.status) ?? 0) + 1);
 
+  const turnedAway = (byType.get("request.rejected") ?? 0) + (byType.get("request.throttled") ?? 0);
   const stats = stepStats(all);
   const { stages, outside } = funnelStages(all);
   const failed = byType.get("audit.failed") ?? 0;
@@ -170,6 +177,25 @@ function main(): void {
       ? `\n  No events yet. The log starts empty and is not backfilled, so audits\n` +
         `  run before this existed are absent — not a quiet week.\n`
       : ``,
+    /**
+     * §8's first two stages, and they are counted differently on purpose.
+     *
+     * A visitor who opens the form and leaves produces no audit, so these two
+     * cannot be a percentage of anything below them and cannot be counted as
+     * distinct audits the way every stage under them is. They are visits.
+     * Printing them inside the same block, with the same shape, would make
+     * "form opened 40" read as forty audits.
+     */
+    ...[
+      `  form opened            ${String(byType.get("question.started") ?? 0).padStart(4)}   visits, not audits`,
+      `  questions answered     ${String(byType.get("question.completed") ?? 0).padStart(4)}   requests queued`,
+      turnedAway > 0
+        ? `  turned away            ${String(turnedAway).padStart(4)}   bad URL or rate limited`
+        : ``,
+      // Filtered rather than joined: an absent row must not leave a blank line
+      // behind it, or the block grows a gap on the days nobody was refused.
+    ].filter(Boolean),
+    ``,
     // Split around the stage that does not exist, so the printout keeps §8's
     // order: ... -> full -> subscribe -> what subscribing buys.
     ...stages.filter((s) => s.label !== AFTER_SUBSCRIBE).map(stageLine),

@@ -668,6 +668,115 @@ export class SubscriptionStore {
   }
 }
 
+export interface AuditRequestRow {
+  request_id: string;
+  url: string;
+  /** The five answers, as submitted. JSON, because `Answers` is a free-text map. */
+  answers: string;
+  /** Null until the queue runner picks this up and mints an audit for it. */
+  audit_id: string | null;
+  requested_at: string;
+  started_at: string | null;
+}
+
+/**
+ * What a stranger asked us to look at — §0's question flow, queued.
+ *
+ * ## Why a request is not an audit
+ *
+ * **No HTTP request may spend money.** An audit costs ~$0.65 and ninety seconds
+ * of a real browser; a form anyone on the internet can submit must not be able
+ * to start one. So the form writes a row here and stops, and
+ * `npm run audit -- --queue` is the thing that decides to spend. A stranger can
+ * fill our queue; they cannot fill our bill.
+ *
+ * It is also the only honest way to answer §6's "your team is assembling". An
+ * audit that has not started has no `audits` row to have a status, and inventing
+ * one — REQUESTED, say — would put a state in the pipeline's own table that the
+ * pipeline never created.
+ *
+ * ## The request id is the visitor's credential
+ *
+ * There is no login before the email gate (§1: anonymous through preview), so
+ * `request_id` is what a visitor holds to come back to. A v4 UUID is 122 random
+ * bits, which is the same reasoning that let audit ids be their own URLs — and
+ * the same reason the status route must look up by whole id and never by prefix.
+ *
+ * ## What is not stored
+ *
+ * No IP, no user agent. The rate limiter keys on the connecting address in
+ * memory and forgets it when the process restarts; writing it down here would
+ * make it permanent, and §8's retention argument applies to a visitor's address
+ * as much as to a customer's.
+ */
+export class AuditRequestStore {
+  private db: Database.Database;
+
+  constructor(dbPath = DB_PATH) {
+    mkdirSync(path.dirname(dbPath), { recursive: true });
+    this.db = new Database(dbPath);
+    this.db.pragma("journal_mode = WAL");
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS audit_requests (
+        request_id   TEXT PRIMARY KEY,
+        url          TEXT NOT NULL,
+        answers      TEXT NOT NULL,
+        audit_id     TEXT,
+        requested_at TEXT NOT NULL,
+        started_at   TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_requests_pending ON audit_requests(audit_id);
+    `);
+  }
+
+  create(requestId: string, url: string, answers: Record<string, string>, now = new Date()): void {
+    this.db
+      .prepare(
+        `INSERT INTO audit_requests (request_id, url, answers, requested_at)
+         VALUES (?, ?, ?, ?)`,
+      )
+      .run(requestId, url, JSON.stringify(answers), now.toISOString());
+  }
+
+  get(requestId: string): AuditRequestRow | null {
+    return (
+      (this.db
+        .prepare(`SELECT * FROM audit_requests WHERE request_id = ?`)
+        .get(requestId) as AuditRequestRow | undefined) ?? null
+    );
+  }
+
+  /** Oldest first, and only what nobody has started. */
+  queue(): AuditRequestRow[] {
+    return this.db
+      .prepare(`SELECT * FROM audit_requests WHERE audit_id IS NULL ORDER BY requested_at`)
+      .all() as AuditRequestRow[];
+  }
+
+  /**
+   * Claim a request for an audit id, **before** the audit runs.
+   *
+   * Stamped first so the status page can answer "where is it" while the audit is
+   * still in flight, and so a runner that dies mid-capture leaves a row pointing
+   * at the wreckage rather than a row that looks untouched and gets picked up
+   * again. `audit_id IS NULL` in the WHERE clause makes claiming it twice a
+   * no-op rather than a race.
+   */
+  start(requestId: string, auditId: string, now = new Date()): boolean {
+    const result = this.db
+      .prepare(
+        `UPDATE audit_requests SET audit_id = ?, started_at = ?
+         WHERE request_id = ? AND audit_id IS NULL`,
+      )
+      .run(auditId, now.toISOString(), requestId);
+    return result.changes === 1;
+  }
+
+  close(): void {
+    this.db.close();
+  }
+}
+
 export interface ReauditRequestRow {
   id: number;
   audit_id: string;

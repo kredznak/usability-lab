@@ -43,6 +43,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 import {
   AuditStore,
@@ -50,10 +51,14 @@ import {
   EmailCaptureStore,
   SubscriptionStore,
   ReauditRequestStore,
+  AuditRequestStore,
   type AuditRow,
+  type AuditRequestRow,
 } from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
-import { publicHtml, type PublishInput } from "./render.js";
+import { publicHtml, escapeHtml, type PublishInput } from "./render.js";
+import { QUESTIONS, type Answers } from "./profile.js";
+import { checkUrl } from "./urlcheck.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { checkFairUse } from "./fairuse.js";
@@ -66,6 +71,22 @@ const PORT = Number(process.env.PORT || 4000);
  * required — one long request would sit in memory until the process died.
  */
 const MAX_BODY = 8 * 1024;
+
+/**
+ * The question flow posts five free-text answers, so it needs more room than an
+ * email address — but not much more. Each answer is separately capped at
+ * `MAX_ANSWER`; this bounds the request even when every character needs three
+ * bytes of percent-encoding.
+ */
+const MAX_REQUEST_BODY = 32 * 1024;
+
+/**
+ * §10 lists a 10,000-character answer as a hostile input nobody has tested.
+ * This is where that stops being untested. A thousand characters is longer than
+ * anyone answers "where do they seem to drop off?" honestly, and short enough
+ * that five of them cannot become a prompt of their own.
+ */
+const MAX_ANSWER = 1000;
 
 /** Only these two states have a page a visitor is allowed to see. */
 function published(audit: AuditRow | null): audit is AuditRow {
@@ -149,16 +170,26 @@ function page(title: string, body: string): string {
   h1 { font-size:22px; margin:0 0 12px; }
   a { color:#E4572E; }
   code { background:#f0eeea; padding:2px 5px; border-radius:3px; font-size:14px; }
+  .lead { font-size:17px; margin:0 0 16px; }
+  .hint { color:#6b6257; font-size:14px; margin:6px 0 22px; }
+  .err { color:#a3301a; font-size:15px; margin:0 0 16px; }
+  form label { display:block; font-weight:600; font-size:15px; margin:0 0 6px; }
+  form input, form textarea { width:100%; box-sizing:border-box; padding:9px 11px;
+        font:inherit; font-size:15px; border:1px solid #bbb; border-radius:3px;
+        background:#fff; color:inherit; }
+  form textarea { margin-bottom:20px; resize:vertical; }
+  form button { padding:10px 18px; font:inherit; font-size:15px; cursor:pointer;
+        border:0; border-radius:3px; background:#E4572E; color:#fff; }
 </style></head>
 <body><div class="wrap"><h1>${title}</h1>${body}</div></body></html>`;
 }
 
-async function readBody(req: IncomingMessage): Promise<string | null> {
+async function readBody(req: IncomingMessage, max = MAX_BODY): Promise<string | null> {
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of req) {
     size += (chunk as Buffer).length;
-    if (size > MAX_BODY) return null;
+    if (size > max) return null;
     chunks.push(chunk as Buffer);
   }
   return Buffer.concat(chunks).toString("utf8");
@@ -169,6 +200,7 @@ const captures = new EmailCaptureStore();
 const events = new EventLog();
 const subs = new SubscriptionStore();
 const requests = new ReauditRequestStore();
+const asks = new AuditRequestStore();
 
 /**
  * Where §1's "prefer to talk it through?" goes.
@@ -192,6 +224,124 @@ const recently = new SlidingWindow(1, 5 * MINUTE);
 const byAudit = new SlidingWindow(20, 60 * MINUTE);
 /** One address cannot be mailed five times in an hour, across every audit. */
 const byEmail = new SlidingWindow(5, 60 * MINUTE);
+
+/**
+ * The question flow's two, and the order they are checked in is the same lesson
+ * B16 taught: the **global** allowance is peeked first, so the per-client map
+ * cannot gain a key until the whole server has spent its hourly budget. Checked
+ * the other way round, anyone with a script and a spoofed source could grow an
+ * unbounded map for free.
+ *
+ * They key on the connecting socket's address, which is honest on localhost and
+ * becomes a proxy's address the moment anything sits in front. **`X-Forwarded-For`
+ * is deliberately not read** — trusting a header the client sets is how a
+ * per-client limit becomes a per-header-value limit, which is no limit at all.
+ * Whatever terminates TLS will have to be taught to us explicitly, alongside
+ * `USABILITY_LAB_SECURE_COOKIES`.
+ */
+const asksGlobally = new SlidingWindow(50, 60 * MINUTE);
+const asksByClient = new SlidingWindow(5, 60 * MINUTE);
+
+/**
+ * §0's question flow, over HTTP — five questions and a URL.
+ *
+ * The same five `QUESTIONS` the CLI asks. `profile.ts` has said "the CLI asks
+ * these; the web flow will ask the same ones" since the profiler was written,
+ * and a second list here would be two products' worth of questions feeding one
+ * schema.
+ *
+ * Every answer is optional. The CLI lets you press enter past any of them and
+ * the profile comes back honest about the gap; a web form that demanded all five
+ * would be collecting worse data, not more.
+ *
+ * Typed values are echoed back on an error so nobody retypes five answers over
+ * a mistyped URL — which makes this the first page here rendered from a
+ * stranger's text, and every interpolation below goes through `escapeHtml`.
+ */
+function questionForm(state: { url?: string; answers?: Answers; error?: string } = {}): string {
+  const fields = QUESTIONS.map(
+    (q, i) => `      <label for="q${i}">${escapeHtml(q)}</label>
+      <textarea id="q${i}" name="q${i}" rows="2" maxlength="${MAX_ANSWER}">${escapeHtml(
+        state.answers?.[q] ?? "",
+      )}</textarea>`,
+  ).join("\n");
+
+  return `<form method="post" action="/request">
+      <label for="url">The page you want looked at</label>
+      <input id="url" name="url" type="url" required inputmode="url"
+             placeholder="https://yoursite.com/" value="${escapeHtml(state.url ?? "")}">
+      <p class="hint">One page. We stop at any login wall.</p>
+${fields}
+      ${state.error ? `<p class="err">${escapeHtml(state.error)}</p>` : ""}
+      <button type="submit">Ask for an audit</button>
+      <p class="hint">Five questions, all optional. Skipping them means a general
+         review instead of one aimed at what you are worried about.</p>
+    </form>`;
+}
+
+/**
+ * §6's "your team is assembling", told honestly.
+ *
+ * The honesty is the point, and F1 is why. A capture that failed must say so
+ * — "retry ×3 then PARKED; **visitor notified honestly**" is the row in the
+ * failure catalogue, and until this page existed there was no visitor-facing
+ * place for that sentence to go. A spinner that never resolves is the version
+ * of this page that lies.
+ *
+ * There is a gap between a request being claimed and the audit row existing,
+ * because the queue runner stamps the id before it shells out. That gap gets
+ * its own wording rather than being folded into "queued", which would tell
+ * someone their audit had not started when it had.
+ */
+function statusPage(row: AuditRequestRow): string {
+  const audit = row.audit_id ? store.get(row.audit_id) : null;
+  const site = escapeHtml(row.url);
+
+  const body = (state: string, extra = "") =>
+    page(
+      "Your audit",
+      `<p class="lead">${site}</p><p>${state}</p>${extra}
+       <p class="hint">This page is yours &mdash; keep the address. It updates as we go.</p>`,
+    );
+
+  if (!row.audit_id) {
+    return body(
+      `In the queue. We look at these in the order they arrive, and yours has not started yet.`,
+    );
+  }
+  if (!audit) return body(`Starting now.`);
+
+  switch (audit.status) {
+    case "PUBLISHED":
+    case "AUTO_PUBLISHED":
+      return body(
+        `Ready.`,
+        `<p><a href="/a/${escapeHtml(audit.audit_id)}/">Read the results</a></p>`,
+      );
+    case "REVIEW_PENDING":
+      return body(
+        `The audit is done and a person is reading it before it goes out. ` +
+          `That is the slowest part and the reason we stand behind what it says.`,
+      );
+    case "CAPTURE_FAILED":
+    case "PARKED":
+      // F1, said out loud.
+      return body(
+        `We could not load that page well enough to audit it &mdash; some sites block ` +
+          `automated browsers, and some need a login we will not go past. Nothing was ` +
+          `published and nothing was charged.`,
+        `<p><a href="/">Try a different page</a></p>`,
+      );
+    case "FAILED":
+      return body(
+        `This one broke on our side. It has been logged and nothing half-finished was ` +
+          `published, which is the part we care about most.`,
+        `<p><a href="/">Start another</a></p>`,
+      );
+    default:
+      return body(`Your team is assembling. Reviewers are on the page now.`);
+  }
+}
 
 /** The URL a re-audit of this audit would capture. */
 function targetUrl(audit: AuditRow): string {
@@ -268,17 +418,107 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   const url = new URL(req.url ?? "/", `http://localhost:${PORT}`);
   const parts = url.pathname.split("/").filter(Boolean);
 
+  // --- the question flow ---------------------------------------------------
   if (url.pathname === "/") {
+    events.record({ audit_id: null, type: "question.started", data: {} });
     return send(
       res,
       200,
       page(
         "The Usability Lab",
-        `<p>Audits live at their own address. There is no directory — that is on purpose.</p>
-         <p>If you have a results link, open it. If you are the founder, the links are printed by
-            <code>npm run review</code>.</p>`,
+        `<p class="lead">Tell us about one page and we will audit it &mdash; with the
+            element each finding is about, so you can check us.</p>${questionForm()}
+         <p class="hint">Audits live at their own address and there is no directory of
+            them, on purpose. If you already have a results link, open it.</p>`,
       ),
     );
+  }
+
+  if (url.pathname === "/request") {
+    if (req.method !== "POST") return notFound(res);
+
+    const body = await readBody(req, MAX_REQUEST_BODY);
+    if (body === null) {
+      return send(res, 413, page("Too long", questionForm({ error: "That was more than we can take in one go." })));
+    }
+    const form = new URLSearchParams(body);
+    const answers: Answers = {};
+    for (const [i, q] of QUESTIONS.entries()) {
+      const value = (form.get(`q${i}`) ?? "").trim();
+      if (value) answers[q] = value;
+    }
+    const typed = (form.get("url") ?? "").trim();
+    const again = (error: string, code = 400) =>
+      send(res, code, page("The Usability Lab", questionForm({ url: typed, answers, error })));
+
+    const tooLong = Object.values(answers).some((a) => a.length > MAX_ANSWER);
+    if (tooLong) {
+      return again(`One of those answers is longer than ${MAX_ANSWER} characters. A sentence or two is plenty.`);
+    }
+
+    const now = Date.now();
+    const client = req.socket.remoteAddress ?? "unknown";
+
+    /**
+     * Global first, then per client — B16's ordering lesson, applied to a map
+     * whose keys an attacker chooses. See the limiter declarations above.
+     */
+    const overall = asksGlobally.peek("all", now);
+    if (!overall.allowed) {
+      events.record({ audit_id: null, type: "request.throttled", data: { key: "global" } });
+      res.setHeader("retry-after", String(Math.ceil(overall.retryAfterMs / 1000)));
+      return again(`More audits have been asked for than we can look at right now. Try again in ${inMinutes(overall.retryAfterMs)}.`, 429);
+    }
+    const mine = asksByClient.hit(client, now);
+    if (!mine.allowed) {
+      events.record({ audit_id: null, type: "request.throttled", data: { key: "client" } });
+      res.setHeader("retry-after", String(Math.ceil(mine.retryAfterMs / 1000)));
+      return again(`That is more audits than one person can ask for at once. Try again in ${inMinutes(mine.retryAfterMs)}.`, 429);
+    }
+
+    /**
+     * The URL check, and it is the reason this route was the careful one.
+     *
+     * Until this form existed we chose every URL we ever captured. Now a
+     * stranger does, and `capture()` runs a real browser on our network — see
+     * urlcheck.ts on what that makes it. The refusal never echoes the address
+     * back, and the event records the *reason*, never the URL: §8 makes events
+     * permanent, and a rejected URL is somebody else's data we decided not to
+     * hold.
+     */
+    const verdict = await checkUrl(typed);
+    if (!verdict.ok) {
+      events.record({ audit_id: null, type: "request.rejected", data: { reason: verdict.reason } });
+      return again(verdict.message);
+    }
+
+    // Spend the global allowance only once the request is one we would act on,
+    // so a hundred typos do not lock the door for the next real visitor.
+    asksGlobally.hit("all", now);
+
+    const requestId = randomUUID();
+    asks.create(requestId, verdict.url, answers);
+    events.record({
+      audit_id: null,
+      type: "question.completed",
+      // How many of the five they answered, and nothing they wrote. The answers
+      // are in the request row; §8 makes events permanent and the answers are a
+      // visitor's words about their own business.
+      data: { answered: Object.keys(answers).length },
+    });
+
+    // 303, so a refresh of the status page is not a resubmission.
+    res.writeHead(303, { location: `/r/${requestId}` });
+    return void res.end();
+  }
+
+  // --- where is my audit ---------------------------------------------------
+  if (parts[0] === "r" && parts.length === 2 && parts[1]) {
+    // Whole id, never a prefix. The same 122-bit reasoning as an audit URL, and
+    // here it is the only thing between one visitor's request and another's.
+    const row = asks.get(parts[1]);
+    if (!row) return notFound(res);
+    return send(res, 200, statusPage(row));
   }
 
   if (parts[0] !== "a" || !parts[1]) return notFound(res);
