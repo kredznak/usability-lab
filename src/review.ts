@@ -163,6 +163,29 @@ async function ask(prompt: string): Promise<string | null> {
   ]);
 }
 
+/**
+ * Lint flags first, before any finding.
+ *
+ * They are the reason lint runs before this gate rather than after it: a
+ * reviewer reading thirteen findings in a row should know up front if one of
+ * them addressed them as having failed, or if the audit found nothing good to
+ * say. Quarantined findings are already gone by this point and are recorded in
+ * lint.json, so nothing here can restore them.
+ */
+const lintFile = path.join(dir, "lint.json");
+if (existsSync(lintFile)) {
+  const { flags } = JSON.parse(readFileSync(lintFile, "utf8")) as {
+    flags: { rule: string; detail: string; quarantine: boolean }[];
+  };
+  console.log(
+    `\n${YELLOW}${flags.length} lint flag(s)${RESET}` +
+      flags
+        .map((f) => `\n  ${f.quarantine ? `${RED}quarantined${RESET} ` : ""}${f.rule}: ${f.detail}`)
+        .join("") +
+      `\n`,
+  );
+}
+
 console.log(
   `\n${BOLD}${audit.url}${RESET}\n` +
     `${DIM}${audit.audit_id} · ${findings.length} findings · $${audit.cost_usd.toFixed(2)}${RESET}\n\n` +

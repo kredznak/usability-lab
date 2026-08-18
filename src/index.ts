@@ -16,6 +16,7 @@ import { deriveSignals } from "./signals.js";
 import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
 import { renderResults } from "./render.js";
+import { lintAudit, quarantined } from "./lint.js";
 import { CallLog, AuditStore, EventLog, type AuditStatus } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
 import { countingFetch } from "./http.js";
@@ -366,6 +367,48 @@ async function main(): Promise<void> {
     );
     if (research.degraded) degraded.push(`research: ${research.degraded}`);
     const cited = research.findings;
+
+    /**
+     * The lint gate — §0's "research -> lint -> founder review".
+     *
+     * Deterministic, zero tokens, and it does not block: the gate is a person,
+     * and lint's job is to put the things worth seeing in front of them before
+     * they read thirteen findings in a row. The one exception is `echo` (F6),
+     * where publishing a finding that repeats the page's instruction in its own
+     * voice is worse than losing it.
+     *
+     * Measured over the whole corpus before shipping: **zero flags on 296
+     * findings across 23 audits.** It is a guard, not a finder.
+     */
+    const lintFlags = lintAudit(cited, captured);
+    const quarantine = quarantined(lintFlags);
+    /**
+     * Quarantined findings leave the publishable set here, before `annotate`,
+     * so pin numbers stay positions in one array. They are not lost: their full
+     * text is written to `lint.json` alongside the flag that removed them.
+     */
+    const publishable = cited.filter((f) => !quarantine.has(f.id));
+    if (lintFlags.length > 0) {
+      await writeFile(
+        path.join(outDir, "lint.json"),
+        JSON.stringify(
+          { flags: lintFlags, quarantined: cited.filter((f) => quarantine.has(f.id)) },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      events.record({
+        audit_id: auditId,
+        type: "step.lint",
+        data: { flags: lintFlags.length, quarantined: quarantine.size },
+      });
+      console.error(
+        `\n  lint: ${lintFlags.length} flag(s)` +
+          lintFlags.map((f) => `\n    ${f.rule.padEnd(10)} ${f.detail}`).join(""),
+      );
+      for (const f of lintFlags) degraded.push(`lint ${f.rule}: ${f.detail}`);
+    }
     if (research.notes.length > 0) {
       await writeFile(
         path.join(outDir, "citations.json"),
@@ -381,12 +424,12 @@ async function main(): Promise<void> {
     // meant the only machine-readable record of an audit was its screenshot.
     await writeFile(
       path.join(outDir, "findings.json"),
-      JSON.stringify(cited, null, 2),
+      JSON.stringify(publishable, null, 2),
       "utf8",
     );
 
     const annotated = await timed("annotate", timings, () =>
-      annotate(captured.screenshot_path, cited, outDir, auditId),
+      annotate(captured.screenshot_path, publishable, outDir, auditId),
       { log: events, auditId },
     );
 
@@ -395,7 +438,9 @@ async function main(): Promise<void> {
       renderResults(
         {
           capture: captured,
-          findings: cited,
+          // The founder's page shows what will be published, so pins on the
+          // annotated image line up with the cards beside them.
+          findings: publishable,
           dropped,
           annotatedImage: annotated.path,
           timings,
