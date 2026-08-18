@@ -1402,10 +1402,8 @@
       "impact_note": "This consistent pattern across many categories makes the whole directory scannable, letting visitors self-select the right section quickly.",
       "source_type": "none",
       "auto": {
-        "status": "contradicted",
-        "contradictions": [
-          "quotes \"Includes X, Y, Z\", which is NOT on the page"
-        ]
+        "status": "verified",
+        "contradictions": []
       },
       "human_true": null,
       "human_useful": null,
@@ -1492,10 +1490,8 @@
       "impact_note": "Visitors who skim rather than read narrative copy may leave before the paragraph reaches its point about the product.",
       "source_type": "none",
       "auto": {
-        "status": "contradicted",
-        "contradictions": [
-          "quotes \"You’re juggling people, projects, and expectations...This al\", which is NOT on the page"
-        ]
+        "status": "verified",
+        "contradictions": []
       },
       "human_true": null,
       "human_useful": true,
@@ -2000,10 +1996,8 @@
       "impact_note": "A visitor has to remember or infer their current region rather than seeing it confirmed, adding unnecessary cognitive effort.",
       "source_type": "none",
       "auto": {
-        "status": "contradicted",
-        "contradictions": [
-          "quotes \"United States\", which is NOT on the page"
-        ]
+        "status": "verified",
+        "contradictions": []
       },
       "human_true": null,
       "human_useful": true,
@@ -3018,10 +3012,8 @@
       "impact_note": "Visitors interested in the class may hesitate to click a link whose outcome is unstated, weakening a secondary conversion path.",
       "source_type": "none",
       "auto": {
-        "status": "contradicted",
-        "contradictions": [
-          "quotes \"Reserve a seat\", which is NOT on the page"
-        ]
+        "status": "verified",
+        "contradictions": []
       },
       "human_true": null,
       "human_useful": true,
@@ -4054,10 +4046,8 @@
       "impact_note": "Without a sense of how many steps remain, visitors cannot gauge the commitment required and may abandon partway through an unseen sequence of steps.",
       "source_type": "paper",
       "auto": {
-        "status": "contradicted",
-        "contradictions": [
-          "quotes \"Create Account\", which is NOT on the page"
-        ]
+        "status": "verified",
+        "contradictions": []
       },
       "human_true": null,
       "human_useful": true,

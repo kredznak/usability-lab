@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { Capture, type CapturedElement, type RawFinding } from "./types.js";
 import { checkClaim, repeatedTextElements } from "./claims.js";
+import { pageSources } from "./confidence.js";
 
 /**
  * Two kinds of test live here, and the distinction matters.
@@ -293,4 +294,132 @@ describe("claims: the frozen corpus stays honest", () => {
     );
     for (const f of named) assert.equal(f.auto.status, "contradicted");
   });
+});
+
+/**
+ * B11. Across 186 corpus findings the quote check raised five flags and all
+ * five were false — an abstraction, a word quoted because it is *absent*, a
+ * hypothetical label, the page title, and an elided quote. Each marked a true
+ * finding `contradicted` and sent it to a human for adjudication it did not
+ * need.
+ *
+ * The fix narrows rather than disarms. The one shape the check has genuinely
+ * caught — an unhedged assertion that the page says something it does not —
+ * still contradicts, and the test above pins it.
+ */
+describe("claims: the quote check knows what is not a quotation", () => {
+  const page = (text: string, title = "Example") =>
+    capture([element({ ref: "el_1", tag: "a", text })], title);
+
+  test("a hypothetical label is not a fabricated quote", () => {
+    // basecamp: live-class links with no label "such as 'Register' or
+    // 'Reserve a seat'". The reviewer was describing what a better label could
+    // say, not claiming the page says it.
+    const v = checkClaim(
+      finding({
+        element_ref: "el_1",
+        observation: `The entries are links with no label such as "Reserve a seat" to say what happens.`,
+      }),
+      page("Aug 17 Intro to Basecamp"),
+    );
+    assert.notEqual(v.status, "contradicted");
+  });
+
+  test("a word quoted because it is absent is not a fabricated quote", () => {
+    // cotopaxi: the finding's whole point was that "United States" is missing
+    // from the list. Requiring it to be present inverts the claim.
+    const v = checkClaim(
+      finding({
+        element_ref: "el_1",
+        observation: `The country list does not include "United States" as an option.`,
+      }),
+      page("Canada Mexico Australia"),
+    );
+    assert.notEqual(v.status, "contradicted");
+  });
+
+  test("an elided quote is inconclusive, not false", () => {
+    // basecamp: every fragment is on the page; the string as written is not
+    // contiguous, because the reviewer cut the middle out.
+    const v = checkClaim(
+      finding({
+        element_ref: "el_1",
+        observation: `The letter opens "You're juggling people…This all has to happen somewhere."`,
+      }),
+      page("You're juggling people, projects, and expectations. This all has to happen somewhere."),
+    );
+    assert.notEqual(v.status, "contradicted");
+  });
+
+  test("the page title is quotable", () => {
+    // B6, narrow version. asana: a true finding about a page titled "Create
+    // Account" was marked contradicted because pageSources never included the
+    // title. It cost Kelly a real finding at the gate.
+    const v = checkClaim(
+      finding({
+        element_ref: "el_1",
+        observation: `The page is titled "Create Account" but shows no step indicator.`,
+      }),
+      page("Sign up free", "Create Account - Try Asana for free"),
+    );
+    assert.notEqual(v.status, "contradicted");
+  });
+
+  test("a title match does not satisfy a claim about visible text", () => {
+    // The reason the title is a separate source rather than added to
+    // pageSources: quoting the browser-tab title while implying it is body
+    // copy must not pass the wider checks.
+    const cap = page("Sign up free", "Create Account");
+    const sources = pageSources(cap);
+    assert.ok(!sources.some((s) => s.includes("Create Account")));
+  });
+
+  test("an unhedged quote that is not on the page still contradicts", () => {
+    // The teeth. Narrowing must not become disarming.
+    const v = checkClaim(
+      finding({
+        element_ref: "el_1",
+        observation: `The banner reads "Free shipping on every order today".`,
+      }),
+      page("Standard delivery from $4.99"),
+    );
+    assert.equal(v.status, "contradicted");
+  });
+});
+
+/**
+ * The abbreviation case, which broke twice while being fixed.
+ *
+ * gov.uk: `(e.g. "Includes eligibility…") … use short, concrete "Includes X,
+ * Y, Z" phrasing`. The quote is a template, and "e.g." says so — but a `\b`
+ * after "e.g." cannot match, because a word boundary needs a word character
+ * and the token ends in a full stop. Then the clause splitter read that same
+ * full stop as the end of a sentence and cut the cue away.
+ */
+test("an abbreviation marks an example without ending the sentence", () => {
+  const cap = capture([element({ ref: "el_1", tag: "p", text: "Includes eligibility, appeals" })]);
+  const v = checkClaim(
+    finding({
+      element_ref: "el_1",
+      observation:
+        `The descriptions (e.g. "Includes eligibility, appeals" for Benefits) ` +
+        `consistently use concrete "Includes X, Y, Z" phrasing.`,
+    }),
+    cap,
+  );
+  assert.notEqual(v.status, "contradicted");
+});
+
+test("a real sentence boundary still ends the clause", () => {
+  // The guard on the guard: a negation in a *previous* sentence must not
+  // excuse a fabrication in this one.
+  const cap = capture([element({ ref: "el_1", tag: "p", text: "Standard delivery from $4.99" })]);
+  const v = checkClaim(
+    finding({
+      element_ref: "el_1",
+      observation: `There is no discount banner. The header reads "Free shipping on every order".`,
+    }),
+    cap,
+  );
+  assert.equal(v.status, "contradicted");
 });

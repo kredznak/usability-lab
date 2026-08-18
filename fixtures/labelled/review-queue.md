@@ -1,6 +1,6 @@
 # Review queue
 
-78 findings await a human label. The fastest way through this is
+74 findings await a human label. The fastest way through this is
 `npm run label`, which asks one question at a time and saves as it goes.
 
 The machine has already checked what it can: cited elements exist, quotes appear
@@ -167,37 +167,13 @@ on a true statement — that is the question below.
 
 - **copy** · severity 1 · medium confidence · positive · page-level
 - https://www.gov.uk/
-- mechanical: **contradicted** — quotes "Includes X, Y, Z", which is NOT on the page
+- mechanical: **verified**
 
 > The category descriptions throughout "Services and information" (e.g. "Includes eligibility, appeals, tax credits and Universal Credit" for Benefits) consistently use short, concrete "Includes X, Y, Z" phrasing rather than abstract summaries.
 
 > This consistent pattern across many categories makes the whole directory scannable, letting visitors self-select the right section quickly.
 
-**Question:** the check above says this contradicts the capture. Is the check right?
-
-## 4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f:4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f-f4
-
-- **copy** · severity 2 · medium confidence · page-level
-- https://basecamp.com/
-- mechanical: **contradicted** — quotes "You’re juggling people, projects, and expectations...This al", which is NOT on the page
-
-> The section opening "There’s a good chance we know why you’re here." is followed by several sentences describing the visitor's situation ("You’re juggling people, projects, and expectations...This all has to happen somewhere.") before Basecamp or its function is named again.
-
-> Visitors who skim rather than read narrative copy may leave before the paragraph reaches its point about the product.
-
-**Question:** the check above says this contradicts the capture. Is the check right?
-
-## 52444e83-6100-4683-bac3-9cf182c7d802:52444e83-6100-4683-bac3-9cf182c7d802-f12
-
-- **heuristics** · severity 2 · high confidence · el_13
-- https://www.cotopaxi.com/cart
-- mechanical: **contradicted** — quotes "United States", which is NOT on the page
-
-> The list of country links ("Australia", "Canada", "European Union", "Japan", "New Zealand", "United Kingdom") does not visually mark which region is currently active, and "United States" is not among the listed options despite the footer button reading "US Site."
-
-> A visitor has to remember or infer their current region rather than seeing it confirmed, adding unnecessary cognitive effort.
-
-**Question:** the check above says this contradicts the capture. Is the check right?
+**Question:** would a founder change something because of this?
 
 ## 6415e068-08ea-4820-8bcb-aa5644f0a32b:recovered-f1
 
@@ -414,18 +390,6 @@ on a true statement — that is the question below.
 > A logical, non-skipping heading outline lets screen reader users jump between sections confidently using heading navigation.
 
 **Question:** would a founder change something because of this?
-
-## 8ae363d2-3761-4b03-a878-37df1fb3a13a:8ae363d2-3761-4b03-a878-37df1fb3a13a-f12
-
-- **conversion-cta** · severity 2 · high confidence · el_42
-- https://basecamp.com/
-- mechanical: **contradicted** — quotes "Reserve a seat", which is NOT on the page
-
-> The live-class entries (e.g. "Aug 17 Intro to Basecamp Mon, Aug 17, 1:00pm") are clickable links but state only the date and topic, with no label such as "Register" or "Reserve a seat" indicating what happens when clicked.
-
-> Visitors interested in the class may hesitate to click a link whose outcome is unstated, weakening a secondary conversion path.
-
-**Question:** the check above says this contradicts the capture. Is the check right?
 
 ## 9664f4c2-2038-48f6-9b8a-f873eaec2534:recovered-f1
 
@@ -930,15 +894,3 @@ on a true statement — that is the question below.
 > Giving the reject option equal visual weight to accept respects visitor choice and avoids steering consent through design bias, which supports trust in the site.
 
 **Question:** would a founder change something because of this?
-
-## e16569d2-9b95-48af-9732-5bafd254ef16:e16569d2-9b95-48af-9732-5bafd254ef16-f2
-
-- **forms+heuristics** · severity 2 · high confidence · el_3
-- https://asana.com/create-account
-- mechanical: **contradicted** — quotes "Create Account", which is NOT on the page
-
-> The form and surrounding page show no step counter, progress bar, or text indicating this is step 1 of a multi-step signup, despite the page title being "Create Account".
-
-> Without a sense of how many steps remain, visitors cannot gauge the commitment required and may abandon partway through an unseen sequence of steps.
-
-**Question:** the check above says this contradicts the capture. Is the check right?

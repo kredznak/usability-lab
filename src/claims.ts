@@ -40,6 +40,18 @@ export interface ClaimCheck {
   kind: "element" | "tag" | "quote" | "measurement";
   ok: boolean;
   detail: string;
+  /**
+   * A check that could not resolve, as opposed to one that failed — B11.
+   *
+   * Across 186 corpus findings the quote check raised five flags and **all
+   * five were false**: an abstraction, a word quoted precisely because it is
+   * *absent*, a hypothetical label, the page title, and an elided quote whose
+   * fragments are all present. Every one marked a true finding `contradicted`.
+   *
+   * A check with 0/5 precision has not earned the right to call a finding
+   * false. Inconclusive checks are reported and do not contradict.
+   */
+  inconclusive?: boolean;
 }
 
 export interface ClaimVerdict {
@@ -67,6 +79,21 @@ const MIN_QUOTE_LEN = 12;
  * Only double quotes. Apostrophes are far too common in ordinary prose
  * ("the page's header") to treat as quotation.
  */
+/**
+ * Phrases that mean the words after them are not a quotation *of* the page.
+ *
+ * Four of B11's five false flags were signalled here, in the sentence around
+ * the quote rather than in the quote itself: "with no label such as
+ * \"Reserve a seat\"" is a hypothetical, "does not list \"United States\"" is
+ * an absence claim. This is a judgement about language, so it is deliberately
+ * conservative — it skips a check rather than asserting anything.
+ */
+const NOT_A_QUOTATION =
+  /\b(such as|for example|no|not|never|without|missing|absent|lacks?|lacking|instead of|rather than|should (say|read)|would (say|read))\b|\b(e\.g\.|i\.e\.)/i;
+
+/** Elision. The fragments may all be on the page; the string as written is not. */
+const ELIDED = /[…]|\.\.\./;
+
 function quotedSpans(s: string): string[] {
   const parts = s.split(/["“”]/);
   const spans: string[] = [];
@@ -150,18 +177,77 @@ export function checkClaim(finding: RawFinding | Finding, capture: Capture): Cla
   // 3. Quoted page text is text the page contains — inside one source, never
   //    across the seam between two of them. See pageSources() for why.
   const sources = pageSources(capture);
-  for (const span of quotedSpans(finding.observation)) {
+  /**
+   * The page title, consulted by the quote check alone — B6, narrow version.
+   *
+   * `pageSources` never included it, so a finding reasoning about a page title
+   * was mechanically false by construction; it cost a true asana finding at the
+   * gate. Kept out of `pageSources` deliberately: a title match must not
+   * satisfy a claim about visible body text.
+   */
+  const quotable = [...sources, capture.title];
+
+  const observation = finding.observation;
+  for (const span of quotedSpans(observation)) {
     const quoted = normalize(trimQuotePunctuation(span));
     if (quoted.length < MIN_QUOTE_LEN) continue;
+
     // Accessible names are legitimately quotable — the Accessibility lane
     // quotes aria-labels, which are real page content a visitor never reads.
-    const found = pageContains(sources, quoted);
+    const found = pageContains(quotable, quoted);
+    if (found) {
+      checks.push({ kind: "quote", ok: true, detail: `quotes "${span.slice(0, 60)}", which is on the page` });
+      continue;
+    }
+
+    /**
+     * The clause before the quote, not the word before it.
+     *
+     * Negation scopes over a clause: "the country list does not include
+     * United States" puts five words between the cue and the quotation. Cut at
+     * the last sentence boundary, so a negation in a previous sentence cannot
+     * excuse a fabrication in this one.
+     */
+    const before =
+      observation
+        .slice(0, observation.indexOf(span))
+        .replace(/["“”]\s*$/, "")
+        // Two letters before the stop, so "e.g." is not read as a sentence
+        // ending. The naive version split on the abbreviation this check is
+        // looking for, cutting the cue out of the clause it was meant to find.
+        .split(/(?<=[a-z]{2}[.!?])\s+/i)
+        .pop() ?? "";
+    if (ELIDED.test(span)) {
+      checks.push({
+        kind: "quote",
+        ok: false,
+        inconclusive: true,
+        detail: `quotes "${span.slice(0, 60)}" with an elision; the fragments cannot be matched as one string`,
+      });
+      continue;
+    }
+    if (NOT_A_QUOTATION.test(before)) {
+      checks.push({
+        kind: "quote",
+        ok: false,
+        inconclusive: true,
+        detail: `quotes "${span.slice(0, 60)}" after "${before.trim().split(/\s+/).slice(-3).join(" ")}" — an example or an absence, not a quotation of the page`,
+      });
+      continue;
+    }
+
+    /**
+     * No elision, no hedge: this is an assertion that the page says something,
+     * and it does not. That is the case the check was built for and it has
+     * caught it for real — linear.app's h1 reported as rendering its headline
+     * twice, where the duplicate was screen-reader-only text (see
+     * claims.test.ts). B11's "never caught a fabrication" is true of the
+     * current corpus and false of its history, so the teeth stay in.
+     */
     checks.push({
       kind: "quote",
-      ok: found,
-      detail: found
-        ? `quotes "${span.slice(0, 60)}", which is on the page`
-        : `quotes "${span.slice(0, 60)}", which is NOT on the page`,
+      ok: false,
+      detail: `quotes "${span.slice(0, 60)}", which is NOT on the page`,
     });
   }
 
@@ -256,7 +342,10 @@ export function checkClaim(finding: RawFinding | Finding, capture: Capture): Cla
     });
   }
 
-  const contradictions = checks.filter((c) => !c.ok).map((c) => c.detail);
+  // Inconclusive checks are reported and do not contradict. Only the checks
+  // that can actually prove a finding wrong — the element exists, the tag
+  // matches, the measurement is real — decide the verdict.
+  const contradictions = checks.filter((c) => !c.ok && !c.inconclusive).map((c) => c.detail);
   const status: ClaimStatus =
     contradictions.length > 0 ? "contradicted" : checks.length > 0 ? "verified" : "unverifiable";
 
