@@ -12,10 +12,14 @@ import { OUT_ROOT } from "./paths.js";
  * ## What it does not pretend to show
  *
  * §8's funnel is question-start -> completion -> preview -> email -> full ->
- * subscribe. There is no web app, no email gate and no Stripe, so four of those
- * six stages cannot emit anything. They are printed as NOT BUILT rather than as
+ * subscribe. Every stage but the last emits now; **subscribe does not, because
+ * Stripe Checkout is not built**. It is printed as NOT BUILT rather than as
  * zero: a zero in a funnel means people arrived and did not convert, which
  * would be a lie about a stage that does not exist.
+ *
+ * The re-audit stage that follows it is the thing a subscription buys, and it
+ * *is* live — which is why the funnel currently shows a conversion nobody can
+ * pay for. That gap is the honest shape of today's work, not a bug in this file.
  *
  * ## Why p95 and not an average
  *
@@ -109,6 +113,10 @@ export function funnelStages(
     ["previewed", "preview.viewed"],
     ["email captured", "email.captured"],
     ["full results read", "full.viewed"],
+    // What a subscription buys. Last, because it is the step past the one that
+    // cannot happen yet — `main` prints the NOT BUILT subscribe line between
+    // this and the stage above it.
+    ["re-audit requested", "reaudit.requested"],
   ] as const;
 
   const outside = new Set<string>();
@@ -129,6 +137,9 @@ export function funnelStages(
 }
 
 const secs = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
+
+/** The one stage that sits below `subscribed NOT BUILT` in the printout. */
+const AFTER_SUBSCRIBE = "re-audit requested";
 
 function main(): void {
   const events = new EventLog();
@@ -159,13 +170,16 @@ function main(): void {
       ? `\n  No events yet. The log starts empty and is not backfilled, so audits\n` +
         `  run before this existed are absent — not a quiet week.\n`
       : ``,
-    ...stages.map(stageLine),
+    // Split around the stage that does not exist, so the printout keeps §8's
+    // order: ... -> full -> subscribe -> what subscribing buys.
+    ...stages.filter((s) => s.label !== AFTER_SUBSCRIBE).map(stageLine),
     outside > 0
       ? `\n  ${outside} audit(s) reached a later stage without a recorded start —\n` +
         `  they began before this log existed, and are left out of the percentages.`
       : ``,
     ``,
-    `  subscribed             NOT BUILT`,
+    `  subscribed             NOT BUILT — no checkout; \`npm run subscribe\` grants by hand`,
+    ...stages.filter((s) => s.label === AFTER_SUBSCRIBE).map(stageLine),
     ``,
     `RE-AUDITS  ${reaudits.length} checked, ${quiet} found nothing and spent nothing`,
     ``,

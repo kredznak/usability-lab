@@ -100,6 +100,24 @@ async function publish(
 }
 
 describe("the visitor's page: what it shows and what it admits to hiding", () => {
+  /**
+   * The published file gets nothing it cannot use.
+   *
+   * `results.html` on disk has no form to post and no session to post it with,
+   * so it gets neither the offer markup nor a byte of the CSS for it. This is a
+   * standing guard against a mistake already made once: the email gate's rules
+   * were spliced into the shared stylesheet unconditionally, and the claim
+   * "the artifact is byte-identical" was made about a file that had grown ten
+   * lines. Optional features that render nothing must also style nothing.
+   */
+  test("the published artifact carries no subscribe markup and no CSS for it", async () => {
+    const html = await publish([1, 2, 3, 4].map((n) => finding(n, 2)));
+    assert.doesNotMatch(html, /class="offer"/);
+    assert.doesNotMatch(html, /\.offer \{/);
+    assert.doesNotMatch(html, /name="csrf"/);
+    assert.doesNotMatch(html, /Keep watching this page/);
+  });
+
   test("shows three issues and no more, however many were kept", async () => {
     const html = await publish([1, 2, 3, 4, 5, 6, 7].map((n) => finding(n, 2)));
     for (const n of [1, 2, 3]) {

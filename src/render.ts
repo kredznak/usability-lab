@@ -7,6 +7,7 @@ import type { OrchestrationResult } from "./orchestrator/index.js";
 import type { SynthesisResult } from "./agents/synthesizer.js";
 import { rubricFor } from "./agents/rubrics.js";
 import { pinNumbers } from "./annotate.js";
+import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 
 /**
  * Two pages, written at two different moments.
@@ -369,6 +370,46 @@ export interface PublishInput {
    * are the same three, worded identically.
    */
   reveal?: boolean;
+  /**
+   * §0's subscribe step, and the thing a subscription actually buys.
+   *
+   * Shown on the revealed page only. Offering monitoring to someone who has
+   * read three findings out of twelve is selling to a stranger; the reader
+   * behind the gate has seen the whole thing and can judge whether more of it
+   * is worth $29.
+   *
+   * A union rather than one shape with optional halves, because a non-subscriber
+   * has no re-audit form and therefore no CSRF token — and a field that is
+   * "required, except when it isn't" is how an empty `csrf=""` ends up posted
+   * and accepted.
+   */
+  offer?:
+    | {
+        subscribed: false;
+        /** The quiet "prefer to talk it through?" address — §1, zero emphasis. */
+        talkTo: string;
+        /**
+         * Checkout is not wired. Stated on the page rather than hidden behind a
+         * button that does nothing, because a dead button is a worse lie than a
+         * sentence — the reader finds out either way, and only one of the two
+         * ways costs them a click and their trust.
+         */
+        checkoutLive: false;
+      }
+    | {
+        subscribed: true;
+        talkTo: string;
+        /** Where the re-audit form POSTs. */
+        action: string;
+        /** Session-bound CSRF token — see tokens.ts. */
+        csrf: string;
+        /** This reader already has a re-audit queued for this audit. */
+        queued?: boolean;
+        /** One was just recorded by this request. */
+        justRequested?: boolean;
+        /** The fair-use refusal, shown to the customer in its own words. */
+        refusal?: string;
+      };
 }
 
 /** quality-bar §7 — three shown free. */
@@ -432,6 +473,81 @@ function gateForm(gate: PublishInput["gate"]): string {
             ${gate.error ? `<p class="gate-error">${escapeHtml(gate.error)}</p>` : ""}
             <p class="gate-fine">One email, for this audit. We don't sell it on.</p>
           </form>`;
+}
+
+/**
+ * §11's price. One number, one place, quoted on one page.
+ */
+export const PRICE_USD = 29;
+
+/** Emitted only on a page carrying the offer — same reason as `GATE_CSS`. */
+const OFFER_CSS = `  .offer { background:#fff; border:1px solid var(--line); border-radius:4px;
+           padding:18px 20px; margin:36px 0 0; }
+  .offer h2 { margin:0 0 8px; font-size:17px; }
+  .offer p { margin:0 0 8px; }
+  .offer form { margin:14px 0 0; }
+  .offer button { padding:9px 16px; font-size:15px; font-family:inherit; cursor:pointer;
+                  border:0; border-radius:3px; background:var(--accent); color:#fff; }
+  .offer-fine { font-size:13px; color:var(--muted); }
+  .offer-note { font-size:14px; color:#444; }
+  .offer-refusal { font-size:14px; color:#a3301a; }`;
+
+/**
+ * The subscribe step, and the re-audit button behind it.
+ *
+ * Two states, one block. What both refuse to do is press: quality-bar §7 stops
+ * the audit telling anyone what to do, and the same restraint has to survive
+ * contact with the one part of this page that wants money. So there is no
+ * urgency, no discount, no "most founders choose", and the case for subscribing
+ * is the same sentence the product is: we will look again and tell you what
+ * changed.
+ *
+ * The "prefer to talk it through?" link is §1's, at the emphasis §1 asked for —
+ * last line, body colour, no button. It is the honest escape hatch for a reader
+ * who wants a person, and it is deliberately not competing with the offer above
+ * it.
+ */
+function offerBlock(offer: PublishInput["offer"]): string {
+  if (!offer) return "";
+
+  const talk = `<p class="offer-fine">Prefer to talk it through?
+        <a href="mailto:${escapeHtml(offer.talkTo)}">Email us</a>.</p>`;
+
+  if (!offer.subscribed) {
+    return `<div class="offer">
+      <h2>Keep watching this page</h2>
+      <p>$${PRICE_USD} a month. Ask for a re-audit whenever you have changed something and
+         we capture the page again, compare it to this one, and tell you what moved &mdash;
+         &ldquo;3 fixed, 1 new&rdquo; &mdash; rather than handing you a fresh report to
+         re-read. Up to ${SITE_LIMIT} sites and ${AUDITS_PER_MONTH} re-audits a month.</p>
+      <p class="offer-note">Checkout is not connected yet, so there is nothing to click here.
+         That is our missing piece, not yours.</p>
+      ${talk}
+    </div>`;
+  }
+
+  const inner = offer.justRequested
+    ? `<p class="offer-note">Queued. It runs on the next pass, and the result appears here
+          with what changed since this page.</p>`
+    : offer.queued
+      ? `<p class="offer-note">You already have a re-audit queued for this page. Asking again
+            would not make it sooner, so we have not recorded a second one.</p>`
+      : offer.refusal
+        ? `<p class="offer-refusal">${escapeHtml(offer.refusal)}</p>`
+        : `<form method="post" action="${escapeHtml(offer.action)}">
+             <input type="hidden" name="csrf" value="${escapeHtml(offer.csrf)}">
+             <button type="submit">Ask for a re-audit</button>
+           </form>`;
+
+  return `<div class="offer">
+      <h2>Ask for a re-audit</h2>
+      <p>We capture this page again and compare it to the version above. If nothing has
+         changed we say so and run no audit.</p>
+      <p class="offer-fine">Each ask counts toward your ${AUDITS_PER_MONTH} for the month,
+         whether or not the page turned out to have changed.</p>
+      ${inner}
+      ${talk}
+    </div>`;
 }
 
 /**
@@ -542,7 +658,7 @@ export function publicHtml(input: PublishInput): string {
   .gate { background:#fff; border:1px solid var(--line); border-left:3px solid var(--accent);
           border-radius:4px; padding:18px 20px; margin:32px 0; }
   .gate h2 { margin:0 0 8px; font-size:17px; }
-  .gate p { margin:0 0 6px; }${input.gate ? `\n${GATE_CSS}` : ""}
+  .gate p { margin:0 0 6px; }${input.gate ? `\n${GATE_CSS}` : ""}${input.offer ? `\n${OFFER_CSS}` : ""}
   .corrections { border-left:3px solid var(--accent); padding:2px 0 2px 14px; margin:0 0 24px;
                  font-size:14px; color:#444; }
   .corrections p { margin:0 0 4px; }
@@ -625,7 +741,7 @@ ${
           .join("")}`
       : ""
   }
-
+${offerBlock(input.offer)}
   <footer>
     Every finding above was checked against the page as captured, read by a person before
     publishing, and carries the element it refers to so you can verify it yourself.

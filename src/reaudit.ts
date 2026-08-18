@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { capture, CaptureFailed } from "./capture.js";
-import { AuditStore, EventLog, type AuditRow } from "./db.js";
+import { AuditStore, EventLog, ReauditRequestStore, type AuditRow } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
 import { Capture } from "./types.js";
 import { diffCaptures, isQuiet, type CaptureDiff } from "./capture-diff.js";
@@ -74,10 +74,65 @@ export function summarise(d: CaptureDiff): string[] {
   return lines;
 }
 
+/**
+ * `npm run reaudit -- --queue` — act on what the results pages asked for.
+ *
+ * The other half of "no HTTP request may spend money". The button records a
+ * row; this is the thing that decides to spend, and it is a command a person
+ * runs (or a cron does) rather than anything a visitor can reach.
+ *
+ * ## Why each request is marked done even when it failed
+ *
+ * A request left pending after a failure is retried on every run, forever, and
+ * the URL that cannot be captured is precisely the one that would be. The
+ * customer's ask has been acted on; that it did not work is in the log above
+ * and in their fair-use count, which is the honest place for it — see
+ * `fairuse.ts` on why a failed re-audit is not refunded.
+ *
+ * ## Why it shells out per request
+ *
+ * The same reason `main` shells out to `npm run audit`: one crashed capture
+ * takes down one request rather than the queue. It also means the queue runner
+ * has no opinion about what a re-audit is — it stays exactly one behaviour,
+ * defined once, in the branch below.
+ */
+function runQueue(): void {
+  const requests = new ReauditRequestStore();
+  const pending = requests.queue();
+
+  if (pending.length === 0) {
+    console.log(`\nNothing queued. Re-audits are asked for from a results page.\n`);
+    requests.close();
+    return;
+  }
+
+  console.error(`\n${pending.length} re-audit${pending.length === 1 ? "" : "s"} queued.\n`);
+  let failed = 0;
+
+  for (const r of pending) {
+    console.error(`\n─── request ${r.id}: ${r.url}  (asked ${r.requested_at.slice(0, 10)})\n`);
+    try {
+      execFileSync("npm", ["run", "reaudit", "--", r.url], { stdio: "inherit" });
+    } catch {
+      failed += 1;
+      console.error(`\n  request ${r.id} did not complete. Marked done anyway — see above.\n`);
+    }
+    requests.complete(r.id);
+  }
+
+  console.log(
+    `\n${pending.length - failed} of ${pending.length} completed` +
+      (failed > 0 ? `, ${failed} failed.\n` : `.\n`),
+  );
+  requests.close();
+}
+
 async function main(): Promise<void> {
+  if (process.argv[2] === "--queue") return runQueue();
+
   const url = process.argv[2];
   if (!url || url.startsWith("--")) {
-    console.error("usage: npm run reaudit -- <url>");
+    console.error("usage: npm run reaudit -- <url>\n       npm run reaudit -- --queue");
     process.exit(2);
   }
 

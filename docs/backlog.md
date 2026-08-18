@@ -566,6 +566,57 @@ tell apart from us** — until then it would be a flag with one possible value.
 
 ---
 
+## B18. Subscribing buys something; nothing can subscribe
+
+**What.** Built 2026-08-18: the `subscriptions` table, the fair-use cap as a
+real refusal, the offer on the full results page, a re-audit button behind CSRF,
+a request queue, and `npm run reaudit -- --queue` to act on it. **Stripe
+Checkout, its webhook, and F21's daily reconciliation are not built** — they are
+the third of §0's subscribe step that needs API keys nobody has yet.
+
+**Why it was built in this order.** §0 defines a subscription as
+"customer-triggered re-audits from the results page", and until today there was
+no button on any page — `npm run reaudit` was a CLI. Building Checkout first
+would have meant a customer paying $29 and landing back on the page they
+already had. Everything a subscription *buys* is now real and tested; the part
+that takes the money is the part that is missing, and it is missing visibly:
+the page says "Checkout is not connected yet" rather than showing a dead button.
+
+**What granting access looks like meanwhile.** `npm run subscribe -- <email>`
+writes the same row the webhook will, through the same store, leaving both
+Stripe id columns null so a hand-granted subscription is distinguishable at a
+glance. That command is also the granting half of F21's reconciliation, so it
+is not throwaway.
+
+**Two decisions inside it that are Kelly's to overrule.**
+
+1. **Sites do not reset with the month; audits do.** "3 sites, 10 audits/mo"
+   reads to me as a rate and a scope: a month is what $29 is quoted against, but
+   §1 sells monitoring *for three sites*, and a site limit that cleared every
+   month would be selling something else. The cost is that swapping a site is a
+   founder deleting a row. `checkFairUse` is the one function to change and
+   `fairuse.test.ts` says so.
+2. **Access expires rather than persists.** A row saying `active` with no period
+   end grants nothing. This matches F21 — named failure "customer paid, still
+   locked out", named repair "reconciliation grants access", named blast radius
+   "one customer, ≤24h" — and deliberately takes that failure over the opposite
+   one, a cancelled customer keeping access until somebody notices. No grace
+   period, because a grace window turns F21's ≤24h into 24h-plus-whatever.
+
+**What is not covered by a test.** `runQueue` in `reaudit.ts` shells out per
+request, so testing it means either spawning a real capture or mocking
+`execFileSync`. It was verified by hand on 2026-08-18 against a temp database —
+it picked the request up, dispatched, failed cleanly on an unresolvable host,
+marked the row done, and reported `0 of 1 completed, 1 failed`. The store
+semantics underneath it (`queue`, `complete`, `pending`) are tested; the loop
+is not. **Recorded here so the green suite is not read as covering it.**
+
+**What is left.** Checkout session creation, the webhook with signature
+verification, and daily reconciliation. All three need keys. None of them can be
+written honestly before there is an account to write them against.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
@@ -580,8 +631,10 @@ and memory. Consolidated 2026-08-10; not new decisions.
   would be invented, so `npm run outcome` prints none.
 - **LLM judge for usefulness.** Needs ~50–100 human labels to calibrate against.
   We have 17.
-- **Not built at all:** Content agent, Stripe, Inngest/Supabase. *(The lint gate,
-  re-audit diffing and the email gate have since shipped; the web app exists as
-  `npm run serve` on localhost only.)*
+- **Not built at all:** Content agent, Stripe Checkout, Inngest/Supabase. *(The
+  lint gate, re-audit diffing, the email gate and the subscribe surface have
+  since shipped; the web app exists as `npm run serve` on localhost only.
+  Subscriptions are real rows granted by hand — see B18 for what Stripe still
+  owes.)*
 - **`docs/quality-bar.md`** still carries one `[UNRESOLVED]` (the post-publish
   correction path) and five `[PROPOSED]` items.

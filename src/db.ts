@@ -535,3 +535,239 @@ export class EmailCaptureStore {
     this.db.close();
   }
 }
+
+/**
+ * Stripe's word for it, narrowed to the three that change what we do.
+ *
+ * Stripe emits more (`incomplete`, `trialing`, `unpaid`, `paused`). They map
+ * onto these three at the boundary rather than here, because a column that can
+ * hold every string Stripe has ever invented is a column nothing can reason
+ * about — and `isActive` would then be a growing list of things that are not
+ * quite active.
+ */
+export type SubscriptionStatus = "active" | "past_due" | "canceled";
+
+export interface SubscriptionRow {
+  email: string;
+  status: SubscriptionStatus;
+  /** Null until Stripe exists. Both ids are Stripe's, and neither is a secret. */
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  /** ISO. What access actually hangs on — see `isActive`. */
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * §7's `subscriptions` table — who is paying, and until when.
+ *
+ * ## Keyed on email, not on audit
+ *
+ * §1 sells a subscription as monitoring for up to three sites, so it cannot
+ * belong to one audit. The address is the only identity this system has: it is
+ * what the gate captures, what the magic link signs, and what Stripe will send
+ * back on a Checkout session. There is no `customers` table because there is
+ * nothing else to put in one.
+ *
+ * ## Access expires; it does not persist
+ *
+ * `isActive` requires a `current_period_end` in the future. A row that says
+ * `active` with no end date grants nothing. That is the harsher of the two
+ * available defaults, and it is chosen to match F21: the named failure is
+ * "customer paid, still locked out", the named repair is daily reconciliation
+ * against Stripe, and the named blast radius is **one customer, ≤24h**. Trusting
+ * the status forever would trade that for the opposite failure — a cancelled
+ * customer keeping access until someone notices — which nothing in the doc
+ * repairs and no number bounds.
+ *
+ * No grace period, deliberately. A grace window would quietly turn F21's ≤24h
+ * into 24h-plus-whatever, and the number in the failure catalogue is the one
+ * this has to honour.
+ */
+export class SubscriptionStore {
+  private db: Database.Database;
+
+  constructor(dbPath = DB_PATH) {
+    mkdirSync(path.dirname(dbPath), { recursive: true });
+    this.db = new Database(dbPath);
+    this.db.pragma("journal_mode = WAL");
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        email                  TEXT PRIMARY KEY,
+        status                 TEXT NOT NULL,
+        stripe_customer_id     TEXT,
+        stripe_subscription_id TEXT,
+        current_period_end     TEXT,
+        created_at             TEXT NOT NULL,
+        updated_at             TEXT NOT NULL
+      );
+    `);
+  }
+
+  get(email: string): SubscriptionRow | null {
+    return (
+      (this.db
+        .prepare(`SELECT * FROM subscriptions WHERE email = ?`)
+        .get(email.trim().toLowerCase()) as SubscriptionRow | undefined) ?? null
+    );
+  }
+
+  /**
+   * Last writer wins, on purpose.
+   *
+   * Stripe webhooks arrive out of order and get retried; the reconciliation job
+   * re-states the same facts daily. All three of those are writes that must be
+   * safe to repeat, so this is an upsert with no version check. When ordering
+   * starts to matter — it will, the first time a cancel lands before the renewal
+   * it followed — the fix is Stripe's own event timestamp, not a lock.
+   */
+  upsert(
+    email: string,
+    fields: {
+      status: SubscriptionStatus;
+      stripeCustomerId?: string | null;
+      stripeSubscriptionId?: string | null;
+      currentPeriodEnd?: string | null;
+    },
+  ): void {
+    const now = new Date().toISOString();
+    this.db
+      .prepare(
+        `INSERT INTO subscriptions
+           (email, status, stripe_customer_id, stripe_subscription_id,
+            current_period_end, created_at, updated_at)
+         VALUES (@email, @status, @customer, @subscription, @period_end, @now, @now)
+         ON CONFLICT(email) DO UPDATE SET
+           status                 = @status,
+           stripe_customer_id     = COALESCE(@customer, stripe_customer_id),
+           stripe_subscription_id = COALESCE(@subscription, stripe_subscription_id),
+           current_period_end     = @period_end,
+           updated_at             = @now`,
+      )
+      .run({
+        email: email.trim().toLowerCase(),
+        status: fields.status,
+        customer: fields.stripeCustomerId ?? null,
+        subscription: fields.stripeSubscriptionId ?? null,
+        period_end: fields.currentPeriodEnd ?? null,
+        now,
+      });
+  }
+
+  /** Paying, and paid up to a date that has not passed. See the class note. */
+  isActive(email: string, now = Date.now()): boolean {
+    const row = this.get(email);
+    if (!row || row.status !== "active" || !row.current_period_end) return false;
+    const end = Date.parse(row.current_period_end);
+    return Number.isFinite(end) && end > now;
+  }
+
+  close(): void {
+    this.db.close();
+  }
+}
+
+export interface ReauditRequestRow {
+  id: number;
+  audit_id: string;
+  email: string;
+  url: string;
+  requested_at: string;
+  completed_at: string | null;
+}
+
+/**
+ * The queue between the results page and `npm run reaudit`.
+ *
+ * ## Why a request and not a run
+ *
+ * **No HTTP request may spend money.** A button that started an audit inline
+ * would put a ~$0.65 model spend and a 90-second Playwright capture behind a
+ * click that anyone holding a session cookie can repeat, on a server with one
+ * process. This records the ask; `npm run reaudit -- --queue` decides when to
+ * spend, and the fair-use cap decides whether to at all.
+ *
+ * ## What the columns are for
+ *
+ * `url` is denormalised off the audit because that is what a re-audit takes as
+ * its argument, and because the audit's `url` may change meaning if a row is
+ * ever corrected — the request should record what was asked for at the time.
+ * `email` is here rather than in an event because §8 makes events permanent and
+ * an address must not outlive the 90-day capture policy; `audit_id` keeps
+ * deleting a customer one join away, exactly as `email_captures` does.
+ *
+ * A request is `completed_at` when something acted on it, whether that action
+ * found a change, found none, or failed. Leaving failures pending would make a
+ * URL that cannot be captured retry on every queue run forever.
+ */
+export class ReauditRequestStore {
+  private db: Database.Database;
+
+  constructor(dbPath = DB_PATH) {
+    mkdirSync(path.dirname(dbPath), { recursive: true });
+    this.db = new Database(dbPath);
+    this.db.pragma("journal_mode = WAL");
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS reaudit_requests (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        audit_id     TEXT NOT NULL,
+        email        TEXT NOT NULL,
+        url          TEXT NOT NULL,
+        requested_at TEXT NOT NULL,
+        completed_at TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_reaudit_pending ON reaudit_requests(completed_at);
+      CREATE INDEX IF NOT EXISTS idx_reaudit_email ON reaudit_requests(email);
+    `);
+  }
+
+  request(auditId: string, email: string, url: string, now = new Date()): void {
+    this.db
+      .prepare(
+        `INSERT INTO reaudit_requests (audit_id, email, url, requested_at)
+         VALUES (?, ?, ?, ?)`,
+      )
+      .run(auditId, email.trim().toLowerCase(), url, now.toISOString());
+  }
+
+  /**
+   * Whether this reader already has an unacted-on request for this audit.
+   *
+   * The second click is the common case — nothing visible happens for hours —
+   * and queueing two audits for it would spend twice for one decision.
+   */
+  pending(auditId: string, email: string): boolean {
+    const row = this.db
+      .prepare(
+        `SELECT 1 FROM reaudit_requests
+         WHERE audit_id = ? AND email = ? AND completed_at IS NULL LIMIT 1`,
+      )
+      .get(auditId, email.trim().toLowerCase());
+    return !!row;
+  }
+
+  /** Oldest first: a queue, not a stack. */
+  queue(): ReauditRequestRow[] {
+    return this.db
+      .prepare(`SELECT * FROM reaudit_requests WHERE completed_at IS NULL ORDER BY id`)
+      .all() as ReauditRequestRow[];
+  }
+
+  /** Everything this address has ever asked for — what the fair-use cap counts. */
+  forEmail(email: string): ReauditRequestRow[] {
+    return this.db
+      .prepare(`SELECT * FROM reaudit_requests WHERE email = ? ORDER BY id`)
+      .all(email.trim().toLowerCase()) as ReauditRequestRow[];
+  }
+
+  complete(id: number, now = new Date()): void {
+    this.db
+      .prepare(`UPDATE reaudit_requests SET completed_at = ? WHERE id = ? AND completed_at IS NULL`)
+      .run(now.toISOString(), id);
+  }
+
+  close(): void {
+    this.db.close();
+  }
+}

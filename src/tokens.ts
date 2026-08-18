@@ -122,6 +122,47 @@ export function verify(token: string, auditId: string, now = Date.now()): Verify
 }
 
 /**
+ * A CSRF token, bound to the session it was rendered into.
+ *
+ * ## Why now
+ *
+ * The rule written into `server.ts` when the cookie was introduced: **if a
+ * state-changing route ever reads this cookie, it needs a CSRF token that day.**
+ * The re-audit button is that route. It reads `ul_full` to learn who is asking,
+ * and it writes a row that costs money to act on.
+ *
+ * ## Why it is derived rather than stored
+ *
+ * `HMAC(secret, "csrf:" + sessionToken)`. No table, no session store, no
+ * expiry of its own — it dies exactly when the session does, because the session
+ * token is its input. A forged form cannot carry a valid value without already
+ * knowing the cookie, and anything that knows the cookie does not need a forged
+ * form.
+ *
+ * `SameSite=Lax` already blocks a cross-site POST from carrying the cookie at
+ * all, so this is the second lock rather than the first. It is worth having
+ * anyway: `SameSite` is a browser's promise, this is ours, and the day someone
+ * relaxes the cookie to `None` for an embed, this is what still holds.
+ *
+ * The `csrf:` prefix is domain separation. Without it a value signed here and a
+ * signature from `sign` are the same construction over overlapping inputs, and
+ * "these two things could never collide" stops being something you can check by
+ * reading.
+ */
+export function csrfFor(sessionToken: string): string {
+  return mac(`csrf:${sessionToken}`);
+}
+
+/** Constant-time, and false for an absent session — no session, no writes. */
+export function csrfMatches(sessionToken: string, given: string): boolean {
+  if (!sessionToken || !given) return false;
+  const expected = Buffer.from(csrfFor(sessionToken), "utf8");
+  const supplied = Buffer.from(given, "utf8");
+  if (expected.length !== supplied.length) return false;
+  return timingSafeEqual(expected, supplied);
+}
+
+/**
  * The loosest check that still rejects nonsense.
  *
  * Deliberately not RFC 5322. A stricter pattern here rejects real addresses —

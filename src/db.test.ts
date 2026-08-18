@@ -4,7 +4,14 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import Database from "better-sqlite3";
-import { AuditStore, CallLog, IllegalTransition, type AuditStatus } from "./db.js";
+import {
+  AuditStore,
+  CallLog,
+  IllegalTransition,
+  SubscriptionStore,
+  ReauditRequestStore,
+  type AuditStatus,
+} from "./db.js";
 
 /**
  * The state machine is the whole point of the review gate, so the test that
@@ -253,5 +260,120 @@ describe("audits record the baseline they were compared against", () => {
     assert.equal(before.status, "PUBLISHED", "the pre-existing row must survive");
     assert.equal(before.baseline_audit_id, null, "an old audit is a first audit, not unknown-shaped");
     assert.equal(after.baseline_audit_id, "old1");
+  });
+});
+
+/**
+ * Subscriptions and the re-audit queue.
+ *
+ * Two stores, one property between them: **nothing gets to spend money by
+ * accident.** `isActive` decides who may ask, `pending` decides how often, and
+ * `complete` decides that a request is never acted on twice.
+ */
+function tempPath(): { file: string; dir: string } {
+  const dir = mkdtempSync(path.join(tmpdir(), "ulab-sub-"));
+  return { file: path.join(dir, "test.db"), dir };
+}
+
+describe("subscriptions", () => {
+  test("access hangs on the date, not on the word", () => {
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+    const future = new Date(Date.now() + 86_400_000).toISOString();
+    const past = new Date(Date.now() - 86_400_000).toISOString();
+
+    assert.equal(s.isActive("nobody@example.com"), false, "no row, no access");
+
+    s.upsert("a@example.com", { status: "active", currentPeriodEnd: future });
+    assert.equal(s.isActive("a@example.com"), true);
+
+    s.upsert("b@example.com", { status: "active", currentPeriodEnd: past });
+    assert.equal(s.isActive("b@example.com"), false, "paid, but the period ran out");
+
+    // The case that decides which way this store fails. A row that says
+    // "active" with no end date grants nothing — see db.ts on F21.
+    s.upsert("c@example.com", { status: "active", currentPeriodEnd: null });
+    assert.equal(s.isActive("c@example.com"), false, "active with no end date is not access");
+
+    s.upsert("d@example.com", { status: "past_due", currentPeriodEnd: future });
+    assert.equal(s.isActive("d@example.com"), false);
+
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("addresses are matched however they were typed", () => {
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+    const future = new Date(Date.now() + 86_400_000).toISOString();
+    s.upsert("  Kelly@Example.COM ", { status: "active", currentPeriodEnd: future });
+    assert.equal(s.isActive("kelly@example.com"), true);
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("a later write that omits the Stripe ids does not erase them", () => {
+    // The reconciliation job knows the status and the period; the webhook knows
+    // the ids. Both write this row, and neither should be able to blank what
+    // the other put there.
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+    s.upsert("e@example.com", {
+      status: "active",
+      stripeCustomerId: "cus_123",
+      stripeSubscriptionId: "sub_456",
+      currentPeriodEnd: "2026-09-01T00:00:00.000Z",
+    });
+    s.upsert("e@example.com", { status: "canceled", currentPeriodEnd: null });
+
+    const row = s.get("e@example.com")!;
+    assert.equal(row.status, "canceled");
+    assert.equal(row.stripe_customer_id, "cus_123");
+    assert.equal(row.stripe_subscription_id, "sub_456");
+    assert.equal(row.current_period_end, null, "the period is stated fresh every time, and can clear");
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("the re-audit queue", () => {
+  test("pending is per reader and per audit, and clears when acted on", () => {
+    const { file, dir } = tempPath();
+    const r = new ReauditRequestStore(file);
+
+    r.request("audit-1", "kelly@example.com", "https://example.com/");
+    assert.equal(r.pending("audit-1", "kelly@example.com"), true);
+    assert.equal(r.pending("audit-2", "kelly@example.com"), false, "a different page is a different ask");
+    assert.equal(r.pending("audit-1", "someone@example.com"), false, "a different reader is too");
+
+    r.complete(r.queue()[0]!.id);
+    assert.equal(r.pending("audit-1", "kelly@example.com"), false);
+    assert.equal(r.queue().length, 0);
+    // Still counted: the ask was spent, whatever came of it — see fairuse.ts.
+    assert.equal(r.forEmail("kelly@example.com").length, 1);
+
+    r.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("the queue is oldest first, and completing twice is not an error", () => {
+    const { file, dir } = tempPath();
+    const r = new ReauditRequestStore(file);
+    r.request("a1", "k@example.com", "https://one.com/");
+    r.request("a2", "k@example.com", "https://two.com/");
+
+    assert.deepEqual(r.queue().map((x) => x.url), ["https://one.com/", "https://two.com/"]);
+
+    // Two explicit clocks, a year apart. Called with the real one, both writes
+    // land in the same millisecond and the assertion below cannot fail — which
+    // is what happened when this was written without them.
+    const first = r.queue()[0]!;
+    r.complete(first.id, new Date("2026-01-01T00:00:00.000Z"));
+    const at = r.forEmail("k@example.com")[0]!.completed_at;
+    r.complete(first.id, new Date("2027-01-01T00:00:00.000Z"));
+    assert.equal(r.forEmail("k@example.com")[0]!.completed_at, at, "the first completion stands");
+
+    r.close();
+    rmSync(dir, { recursive: true, force: true });
   });
 });

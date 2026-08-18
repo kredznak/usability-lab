@@ -29,22 +29,34 @@
  *
  * ## What it deliberately does not have
  *
- * No rate limit, no CSRF token, no HTTPS, no index of audits. The first three
- * are wrong to build against localhost and wrong to skip in front of the
- * public — B17 in the backlog says so with the cost. The fourth is a rule, not
- * an omission: an index would be a cross-customer surface, which §8 says a
- * customer must never reach.
+ * No HTTPS, and no index of audits. The first is a deploy blocker rather than a
+ * task — the magic link is a bearer credential in a URL on its first use, and
+ * whatever terminates TLS must set `USABILITY_LAB_SECURE_COOKIES=1` because this
+ * file refuses to guess. The second is a rule, not an omission: an index would
+ * be a cross-customer surface, which §8 says a customer must never reach.
+ *
+ * Rate limits arrived with B16 and a CSRF token with the re-audit button; the
+ * paragraph that used to say otherwise outlived both by a commit each, which is
+ * the ordinary way a file's header stops being true.
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { AuditStore, EventLog, EmailCaptureStore, type AuditRow } from "./db.js";
+import {
+  AuditStore,
+  EventLog,
+  EmailCaptureStore,
+  SubscriptionStore,
+  ReauditRequestStore,
+  type AuditRow,
+} from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
-import { publicHtml } from "./render.js";
-import { sign, verify, looksLikeEmail, TOKEN_TTL_MS } from "./tokens.js";
+import { publicHtml, type PublishInput } from "./render.js";
+import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
+import { checkFairUse } from "./fairuse.js";
 
 const PORT = Number(process.env.PORT || 4000);
 
@@ -155,6 +167,18 @@ async function readBody(req: IncomingMessage): Promise<string | null> {
 const store = new AuditStore();
 const captures = new EmailCaptureStore();
 const events = new EventLog();
+const subs = new SubscriptionStore();
+const requests = new ReauditRequestStore();
+
+/**
+ * Where §1's "prefer to talk it through?" goes.
+ *
+ * The founder's own address, because at nine published audits the person on the
+ * other end of that link is Kelly and pretending otherwise with a
+ * `hello@`-shaped alias would be the first untrue thing on the page. Overridable
+ * the day that stops being true.
+ */
+const TALK_TO = process.env.USABILITY_LAB_CONTACT ?? "kredznak@gmail.com";
 
 /**
  * B16's limits. The numbers are guesses and should be read as such — nobody has
@@ -169,10 +193,50 @@ const byAudit = new SlidingWindow(20, 60 * MINUTE);
 /** One address cannot be mailed five times in an hour, across every audit. */
 const byEmail = new SlidingWindow(5, 60 * MINUTE);
 
+/** The URL a re-audit of this audit would capture. */
+function targetUrl(audit: AuditRow): string {
+  return audit.final_url ?? audit.url;
+}
+
+/**
+ * What the offer block should say to this reader, right now.
+ *
+ * Every branch is a read of stored state rather than anything passed in from the
+ * request, so a reader who reloads sees the same thing they saw — including the
+ * refusal. `justRequested` is the one exception, and it is the one fact a reload
+ * genuinely cannot reproduce: "you just did that."
+ */
+function offerFor(
+  audit: AuditRow,
+  email: string,
+  sessionToken: string,
+  justRequested = false,
+): PublishInput["offer"] {
+  if (!subs.isActive(email)) {
+    return { subscribed: false, talkTo: TALK_TO, checkoutLive: false };
+  }
+  const fair = checkFairUse(requests.forEmail(email), targetUrl(audit));
+  return {
+    subscribed: true,
+    talkTo: TALK_TO,
+    action: `/a/${audit.audit_id}/reaudit`,
+    csrf: csrfFor(sessionToken),
+    queued: requests.pending(audit.audit_id, email),
+    justRequested,
+    refusal: fair.reason,
+  };
+}
+
 /** Renders a published audit, gated or revealed. */
 function render(
   audit: AuditRow,
-  opts: { reveal: boolean; asked?: boolean; again?: boolean; error?: string },
+  opts: {
+    reveal: boolean;
+    asked?: boolean;
+    again?: boolean;
+    error?: string;
+    offer?: PublishInput["offer"];
+  },
 ): string {
   const loaded = loadPublished(audit);
   const corrections = events
@@ -188,6 +252,7 @@ function render(
     summary: loaded.summary,
     corrections,
     reveal: opts.reveal,
+    offer: opts.offer,
     gate: opts.reveal
       ? undefined
       : {
@@ -419,7 +484,112 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return void res.end();
     }
 
-    return send(res, 200, render(audit, { reveal: true }));
+    return send(
+      res,
+      200,
+      render(audit, { reveal: true, offer: offerFor(audit, check.claims.email, token) }),
+    );
+  }
+
+  // --- asking for a re-audit -----------------------------------------------
+  if (rest.length === 1 && rest[0] === "reaudit") {
+    if (req.method !== "POST") return notFound(res);
+
+    /**
+     * The cookie only — no `?t=` fallback, unlike `/full`.
+     *
+     * A state change reachable by URL is a state change a link preview can
+     * make. Slack, iMessage and every mail client fetch what you paste at
+     * them, and this route's job is to queue work that costs ~$0.65 to act on.
+     * `/full` accepts a token in the query because reading a page is safe to
+     * do by accident; this is not.
+     */
+    const token = cookie(req, COOKIE) ?? "";
+    const check = verify(token, audit.audit_id);
+    if (!check.ok) {
+      events.record({
+        audit_id: audit.audit_id,
+        type: "token.rejected",
+        data: { reason: check.reason, source: "cookie", route: "reaudit" },
+      });
+      return send(
+        res,
+        403,
+        page(
+          "Not this page",
+          `<p>That session is no longer valid.</p>
+           <p><a href="/a/${audit.audit_id}">Ask for a new link</a>.</p>`,
+        ),
+      );
+    }
+
+    const body = await readBody(req);
+    if (body === null) return send(res, 413, page("Too long", `<p>That request was too large.</p>`));
+
+    /**
+     * The CSRF check, and the rule it settles.
+     *
+     * `server.ts` has carried one instruction since the cookie was introduced:
+     * **if a state-changing route ever reads this cookie, it needs a CSRF token
+     * that day.** This is that route and this is that day. The token is derived
+     * from the session rather than stored, so it needs no table and cannot
+     * outlive the session it belongs to — see tokens.ts.
+     *
+     * Checked *after* the session and *before* anything is read out of the
+     * body, so a forged post learns nothing except that it was forged.
+     */
+    if (!csrfMatches(token, new URLSearchParams(body).get("csrf") ?? "")) {
+      events.record({ audit_id: audit.audit_id, type: "csrf.rejected", data: { route: "reaudit" } });
+      return send(
+        res,
+        403,
+        page(
+          "That request did not come from this page",
+          `<p>Open the results again and use the button there.</p>
+           <p><a href="/a/${audit.audit_id}/full">Back to the results</a>.</p>`,
+        ),
+      );
+    }
+
+    const email = check.claims.email;
+    const full = (offer: PublishInput["offer"], code = 200) =>
+      send(res, code, render(audit, { reveal: true, offer }));
+
+    // Not subscribed: the page says so in its own words rather than 403-ing at
+    // someone who is only looking at a button we rendered.
+    if (!subs.isActive(email)) {
+      events.record({ audit_id: audit.audit_id, type: "reaudit.refused", data: { why: "not-subscribed" } });
+      return full({ subscribed: false, talkTo: TALK_TO, checkoutLive: false }, 403);
+    }
+
+    /**
+     * The cap is checked here, on the write, and not only where the button is
+     * drawn. A rendered form is a suggestion; this is the refusal. §11's claim
+     * that worst-case subscriber cost is structural rests on this line and not
+     * on the one in `render.ts`.
+     */
+    const fair = checkFairUse(requests.forEmail(email), targetUrl(audit));
+    if (!fair.allowed) {
+      events.record({
+        audit_id: audit.audit_id,
+        type: "reaudit.refused",
+        data: { why: "fair-use", limit: fair.limit },
+      });
+      return full(offerFor(audit, email, token), 429);
+    }
+
+    // A second click records nothing. Nothing visible happens for hours, so the
+    // second click is the expected behaviour rather than the abusive one — and
+    // two rows would be two captures for one decision.
+    if (requests.pending(audit.audit_id, email)) {
+      return full(offerFor(audit, email, token));
+    }
+
+    requests.request(audit.audit_id, email, targetUrl(audit));
+    // No address in the event; the row above holds it. §8 makes events
+    // permanent and captures expire at 90 days.
+    events.record({ audit_id: audit.audit_id, type: "reaudit.requested", data: {} });
+    return full(offerFor(audit, email, token, true));
   }
 
   // --- the preview ---------------------------------------------------------

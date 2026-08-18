@@ -4,9 +4,16 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { AuditStore, EmailCaptureStore, EventLog } from "./db.js";
-import { sign, verify, looksLikeEmail, TOKEN_TTL_MS } from "./tokens.js";
+import {
+  AuditStore,
+  EmailCaptureStore,
+  EventLog,
+  SubscriptionStore,
+  ReauditRequestStore,
+} from "./db.js";
+import { sign, verify, looksLikeEmail, csrfFor, csrfMatches, TOKEN_TTL_MS } from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
+import { AUDITS_PER_MONTH } from "./fairuse.js";
 
 /**
  * The email gate, over real HTTP.
@@ -32,8 +39,34 @@ const PENDING = "cccccccc-3333-4333-8333-cccccccccccc";
  * cannot silently starve every other test that asks for a link.
  */
 const BOMB = "eeeeeeee-5555-4555-8555-eeeeeeeeeeee";
+/**
+ * Its own audit again, for the re-audit button. Same reason as BOMB: these
+ * tests each open a session, and twenty sessions an hour is the per-audit
+ * allowance every other test on this page is also spending.
+ */
+const SUB = "ffffffff-6666-4666-8666-ffffffffffff";
+/**
+ * Not a fixture. `dddddddd-…` is hardcoded below as the made-up id that must
+ * 404, so seeding an audit at it turns that test green for the wrong reason —
+ * which is exactly what happened when this constant was first written.
+ */
+const NEVER_SEEDED = "dddddddd-4444-4444-8444-dddddddddddd";
 const PORT = 4137;
 const BASE = `http://127.0.0.1:${PORT}`;
+
+/**
+ * One key, shared with the subprocess — and set here, before anything imports
+ * its way into `tokens.ts`.
+ *
+ * Until the re-audit button, no test needed the parent and the server to agree
+ * about signing: tokens were either made and checked in-process, or made by the
+ * child and only ever handed back to it. So the parent had quietly been reading
+ * the repo's real `out/.secret` this whole time, and nothing failed. The first
+ * test to compute a CSRF token for a session the *child* issued is the first
+ * one that could notice, and it did.
+ */
+const SECRET = "test-secret-not-a-real-one";
+process.env.USABILITY_LAB_SECRET = SECRET;
 
 let root: string;
 let outRoot: string;
@@ -122,6 +155,7 @@ before(async () => {
   seed(B, 4, true);
   seed(PENDING, 5, false);
   seed(BOMB, 6, true);
+  seed(SUB, 7, true);
 
   child = spawn(process.execPath, ["--import", "tsx", path.resolve("src/server.ts")], {
     env: {
@@ -129,7 +163,7 @@ before(async () => {
       PORT: String(PORT),
       USABILITY_LAB_DB: dbPath,
       USABILITY_LAB_OUT: outRoot,
-      USABILITY_LAB_SECRET: "test-secret-not-a-real-one",
+      USABILITY_LAB_SECRET: SECRET,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -205,6 +239,72 @@ async function openLink(link: string): Promise<{ status: number; html: string; c
   return { status: second.status, html: await second.text(), clean };
 }
 
+/**
+ * A reader who has been through the whole gate and is holding a live cookie.
+ *
+ * Returns the jar as well as the page, because the re-audit button POSTs and
+ * `fetch` will not carry a cookie for us. The CSRF token is read out of the
+ * rendered HTML rather than computed, so these tests exercise the value the
+ * server actually put on the page — computing it here would test my arithmetic
+ * against itself.
+ */
+async function session(
+  auditId: string,
+  email = freshEmail(),
+): Promise<{ email: string; jar: string; html: string }> {
+  const link = await askForLink(auditId, email);
+  const first = await fetch(link, { redirect: "manual" });
+  assert.equal(first.status, 303);
+  const jar = (first.headers.get("set-cookie") ?? "").split(";")[0]!;
+  const clean = new URL(first.headers.get("location")!, BASE).toString();
+  const page = await fetch(clean, { headers: { cookie: jar } });
+  return { email, jar, html: await page.text() };
+}
+
+const csrfIn = (html: string) => html.match(/name="csrf" value="([^"]+)"/)?.[1] ?? "";
+
+/**
+ * The CSRF token a session is entitled to, computed rather than read off a page.
+ *
+ * Needed whenever the page under test deliberately renders no button — a reader
+ * who is not subscribed, or one who has hit the cap. Posting junk in those cases
+ * is refused by the CSRF check whether or not the check under test exists, and
+ * three tests here were written that way before a revert pass caught them. This
+ * is also the realistic attacker: someone holding a valid session who builds the
+ * form themselves.
+ */
+const liveCsrf = (jar: string) => csrfFor(jar.slice(jar.indexOf("=") + 1));
+
+function subscribe(email: string, days = 30): void {
+  const subs = new SubscriptionStore(dbPath);
+  subs.upsert(email, {
+    status: "active",
+    currentPeriodEnd: new Date(Date.now() + days * 86_400_000).toISOString(),
+  });
+  subs.close();
+}
+
+async function askForReaudit(
+  auditId: string,
+  jar: string,
+  csrf: string,
+): Promise<{ status: number; html: string }> {
+  const res = await fetch(`${BASE}/a/${auditId}/reaudit`, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", cookie: jar },
+    body: new URLSearchParams({ csrf }).toString(),
+    redirect: "manual",
+  });
+  return { status: res.status, html: await res.text() };
+}
+
+function queuedFor(email: string): number {
+  const requests = new ReauditRequestStore(dbPath);
+  const n = requests.forEmail(email).length;
+  requests.close();
+  return n;
+}
+
 describe("tokens", () => {
   test("a token opens the audit it was issued for", () => {
     const result = verify(sign(A, "kelly@example.com"), A);
@@ -240,6 +340,27 @@ describe("tokens", () => {
     for (const junk of ["", ".", "a.b.c", "notatoken"]) {
       assert.equal(verify(junk, A).ok, false);
     }
+  });
+
+  test("a CSRF token belongs to one session and no other", () => {
+    const mine = sign(A, "kelly@example.com");
+    const theirs = sign(A, "someone@example.com");
+    assert.ok(csrfMatches(mine, csrfFor(mine)));
+    assert.ok(!csrfMatches(mine, csrfFor(theirs)));
+  });
+
+  test("no session means no CSRF token can be valid", () => {
+    // The empty-string case, spelled out. `HMAC(secret, "csrf:")` is a real,
+    // computable value, and a check that only compared strings would accept it
+    // from a caller holding no cookie at all.
+    assert.ok(!csrfMatches("", csrfFor("")));
+    assert.ok(!csrfMatches(sign(A, "kelly@example.com"), ""));
+  });
+
+  test("a CSRF token is not a session token, and cannot be swapped for one", () => {
+    const token = sign(A, "kelly@example.com");
+    assert.notEqual(csrfFor(token), token.split(".")[1]);
+    assert.equal(verify(csrfFor(token), A).ok, false);
   });
 
   test("the email check accepts real addresses and rejects nonsense", () => {
@@ -285,7 +406,7 @@ describe("the preview", () => {
 
   test("an unpublished audit is a 404, indistinguishable from a made-up id", async () => {
     const real = await fetch(`${BASE}/a/${PENDING}/`);
-    const fake = await fetch(`${BASE}/a/dddddddd-4444-4444-8444-dddddddddddd/`);
+    const fake = await fetch(`${BASE}/a/${NEVER_SEEDED}/`);
     assert.equal(real.status, 404);
     assert.equal(fake.status, 404);
     assert.equal(await real.text(), await fake.text(), "the two must be byte-identical");
@@ -633,6 +754,172 @@ describe("the credential leaves the URL", () => {
     const res = await fetch(`${BASE}/a/${A}/full`, { headers: { cookie: "ul_full=stale-rubbish" } });
     assert.equal(res.status, 403);
     assert.match(res.headers.get("set-cookie") ?? "", /ul_full=; .*Max-Age=0/);
+  });
+});
+
+/**
+ * The re-audit button, which is the only thing on this server that can cause
+ * money to be spent later.
+ *
+ * The property under test is not "the button works". It is that **nothing
+ * queues work except a subscriber, holding a live session, posting a form we
+ * rendered** — and that a subscriber cannot queue more than the plan covers.
+ * Every test below is one of the ways past that, tried.
+ */
+describe("asking for a re-audit", () => {
+  test("the offer is only on the full page, never the preview", async () => {
+    const preview = await (await fetch(`${BASE}/a/${SUB}/`)).text();
+    assert.doesNotMatch(preview, /Keep watching this page/);
+    assert.doesNotMatch(preview, /class="offer"/);
+
+    const { html } = await session(SUB);
+    assert.match(html, /Keep watching this page/);
+  });
+
+  test("a reader who is not subscribed is told checkout is missing, not shown a button", async () => {
+    const { email, jar, html } = await session(SUB);
+    assert.doesNotMatch(html, /name="csrf"/);
+    assert.match(html, /Checkout is not connected yet/);
+
+    // And posting anyway changes nothing — with a CSRF token this session is
+    // genuinely entitled to, so the subscription check is what has to refuse.
+    const res = await askForReaudit(SUB, jar, liveCsrf(jar));
+    assert.equal(res.status, 403);
+    assert.equal(queuedFor(email), 0);
+  });
+
+  test("a subscriber gets the button, and one press records one request", async () => {
+    const email = freshEmail();
+    subscribe(email);
+    const { jar, html } = await session(SUB, email);
+    const csrf = csrfIn(html);
+    assert.ok(csrf, "a subscriber's page carries a CSRF token");
+
+    const res = await askForReaudit(SUB, jar, csrf);
+    assert.equal(res.status, 200);
+    assert.match(res.html, /Queued/);
+    assert.equal(queuedFor(email), 1);
+
+    const events = new EventLog(dbPath);
+    const requested = events.all(SUB).filter((e) => e.type === "reaudit.requested");
+    events.close();
+    assert.equal(requested.length, 1);
+    // The address is in the request row, not in the permanent event log — §8.
+    assert.deepEqual(requested[0]!.data, {});
+  });
+
+  test("pressing it again queues nothing, and says so", async () => {
+    const email = freshEmail();
+    subscribe(email);
+    const { jar, html } = await session(SUB, email);
+    const csrf = csrfIn(html);
+
+    await askForReaudit(SUB, jar, csrf);
+    const second = await askForReaudit(SUB, jar, csrf);
+    assert.equal(second.status, 200);
+    assert.match(second.html, /already have a re-audit queued/);
+    assert.equal(queuedFor(email), 1, "one decision, one capture");
+  });
+
+  test("a valid session with the wrong CSRF token queues nothing", async () => {
+    const email = freshEmail();
+    subscribe(email);
+    const { jar } = await session(SUB, email);
+
+    const res = await askForReaudit(SUB, jar, "not-the-token");
+    assert.equal(res.status, 403);
+    assert.match(res.html, /did not come from this page/);
+    assert.equal(queuedFor(email), 0);
+  });
+
+  test("one subscriber's CSRF token does not work in another's session", async () => {
+    const mine = freshEmail();
+    const theirs = freshEmail();
+    subscribe(mine);
+    subscribe(theirs);
+    const a = await session(SUB, mine);
+    const b = await session(SUB, theirs);
+
+    const res = await askForReaudit(SUB, a.jar, csrfIn(b.html));
+    assert.equal(res.status, 403);
+    assert.equal(queuedFor(mine), 0);
+  });
+
+  test("no cookie, no request — and the rejection is recorded", async () => {
+    const before = new EventLog(dbPath).all(SUB).filter((e) => e.type === "token.rejected").length;
+    const res = await fetch(`${BASE}/a/${SUB}/reaudit`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: "csrf=x",
+    });
+    assert.equal(res.status, 403);
+
+    const events = new EventLog(dbPath);
+    const after = events.all(SUB).filter((e) => e.type === "token.rejected");
+    events.close();
+    assert.equal(after.length, before + 1);
+    assert.equal(after[after.length - 1]!.data.route, "reaudit");
+  });
+
+  /**
+   * A GET here would be a link, and a link is something Slack, iMessage and
+   * every mail client fetch on the reader's behalf. A prefetch must not be able
+   * to spend $0.65.
+   */
+  test("a re-audit cannot be started by following a link", async () => {
+    const email = freshEmail();
+    subscribe(email);
+    const { jar } = await session(SUB, email);
+    const res = await fetch(`${BASE}/a/${SUB}/reaudit`, { headers: { cookie: jar } });
+    assert.equal(res.status, 404);
+    assert.equal(queuedFor(email), 0);
+  });
+
+  test(`the ${AUDITS_PER_MONTH + 1}th ask this month is refused, and nothing is queued`, async () => {
+    const email = freshEmail();
+    subscribe(email);
+
+    // Ten already spent this month, all completed, all for this same site — so
+    // the site limit cannot be what refuses.
+    const requests = new ReauditRequestStore(dbPath);
+    for (let i = 0; i < AUDITS_PER_MONTH; i++) {
+      requests.request(SUB, email, "https://example.com/");
+    }
+    for (const r of requests.forEmail(email)) requests.complete(r.id);
+    requests.close();
+
+    const { jar, html } = await session(SUB, email);
+    // The page refuses before the button is even drawn.
+    assert.doesNotMatch(html, /name="csrf"/);
+    assert.match(html, new RegExp(`${AUDITS_PER_MONTH} re-audits this month`));
+
+    /**
+     * And so does the route, which is the one that matters.
+     *
+     * The CSRF token is computed from the session here rather than read out of
+     * the HTML, because the page above deliberately carries none — and a post
+     * with a *bogus* token would be refused by the CSRF check whether or not
+     * the cap exists, which is a test that passes for the wrong reason. This is
+     * also a real customer: one who loaded the page while they still had asks
+     * left, and spent the last one in another tab before pressing.
+     */
+    const res = await askForReaudit(SUB, jar, liveCsrf(jar));
+    assert.equal(res.status, 429);
+    assert.equal(queuedFor(email), AUDITS_PER_MONTH, "the eleventh was not recorded");
+  });
+
+  test("an expired subscription buys nothing", async () => {
+    const email = freshEmail();
+    const subs = new SubscriptionStore(dbPath);
+    // Paid, and the period has run out. `isActive` hangs on the date, not the
+    // word — see db.ts on why access expires rather than persists.
+    subs.upsert(email, { status: "active", currentPeriodEnd: "2020-01-01T00:00:00.000Z" });
+    subs.close();
+
+    const { jar, html } = await session(SUB, email);
+    assert.match(html, /Checkout is not connected yet/);
+    assert.equal((await askForReaudit(SUB, jar, liveCsrf(jar))).status, 403);
+    assert.equal(queuedFor(email), 0);
   });
 });
 

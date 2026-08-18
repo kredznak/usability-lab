@@ -215,6 +215,13 @@ States are rows in `audits.status`; transitions only via Inngest steps — no ag
 
 **Services.** Vercel → Inngest: signed event keys. Inngest → worker: signed webhooks. Worker → Anthropic API: server-side API key (env, never client). Worker → Supabase: service key, but all queries pass through RLS policies anyway (defense in depth). Payments: Stripe Checkout + signed webhooks; card data never touches our systems, and subscription state lives in a `subscriptions` table reconciled daily against Stripe (F21).
 
+**Amended 2026-08-18: what the `subscriptions` table turned out to be.** Built, minus Stripe. Four things this section did not say, decided while building and recorded here rather than in a commit message:
+
+1. **It is keyed on email**, because the address is the only identity this system has — it is what the gate captures, what the magic link signs, and what Checkout will return. There is no `customers` table because there is nothing else to put in one.
+2. **Access expires; it does not persist.** `isActive` requires a `current_period_end` in the future, so a row saying `active` with no end date grants nothing. This takes F21's failure ("customer paid, still locked out", repaired by reconciliation, ≤24h) over the unnamed opposite one — a cancelled customer keeping access until somebody notices. No grace period: a grace window silently turns that ≤24h into more.
+3. **The fair-use cap is a spend control, not a policy line.** §11's claim that worst-case subscriber cost is structural is only true if something refuses, so `fairuse.ts` refuses — on the write, not only where the button is drawn. It counts re-audit *requests*, because audits carry no link to an address and the request queue is the only ledger that does.
+4. **No HTTP request may spend money.** The results page records a request; `npm run reaudit -- --queue` decides when to act on it. A button that started an audit inline would put ~$0.65 and a 90-second capture behind a click anyone holding a session cookie can repeat. The route is POST-only and CSRF-checked for the same reason — a GET would be a link, and link previews are fetched on the reader's behalf.
+
 **Agent-level authorization (the interesting layer).** Agents have no ambient credentials. AuthZ = Reach column, enforced three ways: (1) tool allowlists in subagent definitions, (2) PreToolUse hook validating every call against the allowlist + audit_id scoping (an agent can only query rows for its own audit), (3) RLS as the backstop if 1–2 are misconfigured. The send capability exists only in the notify step, outside any agent's toolset — an agent can draft an email; only the pipeline can send one.
 
 ---
