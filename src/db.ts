@@ -443,3 +443,95 @@ export class EventLog {
     this.db.close();
   }
 }
+
+export interface EmailCaptureRow {
+  audit_id: string;
+  email: string;
+  captured_at: string;
+  /** Set when a magic link for this pair is first opened. Null until then. */
+  verified_at: string | null;
+}
+
+/**
+ * Who asked to see the rest of an audit — §6's email gate.
+ *
+ * ## Why this is a table and not an audit status
+ *
+ * §6 draws the state machine as `PUBLISHED → (EMAIL_CAPTURED) → (SUBSCRIBED)`,
+ * and this store is a deliberate departure from that line, approved 2026-08-18.
+ * Three reasons, in order of how much they cost to ignore:
+ *
+ * 1. **An email capture is a fact about a visitor, not about an audit.** Two
+ *    people can open the same link; the audit has not changed state twice.
+ *    Statuses that mean "somebody did something" cannot answer "who".
+ * 2. **`PUBLISHED` is terminal by an explicit decision** — see LEGAL above. A
+ *    published audit that turns out to be wrong gets a correction, not a status
+ *    rewind, and `correct.ts` refuses to touch anything that is not PUBLISHED.
+ *    Moving an audit to EMAIL_CAPTURED would silently disable corrections on
+ *    every audit anyone had actually read.
+ * 3. **The funnel reads events, not statuses.** The two stages this unlocks
+ *    were always going to be counted from `email.captured` and `full.viewed`.
+ *
+ * ## What is stored, and what is not
+ *
+ * The address and two timestamps. No IP, no user agent, no page content. §8's
+ * deletion clause is by `audit_id`, which is why that column is here and is the
+ * only link to anything else — deleting a customer stays one join away.
+ */
+export class EmailCaptureStore {
+  private db: Database.Database;
+
+  constructor(dbPath = DB_PATH) {
+    mkdirSync(path.dirname(dbPath), { recursive: true });
+    this.db = new Database(dbPath);
+    this.db.pragma("journal_mode = WAL");
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS email_captures (
+        audit_id    TEXT NOT NULL,
+        email       TEXT NOT NULL,
+        captured_at TEXT NOT NULL,
+        verified_at TEXT,
+        PRIMARY KEY (audit_id, email)
+      );
+      CREATE INDEX IF NOT EXISTS idx_captures_audit ON email_captures(audit_id);
+    `);
+  }
+
+  /**
+   * Idempotent on (audit, email): asking twice re-issues a link rather than
+   * erroring or duplicating. A visitor who loses the first mail is not doing
+   * anything wrong, and `captured_at` keeps the *first* ask so the funnel's
+   * preview→email timing stays honest.
+   */
+  capture(auditId: string, email: string): void {
+    this.db
+      .prepare(
+        `INSERT INTO email_captures (audit_id, email, captured_at)
+         VALUES (?, ?, ?)
+         ON CONFLICT(audit_id, email) DO NOTHING`,
+      )
+      .run(auditId, email.trim().toLowerCase(), new Date().toISOString());
+  }
+
+  /** First open wins; later opens leave the timestamp alone. */
+  markVerified(auditId: string, email: string): void {
+    this.db
+      .prepare(
+        `UPDATE email_captures SET verified_at = ?
+         WHERE audit_id = ? AND email = ? AND verified_at IS NULL`,
+      )
+      .run(new Date().toISOString(), auditId, email.trim().toLowerCase());
+  }
+
+  get(auditId: string, email: string): EmailCaptureRow | null {
+    return (
+      (this.db
+        .prepare(`SELECT * FROM email_captures WHERE audit_id = ? AND email = ?`)
+        .get(auditId, email.trim().toLowerCase()) as EmailCaptureRow | undefined) ?? null
+    );
+  }
+
+  close(): void {
+    this.db.close();
+  }
+}

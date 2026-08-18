@@ -189,6 +189,14 @@ Failure edges: CAPTURING → CAPTURE_FAILED (retry queue, max 3, then PARKED)
 Overrun edge: any step > budget → DEGRADED or PARKED (below)
 ```
 
+**Amended 2026-08-18: `EMAIL_CAPTURED` and `SUBSCRIBED` are not audit statuses.** The diagram above kept them for a week and the email gate slice did not build them. They live in an `email_captures` table plus `email.captured` / `full.viewed` events, because:
+
+1. **They describe a visitor, not an audit.** Two people can open one results link; the audit has not changed state twice, and a status cannot answer *who*.
+2. **`PUBLISHED` is terminal by an earlier decision** — a published page that turns out to be wrong gets a correction, not a status rewind, and `npm run correct` refuses anything that is not `PUBLISHED`. Advancing past it would have silently disabled corrections on every audit anyone actually read.
+3. **The funnel reads events**, so the two stages were never going to be counted from statuses anyway.
+
+`PUBLISHED` and `AUTO_PUBLISHED` remain the only states a visitor can reach a page in. Subscription state, when it exists, lands in the `subscriptions` table §6 already specifies — not in the audit row either.
+
 States are rows in `audits.status`; transitions only via Inngest steps — no agent writes status.
 
 **Crash/resume semantics.** Inngest checkpoints after each step; a crashed worker resumes at the last completed step with the same audit_id. Steps are idempotent: capture re-runs overwrite the capture set; audit re-runs regenerate findings for that audit_id (delete-then-insert in one transaction). A resumed run never mixes artifacts from two attempts.

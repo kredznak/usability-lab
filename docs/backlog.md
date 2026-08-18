@@ -485,6 +485,56 @@ the next time a metric tempts us to automate the gate away.
 
 ---
 
+## B16. The served surface has no defences a public one would need
+
+**What.** `npm run serve` (2026-08-18) has no rate limit, no CSRF token, no
+HTTPS, and no lockout on repeated bad tokens. All four were left out on purpose:
+they are untestable against localhost and unacceptable in front of the public,
+so building them now buys a false sense of having done it.
+
+**Why it matters.** The gate is the first thing in this repo a stranger could
+reach. Two of the four are cheap and two are not:
+
+- **Rate limit** on `POST /a/:id/email` — without it, one address can be mailed
+  a link as fast as a loop can run, from anyone holding a results URL. Small: a
+  counter keyed on audit id.
+- **Bad-token lockout** — the token is HMAC-SHA256 and not guessable, so this is
+  belt-and-braces rather than load-bearing. Smallest of the four.
+- **CSRF** — the only state-changing route is the email form, and the worst a
+  forged POST achieves is sending a link to an address the attacker already
+  typed. Genuinely low, and worth writing down as low rather than doing on
+  reflex.
+- **HTTPS** — not ours to build; it belongs to whatever fronts this. But the
+  magic link is a bearer credential in a URL, so plain HTTP in front of a real
+  customer would be a real leak. **This one is a deploy blocker, not a task.**
+
+**Cost.** Rate limit and lockout: small, an hour with tests. The other two are
+decisions, not code.
+
+## B17. The funnel cannot tell a customer from us
+
+**What.** `preview.viewed`, `email.captured` and `full.viewed` are recorded for
+anyone who loads the page, including whoever is testing it. Verifying the gate
+by hand on 2026-08-18 put three fabricated stages into the real dashboard within
+a minute, and they had to be deleted by hand — from a log that is append-only by
+construction, using a script that stepped around it.
+
+**Why it matters.** This is the 200% review row again in a new place. A dashboard
+that counts its own author is not measuring anything, and the first instinct on
+finding wrong numbers in it was to bypass the append-only guarantee — which is
+exactly the failure B5 exists to prevent.
+
+**What would fix it.** Either a flag on the event (`internal: true` when the
+request comes from localhost, which is honest today and wrong the moment this is
+deployed), or the discipline of pointing manual checks at `USABILITY_LAB_DB`.
+The second is free and was the actual mistake; the first is the durable answer
+and should wait until there is a real deployment to distinguish *from*.
+
+**Cost.** Small either way. **Do not build it before there is a customer to
+tell apart from us** — until then it would be a flag with one possible value.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
@@ -499,7 +549,8 @@ and memory. Consolidated 2026-08-10; not new decisions.
   would be invented, so `npm run outcome` prints none.
 - **LLM judge for usefulness.** Needs ~50–100 human labels to calibrate against.
   We have 17.
-- **Not built at all:** lint gate, Content agent, email gate, Stripe, web app,
-  Inngest/Supabase, re-audit diffing.
+- **Not built at all:** Content agent, Stripe, Inngest/Supabase. *(The lint gate,
+  re-audit diffing and the email gate have since shipped; the web app exists as
+  `npm run serve` on localhost only.)*
 - **`docs/quality-bar.md`** still carries one `[UNRESOLVED]` (the post-publish
   correction path) and five `[PROPOSED]` items.

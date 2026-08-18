@@ -1,8 +1,5 @@
-import { readFileSync, existsSync } from "node:fs";
-import path from "node:path";
 import { AuditStore, EventLog } from "./db.js";
-import { OUT_ROOT } from "./paths.js";
-import { Capture, Finding, type ReviewRecord } from "./types.js";
+import { loadPublished, NotPublishable } from "./published.js";
 import { renderPublic } from "./render.js";
 
 /**
@@ -67,32 +64,21 @@ async function main(): Promise<void> {
     process.exit(2);
   }
 
-  const dir = path.join(OUT_ROOT, audit.audit_id);
-  const reviewFile = path.join(dir, "review.json");
-  if (!existsSync(reviewFile)) {
-    console.error(`No review.json in ${dir}. Cannot rebuild what was published.`);
+  // `loadPublished` rebuilds the kept set from the founder's recorded decisions
+  // rather than from findings.json, so a correction cannot quietly restore
+  // something that was cut or revert a severity adjusted at the gate.
+  let page;
+  try {
+    page = loadPublished(audit);
+  } catch (err) {
+    if (!(err instanceof NotPublishable)) throw err;
+    console.error(
+      `Cannot rebuild what ${audit.audit_id.slice(0, 8)} published: ${err.reason}.\n` +
+        `  The artifacts that recorded it are not on disk.`,
+    );
     store.close();
     process.exit(2);
   }
-
-  const findings = (JSON.parse(readFileSync(path.join(dir, "findings.json"), "utf8")) as unknown[]).map(
-    (f) => Finding.parse(f),
-  );
-  const capture = Capture.parse(JSON.parse(readFileSync(path.join(dir, "capture.json"), "utf8")));
-  const review = JSON.parse(readFileSync(reviewFile, "utf8")) as ReviewRecord;
-
-  /**
-   * Rebuilt from the founder's recorded decisions, not from the findings file.
-   * A correction must not quietly restore something that was cut, or change
-   * a severity the reviewer adjusted at the gate.
-   */
-  const decided = new Map(review.decisions.map((d) => [d.finding_id, d]));
-  const kept = findings
-    .filter((f) => decided.get(f.id)?.keep)
-    .map((f) => {
-      const d = decided.get(f.id)!;
-      return d.severity_after === f.severity ? f : Finding.parse({ ...f, severity: d.severity_after });
-    });
 
   const events = new EventLog();
   events.record({
@@ -108,17 +94,7 @@ async function main(): Promise<void> {
     .filter((e) => e.type === "audit.corrected")
     .map((e) => ({ at: e.at, reason: String(e.data.reason ?? "") }));
 
-  const publicPath = await renderPublic(
-    {
-      capture,
-      kept,
-      allFindings: findings,
-      annotatedImage: path.join(dir, `${audit.audit_id}-annotated.png`),
-      summary: audit.profile_summary ?? "A review of this page.",
-      corrections,
-    },
-    dir,
-  );
+  const publicPath = await renderPublic({ ...page, corrections }, page.dir);
 
   events.close();
   store.close();

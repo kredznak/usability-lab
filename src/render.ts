@@ -328,6 +328,38 @@ export interface PublishInput {
    * sells against.
    */
   corrections?: { at: string; reason: string }[];
+  /**
+   * Turns the withheld-count block into §6's email gate — B16, 2026-08-18.
+   *
+   * Optional so the artifact `review.ts` writes to disk is unchanged: a file
+   * on a filesystem has nothing to POST to, and a form that goes nowhere is a
+   * worse page than a paragraph that explains itself. `server.ts` passes this;
+   * the publish path does not.
+   */
+  gate?: {
+    /** Where the form POSTs. */
+    action: string;
+    /** Shown instead of the form once this visitor has asked. */
+    asked?: boolean;
+    /** Set when a submission was rejected, so the reason survives the redirect. */
+    error?: string;
+  };
+  /**
+   * Show every kept finding instead of §6's free three — the page behind the
+   * email gate.
+   *
+   * This is what "full results" means for a *customer*, and it is deliberately
+   * not `results-full.html`. That file is `renderResults`, the founder's view:
+   * it carries findings the founder cut and the Synthesizer's set-aside
+   * reasoning. Serving it to a visitor would publish exactly the material a
+   * person decided to withhold, which is the opposite of what the gate is for.
+   *
+   * Everything else on the page is unchanged, including the correction history
+   * and the citations. The gate buys *more of the same page*, not a different
+   * one — a customer should be able to check that the three they saw for free
+   * are the same three, worded identically.
+   */
+  reveal?: boolean;
 }
 
 /** quality-bar §7 — three shown free. */
@@ -341,7 +373,63 @@ export const FREE_FINDINGS = 3;
  * severity 4" is both more persuasive and true, and if the withheld findings
  * ever *are* filler this line makes that visible rather than hiding it.
  */
-export async function renderPublic(input: PublishInput, outDir: string): Promise<string> {
+/**
+ * Emitted only on a page that has a gate.
+ *
+ * Held apart from the main stylesheet so `results.html` on disk is unchanged by
+ * this slice — it has no form, so it gets no rules for one. Dead CSS in a
+ * customer's page is a small thing; a comment claiming the file is untouched
+ * while the file grew ten lines is not, and that is what the first version of
+ * this said.
+ */
+const GATE_CSS = `  .gate-form { margin-top:16px; }
+  .gate-form label { display:block; font-weight:600; font-size:14px; margin-bottom:6px; }
+  .gate-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .gate-form input { flex:1 1 220px; padding:9px 11px; font-size:15px; font-family:inherit;
+                     border:1px solid #bbb; border-radius:3px; background:#fff; color:var(--ink); }
+  .gate-form button { padding:9px 16px; font-size:15px; font-family:inherit; cursor:pointer;
+                      border:0; border-radius:3px; background:var(--accent); color:#fff; }
+  .gate-fine { margin-top:8px !important; font-size:13px; color:var(--muted); }
+  .gate-error { margin-top:8px !important; font-size:14px; color:#a3301a; }
+  .gate-sent { margin-top:14px !important; font-size:15px; }`;
+
+/**
+ * The gate itself: one field, one button, no persuasion.
+ *
+ * quality-bar §7 forbids the audit from telling anyone what to do, and the same
+ * restraint applies to us asking for something. There is no urgency copy, no
+ * "unlock", no count-down. The withheld paragraph above already says exactly
+ * how many findings there are and how severe — that is the whole argument, and
+ * it is true, which is the only kind of argument this product is allowed to
+ * make.
+ */
+function gateForm(gate: PublishInput["gate"]): string {
+  if (!gate) return "";
+  if (gate.asked) {
+    return `<p class="gate-sent">A link to the full results is on its way to that address.
+              It opens this page and no other, and expires in seven days.</p>`;
+  }
+  return `<form class="gate-form" method="post" action="${escapeHtml(gate.action)}">
+            <label for="gate-email">Email me the rest</label>
+            <div class="gate-row">
+              <input id="gate-email" name="email" type="email" required
+                     autocomplete="email" placeholder="you@company.com">
+              <button type="submit">Send the link</button>
+            </div>
+            ${gate.error ? `<p class="gate-error">${escapeHtml(gate.error)}</p>` : ""}
+            <p class="gate-fine">One email, for this audit. We don't sell it on.</p>
+          </form>`;
+}
+
+/**
+ * The published page as a string.
+ *
+ * Split out from `renderPublic` so `server.ts` can serve this page over HTTP
+ * without writing a file first. Everything that decides *what a visitor sees* —
+ * the free three, the withheld count, the pin numbers — lives here, so the
+ * served page and the file on disk cannot drift apart into two answers.
+ */
+export function publicHtml(input: PublishInput): string {
   const { capture, kept, allFindings, annotatedImage, summary } = input;
   const corrections = input.corrections ?? [];
   const imageSrc = path.basename(annotatedImage);
@@ -382,8 +470,8 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
    * That is a real risk and it is deliberately unguarded: `npm run outcome`
    * measures it, and a guard added now would pre-empt the measurement.
    */
-  const shown = bySeverity(issues.slice(0, FREE_FINDINGS));
-  const withheld = issues.slice(FREE_FINDINGS);
+  const shown = bySeverity(input.reveal ? issues : issues.slice(0, FREE_FINDINGS));
+  const withheld = input.reveal ? [] : issues.slice(FREE_FINDINGS);
   const severeWithheld = withheld.filter((f) => f.severity >= 3).length;
 
   /**
@@ -441,7 +529,7 @@ export async function renderPublic(input: PublishInput, outDir: string): Promise
   .gate { background:#fff; border:1px solid var(--line); border-left:3px solid var(--accent);
           border-radius:4px; padding:18px 20px; margin:32px 0; }
   .gate h2 { margin:0 0 8px; font-size:17px; }
-  .gate p { margin:0 0 6px; }
+  .gate p { margin:0 0 6px; }${input.gate ? `\n${GATE_CSS}` : ""}
   .corrections { border-left:3px solid var(--accent); padding:2px 0 2px 14px; margin:0 0 24px;
                  font-size:14px; color:#444; }
   .corrections p { margin:0 0 4px; }
@@ -478,7 +566,13 @@ ${
     inferred from page text carry no pin, because there is no box to point at.</figcaption>
   </figure>
 
-  <h2>${shown.length === 0 ? "No issues found" : `The ${shown.length} that matter most`}</h2>
+  <h2>${
+    shown.length === 0
+      ? "No issues found"
+      : input.reveal
+        ? `All ${shown.length} finding${shown.length === 1 ? "" : "s"}, most important first`
+        : `The ${shown.length} that matter most`
+  }</h2>
   ${shown.map((f, i) => card(f, i + 1)).join("")}
 
   ${
@@ -494,7 +588,7 @@ ${
                    withheld.length === 1 ? "is" : "are"
                  } above severity 2.`
            }</p>
-           <p>Each one names the element it is about and what it costs you.</p>
+           <p>Each one names the element it is about and what it costs you.</p>${gateForm(input.gate)}
          </div>`
       : ""
   }
@@ -528,7 +622,12 @@ ${
 </body>
 </html>`;
 
+  return html;
+}
+
+/** `publicHtml` written to `results.html`. The publish path's entry point. */
+export async function renderPublic(input: PublishInput, outDir: string): Promise<string> {
   const outPath = path.join(outDir, "results.html");
-  await writeFile(outPath, html, "utf8");
+  await writeFile(outPath, publicHtml(input), "utf8");
   return outPath;
 }

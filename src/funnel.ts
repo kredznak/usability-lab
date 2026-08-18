@@ -103,6 +103,12 @@ export function funnelStages(
     ["completed", "audit.completed"],
     ["reviewed at the gate", "review.decided"],
     ["published", "audit.published"],
+    // §6's visitor half, live since the server shipped. These count distinct
+    // audits like every stage above, so ten people opening one preview is one
+    // audit previewed — the same rule that fixed the 200% review row.
+    ["previewed", "preview.viewed"],
+    ["email captured", "email.captured"],
+    ["full results read", "full.viewed"],
   ] as const;
 
   const outside = new Set<string>();
@@ -159,7 +165,6 @@ function main(): void {
         `  they began before this log existed, and are left out of the percentages.`
       : ``,
     ``,
-    `  email captured         NOT BUILT`,
     `  subscribed             NOT BUILT`,
     ``,
     `RE-AUDITS  ${reaudits.length} checked, ${quiet} found nothing and spent nothing`,
