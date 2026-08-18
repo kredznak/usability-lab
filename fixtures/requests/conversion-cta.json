@@ -80,10 +80,6 @@
       "cache_control": {
         "type": "ephemeral"
       }
-    },
-    {
-      "type": "text",
-      "text": "## Your lane: Conversion & CTA\n\nYou review whether this page moves a visitor toward the action it wants from them. Calls to action: whether one is obvious, whether it is the same one throughout, whether it says what happens next. Trust: the signals a visitor looks for before committing — pricing shown plainly, what the commitment actually is, who else uses this, how to reach a human. Motivation: whether the page gives someone a reason to act before it asks them to.\n\nSpecifics worth your attention: competing calls to action with equal weight; a primary action below the fold with nothing above it; vague action labels (\"Submit\", \"Learn more\") where a specific one would do; cost or commitment revealed late; no visible answer to \"what happens after I click this\".\n\nLeave to others: the number of fields behind the button (Forms & Flow), whether the button is large enough or contrasts enough to be seen (Visual Hierarchy), whether its label is grammatical (Copy), and whether it is reachable by keyboard (Accessibility)."
     }
   ],
   "messages": [
@@ -152,6 +148,10 @@
           "cache_control": {
             "type": "ephemeral"
           }
+        },
+        {
+          "type": "text",
+          "text": "## Your lane: Conversion & CTA\n\nYou review whether this page moves a visitor toward the action it wants from them. Calls to action: whether one is obvious, whether it is the same one throughout, whether it says what happens next. Trust: the signals a visitor looks for before committing — pricing shown plainly, what the commitment actually is, who else uses this, how to reach a human. Motivation: whether the page gives someone a reason to act before it asks them to.\n\nSpecifics worth your attention: competing calls to action with equal weight; a primary action below the fold with nothing above it; vague action labels (\"Submit\", \"Learn more\") where a specific one would do; cost or commitment revealed late; no visible answer to \"what happens after I click this\".\n\nLeave to others: the number of fields behind the button (Forms & Flow), whether the button is large enough or contrasts enough to be seen (Visual Hierarchy), whether its label is grammatical (Copy), and whether it is reachable by keyboard (Accessibility)."
         }
       ]
     }

@@ -162,6 +162,16 @@ describe("renderCapture sends every field a rubric promises", () => {
     assert.doesNotMatch(JSON.stringify(blocks), /SCREENSHOT/);
   });
 
+  test("the lane is the last thing in the request, after the page data", () => {
+    // B12. Everything above it is identical for every reviewer of this audit,
+    // which is what lets the images be written to the cache once and read by
+    // the rest — ~$0.18 an audit.
+    const blocks = buildRequest(RUBRICS.heuristics!, capture, {
+      tiles: [{ base64: "AAAA", fromY: 0, toY: 900 }], unshownPx: 0, fullHeightPx: 900,
+    }).messages[0]!.content as { type: string; text?: string }[];
+    assert.match(blocks[blocks.length - 1]!.text ?? "", /Your lane/);
+  });
+
   test("the page content carries a cache breakpoint", () => {
     // Four reviewers, one page. Without this the images are sent four times and
     // become the most expensive thing in the audit.
@@ -170,13 +180,18 @@ describe("renderCapture sends every field a rubric promises", () => {
       unshownPx: 0,
       fullHeightPx: 900,
     });
-    const blocks = out.messages[0]!.content as { cache_control?: unknown }[];
+    const blocks = out.messages[0]!.content as { cache_control?: unknown; text?: string }[];
     assert.equal(
       blocks.filter((b) => b.cache_control).length,
       1,
-      "exactly one breakpoint, on the last block, so everything before it caches",
+      "exactly one breakpoint, so everything before it caches",
     );
-    assert.ok(blocks[blocks.length - 1]!.cache_control, "the breakpoint must be last");
+    // B12: the breakpoint marks the end of the *shared* prefix, not the end of
+    // the request. The lane block that follows it differs per reviewer and is
+    // deliberately outside the cached span — that is the whole arrangement.
+    const mark = blocks.findIndex((b) => b.cache_control);
+    assert.match(blocks[mark]!.text ?? "", /captured_page_data/);
+    assert.match(blocks[mark + 1]!.text ?? "", /Your lane/);
   });
 
   /**

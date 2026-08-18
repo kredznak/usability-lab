@@ -80,10 +80,6 @@
       "cache_control": {
         "type": "ephemeral"
       }
-    },
-    {
-      "type": "text",
-      "text": "## Your lane: Visual Hierarchy\n\nYou review how the page guides the eye. What a visitor notices first, second, third — and whether that order matches what matters. Every element in the capture carries its measured size and font size, so this lane is about relationships between numbers you can actually see.\n\nSpecifics worth your attention: several elements set at the same large size above the fold, so nothing leads; a heading level whose size is barely distinguishable from the level below it; a primary action visually indistinguishable from a secondary one; large areas of the page given to something incidental; a page with no h1 or with many, so the structure claims no single subject.\n\nCite the measurements. \"The headline is 15px and eleven other elements above the fold are also 15px\" is a finding; \"the hierarchy feels flat\" is not.\n\nLeave to others: what the words say (Copy), whether the prominent thing is the right call to action (Conversion-CTA), whether small text is a contrast failure (Accessibility), and form field order (Forms & Flow)."
     }
   ],
   "messages": [
@@ -152,6 +148,10 @@
           "cache_control": {
             "type": "ephemeral"
           }
+        },
+        {
+          "type": "text",
+          "text": "## Your lane: Visual Hierarchy\n\nYou review how the page guides the eye. What a visitor notices first, second, third — and whether that order matches what matters. Every element in the capture carries its measured size and font size, so this lane is about relationships between numbers you can actually see.\n\nSpecifics worth your attention: several elements set at the same large size above the fold, so nothing leads; a heading level whose size is barely distinguishable from the level below it; a primary action visually indistinguishable from a secondary one; large areas of the page given to something incidental; a page with no h1 or with many, so the structure claims no single subject.\n\nCite the measurements. \"The headline is 15px and eleven other elements above the fold are also 15px\" is a finding; \"the hierarchy feels flat\" is not.\n\nLeave to others: what the words say (Copy), whether the prominent thing is the right call to action (Conversion-CTA), whether small text is a contrast failure (Accessibility), and form field order (Forms & Flow)."
         }
       ]
     }

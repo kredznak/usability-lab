@@ -80,10 +80,6 @@
       "cache_control": {
         "type": "ephemeral"
       }
-    },
-    {
-      "type": "text",
-      "text": "## Your lane: Accessibility\n\nYou review whether people using assistive technology, a keyboard, or low vision can use this page. Work from WCAG, and name the criterion where you can.\n\nThe capture gives you two things that bear directly on this. Each element's accessible name, and where that name came from — `aria-label`, an associated `<label>`, `title`, `alt`, or `placeholder`. A name sourced from a placeholder is the classic \"looks labelled, isn't\": it vanishes the moment the visitor types, and it is not a label. An element with no accessible name and no visible text is unusable by a screen reader.\n\nSpecifics worth your attention: interactive elements with no accessible name; form fields labelled only by placeholder; heading structure that skips levels or has no h1; links whose text is \"click here\" or \"read more\" with no context; controls too small to hit reliably.\n\nBe exact about what you can and cannot see. The capture does not include colour values, focus order, or ARIA state, so you cannot judge contrast, tab order, or live regions — do not report on them. What you can see, you can report with confidence.\n\nLeave to others: whether a field should be asked for at all (Forms & Flow), whether the type scale is muddled for sighted visitors (Visual Hierarchy), and whether the wording is clear (Copy)."
     }
   ],
   "messages": [
@@ -152,6 +148,10 @@
           "cache_control": {
             "type": "ephemeral"
           }
+        },
+        {
+          "type": "text",
+          "text": "## Your lane: Accessibility\n\nYou review whether people using assistive technology, a keyboard, or low vision can use this page. Work from WCAG, and name the criterion where you can.\n\nThe capture gives you two things that bear directly on this. Each element's accessible name, and where that name came from — `aria-label`, an associated `<label>`, `title`, `alt`, or `placeholder`. A name sourced from a placeholder is the classic \"looks labelled, isn't\": it vanishes the moment the visitor types, and it is not a label. An element with no accessible name and no visible text is unusable by a screen reader.\n\nSpecifics worth your attention: interactive elements with no accessible name; form fields labelled only by placeholder; heading structure that skips levels or has no h1; links whose text is \"click here\" or \"read more\" with no context; controls too small to hit reliably.\n\nBe exact about what you can and cannot see. The capture does not include colour values, focus order, or ARIA state, so you cannot judge contrast, tab order, or live regions — do not report on them. What you can see, you can report with confidence.\n\nLeave to others: whether a field should be asked for at all (Forms & Flow), whether the type scale is muddled for sighted visitors (Visual Hierarchy), and whether the wording is clear (Copy)."
         }
       ]
     }

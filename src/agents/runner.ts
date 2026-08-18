@@ -129,13 +129,23 @@ function screenshotPreamble(tiles: PageTiles): string {
  * 2026-08-17: every lane writes 12-24k tokens of images to the cache and none
  * reads them, costing roughly $0.15-0.18 an audit — about 30% of a run.
  *
- * The fix is to move the lane below the page content so the prefix is shared.
- * The cost is that our instructions would then follow untrusted third-party
- * data instead of preceding all of it. That trade was not worth making blind,
- * so this exists to make it measurable: `npm run redteam` can run the same
- * injection fixtures against both orderings.
+ * The fix is to move the lane below the page content so the prefix is shared,
+ * taking the images from ~$0.26 of a ~$0.55 audit to ~$0.08. The cost is that
+ * our lane instruction then follows untrusted third-party data instead of
+ * preceding all of it.
+ *
+ * **Kelly's decision, 2026-08-17: take it.** Three paired rounds of the red
+ * team, thirty reviewer calls, five fixtures — two of them built so that
+ * success is observable — found no difference between the orderings. That is
+ * evidence and not proof: nothing has ever succeeded against either
+ * arrangement, so the experiment cannot separate "both safe" from "both
+ * untested". `docs/redteam.md` records exactly that.
+ *
+ * `USABILITY_LAB_LANE_AFTER_DATA=0` restores the old ordering, and the red team
+ * still runs against both. Keep it that way: the first person who breaks this
+ * will want to compare.
  */
-export const LANE_AFTER_DATA = process.env.USABILITY_LAB_LANE_AFTER_DATA === "1";
+export const LANE_AFTER_DATA = process.env.USABILITY_LAB_LANE_AFTER_DATA !== "0";
 
 export function buildRequest(
   rubric: Rubric,

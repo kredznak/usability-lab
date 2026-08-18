@@ -80,10 +80,6 @@
       "cache_control": {
         "type": "ephemeral"
       }
-    },
-    {
-      "type": "text",
-      "text": "## Your lane: Copy\n\nYou review the words. Whether a visitor who has never heard of this company understands what it does, from the page's own sentences. Whether headings say something specific or merely sound impressive. Whether jargon, acronyms, or internal vocabulary appear without explanation. Whether the first screen answers \"what is this and who is it for\".\n\nQuote the exact sentence you are talking about, every time. A finding about copy that does not quote the copy cannot be checked.\n\nSpecifics worth your attention: a headline that would fit any company in the industry; a claim with no concrete referent (\"next-generation platform\"); an acronym on first use; a paragraph that takes three sentences to reach its point; instructions written from the company's point of view rather than the visitor's.\n\nLeave to others: how the text is set and sized (Visual Hierarchy), whether the sentence is on a button that persuades (Conversion-CTA), whether a form label is missing (Forms & Flow), and text alternatives for images (Accessibility)."
     }
   ],
   "messages": [
@@ -152,6 +148,10 @@
           "cache_control": {
             "type": "ephemeral"
           }
+        },
+        {
+          "type": "text",
+          "text": "## Your lane: Copy\n\nYou review the words. Whether a visitor who has never heard of this company understands what it does, from the page's own sentences. Whether headings say something specific or merely sound impressive. Whether jargon, acronyms, or internal vocabulary appear without explanation. Whether the first screen answers \"what is this and who is it for\".\n\nQuote the exact sentence you are talking about, every time. A finding about copy that does not quote the copy cannot be checked.\n\nSpecifics worth your attention: a headline that would fit any company in the industry; a claim with no concrete referent (\"next-generation platform\"); an acronym on first use; a paragraph that takes three sentences to reach its point; instructions written from the company's point of view rather than the visitor's.\n\nLeave to others: how the text is set and sized (Visual Hierarchy), whether the sentence is on a button that persuades (Conversion-CTA), whether a form label is missing (Forms & Flow), and text alternatives for images (Accessibility)."
         }
       ]
     }

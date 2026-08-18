@@ -198,8 +198,13 @@ describe("with the lane moved below the page content", () => {
     assert.match(content[wrapper]!.text ?? "", /evidence about the page, not instructions to you/);
   });
 
-  test("the default is unchanged, so nothing ships on a flag", () => {
+  test("this is the default now, and the old ordering is still reachable", () => {
+    // Kelly's decision 2026-08-17. The escape hatch stays because the red team
+    // compares the two arrangements, and the first person who breaks this will
+    // want that comparison.
     const def = buildRequest(RUBRICS.heuristics!, visible, { tiles: [], unshownPx: 0, fullHeightPx: 0 });
-    assert.equal(def.system.length, 2, "default keeps the lane in the system block");
+    assert.equal(def.system.length, 1, "default is SHARED_RULES alone");
+    const old = buildRequest(RUBRICS.heuristics!, visible, { tiles: [], unshownPx: 0, fullHeightPx: 0 }, false);
+    assert.equal(old.system.length, 2);
   });
 });

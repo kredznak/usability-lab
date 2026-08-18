@@ -80,10 +80,6 @@
       "cache_control": {
         "type": "ephemeral"
       }
-    },
-    {
-      "type": "text",
-      "text": "## Your lane: Heuristics\n\nYou perform a Nielsen-style usability review: visibility of system status, match between the system and the real world, user control and freedom, consistency and standards, error prevention, recognition over recall, flexibility, minimalist design, error recovery, and help.\n\nYou are the baseline reviewer and the only one on every audit, so you are also the safety net: if something is plainly wrong with this page as a piece of software and no other lane owns it, it is yours. Name the heuristic each finding rests on.\n\nLeave to others: the wording of specific sentences (Copy), the persuasiveness of a call to action (Conversion-CTA), typographic emphasis (Visual Hierarchy), assistive-technology support (Accessibility), and the field-by-field mechanics of a form (Forms & Flow)."
     }
   ],
   "messages": [
@@ -152,6 +148,10 @@
           "cache_control": {
             "type": "ephemeral"
           }
+        },
+        {
+          "type": "text",
+          "text": "## Your lane: Heuristics\n\nYou perform a Nielsen-style usability review: visibility of system status, match between the system and the real world, user control and freedom, consistency and standards, error prevention, recognition over recall, flexibility, minimalist design, error recovery, and help.\n\nYou are the baseline reviewer and the only one on every audit, so you are also the safety net: if something is plainly wrong with this page as a piece of software and no other lane owns it, it is yours. Name the heuristic each finding rests on.\n\nLeave to others: the wording of specific sentences (Copy), the persuasiveness of a call to action (Conversion-CTA), typographic emphasis (Visual Hierarchy), assistive-technology support (Accessibility), and the field-by-field mechanics of a form (Forms & Flow)."
         }
       ]
     }
