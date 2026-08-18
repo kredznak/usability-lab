@@ -119,7 +119,30 @@ function screenshotPreamble(tiles: PageTiles): string {
   );
 }
 
-export function buildRequest(rubric: Rubric, capture: Capture, tiles: PageTiles) {
+/**
+ * Where the lane block goes — B12, and the reason it is a flag rather than a
+ * decision.
+ *
+ * Prompt caching matches a *prefix* of the whole request. `system` is
+ * `[SHARED_RULES, rubric.lane]`, so the prefix diverges at the lane and the
+ * images after it are a different prefix for every reviewer. Measured
+ * 2026-08-17: every lane writes 12-24k tokens of images to the cache and none
+ * reads them, costing roughly $0.15-0.18 an audit — about 30% of a run.
+ *
+ * The fix is to move the lane below the page content so the prefix is shared.
+ * The cost is that our instructions would then follow untrusted third-party
+ * data instead of preceding all of it. That trade was not worth making blind,
+ * so this exists to make it measurable: `npm run redteam` can run the same
+ * injection fixtures against both orderings.
+ */
+export const LANE_AFTER_DATA = process.env.USABILITY_LAB_LANE_AFTER_DATA === "1";
+
+export function buildRequest(
+  rubric: Rubric,
+  capture: Capture,
+  tiles: PageTiles,
+  laneAfterData = LANE_AFTER_DATA,
+) {
   const imageBlocks = tiles.tiles.map((t) => ({
     type: "image" as const,
     source: { type: "base64" as const, media_type: "image/png" as const, data: t.base64 },
@@ -133,17 +156,22 @@ export function buildRequest(rubric: Rubric, capture: Capture, tiles: PageTiles)
       effort: "high" as const,
       format: zodOutputFormat(SubAgentOutput),
     },
-    system: [
-      // Shared block first, and it alone carries the breakpoint: all six agents
-      // then hit one cached prefix instead of six. The lane block that follows
-      // is small and differs per agent, so it is not worth caching.
-      {
-        type: "text" as const,
-        text: SHARED_RULES,
-        cache_control: { type: "ephemeral" as const },
-      },
-      { type: "text" as const, text: rubric.lane },
-    ],
+    system: laneAfterData
+      ? // Shared rules only. Every reviewer of every audit now has an identical
+        // system block, so the images that follow sit on a shared prefix.
+        [{ type: "text" as const, text: SHARED_RULES, cache_control: { type: "ephemeral" as const } }]
+      : [
+          // Shared block first, and it alone carries the breakpoint: all six
+          // agents then hit one cached prefix instead of six. The lane block
+          // that follows is small and differs per agent — and is also what
+          // makes the images uncacheable. See LANE_AFTER_DATA.
+          {
+            type: "text" as const,
+            text: SHARED_RULES,
+            cache_control: { type: "ephemeral" as const },
+          },
+          { type: "text" as const, text: rubric.lane },
+        ],
     messages: [
       {
         role: "user" as const,
@@ -181,6 +209,12 @@ export function buildRequest(rubric: Rubric, capture: Capture, tiles: PageTiles)
             // most expensive thing in the run.
             cache_control: { type: "ephemeral" as const },
           },
+          // The lane, last. Everything above it is identical for every reviewer
+          // of this audit, which is the whole point: the images are written to
+          // the cache once and read by the rest. It also means this instruction
+          // follows the untrusted page content rather than preceding it — the
+          // property `npm run redteam` exists to test.
+          ...(laneAfterData ? [{ type: "text" as const, text: rubric.lane }] : []),
         ],
       },
     ],
