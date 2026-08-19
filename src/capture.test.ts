@@ -4,7 +4,8 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
-import { capture } from "./capture.js";
+import { capture, robotsAllows } from "./capture.js";
+import { createServer, type Server } from "node:http";
 import type { Capture } from "./types.js";
 
 /**
@@ -267,5 +268,115 @@ describe("elements that stay put while the page scrolls say so", () => {
     // mean "unknown", never "definitely not sticky".
     assert.equal(find("Announcement")?.position ?? null, null);
     assert.equal(find("A link near the bottom")?.position ?? null, null);
+  });
+});
+
+/**
+ * B19 — the guard proxy, end to end through a real browser.
+ *
+ * The unit tests in `guardproxy.test.ts` prove the proxy refuses what it should.
+ * This proves the browser is actually *using* it, which is a different claim and
+ * the one that would silently stop being true — a wrong launch flag, a Chromium
+ * default, a `finally` that closes the proxy too early, and every request goes
+ * direct again while every test stays green.
+ */
+describe("the capture guard, with a browser attached", () => {
+  const SSRF = pathToFileURL(path.resolve("fixtures/pages/ssrf-subresource.html")).href;
+
+  test("a URL pointing inward is refused before a browser is launched", async () => {
+    const out = mkdtempSync(path.join(tmpdir(), "ulab-ssrf-"));
+    try {
+      await assert.rejects(
+        () => capture("http://169.254.169.254/latest/meta-data/", "ssrf-direct", out),
+        /private network/,
+      );
+    } finally {
+      rmSync(out, { recursive: true, force: true });
+    }
+  });
+
+  test("a page's inward-pointing sub-resources are refused, and said out loud", async () => {
+    /**
+     * The case that decided against `--host-resolver-rules`. The document here
+     * is a harmless local file; its iframe and image point at cloud metadata and
+     * the LAN. Pinning only the submitted URL would let both through, and an
+     * iframe renders into the screenshot we publish.
+     *
+     * The refusals are read off stderr because that is where a person would see
+     * them — a capture missing half its assets has to announce itself, or the
+     * reviewers describe a layout that never existed.
+     */
+    const out = mkdtempSync(path.join(tmpdir(), "ulab-ssrf-"));
+    const said: string[] = [];
+    const realError = console.error;
+    console.error = (...args: unknown[]) => void said.push(args.map(String).join(" "));
+    try {
+      const result = await capture(SSRF, "ssrf-subresource", out);
+      // The page itself still captures — this is a guard, not a purge.
+      assert.ok(result.elements.length > 0, "the harmless part of the page survives");
+      assert.match(result.text_excerpt, /ordinary looking page/);
+    } finally {
+      console.error = realError;
+      rmSync(out, { recursive: true, force: true });
+    }
+
+    const spoken = said.join("\n");
+    assert.match(spoken, /capture guard refused/);
+    assert.match(spoken, /169\.254\.169\.254 \(private-host\)/);
+    assert.match(spoken, /10\.0\.0\.1 \(private-host\)/);
+    /**
+     * Loopback gets its own assertion because Chromium documents an exemption
+     * for it — and this is where that exemption would show up if it applied.
+     *
+     * **It does not, on this Chromium.** Removing `bypass: "<-loopback>"` from
+     * the launch options leaves this passing, which was checked by removing it.
+     * So read this line as "loopback reaches the guard", not as "the bypass
+     * option works" — the option is kept as insurance against a version that
+     * restores the exemption, and `capture.ts` says so where it is set.
+     */
+    assert.match(spoken, /127\.0\.0\.1 \(private-host\)/);
+  });
+});
+
+
+/**
+ * `robots.txt` is the first request this system makes to a host somebody else
+ * chose — before the browser, and therefore before the guard proxy exists.
+ *
+ * It used to go out through a bare `fetch`, which resolves the name itself. So
+ * the host could answer publicly for `checkUrl` and privately here, and nothing
+ * in the browser-side work would have touched it.
+ */
+describe("robots.txt connects to the address we validated", () => {
+  let origin: Server;
+  let port: number;
+
+  before(async () => {
+    origin = createServer((_req, res) => {
+      res.writeHead(200, { "content-type": "text/plain" });
+      res.end("User-agent: *\nDisallow: /\n");
+    });
+    await new Promise<void>((r) => origin.listen(0, "127.0.0.1", r));
+    port = (origin.address() as { port: number }).port;
+  });
+
+  after(() => origin.close());
+
+  test("a pinned address is where it actually connects", async () => {
+    /**
+     * `nowhere.test` does not resolve. The only way this reaches a server that
+     * answers "Disallow: /" is by dialling the address it was handed instead of
+     * the name — which is the whole property.
+     */
+    const allowed = await robotsAllows(`http://nowhere.test:${port}/page`, "127.0.0.1");
+    assert.equal(allowed, false, "it read the robots.txt at the pinned address");
+  });
+
+  test("without the pin it resolves the name, fails, and fails open", async () => {
+    // The contrast that makes the test above mean something: same URL, no pin,
+    // and it cannot get there at all. Failing open is the existing robots
+    // behaviour for an unreachable file, not a new decision.
+    const allowed = await robotsAllows(`http://nowhere.test:${port}/page`);
+    assert.equal(allowed, true);
   });
 });

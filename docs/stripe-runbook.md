@@ -159,8 +159,7 @@ Does **not** close:
 
 - **B22** — a late webhook can still revive a cancelled subscription until
   reconciliation corrects it. Deliberate; the window is ≤24h by design.
-- **B19** — DNS rebinding in the question flow. Unrelated to Stripe, and a
-  blocker on serving any of this publicly.
+- **B19** — closed 2026-08-18, so it no longer blocks a public deploy.
 - **HTTPS.** Stripe will accept an `http://localhost` return URL in test mode
   and will not in production, and the magic link is a bearer credential in a URL
   regardless. Whatever terminates TLS must set `USABILITY_LAB_SECURE_COOKIES=1`.

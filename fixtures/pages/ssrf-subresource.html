@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>A page that reaches inward without saying so</title>
+  </head>
+  <body>
+    <!--
+      B19's fixture. The main document is harmless; the sub-resources are not.
+
+      This is the shape `--host-resolver-rules` does not catch: pinning only the
+      URL a visitor submitted leaves every other request the page makes free to
+      resolve wherever it likes. An iframe renders into the screenshot we publish
+      exactly like the main document does, so an iframe pointed at the cloud
+      metadata service is an exfiltration path with our name on the results page.
+    -->
+    <h1>An ordinary looking page</h1>
+    <p>There is visible text here so the capture is not empty.</p>
+
+    <iframe
+      src="http://169.254.169.254/latest/meta-data/"
+      width="400"
+      height="200"
+      title="metadata"
+    ></iframe>
+
+    <img src="http://10.0.0.1/internal.png" alt="something on the LAN" />
+
+    <!--
+      Loopback specifically, and it is a separate case from the two above.
+      Chromium bypasses its proxy for loopback by default, so without
+      `--proxy-bypass-list=<-loopback>` this request never reaches the guard at
+      all — it goes straight out, and the one defence this page tests is skipped
+      by exactly the destination it exists to refuse.
+
+      Port 44444 because Chromium refuses to connect to its own list of
+      restricted ports (9, 25, 6667 and about eighty others) before any proxy is
+      consulted — the first version of this used port 9 and the request was
+      never issued at all, which looked exactly like the guard working.
+    -->
+    <iframe src="http://127.0.0.1:44444/" width="200" height="100" title="loopback"></iframe>
+
+    <a href="https://example.com/">An ordinary link, so there is an element to find.</a>
+  </body>
+</html>

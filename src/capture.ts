@@ -1,7 +1,11 @@
 import { chromium, type Browser, type Page } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
+import { request as httpRequest } from "node:http";
+import { request as httpsRequest } from "node:https";
 import path from "node:path";
 import { Capture, type CapturedElement } from "./types.js";
+import { resolveGuarded } from "./urlcheck.js";
+import { startGuardProxy } from "./guardproxy.js";
 
 /**
  * page-inspector — docs/design.md §5. Deterministic code, zero tokens.
@@ -80,19 +84,80 @@ async function respectRateLimit(url: string): Promise<void> {
 }
 
 /**
+ * A GET that connects to an address we already validated — B19.
+ *
+ * `robots.txt` is the **first** request this system makes to a host somebody
+ * else chose, and it went out through a bare `fetch`, which resolves the name
+ * itself. So the host could answer publicly for `checkUrl` and privately here,
+ * before the browser and its proxy were ever involved.
+ *
+ * Node's `lookup` option is the pin: the socket is told the answer instead of
+ * asking for one. The `Host` header still carries the site's name, so virtual
+ * hosting and TLS certificates behave exactly as they would without this.
+ */
+async function fetchPinned(url: URL, pinnedAddress?: string): Promise<string> {
+  const address =
+    pinnedAddress ??
+    (await (async () => {
+      const verdict = await resolveGuarded(url.hostname);
+      if (!verdict.ok) throw new Error(`refused: ${verdict.reason}`);
+      return verdict.address;
+    })());
+
+  return new Promise<string>((resolve, reject) => {
+    const send = url.protocol === "https:" ? httpsRequest : httpRequest;
+    const req = send(
+      url,
+      {
+        timeout: 5000,
+        lookup: (_hostname, opts, cb) => {
+          // Signature varies with `opts.all`; both shapes are answered with the
+          // one address we are willing to talk to.
+          const family = address.includes(":") ? 6 : 4;
+          if (opts && (opts as { all?: boolean }).all) {
+            (cb as unknown as (e: null, a: { address: string; family: number }[]) => void)(null, [
+              { address, family },
+            ]);
+          } else {
+            (cb as unknown as (e: null, a: string, f: number) => void)(null, address, family);
+          }
+        },
+      },
+      (res) => {
+        if ((res.statusCode ?? 500) >= 400) {
+          res.resume();
+          reject(new Error(`HTTP ${res.statusCode}`));
+          return;
+        }
+        let body = "";
+        res.setEncoding("utf8");
+        res.on("data", (c: string) => {
+          // A robots.txt is a few kilobytes. Anything claiming to be more is
+          // not something to hold in memory on a stranger's say-so.
+          if (body.length < 512 * 1024) body += c;
+        });
+        res.on("end", () => resolve(body));
+      },
+    );
+    req.on("timeout", () => req.destroy(new Error("timeout")));
+    req.on("error", reject);
+    req.end();
+  });
+}
+
+/**
  * §5: respects robots.txt. Conservative and deliberately simple — we only honour
  * `Disallow` under a wildcard or our own agent, and we fail *open* on a fetch
  * error (a missing robots.txt means no restrictions, per the standard).
  */
-export async function robotsAllows(url: string): Promise<boolean> {
+export async function robotsAllows(url: string, pinnedAddress?: string): Promise<boolean> {
   const target = new URL(url);
+  // No robots.txt over `file://`, and nothing to ask. Fails open, as it does
+  // for any unreachable robots.txt.
+  if (target.protocol !== "http:" && target.protocol !== "https:") return true;
   let body: string;
   try {
-    const res = await fetch(new URL("/robots.txt", target).href, {
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return true;
-    body = await res.text();
+    body = await fetchPinned(new URL("/robots.txt", target), pinnedAddress);
   } catch {
     return true;
   }
@@ -554,15 +619,72 @@ async function extractElements(
 }
 
 export async function capture(url: string, auditId: string, outDir: string): Promise<Capture> {
-  if (!(await robotsAllows(url))) {
+  /**
+   * Resolve once, up front, and refuse before anything is fetched — B19.
+   *
+   * The address is then used for every request this function makes: pinned
+   * directly for `robots.txt`, and re-derived per host by the guard proxy for
+   * everything the browser does. `checkUrl` at the front door decides whether a
+   * URL may be *queued*; this is what decides whether it may be *reached*, and
+   * the two are minutes or hours apart.
+   */
+  const target = new URL(url);
+  /**
+   * `file://` has no host and no network, so there is nothing to pin and
+   * nothing to rebind — the fixtures under `fixtures/pages/` load this way. The
+   * proxy is still started, because a local page can still reference `http://`
+   * sub-resources and those are somebody's network.
+   */
+  const networked = target.protocol === "http:" || target.protocol === "https:";
+  let pinned: string | undefined;
+  if (networked) {
+    const guarded = await resolveGuarded(target.hostname);
+    if (!guarded.ok) {
+      throw new CaptureFailed(
+        guarded.reason === "private-host"
+          ? "that address points at a private network"
+          : "that host does not resolve",
+        url,
+      );
+    }
+    pinned = guarded.address;
+  }
+
+  if (!(await robotsAllows(url, pinned))) {
     throw new CaptureFailed("robots.txt disallows this path", url);
   }
   await respectRateLimit(url);
   await mkdir(outDir, { recursive: true });
 
+  /**
+   * Every request the page makes goes through this, including the ones we never
+   * named: redirects, images, iframes, XHR. See guardproxy.ts.
+   */
+  const proxy = await startGuardProxy();
+
   let browser: Browser | undefined;
   try {
-    browser = await chromium.launch();
+    browser = await chromium.launch({
+      /**
+       * `bypass: "<-loopback>"` asks Chromium to **drop** its documented
+       * exemption for `localhost`, `127.0.0.1` and `[::1]`.
+       *
+       * **It is belt, and I could not make the braces fail.** The fixture in
+       * `capture.test.ts` requests a loopback sub-resource specifically to catch
+       * this, and that request reaches the guard on this Chromium *with or
+       * without* the option — so on this version the exemption is not being
+       * applied to a proxy set this way. Kept anyway: the exemption is real and
+       * documented, it is version-dependent, and a Playwright or Chromium
+       * upgrade that restores it would otherwise reopen the hole in silence.
+       *
+       * What is *not* claimed: that a test covers this line. It does not, and
+       * the note in the test says so.
+       *
+       * It has to go here rather than in `args` regardless — Playwright builds
+       * `--proxy-bypass-list` from this option, and its version wins.
+       */
+      proxy: { server: proxy.url, bypass: "<-loopback>" },
+    });
     const context = await browser.newContext({
       viewport: VIEWPORT,
       deviceScaleFactor: 1,
@@ -630,5 +752,20 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
     return result;
   } finally {
     await browser?.close();
+    await proxy.close();
+    /**
+     * A refused sub-resource changes what the page looked like, so it is said
+     * out loud rather than swallowed. A capture missing its stylesheet produces
+     * findings about a layout that never existed — and the reviewers cannot
+     * tell the difference, which is precisely the failure mode this project
+     * keeps rediscovering.
+     */
+    if (proxy.refusals.length > 0) {
+      const hosts = [...new Set(proxy.refusals.map((r) => `${r.host} (${r.reason})`))];
+      console.error(
+        `  capture guard refused ${proxy.refusals.length} request(s) to ${hosts.length} host(s):\n` +
+          hosts.map((h) => `    ${h}`).join("\n"),
+      );
+    }
   }
 }

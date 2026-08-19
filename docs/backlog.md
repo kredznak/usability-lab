@@ -617,31 +617,55 @@ written honestly before there is an account to write them against.
 
 ---
 
-## B19. The URL guard resolves once; the browser resolves again
+## B19. ~~The URL guard resolves once; the browser resolves again~~ — DONE 2026-08-18
 
-**What.** `src/urlcheck.ts` refuses any hostname that resolves to a private,
-loopback or link-local address, and it does that *before* the request is queued.
-Playwright then resolves the same name again when it navigates. A name whose
-answer changes between the two lookups passes the check and connects somewhere
-else — classic DNS rebinding.
+**What it was.** `checkUrl` resolved a hostname, judged it, and threw the
+addresses away. Playwright then resolved the same name again — minutes or hours
+later, when the queue ran — and connected to whatever it got. A host answering
+publicly for the first lookup and `169.254.169.254` for the second passed the
+check and reached the cloud metadata service, whose response would be rendered
+into a screenshot published back to the person who chose the URL.
 
-**Why it matters.** The whole point of the guard is that a stranger now chooses
-the URL. `169.254.169.254` is refused; `attacker.example` that answers public
-once and `169.254.169.254` the second time is not. The window is small — the
-queue runner may be minutes or hours behind the form — but a long window is a
-*bigger* one, not a smaller one, because the attacker gets to choose when the
-answer flips.
+**What closed it.** `resolveGuarded` returns **the address to connect to**
+rather than a verdict, and `src/guardproxy.ts` — a loopback-only proxy started
+per capture — makes every request the browser sends go to an address it
+validated. `robots.txt`, which runs *before* the browser and used a bare
+`fetch`, connects through a pinned `lookup` for the same reason.
 
-**What would fix it.** Pin the address we validated and make the browser use
-that one: resolve at request time, store the IP alongside the URL, and have
-`capture.ts` connect to the IP with the `Host` header set. That is a real change
-to the capture path and to how redirects are followed, since every hop needs the
-same treatment.
+**Why a proxy and not `--host-resolver-rules`.** The Chromium flag is two lines
+and pins the hosts you name. It does not pin the ones you cannot: a redirect, an
+`<iframe src>`, an image, an XHR. An iframe pointed at an internal address
+renders into the screenshot exactly as the main document would, so pinning only
+the submitted URL leaves the interesting half open. `fixtures/pages/ssrf-subresource.html`
+is that case, and it is a committed test.
 
-**Cost.** Medium, and mostly in `capture.ts`. **Do not deploy the question flow
-to a public address before this is done** — on localhost the guard is already
-more than the threat model needs; on the internet it is the difference between a
-refusal and a redirect.
+**Fidelity was measured, not assumed.** basecamp.com captured through the proxy
+and directly on HEAD, minutes apart: 88 elements, 88 total, 6,621 characters,
+4,502px — identical on every number. The proxy is transparent.
+
+**Three things found while building it, each by a test that failed:**
+
+1. The injected policy never governed — `resolveGuarded` had already refused
+   with the real rule before `isBlocked` ran. The allow-path test failed with a
+   403 that looked exactly like the feature working.
+2. `--proxy-bypass-list` passed through `args` does nothing; Playwright builds
+   that flag from its own `proxy.bypass` option and its version wins.
+3. Chromium refuses its own list of restricted ports (9, 25, 6667 and ~80
+   others) before any proxy is consulted. The loopback fixture originally used
+   port 9, so the request was never issued — which also looked like the guard
+   working.
+
+**What is not covered, stated plainly.**
+
+- **`bypass: "<-loopback>"` is untested.** It asks Chromium to drop its
+  documented loopback exemption, and removing it leaves the loopback assertion
+  passing — so on this Chromium the exemption is not applied to a proxy set this
+  way. Kept as insurance against a version that restores it; `capture.ts` says so
+  where it is set, and the test says so too.
+- **WebRTC.** A page can open direct UDP connections that do not traverse an
+  HTTP proxy. It is not a practical route to a metadata endpoint — those speak
+  HTTP and will not complete an ICE handshake — but it is the one thing a page
+  can still do that this does not see.
 
 ---
 

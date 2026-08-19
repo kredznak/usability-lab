@@ -15,18 +15,21 @@
  * So the rule is: **resolve the host first, and refuse anything that points
  * inward.**
  *
- * ## What this does not stop, stated plainly
+ * ## What this file does, and what closes the rest — B19, 2026-08-18
  *
- * DNS rebinding. This resolves the name once, here, and Playwright resolves it
- * again when it navigates — a name whose answer changes between the two passes
- * both checks and then connects somewhere else. The real fix is to pin the
- * address we validated and make the browser use that one, which means teaching
- * `capture.ts` about resolved IPs. That is not in this slice, and writing this
- * comment as if the hole were closed is how it stays open. **Recorded in the
- * backlog rather than only here.**
+ * `checkUrl` answers one question: **may this URL be queued.** It resolves,
+ * judges, and throws the addresses away. That leaves DNS rebinding wide open on
+ * its own, because the queue runs minutes or hours later and resolves the name
+ * again — and the second answer is the attacker's.
  *
- * Nor does it stop a public host that is merely unpleasant to fetch. It is a
- * guard against reaching *inward*, not a reputation service.
+ * `resolveGuarded` below is the other half: it returns **the address to
+ * connect to**, and `guardproxy.ts` makes every request the browser sends go to
+ * an address it validated rather than to a name something re-resolves. Between
+ * them the window is closed. Neither is sufficient alone, which is why this
+ * paragraph names both rather than claiming either.
+ *
+ * What it still does not stop is a public host that is merely unpleasant to
+ * fetch. This is a guard against reaching *inward*, not a reputation service.
  *
  * ## Ports are deliberately not restricted
  *
@@ -145,9 +148,69 @@ export function isPrivateAddress(ip: string): boolean {
  * one, which is how a DNS-based bypass actually looks. A rule that only runs
  * against whatever DNS happens to say is a rule nobody has tested.
  */
-export type Resolver = (hostname: string) => Promise<{ address: string }[]>;
+export type Resolver = (hostname: string) => Promise<{ address: string; family?: number }[]>;
 
 const realResolver: Resolver = (hostname) => lookup(hostname, { all: true });
+
+export type GuardResult =
+  | { ok: true; address: string; family: number }
+  | { ok: false; reason: "unresolvable" | "private-host" };
+
+/**
+ * Resolve a host once, and hand back **the single address to connect to** — B19.
+ *
+ * ## The difference between this and `checkUrl`
+ *
+ * `checkUrl` answers "may this be queued". It resolves, judges, and throws the
+ * addresses away — and then, minutes or hours later, something else resolves the
+ * name again and connects to whatever it gets. A name that answers publicly for
+ * the first lookup and `169.254.169.254` for the second passes both checks and
+ * reaches the metadata service. That is DNS rebinding, and it is why this
+ * function returns an address instead of a verdict.
+ *
+ * **Whatever calls this must connect to `address` and never to the hostname.**
+ * The moment a caller passes the name to a socket, the kernel resolves it again
+ * and the guarantee is gone.
+ *
+ * `family` comes back too, because `net.connect` needs it for IPv6 and guessing
+ * from the string is one more thing to get wrong.
+ */
+export async function resolveGuarded(
+  hostname: string,
+  resolve: Resolver = realResolver,
+  /**
+   * Injectable for the same reason `resolve` is, and with the same discipline:
+   * the default is the real rule, and the real rule is tested against the real
+   * ranges below. `guardproxy.ts` swaps it so its plumbing tests can reach a
+   * loopback server — the one address the real rule exists to refuse.
+   */
+  isBlocked: (ip: string) => boolean = isPrivateAddress,
+): Promise<GuardResult> {
+  const literal = hostname.replace(/^\[|\]$/g, "");
+  if (isIP(literal)) {
+    return isBlocked(literal)
+      ? { ok: false, reason: "private-host" }
+      : { ok: true, address: literal, family: isIP(literal) };
+  }
+
+  let addresses: { address: string; family?: number }[];
+  try {
+    addresses = await resolve(hostname);
+  } catch {
+    return { ok: false, reason: "unresolvable" };
+  }
+  if (addresses.length === 0) return { ok: false, reason: "unresolvable" };
+
+  // Every address, not the one we intend to use. A host that answers with one
+  // public address and one loopback is a host that reaches loopback whenever
+  // the resolver reorders its answers.
+  if (addresses.some((a) => isBlocked(a.address))) {
+    return { ok: false, reason: "private-host" };
+  }
+
+  const first = addresses[0]!;
+  return { ok: true, address: first.address, family: first.family ?? isIP(first.address) };
+}
 
 /**
  * Parse, then resolve, then judge.
