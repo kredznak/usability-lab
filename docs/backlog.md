@@ -698,9 +698,11 @@ leaving the spend untestable — which is the honest split. Small.
 
 ---
 
-## B21. Two Stripe calls have never been sent to Stripe
+## B21. No real Stripe account has ever been sent a request
 
 **Status 2026-08-18: the guessing is gone; the sending has not happened.**
+**Status 2026-08-19: they have been sent to a fake Stripe that knows the schema.
+What is left needs an account and a card.**
 
 ### What was verified against Stripe's live documentation
 
@@ -747,14 +749,47 @@ page, because both numbers are real and only a person can say which is right.
 Tested against a stub, including the case where the key does not authenticate at
 all.
 
+### The requests have now been sent — 2026-08-19
+
+Not to Stripe. To **`stripe-mock`**, Stripe's own server, generated from their
+OpenAPI spec: `brew install stripe-mock`, and `STRIPE_API_BASE` — a seam that
+already existed — points `liveStripe` at it. `src/stripe-live.test.ts`, ten
+tests, each watched failing with its fix reverted.
+
+What that newly covers, none of which a stub could: the form encoding, the auth
+header, the pinned `Stripe-Version`, a fresh idempotency key per POST and none
+on a GET, the `status=all` paging loop, error text that does not carry the
+secret key, and `readSubscription` parsing a subscription object shaped by the
+spec instead of by my typing. **Misspell `line_items` and the request is now
+refused** — the stub accepted everything.
+
+Two findings worth keeping:
+
+- **Stripe's spec agrees that `current_period_end` is not top-level.** The
+  fixture carries it only inside `items.data[]`. That is the docs finding above,
+  confirmed a second time from a different source.
+- **stripe-mock 401s on a key with underscores after the prefix.**
+  `sk_test_NEVERLOGTHIS9f3a` authenticates, `sk_test_NEVER_LOG_THIS_9f3a` does
+  not, and the refusal is indistinguishable from a wrong key.
+
 ### What is still open
 
-**No request has been sent to Stripe.** `stripe:check` proves a key and a price;
-it does not prove a payment. `docs/stripe-runbook.md` is the half hour that
-closes this: make the price, run `stripe listen`, buy one subscription with
-`4242 4242 4242 4242`, watch the row appear, cancel it, reconcile.
+**stripe-mock validates top-level parameter names only.** Measured, not assumed:
+`line_itemz[0][price]` and `subscription_datum[…]` are 400s;
+`subscription_data[nonsense_key]` and `line_items[0][quantityy]` are 200s. So
+the one field this file most needs to be right — **`subscription_data[metadata]`,
+where a typo means every customer pays and stays locked out** — is still covered
+by documentation alone.
 
-**Do not mark this done from a passing `stripe:check`** — that is the easy half.
+**And nothing has charged a card, delivered a webhook, or round-tripped
+`ul_email` back out through a `customer.subscription.*` event.** That needs an
+account. `docs/stripe-runbook.md` is the half hour: make the price, run
+`stripe listen`, buy one with `4242 4242 4242 4242`, watch the row appear,
+cancel it, reconcile.
+
+**Do not mark this done from a passing `stripe:check`, and do not mark it done
+from a green `stripe-live.test.ts` either.** Both prove shape. Neither proves a
+payment, and the failure they cannot see is the expensive one.
 
 ---
 
@@ -795,8 +830,8 @@ and memory. Consolidated 2026-08-10; not new decisions.
 - **LLM judge for usefulness.** Needs ~50–100 human labels to calibrate against.
   We have 17.
 - **Not built at all:** Content agent, Inngest/Supabase, the nightly priors job,
-  F11's daily cost ceiling. *(Stripe Checkout is built but has never been sent a
-  request — B21.)* *(The lint gate, re-audit
+  F11's daily cost ceiling. *(Stripe Checkout is built, and its requests run
+  against `stripe-mock`, but no real account has ever been sent one — B21.)* *(The lint gate, re-audit
   diffing, the email gate, the subscribe surface and the question flow have
   since shipped, and Stripe with them; the web app exists as `npm run serve` on
   localhost only. See B21 for what Stripe still owes and B19 before any of this

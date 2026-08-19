@@ -8,6 +8,24 @@ which is why it is a document rather than a test.
 Nothing here touches real money. Test mode uses a separate set of keys and a
 separate dashboard, and the only card involved is Stripe's fake one.
 
+> **What was done instead, and why it is not enough** — 2026-08-19.
+> `src/stripe-live.test.ts` sends the real requests to `stripe-mock`
+> (`brew install stripe-mock`), Stripe's own server built from their OpenAPI
+> spec. That is why the form encoding, the headers, the paging and the response
+> parsing are no longer on my word. Two things it cannot do, and both are why
+> this document still exists:
+>
+> - **It validates top-level parameter names only.** Measured:
+>   `line_itemz[0][price]` → 400, but `line_items[0][quantityy]` → 200. So a typo
+>   in `subscription_data[metadata]` — the key access is granted by — sails
+>   straight through.
+> - **It never charges, never delivers a webhook, and never gives your metadata
+>   back.** The whole grant path, from `checkout.session.completed` to a row with
+>   a non-null `current_period_end`, is untested until step 6 below.
+>
+> If you are reading this hoping to skip step 6: step 6 is the only part that
+> tests the failure that costs money.
+
 ---
 
 ## 1. Make the price (5 min)

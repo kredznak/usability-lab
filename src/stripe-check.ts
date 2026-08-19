@@ -3,8 +3,9 @@
  *
  * ## What it is for
  *
- * Stripe is built here but has never been sent a request. The failures that
- * follow from that are all silent: a one-off price sells a single charge and
+ * Stripe is built here and has never been sent a request by a real account —
+ * only by `stripe-live.test.ts`, to a mock. The failures that follow from that
+ * are all silent: a one-off price sells a single charge and
  * never renews, an inactive price makes every Checkout session 400, a live key
  * pointed at localhost takes real money for a page nobody can reach. None of
  * those announce themselves — you find out from a customer.

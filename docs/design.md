@@ -229,7 +229,7 @@ States are rows in `audits.status`; transitions only via Inngest steps — no ag
 - **An unrecognised Stripe status grants nothing.** Stripe adds statuses without asking, and the safe direction is a customer who has to email us.
 - **Configured or nothing.** All three env vars or none: a secret key without a webhook secret takes money and never grants access. Missing any one, the page keeps saying checkout is not connected and the webhook route 404s rather than advertising an endpoint it cannot check.
 
-Two things are open and named in the backlog: the live calls have never been sent to Stripe (B21), and a late webhook can revive a cancelled subscription until reconciliation corrects it (B22).
+Two things are open and named in the backlog: no real Stripe account has ever been sent a request, so nothing has charged a card or delivered a webhook — the calls have only run against `stripe-mock`, which validates top-level parameter names and nothing nested (B21); and a late webhook can revive a cancelled subscription until reconciliation corrects it (B22).
 
 **Amended 2026-08-18: the question flow moved a trust boundary this section never named.** Every URL this system had ever captured was typed by Kelly into a terminal. §0's question flow means a stranger picks it, and `capture()` drives a real browser from our network — which makes the capture step a server-side request forgery sink, the classic one. `src/urlcheck.ts` resolves the host before anything is queued and refuses loopback, private, link-local, carrier-NAT, multicast and reserved ranges, in v4 and in v6, including v4-mapped v6 (`::ffff:169.254.169.254`). Three consequences worth stating here rather than only in the code:
 

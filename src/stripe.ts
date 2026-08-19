@@ -22,14 +22,24 @@
  * checkable against Stripe's own docs. Swapping to the SDK later is a change to
  * `liveStripe` and nothing else, which is what the interface is for.
  *
- * ## What is NOT verified, stated plainly
+ * ## What is verified and what is not, stated plainly — updated 2026-08-19
  *
- * `createCheckoutSession` and `listSubscriptions` have never been sent to
- * Stripe. Their request shape is tested against a stub — the endpoint, the form
- * encoding, the auth header, the metadata — so what remains unverified is
- * exactly one thing: **whether Stripe accepts it.** Field names and response
- * shapes come from Stripe's documentation and nothing here has confirmed them.
- * Backlog B21.
+ * These calls have now been **sent over HTTP to `stripe-mock`**, Stripe's own
+ * server built from their OpenAPI spec — see `stripe-live.test.ts`. That covers
+ * the form encoding, the auth header, the pinned version, the idempotency key,
+ * the paging loop, and parsing responses shaped by the spec rather than by my
+ * typing. Misspell `line_items` and the request is now refused, which is the
+ * thing a stub could never do.
+ *
+ * **Two gaps remain, and they are the reason B21 is still open.**
+ *
+ * 1. stripe-mock validates *top-level* parameter names only. Everything nested
+ *    passes unchecked — including `subscription_data[metadata]`, the single
+ *    highest-risk key in this file, because if it is wrong the customer pays and
+ *    is never granted access. That one rests on documentation alone.
+ * 2. Nothing here charges a card, delivers a webhook, or round-trips metadata
+ *    back out through a `customer.subscription.*` event. Only a real account
+ *    does that; `docs/stripe-runbook.md` is the half hour it takes.
  */
 
 import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
@@ -64,11 +74,11 @@ export interface StripeConfig {
   /**
    * Stripe's API root.
    *
-   * Overridable so the tests can point `liveStripe` at a stub that records what
-   * it was sent. That turns "these two calls have never run" into "these two
-   * calls have run against something that checks their shape" — the form
-   * encoding, the auth header, the metadata we rely on. What stays unverified
-   * is narrower and honest: whether *Stripe* accepts that shape.
+   * Overridable so the tests can point `liveStripe` somewhere that is not
+   * Stripe. `stripe-live.test.ts` points it at `stripe-mock` — Stripe's own
+   * server, generated from their OpenAPI spec — which is what turned "these
+   * calls have never run" into "these calls have run against something that
+   * refuses a parameter Stripe does not have."
    *
    * Not a security boundary. It is read from our own environment, not from
    * anything a visitor sends.
@@ -303,7 +313,8 @@ export function readSubscription(object: Record<string, unknown>): StripeSubscri
 }
 
 /**
- * The live client. **Never exercised** — see the header.
+ * The live client. Exercised against `stripe-mock` and against nothing else —
+ * see the header for exactly which half of that is real.
  */
 export function liveStripe(config: StripeConfig): StripeClient {
   async function call(pathAndQuery: string, body?: URLSearchParams): Promise<Record<string, unknown>> {
