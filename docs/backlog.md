@@ -817,7 +817,32 @@ the failure direction is free access, which nobody complains about.
 
 ## B23. A research step died and the metric read it as a thin corpus
 
-**Found 2026-08-19, while fixing the uncited rate. Not yet fixed.**
+**Found 2026-08-19, while fixing the uncited rate.**
+
+**Corrected the same day, before building anything: the crash itself was already
+fixed, and two of the three claims below were wrong.** Kept in full rather than
+rewritten, because what an entry got wrong is worth as much as what it got right.
+
+- **The crash cannot recur.** The duolingo research call ran at 11:34 UTC on
+  2026-08-17; `1bb5cd5` landed at 13:23 UTC and replaced `messages.parse()` —
+  which lets the SDK throw on malformed JSON — with `messages.create()`, reading
+  `stop_reason` before touching the body, and swapped the token formula for a
+  flat ceiling. `researcher.ts` names this exact error in a comment: *"Truncation
+  used to reach us as 'Unterminated string in JSON at position 1616', which
+  describes the symptom and hides the cause."* The audit predates its own fix by
+  two hours.
+- **"The founder gate does not show it" was wrong.** `render.ts` puts the full
+  degraded list on `results-full.html`, and duolingo's page carries it verbatim,
+  error text and all. What is true is narrower: **`npm run review` — the terminal
+  where keep/cut actually happens — shows lint flags and not degradation.**
+- **"The metric absorbed it" was right**, and is fixed as of `19d50a2`.
+
+**What is actually left**, and it is small: `degraded` exists only as rendered
+HTML, never as data, which is why `outcome.ts` had to infer research failures
+from `model_calls` instead of reading them. Writing it as data and mirroring the
+lint block at the terminal gate is the whole of it. **The alarm added to
+`npm run outcome` currently reports a bug that no longer exists** — worth knowing
+before anyone acts on it.
 
 **What happened.** On the duolingo audit (`2a5a7f87`) the researcher failed:
 
