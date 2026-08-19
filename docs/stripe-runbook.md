@@ -34,15 +34,26 @@ because the card form is Stripe's page and not ours.
 ## 3. Point webhooks at localhost (5 min)
 
 ```
-npm install -g @stripe/cli     # or: brew install stripe/stripe-cli/stripe
+brew install stripe            # or: npm install -g @stripe/cli   (Node 18+)
 stripe login
 stripe listen --forward-to localhost:4000/stripe/webhook \
-  --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,checkout.session.completed
+  --events=customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,checkout.session.completed
 ```
 
-`stripe listen` prints a signing secret (`whsec_…`) on startup. **That secret is
-the one for this session** — it is not the dashboard's, and it changes each time
-you restart `stripe listen`.
+`stripe listen` prints a signing secret (`whsec_…`) on startup. **It is not the
+dashboard's** — a webhook endpoint created in the dashboard has its own, and the
+two are different secrets for different delivery paths. Stripe's CLI reference
+notes that this one *does not* change between restarts of `listen`, so it only
+has to go into `.env` once.
+
+You do **not** need to create a webhook endpoint in the dashboard for this;
+`stripe listen` delivers without one.
+
+> **Why no `--latest`.** The CLI has a `--latest` flag that sends events in the
+> newest API version. Leave it off. Without it, events arrive shaped by *your
+> account's* version — which is what production will do, and the case
+> `readSubscription` reads both the old and new home of `current_period_end` to
+> survive. Testing with `--latest` would test a shape your account may not send.
 
 > **The other one that bites.** If you later create a real webhook endpoint in
 > the dashboard, subscribe it to the three `customer.subscription.*` events.
@@ -69,6 +80,17 @@ access.
 ```
 npm run stripe:check
 ```
+
+Unconfigured it exits 2 and says which variables are missing — verified
+2026-08-18, which is as far as this runbook can be executed without an account:
+
+```
+Stripe is not configured — nothing to check.
+
+  Set STRIPE_SECRET_KEY, STRIPE_PRICE_ID and STRIPE_WEBHOOK_SECRET in .env.
+```
+
+With keys, it goes further.
 
 It authenticates, reads the price, and refuses on the failures that are
 otherwise silent: a one-off price, an archived price, a webhook secret that is
