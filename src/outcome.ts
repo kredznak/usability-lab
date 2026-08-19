@@ -1,6 +1,6 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
-import { loadCorpus, type LabelledFinding } from "./corpus.js";
+import { loadCorpus, citationBreakdown, type LabelledFinding } from "./corpus.js";
 import { FREE_FINDINGS } from "./render.js";
 import { CORPUS_ROOT } from "./paths.js";
 
@@ -102,18 +102,61 @@ console.log(`  medium-confidence correct   ${pct(mediumTrue.length, medium.lengt
  * Research at all.
  */
 const NONE_CITATION_ALERT = 0.5;
-const researched = corpus.findings.filter((f) => f.source_type !== undefined);
-const noneCited = researched.filter((f) => f.source_type === "none");
-if (researched.length > 0) {
-  const rate = noneCited.length / researched.length;
+
+/**
+ * **This used to be one number, and the number was wrong** — corrected
+ * 2026-08-19.
+ *
+ * The filter here read `f.source_type !== undefined`, meaning to keep only
+ * audits that had been through Research. `source_type` is not optional and is
+ * written as `"none"` whenever a finding has no citation, so the filter matched
+ * everything and excluded nothing. It reported **85.0%** — a figure built mostly
+ * from 106 findings belonging to audits that predate the Research step and could
+ * not have been cited by any corpus.
+ *
+ * A guard that looks present and does nothing, which is this project's most
+ * common bug and its hardest to see: the line named the right idea, so nobody
+ * checked whether it did the thing.
+ *
+ * Three groups now, because `none` means three unrelated things and only the
+ * first is a statement about the corpus:
+ *   - **ok**     — Research ran and declined. The real rate. §10's line applies here.
+ *   - **failed** — Research ran and crashed. Should be zero; see B23.
+ *   - **never**  — Research did not exist yet. History, not a signal.
+ */
+const citations = citationBreakdown(corpus);
+
+if (citations.seen.total > 0) {
+  const { total, uncited } = citations.seen;
   console.log(
-    `\n  uncited findings            ${pct(noneCited.length, researched.length)}   ` +
-      `(${noneCited.length}/${researched.length} report source_type "none")` +
-      (rate > NONE_CITATION_ALERT
+    `\n  uncited findings            ${pct(uncited, total)}   ` +
+      `(${uncited}/${total} declined a citation, of findings Research actually saw)` +
+      (uncited / total > NONE_CITATION_ALERT
         ? `\n      <- above §10's ${NONE_CITATION_ALERT * 100}% notify line. The corpus is too thin` +
           `\n         for what we are finding, or Research is declining too readily.` +
           `\n         Add sources; do not loosen the citing.`
         : ""),
+  );
+}
+
+// A research step that crashed leaves findings indistinguishable from honest
+// declines. Splitting them out is the only place in this system that would ever
+// mention it — the audit still publishes, and nothing else notices.
+if (citations.crashed.length > 0) {
+  const findings = citations.crashed.reduce((n: number, a) => n + a.findings, 0);
+  console.log(
+    `\n  uncited because Research FAILED  ${findings} findings across ${citations.crashed.length} audit(s)` +
+      `\n      <- not declines. The step errored and the findings published uncited.` +
+      citations.crashed.map((a) => `\n         ${a.audit_id.slice(0, 8)}  ${a.url}`).join("") +
+      `\n         See backlog B23.`,
+  );
+}
+
+if (citations.preResearch.findings > 0) {
+  console.log(
+    `\n  excluded from the rate      ${citations.preResearch.findings} findings from ` +
+      `${citations.preResearch.audits} audit(s) that predate Research` +
+      `\n      <- uncited by construction. Counting them read 85% when the honest figure was 61.6%.`,
   );
 }
 

@@ -4,7 +4,7 @@ import { Capture, Finding, type ReviewDecision, type ReviewRecord } from "./type
 import { checkClaim } from "./claims.js";
 import { ALL_RUBRICS } from "./agents/rubrics.js";
 import { OUT_ROOT, CORPUS_ROOT } from "./paths.js";
-import { AuditStore } from "./db.js";
+import { AuditStore, type ResearchOutcome } from "./db.js";
 
 /**
  * Builds the labelled corpus the outcome suite scores against — docs/design.md §10.
@@ -107,13 +107,68 @@ type RecoveredFinding = Pick<
 >;
 
 export interface Corpus {
-  built_from: { audit_id: string; url: string; findings: number }[];
+  /**
+   * `research` records whether the citation step ever ran — see
+   * `AuditStore.researchOutcome`. It lives at the audit level because that is
+   * where the fact is: a finding's `source_type: "none"` cannot distinguish
+   * "Research declined" from "Research never ran", and reading the two together
+   * is what made the uncited rate meaningless.
+   */
+  built_from: { audit_id: string; url: string; findings: number; research: ResearchOutcome }[];
   /**
    * Audits on disk we could not score, and why. Listed rather than dropped —
    * a corpus that silently ignores half the evidence reads as cleaner than it is.
    */
   skipped: { audit_id: string; reason: string }[];
   findings: LabelledFinding[];
+}
+
+export interface CitationBreakdown {
+  /** Findings Research actually saw. The only group §10's 50% line applies to. */
+  seen: { total: number; uncited: number };
+  /** Audits whose research step errored. Should always be empty — B23. */
+  crashed: { audit_id: string; url: string; findings: number }[];
+  /** Audits that predate Research. Uncited by construction, not by judgment. */
+  preResearch: { audits: number; findings: number };
+}
+
+/**
+ * Split the uncited count three ways — 2026-08-19.
+ *
+ * This arithmetic used to live inline in `outcome.ts`, which is a top-level
+ * script that prints and exits, and therefore had no tests. It was wrong for
+ * days: the line meant to keep only researched audits tested
+ * `source_type !== undefined`, and `source_type` is never undefined, so it kept
+ * everything and reported **85.0%** where the honest figure was **61.6%**.
+ *
+ * It is a function here because that is the difference between arithmetic
+ * someone can check and arithmetic that only ever appears in output nobody
+ * diffs. The printing stays in `outcome.ts`; the counting does not.
+ */
+export function citationBreakdown(corpus: Corpus): CitationBreakdown {
+  const research = new Map(corpus.built_from.map((b) => [b.audit_id, b.research]));
+  // An audit missing from `built_from` cannot have been through a step that did
+  // not exist when it ran, so `never` is both the safe default and the true one.
+  const groupOf = (auditId: string): ResearchOutcome => research.get(auditId) ?? "never";
+
+  const seen = corpus.findings.filter((f) => groupOf(f.audit_id) === "ok");
+  const crashedAudits = corpus.built_from.filter((b) => b.research === "failed");
+  const pre = corpus.built_from.filter((b) => b.research === "never");
+
+  return {
+    seen: { total: seen.length, uncited: seen.filter((f) => f.source_type === "none").length },
+    crashed: crashedAudits.map((b) => ({
+      audit_id: b.audit_id,
+      url: b.url,
+      // Counted from the findings rather than trusted from `built_from.findings`,
+      // which is the count before labelling and can differ.
+      findings: corpus.findings.filter((f) => f.audit_id === b.audit_id).length,
+    })),
+    preResearch: {
+      audits: pre.length,
+      findings: corpus.findings.filter((f) => groupOf(f.audit_id) === "never").length,
+    },
+  };
 }
 
 export function loadCorpus(): Corpus {
@@ -256,6 +311,25 @@ function reauditedAudits(): Map<string, string> {
   return out;
 }
 
+/**
+ * Whether the citation step ran, per audit — the axis the uncited rate needs.
+ *
+ * Same shape and same tolerance as the two lookups above: no database is a
+ * legitimate state, and an audit with no row is `never`, which is exactly right
+ * for the six that predate the `audits` table *and* predate Research.
+ */
+function researchOutcomes(auditIds: string[]): Map<string, ResearchOutcome> {
+  const out = new Map<string, ResearchOutcome>();
+  try {
+    const store = new AuditStore();
+    for (const id of auditIds) out.set(id, store.researchOutcome(id));
+    store.close();
+  } catch {
+    // As above. Everything stays `never`, which understates rather than flatters.
+  }
+  return out;
+}
+
 export function buildCorpus(): Corpus {
   // Human labels survive a rebuild; that work is expensive and must not be
   // thrown away because a claim check was refined.
@@ -264,6 +338,7 @@ export function buildCorpus(): Corpus {
   const built: Corpus = { built_from: [], skipped: [], findings: [] };
   const retired = retiredAudits();
   const reaudits = reauditedAudits();
+  const research = researchOutcomes(completedAudits());
 
   for (const auditId of completedAudits()) {
     const dir = path.join(OUT_ROOT, auditId);
@@ -307,7 +382,12 @@ export function buildCorpus(): Corpus {
       ? (JSON.parse(readFileSync(sidecar, "utf8")) as unknown[]).map((f) => Finding.parse(f))
       : (findingsFromHtml(readFileSync(path.join(dir, "results.html"), "utf8")) as RecoveredFinding[]);
 
-    built.built_from.push({ audit_id: auditId, url: capture.final_url, findings: findings.length });
+    built.built_from.push({
+      audit_id: auditId,
+      url: capture.final_url,
+      findings: findings.length,
+      research: research.get(auditId) ?? "never",
+    });
 
     // The founder gate's keep/cut decisions, where this audit has been through
     // it. See LabelledFinding.review_keep for why these stay in their own field.

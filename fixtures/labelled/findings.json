@@ -3,72 +3,86 @@
     {
       "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
       "url": "https://www.notion.com/pricing",
-      "findings": 13
+      "findings": 13,
+      "research": "ok"
     },
     {
       "audit_id": "1e6d5d13-638e-4d58-8b78-9aad1f68cb72",
       "url": "https://www.allbirds.com/",
-      "findings": 17
+      "findings": 17,
+      "research": "never"
     },
     {
       "audit_id": "25567a70-a903-4ed7-8a79-ac63656e4c75",
       "url": "https://linear.app/pricing",
-      "findings": 7
+      "findings": 7,
+      "research": "ok"
     },
     {
       "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
       "url": "https://www.duolingo.com/",
-      "findings": 8
+      "findings": 8,
+      "research": "failed"
     },
     {
       "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
       "url": "https://www.gov.uk/",
-      "findings": 12
+      "findings": 12,
+      "research": "never"
     },
     {
       "audit_id": "4f8f1271-63d5-4634-b8a6-59cf5f7dbd6f",
       "url": "https://basecamp.com/",
-      "findings": 17
+      "findings": 17,
+      "research": "never"
     },
     {
       "audit_id": "52444e83-6100-4683-bac3-9cf182c7d802",
       "url": "https://www.cotopaxi.com/cart",
-      "findings": 14
+      "findings": 14,
+      "research": "ok"
     },
     {
       "audit_id": "5d121558-e2e9-406c-9bc7-4fa16064285e",
       "url": "https://www.irs.gov/payments",
-      "findings": 13
+      "findings": 13,
+      "research": "ok"
     },
     {
       "audit_id": "6415e068-08ea-4820-8bcb-aa5644f0a32b",
       "url": "https://www.allbirds.com/",
-      "findings": 18
+      "findings": 18,
+      "research": "never"
     },
     {
       "audit_id": "8ae363d2-3761-4b03-a878-37df1fb3a13a",
       "url": "https://basecamp.com/",
-      "findings": 14
+      "findings": 14,
+      "research": "ok"
     },
     {
       "audit_id": "9664f4c2-2038-48f6-9b8a-f873eaec2534",
       "url": "https://linear.app/",
-      "findings": 14
+      "findings": 14,
+      "research": "never"
     },
     {
       "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
       "url": "https://linear.app/",
-      "findings": 16
+      "findings": 16,
+      "research": "never"
     },
     {
       "audit_id": "dfcd777a-2bb6-4681-8d30-0c07769c9531",
       "url": "https://www.gov.uk/",
-      "findings": 12
+      "findings": 12,
+      "research": "never"
     },
     {
       "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
       "url": "https://asana.com/create-account",
-      "findings": 12
+      "findings": 12,
+      "research": "ok"
     }
   ],
   "skipped": [
@@ -110,6 +124,10 @@
     },
     {
       "audit_id": "58c9cfe5-bf97-45bc-9704-e333e4e4d247",
+      "reason": "FAILED — retired by the state machine, not scored"
+    },
+    {
+      "audit_id": "5b5b3b2a-66ce-4c50-8f21-9bf05bb9ac37",
       "reason": "FAILED — retired by the state machine, not scored"
     },
     {

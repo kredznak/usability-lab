@@ -5,7 +5,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "nod
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { AuditStore } from "./db.js";
-import type { Corpus } from "./corpus.js";
+import { citationBreakdown, type Corpus } from "./corpus.js";
 
 /**
  * Which audits the corpus is allowed to score.
@@ -240,5 +240,89 @@ describe("a re-audit is monitoring, not eval data", () => {
     } finally {
       rmSync(fx.root, { recursive: true, force: true });
     }
+  });
+});
+
+/**
+ * The uncited rate, split three ways — 2026-08-19.
+ *
+ * This arithmetic lived inline in `outcome.ts`, a script that prints and exits,
+ * and it was wrong for days without anything noticing. The line meant to count
+ * only audits that had been through Research and read
+ * `f.source_type !== undefined`; `source_type` is never undefined, so it counted
+ * everything. It reported **85.0% uncited** where the honest figure was 61.6% —
+ * the difference being 106 findings from audits that predate the step and could
+ * not have been cited by any corpus, however good.
+ *
+ * Every test below is built from a hand-written `Corpus` rather than from disk,
+ * because the property under test is the arithmetic and nothing else.
+ */
+describe("the uncited rate counts only findings Research actually saw", () => {
+  const finding = (audit_id: string, source_type: "paper" | "none") =>
+    ({ key: `${audit_id}:x${Math.random()}`, audit_id, source_type }) as unknown as Corpus["findings"][number];
+
+  const corpusOf = (
+    audits: { id: string; research: "ok" | "failed" | "never"; cited: number; uncited: number }[],
+  ): Corpus => ({
+    built_from: audits.map((a) => ({
+      audit_id: a.id,
+      url: `https://${a.id}.example`,
+      findings: a.cited + a.uncited,
+      research: a.research,
+    })),
+    skipped: [],
+    findings: audits.flatMap((a) => [
+      ...Array.from({ length: a.cited }, () => finding(a.id, "paper")),
+      ...Array.from({ length: a.uncited }, () => finding(a.id, "none")),
+    ]),
+  });
+
+  test("an audit that predates Research leaves the numerator AND the denominator", () => {
+    /**
+     * The original bug, in miniature. Pooled, this reads 6/8 = 75%; counted
+     * honestly it is 2/4 = 50%. Both numbers are arithmetically correct and only
+     * one of them is about the corpus.
+     */
+    const b = citationBreakdown(
+      corpusOf([
+        { id: "new", research: "ok", cited: 2, uncited: 2 },
+        { id: "old", research: "never", cited: 0, uncited: 4 },
+      ]),
+    );
+    assert.deepEqual(b.seen, { total: 4, uncited: 2 });
+    assert.deepEqual(b.preResearch, { audits: 1, findings: 4 });
+  });
+
+  test("a crashed research step is reported separately, not as a decline", () => {
+    // duolingo: the researcher died on malformed JSON and eight findings
+    // published uncited. Counted as declines it reads as a thin corpus, and the
+    // fix would have been more sources for a problem sources cannot solve.
+    const b = citationBreakdown(
+      corpusOf([
+        { id: "fine", research: "ok", cited: 3, uncited: 1 },
+        { id: "crash", research: "failed", cited: 0, uncited: 8 },
+      ]),
+    );
+    assert.deepEqual(b.seen, { total: 4, uncited: 1 });
+    assert.equal(b.crashed.length, 1);
+    assert.equal(b.crashed[0]!.audit_id, "crash");
+    assert.equal(b.crashed[0]!.findings, 8);
+  });
+
+  test("a finding whose audit is not in built_from is not silently counted as researched", () => {
+    // The safe default matters: an unknown audit cannot have been through a step
+    // that did not exist, and guessing `ok` would quietly flatter the rate.
+    const c = corpusOf([{ id: "known", research: "ok", cited: 1, uncited: 1 }]);
+    c.findings.push(finding("orphan", "none"));
+    const b = citationBreakdown(c);
+    assert.deepEqual(b.seen, { total: 2, uncited: 1 }, "the orphan must not join the rate");
+    assert.equal(b.preResearch.findings, 1);
+  });
+
+  test("nothing crashed is the expected case and reports nothing", () => {
+    const b = citationBreakdown(corpusOf([{ id: "a", research: "ok", cited: 5, uncited: 5 }]));
+    assert.deepEqual(b.crashed, []);
+    assert.deepEqual(b.preResearch, { audits: 0, findings: 0 });
+    assert.deepEqual(b.seen, { total: 10, uncited: 5 });
   });
 });

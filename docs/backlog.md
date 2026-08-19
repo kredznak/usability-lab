@@ -815,6 +815,55 @@ the failure direction is free access, which nobody complains about.
 
 ---
 
+## B23. A research step died and the metric read it as a thin corpus
+
+**Found 2026-08-19, while fixing the uncited rate. Not yet fixed.**
+
+**What happened.** On the duolingo audit (`2a5a7f87`) the researcher failed:
+
+```
+Failed to parse structured output as JSON:
+Unterminated string in JSON at position 1616 (line 1 column 1617)
+```
+
+`ok=0`, zero tokens billed, 95 seconds spent. Eight findings published with no
+citation. The audit is `PUBLISHED`.
+
+**What was not silent.** `index.ts` did its job — `research.degraded` was pushed
+onto the run's degraded list, stored on the record, and printed as
+`DEGRADED: research: ...` at the end of the run. This is not a missing guard.
+
+**What was silent is everything after that.** Nothing downstream reads it:
+
+- **The founder gate does not show it.** `review.ts` never mentions `degraded`,
+  so the person deciding whether to publish sees eight uncited findings and no
+  reason to think anything went wrong.
+- **The metric absorbed it as judgment.** Until today `npm run outcome` counted
+  those eight as honest declines. A crashed step and a thin corpus produce
+  identical numbers, and the remedy for one — add sources — does nothing for the
+  other. `citationBreakdown` now separates them; that is a report, not a repair.
+
+**Why this is worth a number.** §12's F7 covers a *reviewer* failing schema
+validation. This is the Research step failing it, and the consequence is
+different in kind: a quarantined finding is visibly absent, while an uncited
+finding looks exactly like the honest ones. **The failure mode is a page that
+reads as well-evidenced work when a whole step did not run.**
+
+**What would fix it.** Two candidates, both small, neither chosen:
+
+1. Surface the degraded list at the gate, so publishing over a failed step is a
+   decision rather than an oversight.
+2. Retry the researcher on a parse failure. `researcher.ts` already handles
+   `stop_reason === "max_tokens"` explicitly; this failure got past that, so the
+   truncation is happening somewhere the existing check does not look. **Worth
+   understanding before adding a retry** — a retry around a bug that is not
+   truncation would just spend twice.
+
+**Cost.** Small either way. **Ask before building** — §0 handles F1, F7, F9, F11
+and F21 in v0, and this is a sixth failure, not one of those.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages

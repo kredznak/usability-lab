@@ -98,6 +98,15 @@ export type AuditStatus =
   | "FAILED";
 
 /**
+ * Whether an audit's findings ever had a chance at a citation.
+ *
+ * Not a status — an audit is `PUBLISHED` either way. This is the axis the
+ * uncited metric has to be read along, because `none` means three different
+ * things and only one of them is about the corpus. See `researchOutcome`.
+ */
+export type ResearchOutcome = "ok" | "failed" | "never";
+
+/**
  * Every legal edge, and nothing else. §6: "transitions only via Inngest steps —
  * no agent writes status." There is no Inngest in v0, so this map plus
  * `AuditStore.transition` is what enforces it.
@@ -245,6 +254,32 @@ export class AuditStore {
       .prepare(`SELECT DISTINCT agent FROM model_calls WHERE audit_id = ? AND ok = 1`)
       .all(auditId) as { agent: string }[];
     return rows.map((r) => r.agent).filter((a) => known.includes(a));
+  }
+
+  /**
+   * Did the research step run on this audit, and did it survive?
+   *
+   * Read from `model_calls` for the same reason `lanesOf` is, plus one specific
+   * to this step: **a finding cannot answer the question.** Every finding
+   * carries `citation.source_type`, and it reads `none` in three unrelated
+   * situations — Research looked and honestly declined, Research never ran
+   * because the audit predates it, or Research ran and crashed. Only the first
+   * says anything about the corpus, and pooling all three is how the uncited
+   * rate came to read 85% when the number that means something is 61.6%.
+   *
+   * `failed` is its own answer rather than folded into `never`, because it is
+   * the one that should never happen. On 2026-08-19 the duolingo audit's
+   * researcher died on `Unterminated string in JSON` and published eight
+   * silently uncited findings — see backlog B23.
+   */
+  researchOutcome(auditId: string): ResearchOutcome {
+    const rows = this.db
+      .prepare(`SELECT ok FROM model_calls WHERE audit_id = ? AND agent = 'researcher'`)
+      .all(auditId) as { ok: number }[];
+    if (rows.length === 0) return "never";
+    // Any successful attempt counts: the runner retries, and a retry that
+    // succeeded is a research step that ran.
+    return rows.some((r) => r.ok === 1) ? "ok" : "failed";
   }
 
   list(status?: AuditStatus): AuditRow[] {

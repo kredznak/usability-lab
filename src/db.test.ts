@@ -377,3 +377,92 @@ describe("the re-audit queue", () => {
     rmSync(dir, { recursive: true, force: true });
   });
 });
+
+/**
+ * `researchOutcome` — the axis the uncited rate has to be read along.
+ *
+ * Written 2026-08-19 after `npm run outcome` was found reporting 85% uncited
+ * from a filter that excluded nothing. The filter meant to keep only audits that
+ * had been through Research and tested `source_type !== undefined`, but
+ * `source_type` is written as `"none"` whenever a finding has no citation — so
+ * every finding matched, including 106 from audits that predate the step.
+ *
+ * **A finding cannot answer this question**, which is the whole reason the
+ * lookup lives here: `none` means "declined", "never ran" and "crashed" all at
+ * once, and only the first says anything about the corpus.
+ */
+describe("whether an audit's findings ever had a chance at a citation", () => {
+  const withCalls = (calls: { agent: string; ok: boolean }[]) => {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-research-"));
+    const file = path.join(dir, "r.db");
+    const log = new CallLog(file);
+    for (const c of calls) {
+      log.record({
+        audit_id: "a1", agent: c.agent, model: "claude-sonnet-5",
+        prompt_version: "researcher-v1", input_tokens: 1, output_tokens: 2,
+        cache_read_tokens: 0, cache_write_tokens: 0, latency_ms: 3, cost_usd: 0.01,
+        ok: c.ok, error: c.ok ? null : "Failed to parse structured output",
+      });
+    }
+    log.close();
+    const store = new AuditStore(file);
+    const outcome = store.researchOutcome("a1");
+    store.close();
+    rmSync(dir, { recursive: true, force: true });
+    return outcome;
+  };
+
+  test("an audit from before Research existed reports never, not a decline", () => {
+    // The 106-finding case. These must leave the numerator AND the denominator.
+    assert.equal(withCalls([{ agent: "heuristics", ok: true }]), "never");
+  });
+
+  test("a research step that ran and returned reports ok", () => {
+    assert.equal(withCalls([{ agent: "researcher", ok: true }]), "ok");
+  });
+
+  test("a research step that crashed is failed, which is not the same as never", () => {
+    /**
+     * The duolingo case: the researcher died on `Unterminated string in JSON`
+     * and eight findings published uncited. Folded into `never` it would look
+     * like history; folded into `ok` it would look like the corpus is thin. It
+     * is neither — it is a bug, and B23 exists because this told us so.
+     */
+    assert.equal(withCalls([{ agent: "researcher", ok: false }]), "failed");
+  });
+
+  test("a retry that succeeded is a research step that ran", () => {
+    // The runner retries. One failed attempt followed by a good one is a
+    // successful step, and counting it as failed would hide real declines.
+    assert.equal(
+      withCalls([
+        { agent: "researcher", ok: false },
+        { agent: "researcher", ok: true },
+      ]),
+      "ok",
+    );
+  });
+
+  test("the lookup names one agent exactly, and does not match around it", () => {
+    /**
+     * The query is `agent = 'researcher'`, not `LIKE '%esearch%'` — and the
+     * first version of this test could not tell the difference, because it used
+     * `synthesizer` as the other agent and no loose pattern would have matched
+     * that either. It passed under both, which is the failure this suite keeps
+     * finding: **a test that supplies input the first guard rejects is testing
+     * the first guard, not the one it names.**
+     *
+     * So the other agent is one a substring match *would* catch, and it appears
+     * **alone** — the second version of this test paired it with a successful
+     * `researcher` row, which made both queries answer "ok" and caught nothing
+     * either. With no real research call present, equality says `never` and a
+     * loose match says `ok`, which is the only arrangement that tells them
+     * apart.
+     *
+     * There is no `co-researcher` today. The point is that the day someone adds
+     * a second research-shaped step, a loose match would start counting its
+     * calls as this one's and quietly move the citation rate.
+     */
+    assert.equal(withCalls([{ agent: "co-researcher", ok: true }]), "never");
+  });
+});
