@@ -271,3 +271,87 @@ describe("what the SDK does with an enum, pinned", () => {
     }
   });
 });
+
+/**
+ * The seven rows added 2026-08-19, and the gaps they were chosen against.
+ *
+ * These are not "more sources is better". Each one answers a cluster counted in
+ * the 45 uncited findings that Research actually saw — read individually, not
+ * sampled. This suite is where that reasoning survives: delete a row and the
+ * test names the gap that reopens, instead of a coverage number quietly
+ * dropping somewhere nobody looks.
+ *
+ * It deliberately asserts **reachability from the lane the gap appeared in**,
+ * not mere presence in the table. A source the Research agent is never shown is
+ * a source that does not exist — `sourcesFor` filters the shortlist by lens, so
+ * a row with the wrong `topics` is invisible however good its claim is.
+ */
+describe("the gaps these sources were added against", () => {
+  const reachableFrom = (lane: string, id: string) =>
+    sourcesFor([lane]).some((s) => s.id === id);
+
+  const GAPS: { gap: string; lane: string; source: string; findings: number }[] = [
+    // ~16 findings: "Jargon on First Use", "Plain language", "Acronym on first
+    // use", "Copy - Clarity/Specificity", "Value proposition clarity"...
+    { gap: "plain language and jargon", lane: "copy", source: "nng-plain-language", findings: 16 },
+    { gap: "marketing language and internal jargon", lane: "copy", source: "nng-user-centric-language", findings: 16 },
+    // ~9 findings on pricing pages: "Cost transparency", "Cost disclosure
+    // timing", "Trust before commitment", "Commitment revealed late".
+    { gap: "cost transparency outside checkout", lane: "conversion-cta", source: "nng-show-price", findings: 9 },
+    // ~4: "Specific vs. vague CTA label", "Clarity of link text",
+    // "Consistent call to action", "Clarity of next step".
+    { gap: "CTA and link label specificity", lane: "conversion-cta", source: "nng-better-link-labels", findings: 4 },
+    // ~3 WCAG criteria the table did not hold.
+    { gap: "heading structure as programmatic structure", lane: "visual-hierarchy", source: "wcag-info-and-relationships", findings: 3 },
+    { gap: "minimum target size", lane: "a11y", source: "wcag-target-size-minimum", findings: 3 },
+  ];
+
+  for (const { gap, lane, source, findings } of GAPS) {
+    test(`${gap} (~${findings} uncited) is reachable from the ${lane} lens`, () => {
+      assert.ok(
+        reachableFrom(lane, source),
+        `${source} exists but the ${lane} shortlist cannot see it — check its topics`,
+      );
+    });
+  }
+
+  test("the corpus does not only say jargon is bad", () => {
+    /**
+     * The one row here that is not filling a gap. Two plain-language sources on
+     * their own read as a rule — "avoid jargon" — and that rule is wrong for a
+     * specialist audience, which is most of the B2B sites we audit. Nielsen's
+     * "Use Specialized Language for Specialized Audiences" says so directly, so
+     * a reviewer stretching plain-language guidance onto an expert page can be
+     * answered from the same table rather than from nobody.
+     *
+     * Asserted as a pair because either alone is a corpus with an opinion.
+     */
+    const copy = sourcesFor(["copy"]).map((s) => s.id);
+    assert.ok(copy.includes("nng-plain-language"), "the plain-language side");
+    assert.ok(copy.includes("nng-specialized-language"), "and the side that says when jargon is right");
+  });
+
+  test("every claim added carries at least one quotation from its page", () => {
+    /**
+     * **What this does not do**, stated because the first version of it implied
+     * otherwise and a revert proved the point: it cannot tell a quoted claim
+     * from a mostly-paraphrased one. Replacing a quoted sentence with a
+     * paraphrase left the other quotations in place and the test stayed green.
+     *
+     * What it does catch is a claim written entirely from memory, which is the
+     * failure mode with a history here — a guessed growth.design URL 404'd when
+     * this table was built, and a guessed pricing URL 404'd while adding these
+     * rows. Reading the page is a rule kept by people; this is the floor under
+     * it, and the floor is low.
+     */
+    for (const id of [...GAPS.map((g) => g.source), "nng-specialized-language"]) {
+      const source = sourceById(id);
+      assert.ok(source, `${id} is missing from the table`);
+      assert.match(
+        source!.claim,
+        /["“]/,
+        `${id}'s claim carries no quotation at all — it may be a recollection rather than a reading`,
+      );
+    }
+  });
+});
