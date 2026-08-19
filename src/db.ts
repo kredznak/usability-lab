@@ -655,6 +655,15 @@ export class SubscriptionStore {
       });
   }
 
+  /**
+   * Every row. Added for `npm run reconcile`, which has to diff the whole table
+   * against Stripe — there is no "which ones changed" question to ask a billing
+   * system we are not already in sync with.
+   */
+  all(): SubscriptionRow[] {
+    return this.db.prepare(`SELECT * FROM subscriptions ORDER BY email`).all() as SubscriptionRow[];
+  }
+
   /** Paying, and paid up to a date that has not passed. See the class note. */
   isActive(email: string, now = Date.now()): boolean {
     const row = this.get(email);

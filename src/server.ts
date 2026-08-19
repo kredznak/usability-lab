@@ -62,6 +62,14 @@ import { checkUrl } from "./urlcheck.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { checkFairUse } from "./fairuse.js";
+import {
+  stripeConfig,
+  liveStripe,
+  verifyWebhook,
+  mapStatus,
+  readSubscription,
+  type StripeClient,
+} from "./stripe.js";
 
 const PORT = Number(process.env.PORT || 4000);
 
@@ -213,6 +221,17 @@ const asks = new AuditRequestStore();
 const TALK_TO = process.env.USABILITY_LAB_CONTACT ?? "kredznak@gmail.com";
 
 /**
+ * Stripe, or honestly nothing.
+ *
+ * Read once at startup rather than per request, so the page and the webhook
+ * route can never disagree about whether checkout exists. `null` here is not an
+ * error state — it is today's state, and every surface below is written to say
+ * so out loud rather than to half-work.
+ */
+const stripe = stripeConfig();
+const billing: StripeClient | null = stripe ? liveStripe(stripe) : null;
+
+/**
  * B16's limits. The numbers are guesses and should be read as such — nobody has
  * used this yet, so they are set where a real visitor cannot plausibly reach
  * them and an automated one hits them in seconds.
@@ -356,15 +375,31 @@ function targetUrl(audit: AuditRow): string {
  * refusal. `justRequested` is the one exception, and it is the one fact a reload
  * genuinely cannot reproduce: "you just did that."
  */
+function notSubscribed(
+  audit: AuditRow,
+  sessionToken: string,
+  justPaid = false,
+): PublishInput["offer"] {
+  return stripe
+    ? {
+        subscribed: false,
+        talkTo: TALK_TO,
+        checkoutLive: true,
+        action: `/a/${audit.audit_id}/subscribe`,
+        csrf: csrfFor(sessionToken),
+        justPaid,
+      }
+    : { subscribed: false, talkTo: TALK_TO, checkoutLive: false, justPaid };
+}
+
 function offerFor(
   audit: AuditRow,
   email: string,
   sessionToken: string,
   justRequested = false,
+  justPaid = false,
 ): PublishInput["offer"] {
-  if (!subs.isActive(email)) {
-    return { subscribed: false, talkTo: TALK_TO, checkoutLive: false };
-  }
+  if (!subs.isActive(email)) return notSubscribed(audit, sessionToken, justPaid);
   const fair = checkFairUse(requests.forEmail(email), targetUrl(audit));
   return {
     subscribed: true,
@@ -510,6 +545,83 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     // 303, so a refresh of the status page is not a resubmission.
     res.writeHead(303, { location: `/r/${requestId}` });
     return void res.end();
+  }
+
+  // --- Stripe's webhook ----------------------------------------------------
+  if (url.pathname === "/stripe/webhook") {
+    /**
+     * Public, and authenticated by a signature and nothing else.
+     *
+     * No cookie is read, so there is no CSRF token — there is no session to
+     * ride. What stands in its place is `verifyWebhook`, and it is the single
+     * most dangerous function in the repo: get it wrong and anyone on the
+     * internet can grant themselves a subscription by POSTing JSON here.
+     *
+     * The route 404s when Stripe is not configured rather than 400ing, so an
+     * unconfigured deployment does not advertise an endpoint it cannot check.
+     */
+    if (req.method !== "POST" || !stripe) return notFound(res);
+
+    const raw = await readBody(req, MAX_REQUEST_BODY);
+    if (raw === null) return send(res, 413, "too large", "text/plain; charset=utf-8");
+
+    const check = verifyWebhook(raw, req.headers["stripe-signature"] as string | undefined, stripe.webhookSecret);
+    if (!check.ok) {
+      // The reason, never the body. §8 makes events permanent, and an unverified
+      // body is whatever a stranger chose to send.
+      events.record({ audit_id: null, type: "webhook.rejected", data: { reason: check.reason } });
+      return send(res, 400, check.reason, "text/plain; charset=utf-8");
+    }
+
+    const object = check.event.data.object;
+    /**
+     * The address is ours, not the payer's.
+     *
+     * Stripe's checkout form lets whoever is paying type any email they like.
+     * Believing it would mean a card grants access to an arbitrary address —
+     * the whole authorization model handed to anyone willing to spend $29. So
+     * the only address considered is the one this server wrote into metadata
+     * when it created the session, from a signed results-page session.
+     */
+    const metadata = (object.metadata as Record<string, string> | undefined) ?? {};
+    const email = metadata.ul_email ?? null;
+
+    if (!email) {
+      // Acknowledged, not acted on. A 200 stops Stripe retrying something that
+      // will never succeed; recording it means we find out it happened.
+      events.record({ audit_id: null, type: "webhook.unattributed", data: { type: check.event.type } });
+      return send(res, 200, "no ul_email", "text/plain; charset=utf-8");
+    }
+
+    if (check.event.type === "checkout.session.completed") {
+      // The session says a payment succeeded but carries no period end; the
+      // subscription events that follow carry the dates. Marking `past_due`
+      // here would lock out a customer who just paid, and marking `active` with
+      // no end date grants nothing (see db.ts), so this waits — Stripe sends
+      // `customer.subscription.created`/`updated` within the same breath, and
+      // reconciliation is the backstop if it does not.
+      events.record({ audit_id: null, type: "checkout.completed", data: {} });
+      return send(res, 200, "ok", "text/plain; charset=utf-8");
+    }
+
+    if (check.event.type.startsWith("customer.subscription.")) {
+      const sub = readSubscription(object);
+      const status =
+        check.event.type === "customer.subscription.deleted" ? "canceled" : mapStatus(sub.status);
+      subs.upsert(email, {
+        status,
+        stripeCustomerId: sub.customerId || null,
+        stripeSubscriptionId: sub.id || null,
+        currentPeriodEnd: status === "canceled" ? null : sub.currentPeriodEnd,
+      });
+      events.record({ audit_id: null, type: "subscription.changed", data: { status } });
+      return send(res, 200, "ok", "text/plain; charset=utf-8");
+    }
+
+    // Everything else Stripe sends is acknowledged and ignored. A 200 for an
+    // event we do not handle is the difference between "we chose not to care"
+    // and an endpoint Stripe retries forever.
+    return send(res, 200, "ignored", "text/plain; charset=utf-8");
   }
 
   // --- where is my audit ---------------------------------------------------
@@ -724,11 +836,94 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return void res.end();
     }
 
+    // `?paid=1` is Stripe's `success_url` coming back. It is a hint from a
+    // redirect and nothing more — it grants nothing, it only changes what the
+    // page says while the webhook is in flight.
+    const justPaid = url.searchParams.get("paid") === "1";
     return send(
       res,
       200,
-      render(audit, { reveal: true, offer: offerFor(audit, check.claims.email, token) }),
+      render(audit, {
+        reveal: true,
+        offer: offerFor(audit, check.claims.email, token, false, justPaid),
+      }),
     );
+  }
+
+  // --- starting a subscription ---------------------------------------------
+  if (rest.length === 1 && rest[0] === "subscribe") {
+    if (req.method !== "POST") return notFound(res);
+
+    // Cookie only, same reasoning as the re-audit button: a state change
+    // reachable by URL is one a link preview can make.
+    const token = cookie(req, COOKIE) ?? "";
+    const check = verify(token, audit.audit_id);
+    if (!check.ok) {
+      events.record({
+        audit_id: audit.audit_id,
+        type: "token.rejected",
+        data: { reason: check.reason, source: "cookie", route: "subscribe" },
+      });
+      return send(
+        res,
+        403,
+        page(
+          "Not this page",
+          `<p>That session is no longer valid.</p>
+           <p><a href="/a/${audit.audit_id}">Ask for a new link</a>.</p>`,
+        ),
+      );
+    }
+
+    const body = await readBody(req);
+    if (body === null) return send(res, 413, page("Too long", `<p>That request was too large.</p>`));
+    if (!csrfMatches(token, new URLSearchParams(body).get("csrf") ?? "")) {
+      events.record({ audit_id: audit.audit_id, type: "csrf.rejected", data: { route: "subscribe" } });
+      return send(
+        res,
+        403,
+        page(
+          "That request did not come from this page",
+          `<p>Open the results again and use the button there.</p>
+           <p><a href="/a/${audit.audit_id}/full">Back to the results</a>.</p>`,
+        ),
+      );
+    }
+
+    const email = check.claims.email;
+    // Already paying. Sending them to Checkout again would sell a second
+    // subscription to somebody who has one, which Stripe would happily do.
+    if (subs.isActive(email)) {
+      return send(res, 200, render(audit, { reveal: true, offer: offerFor(audit, email, token) }));
+    }
+    if (!billing) {
+      return send(res, 503, render(audit, { reveal: true, offer: notSubscribed(audit, token) }));
+    }
+
+    try {
+      const session = await billing.createCheckoutSession({ email, auditId: audit.audit_id });
+      if (!session.url) throw new Error("no checkout url");
+      events.record({ audit_id: audit.audit_id, type: "checkout.started", data: {} });
+      // 303 to Stripe. This is the one redirect here that leaves our origin,
+      // and it carries no credential — the session id is Stripe's.
+      res.writeHead(303, { location: session.url });
+      return void res.end();
+    } catch (err) {
+      // The message can carry Stripe's own error text; it goes to our console
+      // and not to the visitor, and the event records only that it happened.
+      console.error(`  checkout failed for ${audit.audit_id}: ${String(err)}`);
+      events.record({ audit_id: audit.audit_id, type: "checkout.failed", data: {} });
+      return send(
+        res,
+        502,
+        page(
+          "That did not go through",
+          `<p>We could not start checkout just now. Nothing was charged.</p>
+           <p><a href="/a/${audit.audit_id}/full">Back to the results</a>, or
+              <a href="mailto:${escapeHtml(TALK_TO)}">email us</a>.</p>`,
+        ),
+      );
+    }
   }
 
   // --- asking for a re-audit -----------------------------------------------
@@ -799,7 +994,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     // someone who is only looking at a button we rendered.
     if (!subs.isActive(email)) {
       events.record({ audit_id: audit.audit_id, type: "reaudit.refused", data: { why: "not-subscribed" } });
-      return full({ subscribed: false, talkTo: TALK_TO, checkoutLive: false }, 403);
+      return full(notSubscribed(audit, token), 403);
     }
 
     /**

@@ -15,6 +15,7 @@ import {
 } from "./db.js";
 import { QUESTIONS } from "./profile.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches, TOKEN_TTL_MS } from "./tokens.js";
+import { signWebhook } from "./stripe.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { AUDITS_PER_MONTH } from "./fairuse.js";
 
@@ -1119,6 +1120,308 @@ describe("where is my audit", () => {
     const html = await (await fetch(`${BASE}/r/${requestId}`)).text();
     assert.match(html, /could not load that page/);
     assert.match(html, /Nothing was published/);
+  });
+});
+
+/**
+ * Stripe, on a second server.
+ *
+ * The main server above runs unconfigured, because that is today's real state
+ * and the honest copy on the results page is worth testing. Checkout needs the
+ * opposite, so it gets its own process on its own port, sharing the same temp
+ * database — which is also how the webhook's writes become visible to a page
+ * the first server renders.
+ *
+ * The Stripe API itself is a stub in this file. That is deliberate and it buys
+ * something real: `liveStripe` is exercised for its **request shape** — the
+ * endpoint, the form encoding, the auth header, the `ul_email` metadata the
+ * whole authorization model hangs on. What stays unverified is one thing, and
+ * it is named in B21: whether Stripe accepts that shape.
+ */
+describe("Stripe, when it is configured", () => {
+  const STRIPE_PORT = PORT + 2;
+  const APP_PORT = PORT + 3;
+  const APP = `http://127.0.0.1:${APP_PORT}`;
+  const WHSEC = "whsec_test_only";
+  const PAID = "ffffffff-7777-4777-8777-ffffffffffff";
+
+  let stripeStub: import("node:http").Server;
+  let paidChild: ChildProcess;
+  /** Every request the stub was sent, so the tests can read what we asked for. */
+  const seen: { path: string; auth: string; body: string }[] = [];
+
+  before(async () => {
+    seed(PAID, 5, true);
+
+    const { createServer } = await import("node:http");
+    stripeStub = createServer((req, res) => {
+      const chunks: Buffer[] = [];
+      req.on("data", (c) => chunks.push(c as Buffer));
+      req.on("end", () => {
+        const body = Buffer.concat(chunks).toString("utf8");
+        seen.push({ path: req.url ?? "", auth: String(req.headers.authorization ?? ""), body });
+        res.writeHead(200, { "content-type": "application/json" });
+        if ((req.url ?? "").startsWith("/checkout/sessions")) {
+          res.end(JSON.stringify({ id: "cs_test_1", url: "https://checkout.stripe.test/pay/cs_test_1" }));
+        } else {
+          res.end(JSON.stringify({ data: [], has_more: false }));
+        }
+      });
+    });
+    await new Promise<void>((r) => stripeStub.listen(STRIPE_PORT, "127.0.0.1", r));
+
+    paidChild = spawn(process.execPath, ["--import", "tsx", path.resolve("src/server.ts")], {
+      env: {
+        ...process.env,
+        PORT: String(APP_PORT),
+        USABILITY_LAB_DB: dbPath,
+        USABILITY_LAB_OUT: outRoot,
+        USABILITY_LAB_SECRET: SECRET,
+        STRIPE_SECRET_KEY: "sk_test_only",
+        STRIPE_PRICE_ID: "price_test_only",
+        STRIPE_WEBHOOK_SECRET: WHSEC,
+        STRIPE_API_BASE: `http://127.0.0.1:${STRIPE_PORT}`,
+        USABILITY_LAB_BASE_URL: APP,
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    paidChild.stdout?.setEncoding("utf8");
+    for (let i = 0; i < 100; i++) {
+      try {
+        await fetch(`${APP}/`);
+        return;
+      } catch {
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    }
+    throw new Error("stripe-configured server did not start");
+  });
+
+  after(() => {
+    paidChild?.kill();
+    stripeStub?.close();
+  });
+
+  /** A session on the *configured* server, whose stdout prints its own links. */
+  async function paidSession(auditId: string, email = freshEmail()) {
+    const printed = new Promise<string>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("no link printed")), 5000);
+      const onData = (chunk: string) => {
+        const match = chunk.match(/(http:\/\/\S+\/full\?t=\S+)/);
+        if (match) {
+          clearTimeout(timer);
+          paidChild.stdout?.off("data", onData);
+          resolve(match[1]!);
+        }
+      };
+      paidChild.stdout?.on("data", onData);
+    });
+    await fetch(`${APP}/a/${auditId}/email`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ email }).toString(),
+    });
+    const link = (await printed).replace("localhost", "127.0.0.1");
+    const first = await fetch(link, { redirect: "manual" });
+    const jar = (first.headers.get("set-cookie") ?? "").split(";")[0]!;
+    const clean = new URL(first.headers.get("location")!, APP).toString();
+    const html = await (await fetch(clean, { headers: { cookie: jar } })).text();
+    return { email, jar, html, clean };
+  }
+
+  function webhook(body: string, signature: string) {
+    return fetch(`${APP}/stripe/webhook`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "stripe-signature": signature },
+      body,
+    });
+  }
+
+  const subscriptionEvent = (email: string, over: Record<string, unknown> = {}) =>
+    JSON.stringify({
+      id: "evt_x",
+      type: "customer.subscription.updated",
+      data: {
+        object: {
+          id: "sub_x",
+          customer: "cus_x",
+          status: "active",
+          current_period_end: Math.floor(Date.now() / 1000) + 30 * 86_400,
+          metadata: { ul_email: email },
+          ...over,
+        },
+      },
+    });
+
+  test("the page offers a real button instead of an apology", async () => {
+    const { html } = await paidSession(PAID);
+    assert.match(html, /Subscribe &mdash; \$29 a month/);
+    assert.match(html, /name="csrf"/);
+    assert.doesNotMatch(html, /Checkout is not connected yet/);
+  });
+
+  test("pressing it sends the customer to Stripe, and asks Stripe for the right thing", async () => {
+    const { jar, html, email } = await paidSession(PAID);
+    const before = seen.length;
+    const res = await fetch(`${APP}/a/${PAID}/subscribe`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", cookie: jar },
+      body: new URLSearchParams({ csrf: csrfIn(html) }).toString(),
+      redirect: "manual",
+    });
+    assert.equal(res.status, 303);
+    assert.equal(res.headers.get("location"), "https://checkout.stripe.test/pay/cs_test_1");
+
+    assert.equal(seen.length, before + 1);
+    const call = seen[seen.length - 1]!;
+    assert.match(call.path, /^\/checkout\/sessions/);
+    assert.equal(call.auth, "Bearer sk_test_only");
+    const form = new URLSearchParams(call.body);
+    assert.equal(form.get("mode"), "subscription");
+    assert.equal(form.get("line_items[0][price]"), "price_test_only");
+    /**
+     * The field the whole authorization model hangs on. Stripe's form lets the
+     * payer type any address; this is the one we will believe, set server-side
+     * from a signed session.
+     */
+    assert.equal(form.get("metadata[ul_email]"), email);
+    assert.equal(form.get("subscription_data[metadata][ul_email]"), email);
+    assert.equal(form.get("success_url"), `${APP}/a/${PAID}/full?paid=1`);
+  });
+
+  test("a forged subscribe post buys nothing", async () => {
+    const { jar } = await paidSession(PAID);
+    const before = seen.length;
+    const res = await fetch(`${APP}/a/${PAID}/subscribe`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", cookie: jar },
+      body: new URLSearchParams({ csrf: "nope" }).toString(),
+      redirect: "manual",
+    });
+    assert.equal(res.status, 403);
+    assert.equal(seen.length, before, "Stripe was never called");
+  });
+
+  test("a signed webhook grants access; the same body unsigned grants nothing", async () => {
+    const email = freshEmail();
+    const body = subscriptionEvent(email);
+
+    const forged = await webhook(body, `t=${Math.floor(Date.now() / 1000)},v1=${"0".repeat(64)}`);
+    assert.equal(forged.status, 400);
+    const subs = new SubscriptionStore(dbPath);
+    assert.equal(subs.isActive(email), false, "a forged webhook must grant nothing");
+
+    const real = await webhook(body, signWebhook(body, WHSEC));
+    assert.equal(real.status, 200);
+    assert.equal(subs.isActive(email), true);
+    subs.close();
+  });
+
+  test("the subscription belongs to the address we signed, not one Stripe was given", async () => {
+    /**
+     * The attack this closes: pay for a subscription, tell Stripe your email is
+     * the victim's, and have us grant them — or, more usefully, tell Stripe an
+     * address you control while paying, and have us grant *that*. Only
+     * `metadata.ul_email` — written by this server from a signed session — is
+     * ever read.
+     */
+    const victim = freshEmail();
+    const body = JSON.stringify({
+      id: "evt_y",
+      type: "customer.subscription.updated",
+      data: {
+        object: {
+          id: "sub_y",
+          status: "active",
+          current_period_end: Math.floor(Date.now() / 1000) + 86_400,
+          customer_email: victim,
+          customer_details: { email: victim },
+          // no ul_email
+        },
+      },
+    });
+    const res = await webhook(body, signWebhook(body, WHSEC));
+    assert.equal(res.status, 200, "acknowledged so Stripe stops retrying");
+    const subs = new SubscriptionStore(dbPath);
+    assert.equal(subs.isActive(victim), false);
+    assert.equal(subs.get(victim), null, "no row at all");
+    subs.close();
+  });
+
+  test("a cancellation takes access away", async () => {
+    const email = freshEmail();
+    const granted = subscriptionEvent(email);
+    await webhook(granted, signWebhook(granted, WHSEC));
+
+    const subs = new SubscriptionStore(dbPath);
+    assert.equal(subs.isActive(email), true);
+
+    const cancelled = JSON.stringify({
+      id: "evt_z",
+      type: "customer.subscription.deleted",
+      data: { object: { id: "sub_x", status: "canceled", metadata: { ul_email: email } } },
+    });
+    await webhook(cancelled, signWebhook(cancelled, WHSEC));
+    assert.equal(subs.isActive(email), false);
+    subs.close();
+  });
+
+  test("a status Stripe invents tomorrow grants nothing", async () => {
+    const email = freshEmail();
+    const body = subscriptionEvent(email, { status: "quantum_superposition" });
+    await webhook(body, signWebhook(body, WHSEC));
+    const subs = new SubscriptionStore(dbPath);
+    assert.equal(subs.isActive(email), false);
+    subs.close();
+  });
+
+  test("a replayed webhook is refused once it is old enough", async () => {
+    const email = freshEmail();
+    const body = subscriptionEvent(email);
+    const old = signWebhook(body, WHSEC, Date.now() - 10 * 60 * 1000);
+    assert.equal((await webhook(body, old)).status, 400);
+    const subs = new SubscriptionStore(dbPath);
+    assert.equal(subs.isActive(email), false);
+    subs.close();
+  });
+
+  test("coming back from Stripe says the payment landed, not 'subscribe'", async () => {
+    const { jar, clean } = await paidSession(PAID);
+    const html = await (await fetch(`${clean}?paid=1`, { headers: { cookie: jar } })).text();
+    assert.match(html, /Payment received/);
+    assert.doesNotMatch(html, /Subscribe &mdash;/);
+  });
+
+  test("an already-paying customer is not sent to checkout again", async () => {
+    const email = freshEmail();
+    const body = subscriptionEvent(email);
+    await webhook(body, signWebhook(body, WHSEC));
+
+    const { jar, html } = await paidSession(PAID, email);
+    // They see the re-audit button, not a subscribe button.
+    assert.match(html, /Ask for a re-audit<\/button>/);
+    const before = seen.length;
+    const res = await fetch(`${APP}/a/${PAID}/subscribe`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", cookie: jar },
+      body: new URLSearchParams({ csrf: csrfIn(html) }).toString(),
+      redirect: "manual",
+    });
+    assert.equal(res.status, 200);
+    assert.equal(seen.length, before, "Stripe was not asked to sell a second subscription");
+  });
+});
+
+describe("the webhook when Stripe is not configured", () => {
+  test("does not exist", async () => {
+    // A 404 rather than a 400: an unconfigured deployment must not advertise an
+    // endpoint it has no secret to check.
+    const res = await fetch(`${BASE}/stripe/webhook`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "{}",
+    });
+    assert.equal(res.status, 404);
   });
 });
 

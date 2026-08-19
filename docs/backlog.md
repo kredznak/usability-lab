@@ -674,6 +674,61 @@ leaving the spend untestable — which is the honest split. Small.
 
 ---
 
+## B21. Two Stripe calls have never been sent to Stripe
+
+**What.** `createCheckoutSession` and `listSubscriptions` in `src/stripe.ts` are
+written from Stripe's documentation. Their **request shape** is tested — the
+endpoint, the form encoding, the `Authorization` header, the `metadata[ul_email]`
+field the whole authorization model hangs on — against a stub in
+`server.test.ts`. What has never happened is Stripe receiving one.
+
+**What could be wrong.** Field names and response shapes, and nothing here can
+tell. Three specific risks:
+
+1. **`current_period_end`.** Stripe moved it from the subscription onto
+   subscription *items* in recent API versions. `readSubscription` reads both,
+   because guessing wrong means every subscriber's access expires immediately —
+   `isActive` hangs on exactly that date.
+2. **`subscription_data[metadata][ul_email]`.** If this key is wrong, the
+   metadata never reaches the subscription object, and every
+   `customer.subscription.*` webhook arrives unattributable. The customer pays
+   and is never granted access. `checkout.session.completed` would still carry
+   `metadata[ul_email]`, so the failure is silent and one-sided.
+3. **No API version is pinned.** Requests use whatever version the account
+   defaults to. Pinning a version I cannot test against would be worse — it
+   would break on a guess rather than drift on a default.
+
+**How to close it.** Add test keys, `stripe listen --forward-to
+localhost:4000/stripe/webhook`, and run one real subscription end to end. Half
+an hour with an account; impossible without one.
+
+**Until then:** the page says "Checkout is not connected yet" whenever any of
+the three env vars is missing, which is the honest state and today's state.
+
+---
+
+## B22. A late webhook can revive a cancelled subscription
+
+**What.** Stripe delivers webhooks out of order and retries them. A
+`customer.subscription.updated` that was delayed behind a `deleted` will be
+applied after it, and `SubscriptionStore.upsert` is last-writer-wins by design —
+so a cancelled customer gets their access back until something corrects it.
+
+**Why it was left.** §7 designs `npm run reconcile` as the daily repair, and it
+is built and tested. The window is therefore ≤24h and self-closing, which is the
+same blast radius §12 already accepts for F21. Kelly was offered the guard at
+plan time and the plan's stated default — leave it to reconciliation — stood.
+
+**What would fix it.** A `last_event_at` column, and refusing any write whose
+Stripe event `created` timestamp is older than the one already applied. About
+ten lines plus tests, and `db.ts` has predicted it in a comment since the table
+was written.
+
+**Cost.** Small. **Worth doing before the first real subscriber, not after** —
+the failure direction is free access, which nobody complains about.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
@@ -688,12 +743,13 @@ and memory. Consolidated 2026-08-10; not new decisions.
   would be invented, so `npm run outcome` prints none.
 - **LLM judge for usefulness.** Needs ~50–100 human labels to calibrate against.
   We have 17.
-- **Not built at all:** Content agent, Stripe Checkout, Inngest/Supabase, the
-  nightly priors job, F11's daily cost ceiling. *(The lint gate, re-audit
+- **Not built at all:** Content agent, Inngest/Supabase, the nightly priors job,
+  F11's daily cost ceiling. *(Stripe Checkout is built but has never been sent a
+  request — B21.)* *(The lint gate, re-audit
   diffing, the email gate, the subscribe surface and the question flow have
-  since shipped; the web app exists as `npm run serve` on localhost only.
-  Subscriptions are real rows granted by hand — see B18 for what Stripe still
-  owes, B19 before this is served publicly.)*
+  since shipped, and Stripe with them; the web app exists as `npm run serve` on
+  localhost only. See B21 for what Stripe still owes and B19 before any of this
+  is served publicly.)*
 - **F7 deviated without being written down.** §0 says "redraft loop (max 2) →
   PARKED"; `lint.ts` quarantines the finding instead, with no redraft and no
   park. Quarantine is the better answer — a redraft loop asks a model to try

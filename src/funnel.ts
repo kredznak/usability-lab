@@ -1,7 +1,8 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { AuditStore, EventLog } from "./db.js";
+import { AuditStore, EventLog, SubscriptionStore } from "./db.js";
+import { stripeConfig } from "./stripe.js";
 import { OUT_ROOT } from "./paths.js";
 
 /**
@@ -119,6 +120,10 @@ export function funnelStages(
     ["previewed", "preview.viewed"],
     ["email captured", "email.captured"],
     ["full results read", "full.viewed"],
+    // Pressing subscribe. Audit-keyed like everything above it, because the
+    // press happens on a results page. What follows it — the payment — is not,
+    // and is counted separately below for exactly that reason.
+    ["checkout started", "checkout.started"],
     // What a subscription buys. Last, because it is the step past the one that
     // cannot happen yet — `main` prints the NOT BUILT subscribe line between
     // this and the stage above it.
@@ -160,6 +165,26 @@ function main(): void {
   for (const r of rows) byStatus.set(r.status, (byStatus.get(r.status) ?? 0) + 1);
 
   const turnedAway = (byType.get("request.rejected") ?? 0) + (byType.get("request.throttled") ?? 0);
+
+  /**
+   * The one stage that cannot be counted from events.
+   *
+   * A payment is a fact about a person, not about an audit — `subscription.changed`
+   * carries no `audit_id` and could not, since one subscription covers up to
+   * three sites. So this is a count of rows that grant access **right now**,
+   * which is also the only number anyone would act on. It is printed apart from
+   * the audit funnel for the same reason the question-flow stages are.
+   *
+   * With no Stripe keys the line says so rather than showing a zero: a zero
+   * here would mean people reached checkout and did not pay.
+   */
+  const subs = new SubscriptionStore();
+  const active = subs.all().filter((r) => subs.isActive(r.email)).length;
+  subs.close();
+  const subscribeLine = stripeConfig()
+    ? `  subscribed             ${String(active).padStart(4)}   active right now`
+    : `  subscribed             ${String(active).padStart(4)}   active — but STRIPE KEYS ARE UNSET,\n` +
+      `                              so these were granted by \`npm run subscribe\``;
   const stats = stepStats(all);
   const { stages, outside } = funnelStages(all);
   const failed = byType.get("audit.failed") ?? 0;
@@ -204,7 +229,7 @@ function main(): void {
         `  they began before this log existed, and are left out of the percentages.`
       : ``,
     ``,
-    `  subscribed             NOT BUILT — no checkout; \`npm run subscribe\` grants by hand`,
+    subscribeLine,
     ...stages.filter((s) => s.label === AFTER_SUBSCRIBE).map(stageLine),
     ``,
     `RE-AUDITS  ${reaudits.length} checked, ${quiet} found nothing and spent nothing`,

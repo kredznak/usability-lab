@@ -1,0 +1,328 @@
+/**
+ * Stripe, behind a seam — §0's subscribe step, §7's `subscriptions` table, F21.
+ *
+ * ## Why there is an interface here at all
+ *
+ * There is no Stripe account yet. Written straight against the network, every
+ * line of this file would be unverifiable, and the parts that matter most —
+ * whether a forged webhook can grant somebody a subscription, whether
+ * reconciliation revokes the right rows — would ship on my say-so. So the two
+ * calls that genuinely need a network sit behind `StripeClient`, and everything
+ * on this side of it is tested against a fake.
+ *
+ * That is the same move as the injectable resolver in `urlcheck.ts`, and it was
+ * worth it there for the same reason: the interesting cases are the ones a real
+ * dependency will not produce on demand.
+ *
+ * ## Why raw HTTP and not the `stripe` package
+ *
+ * Three documented REST endpoints, form-encoded, about forty lines. A dependency
+ * I cannot run once is worse than code I can read — I would be guessing at
+ * method names instead of guessing at field names, and only one of those is
+ * checkable against Stripe's own docs. Swapping to the SDK later is a change to
+ * `liveStripe` and nothing else, which is what the interface is for.
+ *
+ * ## What is NOT verified, stated plainly
+ *
+ * `createCheckoutSession` and `listSubscriptions` have never been sent to
+ * Stripe. Their request shape is tested against a stub — the endpoint, the form
+ * encoding, the auth header, the metadata — so what remains unverified is
+ * exactly one thing: **whether Stripe accepts it.** Field names and response
+ * shapes come from Stripe's documentation and nothing here has confirmed them.
+ * Backlog B21.
+ */
+
+import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
+import type { SubscriptionStatus } from "./db.js";
+
+
+/** Everything Stripe needs from the environment. All or nothing — see below. */
+export interface StripeConfig {
+  secretKey: string;
+  priceId: string;
+  webhookSecret: string;
+  /** Where Stripe sends the customer back to. */
+  baseUrl: string;
+  /**
+   * Stripe's API root.
+   *
+   * Overridable so the tests can point `liveStripe` at a stub that records what
+   * it was sent. That turns "these two calls have never run" into "these two
+   * calls have run against something that checks their shape" — the form
+   * encoding, the auth header, the metadata we rely on. What stays unverified
+   * is narrower and honest: whether *Stripe* accepts that shape.
+   *
+   * Not a security boundary. It is read from our own environment, not from
+   * anything a visitor sends.
+   */
+  apiBase: string;
+}
+
+/**
+ * Configured, or not at all.
+ *
+ * There is no half-live state on purpose. A secret key without a webhook secret
+ * would take money and never grant access; a price id without a key would draw
+ * a button that 500s. Missing any one of the three means the page keeps saying
+ * checkout is not connected, which is the truth and is already what it says.
+ */
+export function stripeConfig(env: NodeJS.ProcessEnv = process.env): StripeConfig | null {
+  const secretKey = env.STRIPE_SECRET_KEY;
+  const priceId = env.STRIPE_PRICE_ID;
+  const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
+  if (!secretKey || !priceId || !webhookSecret) return null;
+  return {
+    secretKey,
+    priceId,
+    webhookSecret,
+    baseUrl: (env.USABILITY_LAB_BASE_URL || `http://localhost:${env.PORT || 4000}`).replace(/\/+$/, ""),
+    apiBase: (env.STRIPE_API_BASE || "https://api.stripe.com/v1").replace(/\/+$/, ""),
+  };
+}
+
+export interface CheckoutSession {
+  id: string;
+  /** Where to send the customer. Stripe hosts the card form; we never see a card. */
+  url: string;
+}
+
+export interface StripeSubscription {
+  id: string;
+  customerId: string;
+  /** Stripe's own word, unmapped. `mapStatus` narrows it at the boundary. */
+  status: string;
+  /** ISO, or null when Stripe did not give one. */
+  currentPeriodEnd: string | null;
+  /**
+   * The address **we** put in metadata when the session was created — not the
+   * one typed into Stripe's form. See `createCheckoutSession`.
+   */
+  email: string | null;
+}
+
+export interface StripeClient {
+  createCheckoutSession(input: { email: string; auditId: string }): Promise<CheckoutSession>;
+  listSubscriptions(): Promise<StripeSubscription[]>;
+}
+
+/**
+ * Stripe's status vocabulary, narrowed to the three that change what we do.
+ *
+ * `db.ts` promised this mapping would live at the boundary rather than in the
+ * column, and this is the boundary. **Anything unrecognised maps to `canceled`**
+ * — a status we have never seen before must not grant access, and Stripe adds
+ * statuses without asking us.
+ */
+export function mapStatus(stripeStatus: string): SubscriptionStatus {
+  switch (stripeStatus) {
+    case "active":
+    case "trialing":
+      return "active";
+    case "past_due":
+    case "unpaid":
+    case "incomplete":
+      return "past_due";
+    default:
+      return "canceled";
+  }
+}
+
+// --- the webhook, which is the part that must not be wrong --------------------
+
+export type WebhookFailure = "no-header" | "malformed" | "bad-signature" | "stale";
+
+export interface StripeEvent {
+  id: string;
+  type: string;
+  data: { object: Record<string, unknown> };
+}
+
+export type WebhookResult =
+  | { ok: true; event: StripeEvent }
+  | { ok: false; reason: WebhookFailure };
+
+/**
+ * How old a webhook may be and still be acted on.
+ *
+ * Stripe's own recommendation, and it is replay protection rather than
+ * housekeeping: the signature over a captured request stays valid forever, so
+ * without a window, anyone who ever saw one `checkout.session.completed` can
+ * replay it whenever they like.
+ */
+export const WEBHOOK_TOLERANCE_MS = 5 * 60 * 1000;
+
+/**
+ * Verify a `Stripe-Signature` header, then parse.
+ *
+ * The order is the whole point, and it is the same rule `tokens.ts` follows: an
+ * unverified body is attacker-controlled JSON, and there is no reason to hand it
+ * to a parser. This endpoint is public and unauthenticated by anything else —
+ * the signature *is* the authentication — so a mistake here means anyone on the
+ * internet can grant themselves a subscription.
+ *
+ * The header is `t=<unix>,v1=<hex>[,v1=<hex>]`, and **more than one `v1` is
+ * normal**: during a secret rotation Stripe signs with both. Accepting only the
+ * first would break every webhook for the duration of a rotation, which is
+ * exactly when nobody is looking.
+ */
+export function verifyWebhook(
+  rawBody: string,
+  header: string | undefined,
+  secret: string,
+  now = Date.now(),
+): WebhookResult {
+  if (!header) return { ok: false, reason: "no-header" };
+
+  let timestamp: string | null = null;
+  const signatures: string[] = [];
+  for (const part of header.split(",")) {
+    const eq = part.indexOf("=");
+    if (eq < 0) continue;
+    const key = part.slice(0, eq).trim();
+    const value = part.slice(eq + 1).trim();
+    if (key === "t") timestamp = value;
+    else if (key === "v1") signatures.push(value);
+  }
+  if (!timestamp || signatures.length === 0) return { ok: false, reason: "malformed" };
+  if (!/^\d+$/.test(timestamp)) return { ok: false, reason: "malformed" };
+
+  const sentAt = Number(timestamp) * 1000;
+  if (Math.abs(now - sentAt) > WEBHOOK_TOLERANCE_MS) return { ok: false, reason: "stale" };
+
+  const expected = createHmac("sha256", secret).update(`${timestamp}.${rawBody}`).digest("hex");
+  const expectedBuf = Buffer.from(expected, "utf8");
+  const matched = signatures.some((candidate) => {
+    const given = Buffer.from(candidate, "utf8");
+    // Length first: `timingSafeEqual` throws on a mismatch rather than
+    // returning false, and a thrown exception here would be a 500 on a route
+    // whose whole job is to reject things calmly.
+    return given.length === expectedBuf.length && timingSafeEqual(expectedBuf, given);
+  });
+  if (!matched) return { ok: false, reason: "bad-signature" };
+
+  let event: StripeEvent;
+  try {
+    event = JSON.parse(rawBody) as StripeEvent;
+  } catch {
+    return { ok: false, reason: "malformed" };
+  }
+  if (typeof event?.type !== "string" || typeof event?.data?.object !== "object" || !event.data.object) {
+    return { ok: false, reason: "malformed" };
+  }
+  return { ok: true, event };
+}
+
+/**
+ * Sign a payload the way Stripe does. Test-only in practice, and exported so the
+ * tests build real signatures rather than asserting against a constant somebody
+ * pasted — a fixture copied out of a passing run proves only that the code still
+ * does what it did.
+ */
+export function signWebhook(rawBody: string, secret: string, now = Date.now()): string {
+  const t = Math.floor(now / 1000);
+  const v1 = createHmac("sha256", secret).update(`${t}.${rawBody}`).digest("hex");
+  return `t=${t},v1=${v1}`;
+}
+
+// --- what the two subscription-shaped facts look like on the wire -------------
+
+/** Epoch seconds -> ISO, defensively. */
+function isoFrom(seconds: unknown): string | null {
+  return typeof seconds === "number" && Number.isFinite(seconds)
+    ? new Date(seconds * 1000).toISOString()
+    : null;
+}
+
+/**
+ * A Stripe subscription object, narrowed to the four fields we store.
+ *
+ * `current_period_end` is read from the subscription and then from its first
+ * item, because Stripe has moved that field down onto items in recent API
+ * versions and this repo cannot check which version an account is pinned to.
+ * Reading both is four lines; guessing wrong means every subscriber's access
+ * expires immediately, since `isActive` hangs on exactly that date.
+ */
+export function readSubscription(object: Record<string, unknown>): StripeSubscription {
+  const items = (object.items as { data?: Record<string, unknown>[] } | undefined)?.data;
+  const metadata = (object.metadata as Record<string, string> | undefined) ?? {};
+  return {
+    id: String(object.id ?? ""),
+    customerId: typeof object.customer === "string" ? object.customer : "",
+    status: String(object.status ?? ""),
+    currentPeriodEnd:
+      isoFrom(object.current_period_end) ?? isoFrom(items?.[0]?.current_period_end) ?? null,
+    email: metadata.ul_email ?? null,
+  };
+}
+
+/**
+ * The live client. **Never exercised** — see the header.
+ */
+export function liveStripe(config: StripeConfig): StripeClient {
+  async function call(pathAndQuery: string, body?: URLSearchParams): Promise<Record<string, unknown>> {
+    const headers: Record<string, string> = {
+      authorization: `Bearer ${config.secretKey}`,
+    };
+    if (body) {
+      headers["content-type"] = "application/x-www-form-urlencoded";
+      // A retry of the same click must not create a second subscription.
+      headers["idempotency-key"] = randomUUID();
+    }
+    const res = await fetch(`${config.apiBase}${pathAndQuery}`, {
+      method: body ? "POST" : "GET",
+      headers,
+      body: body?.toString(),
+    });
+    const json = (await res.json()) as Record<string, unknown>;
+    if (!res.ok) {
+      const error = (json.error as { message?: string } | undefined)?.message ?? res.statusText;
+      // The key is in `config`, never in a message that reaches a log or a page.
+      throw new Error(`stripe ${res.status}: ${error}`);
+    }
+    return json;
+  }
+
+  return {
+    async createCheckoutSession({ email, auditId }) {
+      /**
+       * `ul_email` is set here, server-side, from the address that opened this
+       * results page — and it is the only address the webhook will believe.
+       *
+       * Stripe's form lets the payer type any email they like. If we trusted
+       * that, paying would grant access to an arbitrary address, which is the
+       * whole authorization model of this product handed to whoever has a card.
+       * `customer_email` is prefilled as a convenience; `metadata.ul_email` is
+       * the fact.
+       */
+      const form = new URLSearchParams({
+        mode: "subscription",
+        "line_items[0][price]": config.priceId,
+        "line_items[0][quantity]": "1",
+        customer_email: email,
+        client_reference_id: auditId,
+        "metadata[ul_email]": email,
+        "subscription_data[metadata][ul_email]": email,
+        success_url: `${config.baseUrl}/a/${auditId}/full?paid=1`,
+        cancel_url: `${config.baseUrl}/a/${auditId}/full`,
+      });
+      const session = await call("/checkout/sessions", form);
+      return { id: String(session.id ?? ""), url: String(session.url ?? "") };
+    },
+
+    async listSubscriptions() {
+      const out: StripeSubscription[] = [];
+      let startingAfter: string | undefined;
+      // Paged, because a reconciler that silently reads the first hundred rows
+      // would revoke everyone after the hundredth.
+      do {
+        const query = new URLSearchParams({ limit: "100", status: "all" });
+        if (startingAfter) query.set("starting_after", startingAfter);
+        const page = await call(`/subscriptions?${query}`);
+        const data = (page.data as Record<string, unknown>[] | undefined) ?? [];
+        for (const object of data) out.push(readSubscription(object));
+        startingAfter = page.has_more === true && data.length > 0 ? String(data[data.length - 1]!.id) : undefined;
+      } while (startingAfter);
+      return out;
+    },
+  };
+}

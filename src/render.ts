@@ -399,6 +399,19 @@ export interface PublishInput {
          * ways costs them a click and their trust.
          */
         checkoutLive: false;
+        /** They came back from Stripe and the webhook has not landed yet. */
+        justPaid?: boolean;
+      }
+    | {
+        subscribed: false;
+        talkTo: string;
+        /** Stripe is configured, so the button goes somewhere. */
+        checkoutLive: true;
+        /** Where the subscribe form POSTs. */
+        action: string;
+        /** Session-bound CSRF token — this route reads `ul_full`, so it needs one. */
+        csrf: string;
+        justPaid?: boolean;
       }
     | {
         subscribed: true;
@@ -518,14 +531,48 @@ function offerBlock(offer: PublishInput["offer"]): string {
         <a href="mailto:${escapeHtml(offer.talkTo)}">Email us</a>.</p>`;
 
   if (!offer.subscribed) {
-    return `<div class="offer">
-      <h2>Keep watching this page</h2>
+    const pitch = `<h2>Keep watching this page</h2>
       <p>$${PRICE_USD} a month. Ask for a re-audit whenever you have changed something and
          we capture the page again, compare it to this one, and tell you what moved &mdash;
          &ldquo;3 fixed, 1 new&rdquo; &mdash; rather than handing you a fresh report to
-         re-read. Up to ${SITE_LIMIT} sites and ${AUDITS_PER_MONTH} re-audits a month.</p>
+         re-read. Up to ${SITE_LIMIT} sites and ${AUDITS_PER_MONTH} re-audits a month.</p>`;
+
+    /**
+     * Back from Stripe, before the webhook landed.
+     *
+     * The gap is real — Stripe redirects the customer immediately and delivers
+     * the event separately — and it is measured in seconds, not minutes. Showing
+     * the subscribe pitch again to somebody who has just paid is the single
+     * worst thing this page could do, so the paid case is checked before
+     * anything else and says plainly that the payment arrived and access
+     * follows.
+     */
+    if (offer.justPaid) {
+      return `<div class="offer">
+      <h2>Payment received</h2>
+      <p class="offer-note">Thank you. Access is switched on by a message from Stripe that
+         usually arrives within a few seconds &mdash; reload this page and the re-audit
+         button will be here. If it is not, email us and we will sort it out the same day.</p>
+      ${talk}
+    </div>`;
+    }
+
+    if (!offer.checkoutLive) {
+      return `<div class="offer">
+      ${pitch}
       <p class="offer-note">Checkout is not connected yet, so there is nothing to click here.
          That is our missing piece, not yours.</p>
+      ${talk}
+    </div>`;
+    }
+
+    return `<div class="offer">
+      ${pitch}
+      <form method="post" action="${escapeHtml(offer.action)}">
+        <input type="hidden" name="csrf" value="${escapeHtml(offer.csrf)}">
+        <button type="submit">Subscribe &mdash; $${PRICE_USD} a month</button>
+      </form>
+      <p class="offer-fine">Card details go to Stripe and never touch us. Cancel any time.</p>
       ${talk}
     </div>`;
   }
