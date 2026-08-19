@@ -25,7 +25,8 @@
     "correct": "node --import tsx src/correct.ts",
     "serve": "node --env-file-if-exists=.env --import tsx src/server.ts",
     "subscribe": "node --import tsx src/subscribe.ts",
-    "reconcile": "node --env-file-if-exists=.env --import tsx src/reconcile.ts"
+    "reconcile": "node --env-file-if-exists=.env --import tsx src/reconcile.ts",
+    "stripe:check": "node --env-file-if-exists=.env --import tsx src/stripe-check.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

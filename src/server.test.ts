@@ -15,7 +15,7 @@ import {
 } from "./db.js";
 import { QUESTIONS } from "./profile.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches, TOKEN_TTL_MS } from "./tokens.js";
-import { signWebhook } from "./stripe.js";
+import { signWebhook, STRIPE_API_VERSION } from "./stripe.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { AUDITS_PER_MONTH } from "./fairuse.js";
 
@@ -1148,7 +1148,7 @@ describe("Stripe, when it is configured", () => {
   let stripeStub: import("node:http").Server;
   let paidChild: ChildProcess;
   /** Every request the stub was sent, so the tests can read what we asked for. */
-  const seen: { path: string; auth: string; body: string }[] = [];
+  const seen: { path: string; auth: string; version: string; body: string }[] = [];
 
   before(async () => {
     seed(PAID, 5, true);
@@ -1159,7 +1159,12 @@ describe("Stripe, when it is configured", () => {
       req.on("data", (c) => chunks.push(c as Buffer));
       req.on("end", () => {
         const body = Buffer.concat(chunks).toString("utf8");
-        seen.push({ path: req.url ?? "", auth: String(req.headers.authorization ?? ""), body });
+        seen.push({
+          path: req.url ?? "",
+          auth: String(req.headers.authorization ?? ""),
+          version: String(req.headers["stripe-version"] ?? ""),
+          body,
+        });
         res.writeHead(200, { "content-type": "application/json" });
         if ((req.url ?? "").startsWith("/checkout/sessions")) {
           res.end(JSON.stringify({ id: "cs_test_1", url: "https://checkout.stripe.test/pay/cs_test_1" }));
@@ -1276,6 +1281,9 @@ describe("Stripe, when it is configured", () => {
     const call = seen[seen.length - 1]!;
     assert.match(call.path, /^\/checkout\/sessions/);
     assert.equal(call.auth, "Bearer sk_test_only");
+    // Pinned, so the field names verified against that version's docs are the
+    // field names Stripe applies — see STRIPE_API_VERSION.
+    assert.equal(call.version, STRIPE_API_VERSION);
     const form = new URLSearchParams(call.body);
     assert.equal(form.get("mode"), "subscription");
     assert.equal(form.get("line_items[0][price]"), "price_test_only");

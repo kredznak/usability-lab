@@ -8,7 +8,10 @@ import {
   stripeConfig,
   readSubscription,
   WEBHOOK_TOLERANCE_MS,
+  type StripeClient,
+  type StripePrice,
 } from "./stripe.js";
+import { preflight, type Check } from "./stripe-check.js";
 
 /**
  * The webhook verifier, which is the most dangerous function in the repo.
@@ -207,6 +210,37 @@ describe("reading a subscription off the wire", () => {
     assert.equal(sub.currentPeriodEnd, new Date(1789000000 * 1000).toISOString());
   });
 
+  test("the earliest item's period end wins when there are several", () => {
+    /**
+     * Stripe's list filter is documented as matching "the minimum item
+     * current_period_end", so the earliest is what Stripe means by the
+     * subscription's period. Taking `items[0]` would be right by accident on a
+     * one-line plan and wrong the day it gains a second.
+     */
+    const sub = readSubscription({
+      id: "sub_9",
+      status: "active",
+      items: {
+        data: [
+          { current_period_end: 1789600000 },
+          { current_period_end: 1789000000 },
+          { current_period_end: 1789300000 },
+        ],
+      },
+    });
+    assert.equal(sub.currentPeriodEnd, new Date(1789000000 * 1000).toISOString());
+  });
+
+  test("a top-level period end still wins, for accounts pinned to an older version", () => {
+    // Webhooks are shaped by the account's API version, not by ours — see
+    // STRIPE_API_VERSION. An older account still sends it at the top level.
+    const sub = readSubscription({
+      current_period_end: 1780000000,
+      items: { data: [{ current_period_end: 1789000000 }] },
+    });
+    assert.equal(sub.currentPeriodEnd, new Date(1780000000 * 1000).toISOString());
+  });
+
   test("the period end is also read off the first item", () => {
     /**
      * Stripe moved `current_period_end` down onto subscription items in recent
@@ -233,5 +267,97 @@ describe("reading a subscription off the wire", () => {
   test("a period end that is not a number is null, not a date in 1970", () => {
     assert.equal(readSubscription({ current_period_end: "soon" }).currentPeriodEnd, null);
     assert.equal(readSubscription({ current_period_end: null }).currentPeriodEnd, null);
+  });
+});
+
+describe("the preflight — B21's early warning", () => {
+  const CONFIG = {
+    secretKey: "sk_test_x",
+    priceId: "price_x",
+    webhookSecret: "whsec_x",
+    baseUrl: "https://lab.example",
+    apiBase: "https://api.stripe.com/v1",
+  };
+
+  const price = (over: Partial<StripePrice> = {}): StripePrice => ({
+    id: "price_x",
+    active: true,
+    type: "recurring",
+    interval: "month",
+    unitAmount: 2900,
+    currency: "usd",
+    ...over,
+  });
+
+  function client(over: Partial<StripeClient> = {}): StripeClient {
+    return {
+      createCheckoutSession: async () => ({ id: "cs_1", url: "https://x" }),
+      listSubscriptions: async () => [],
+      retrievePrice: async () => price(),
+      ...over,
+    };
+  }
+
+  const find = (checks: Check[], name: string) => checks.find((c) => c.name === name)!;
+
+  test("a well-configured account has nothing blocking", async () => {
+    const checks = await preflight(CONFIG, client());
+    assert.deepEqual(checks.filter((c) => !c.ok && !c.warn), []);
+  });
+
+  test("a one-off price is the failure nothing else would notice", async () => {
+    /**
+     * The whole reason this command exists. A one-time price sells a single
+     * charge: the button works, the customer pays, and the renewal that access
+     * hangs on never comes.
+     */
+    const checks = await preflight(CONFIG, client({ retrievePrice: async () => price({ type: "one_time", interval: null }) }));
+    const check = find(checks, "price is recurring");
+    assert.equal(check.ok, false);
+    assert.equal(check.warn, undefined, "this must block, not warn");
+  });
+
+  test("an archived price blocks", async () => {
+    const checks = await preflight(CONFIG, client({ retrievePrice: async () => price({ active: false }) }));
+    assert.equal(find(checks, "price is active").ok, false);
+  });
+
+  test("a key that does not authenticate stops the run rather than guessing", async () => {
+    const checks = await preflight(CONFIG, client({
+      retrievePrice: async () => { throw new Error("stripe 401: Invalid API Key"); },
+    }));
+    assert.equal(find(checks, "price").ok, false);
+    assert.match(find(checks, "price").detail, /401/);
+    // Nothing after it is reported, because nothing after it was learned.
+    assert.equal(checks.some((c) => c.name === "price is recurring"), false);
+  });
+
+  test("a live key aimed at localhost warns loudly", async () => {
+    const checks = await preflight(
+      { ...CONFIG, secretKey: "sk_live_x", baseUrl: "http://localhost:4000" },
+      client(),
+    );
+    const mode = find(checks, "key mode");
+    assert.equal(mode.ok, false);
+    assert.match(mode.detail, /LIVE key/);
+  });
+
+  test("a live key on a real domain is fine", async () => {
+    const checks = await preflight({ ...CONFIG, secretKey: "sk_live_x" }, client());
+    assert.equal(find(checks, "key mode").ok, true);
+  });
+
+  test("a webhook secret that is not one is caught before any delivery fails", async () => {
+    const checks = await preflight({ ...CONFIG, webhookSecret: "sk_test_oops" }, client());
+    assert.equal(find(checks, "webhook secret").ok, false);
+  });
+
+  test("a price that disagrees with the page warns but does not block", async () => {
+    // Both numbers are real; only a person can say which is right.
+    const checks = await preflight(CONFIG, client({ retrievePrice: async () => price({ unitAmount: 4900 }) }));
+    const check = find(checks, "price matches the page");
+    assert.equal(check.ok, false);
+    assert.equal(check.warn, true);
+    assert.deepEqual(checks.filter((c) => !c.ok && !c.warn), [], "a price mismatch must not block");
   });
 });

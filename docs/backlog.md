@@ -676,34 +676,61 @@ leaving the spend untestable — which is the honest split. Small.
 
 ## B21. Two Stripe calls have never been sent to Stripe
 
-**What.** `createCheckoutSession` and `listSubscriptions` in `src/stripe.ts` are
-written from Stripe's documentation. Their **request shape** is tested — the
-endpoint, the form encoding, the `Authorization` header, the `metadata[ul_email]`
-field the whole authorization model hangs on — against a stub in
-`server.test.ts`. What has never happened is Stripe receiving one.
+**Status 2026-08-18: the guessing is gone; the sending has not happened.**
 
-**What could be wrong.** Field names and response shapes, and nothing here can
-tell. Three specific risks:
+### What was verified against Stripe's live documentation
 
-1. **`current_period_end`.** Stripe moved it from the subscription onto
-   subscription *items* in recent API versions. `readSubscription` reads both,
-   because guessing wrong means every subscriber's access expires immediately —
-   `isActive` hangs on exactly that date.
-2. **`subscription_data[metadata][ul_email]`.** If this key is wrong, the
-   metadata never reaches the subscription object, and every
-   `customer.subscription.*` webhook arrives unattributable. The customer pays
-   and is never granted access. `checkout.session.completed` would still carry
-   `metadata[ul_email]`, so the failure is silent and one-sided.
-3. **No API version is pinned.** Requests use whatever version the account
-   defaults to. Pinning a version I cannot test against would be worse — it
-   would break on a guess rather than drift on a default.
+Every field name in `src/stripe.ts` was checked against docs.stripe.com on
+2026-08-18 rather than against my recall. All confirmed as written:
 
-**How to close it.** Add test keys, `stripe listen --forward-to
-localhost:4000/stripe/webhook`, and run one real subscription end to end. Half
-an hour with an account; impossible without one.
+- **Checkout session create** — `mode`, `line_items[0][price]`,
+  `line_items[0][quantity]`, `customer_email`, `client_reference_id`,
+  `metadata`, `success_url`, `cancel_url`, and the `id`/`url` in the response.
+- **`subscription_data.metadata`** exists and is a map. This was the highest
+  risk in the file: if that key were wrong the metadata would never reach the
+  subscription, every `customer.subscription.*` webhook would arrive
+  unattributable, and **the customer would pay and never be granted access** —
+  silently, and only in one direction, since the checkout session would still
+  carry its own copy.
+- **Subscriptions list** — `limit` (1–100), `starting_after`, and `status=all`,
+  which is documented as returning subscriptions of every status.
+- **The status enum** is exactly the eight `mapStatus` handles.
 
-**Until then:** the page says "Checkout is not connected yet" whenever any of
-the three env vars is missing, which is the honest state and today's state.
+### Three things it changed
+
+1. **`current_period_end` is not a top-level field.** The Subscription object's
+   attribute list does not contain it; it appears only inside
+   `items.data[].current_period_end`. The defensive fallback written blind
+   turned out to be reading the *current* location as its second choice. Both
+   are still read, because a webhook is shaped by the account's API version
+   rather than ours and an older account still sends it at the top level.
+2. **The earliest item wins, not the first.** Stripe's own list filter is
+   documented as matching "the minimum item `current_period_end`". `items[0]`
+   was right by accident on a one-line plan.
+3. **The API version is now pinned** to `2026-07-29.dahlia`, confirmed as
+   current. Pinned rather than omitted because the field names above were
+   verified against *that* version's docs — sending anything else means the docs
+   I checked are not the docs that apply. It does **not** cover webhooks, whose
+   shape follows the account's or the endpoint's version.
+
+### What now catches the silent failures
+
+`npm run stripe:check` — one cheap call, then arithmetic. It blocks on a
+non-recurring price (sells one charge, never renews, nothing else would notice),
+an archived price, a webhook secret that is not one, and a live key aimed at
+localhost. It warns on Stripe's amount disagreeing with the `$29` on the results
+page, because both numbers are real and only a person can say which is right.
+Tested against a stub, including the case where the key does not authenticate at
+all.
+
+### What is still open
+
+**No request has been sent to Stripe.** `stripe:check` proves a key and a price;
+it does not prove a payment. `docs/stripe-runbook.md` is the half hour that
+closes this: make the price, run `stripe listen`, buy one subscription with
+`4242 4242 4242 4242`, watch the row appear, cancel it, reconcile.
+
+**Do not mark this done from a passing `stripe:check`** — that is the easy half.
 
 ---
 

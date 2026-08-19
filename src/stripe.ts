@@ -35,6 +35,24 @@
 import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
 import type { SubscriptionStatus } from "./db.js";
 
+/**
+ * The API version every outbound request is pinned to — B21, 2026-08-18.
+ *
+ * Confirmed from https://docs.stripe.com/api/versioning ("The current version is
+ * 2026-07-29.dahlia"), and pinned rather than omitted for one reason: **every
+ * field name in this file was verified against that version's documentation**,
+ * so sending anything else means the docs I checked are not the docs that apply.
+ * Without the header, requests use whatever default is set in someone's
+ * dashboard, which is a dependency on a setting nobody here can see.
+ *
+ * **This does not cover webhooks.** The same page: "Webhook events also use your
+ * account's API version by default, unless you set an API version during
+ * endpoint creation." So an incoming event can be shaped by an older version
+ * than this, which is exactly why `readSubscription` reads both the old and the
+ * new home of `current_period_end` rather than trusting one.
+ */
+export const STRIPE_API_VERSION = "2026-07-29.dahlia";
+
 
 /** Everything Stripe needs from the environment. All or nothing — see below. */
 export interface StripeConfig {
@@ -100,9 +118,21 @@ export interface StripeSubscription {
   email: string | null;
 }
 
+export interface StripePrice {
+  id: string;
+  active: boolean;
+  /** `recurring` or `one_time`. A one-time price sells one charge and never renews. */
+  type: string;
+  interval: string | null;
+  unitAmount: number | null;
+  currency: string;
+}
+
 export interface StripeClient {
   createCheckoutSession(input: { email: string; auditId: string }): Promise<CheckoutSession>;
   listSubscriptions(): Promise<StripeSubscription[]>;
+  /** For the preflight — the cheapest call that proves the key works. */
+  retrievePrice(priceId: string): Promise<StripePrice>;
 }
 
 /**
@@ -236,21 +266,38 @@ function isoFrom(seconds: unknown): string | null {
 /**
  * A Stripe subscription object, narrowed to the four fields we store.
  *
- * `current_period_end` is read from the subscription and then from its first
- * item, because Stripe has moved that field down onto items in recent API
- * versions and this repo cannot check which version an account is pinned to.
- * Reading both is four lines; guessing wrong means every subscriber's access
- * expires immediately, since `isActive` hangs on exactly that date.
+ * ## Where `current_period_end` actually lives
+ *
+ * **Not on the subscription.** Checked against Stripe's current documentation
+ * on 2026-08-18: the Subscription object's attribute list has no
+ * `current_period_end`, and the example payload carries it only inside
+ * `items.data[].current_period_end`. It was a top-level field in older API
+ * versions, and a webhook shaped by an account pinned to one of those will
+ * still send it there — so both are read, in that order, and neither is a
+ * guess. Getting this wrong means every subscriber's access expires
+ * immediately, because `isActive` hangs on exactly this date.
+ *
+ * ## Why the *earliest* item and not the first
+ *
+ * A subscription can hold several items with different periods. Stripe's own
+ * list filter is documented as matching "the minimum item current_period_end",
+ * so the earliest is what Stripe means by the subscription's period end. Ours
+ * has one item and the two agree; taking `[0]` would have been right by
+ * accident and wrong the day a plan gains a second line.
  */
 export function readSubscription(object: Record<string, unknown>): StripeSubscription {
-  const items = (object.items as { data?: Record<string, unknown>[] } | undefined)?.data;
+  const items = (object.items as { data?: Record<string, unknown>[] } | undefined)?.data ?? [];
   const metadata = (object.metadata as Record<string, string> | undefined) ?? {};
+  const itemEnds = items
+    .map((i) => i.current_period_end)
+    .filter((n): n is number => typeof n === "number" && Number.isFinite(n));
   return {
     id: String(object.id ?? ""),
     customerId: typeof object.customer === "string" ? object.customer : "",
     status: String(object.status ?? ""),
     currentPeriodEnd:
-      isoFrom(object.current_period_end) ?? isoFrom(items?.[0]?.current_period_end) ?? null,
+      isoFrom(object.current_period_end) ??
+      (itemEnds.length > 0 ? isoFrom(Math.min(...itemEnds)) : null),
     email: metadata.ul_email ?? null,
   };
 }
@@ -262,6 +309,7 @@ export function liveStripe(config: StripeConfig): StripeClient {
   async function call(pathAndQuery: string, body?: URLSearchParams): Promise<Record<string, unknown>> {
     const headers: Record<string, string> = {
       authorization: `Bearer ${config.secretKey}`,
+      "stripe-version": STRIPE_API_VERSION,
     };
     if (body) {
       headers["content-type"] = "application/x-www-form-urlencoded";
@@ -307,6 +355,19 @@ export function liveStripe(config: StripeConfig): StripeClient {
       });
       const session = await call("/checkout/sessions", form);
       return { id: String(session.id ?? ""), url: String(session.url ?? "") };
+    },
+
+    async retrievePrice(priceId) {
+      const price = await call(`/prices/${encodeURIComponent(priceId)}`);
+      const recurring = price.recurring as { interval?: string } | null | undefined;
+      return {
+        id: String(price.id ?? ""),
+        active: price.active === true,
+        type: String(price.type ?? ""),
+        interval: recurring?.interval ?? null,
+        unitAmount: typeof price.unit_amount === "number" ? price.unit_amount : null,
+        currency: String(price.currency ?? ""),
+      };
     },
 
     async listSubscriptions() {
