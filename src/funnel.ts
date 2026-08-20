@@ -18,11 +18,16 @@ import { OUT_ROOT } from "./paths.js";
  * zero: a zero in a funnel means people arrived and did not convert, which
  * would be a lie about a stage that does not exist.
  *
- * The first two stages count **visits, not audits**, and are printed apart from
- * the rest for that reason. Somebody who opens the form and leaves has produced
- * no audit to be a distinct count of, so folding them into the block below —
- * where every row is "how many audits reached here" — would put two different
- * units in one column.
+ * The first three stages count **visits, not audits**, and are printed apart
+ * from the rest for that reason. Somebody who opens the form and leaves has
+ * produced no audit to be a distinct count of, so folding them into the block
+ * below — where every row is "how many audits reached here" — would put two
+ * different units in one column.
+ *
+ * `homepage viewed` and `form opened` are separate rows because on 2026-08-20
+ * they stopped being the same thing: `/` became a marketing page and the
+ * questions moved to `/start`. One event covering both would have made the gap
+ * between this block and the next read as a whole-site conversion rate.
  *
  * The re-audit stage that follows it is the thing a subscription buys, and it
  * *is* live — which is why the funnel currently shows a conversion nobody can
@@ -147,6 +152,21 @@ export function funnelStages(
   return { stages, outside: outside.size };
 }
 
+/**
+ * How many of each event type the log holds.
+ *
+ * Four lines, and it is exported rather than left inline because `main()` is a
+ * top-level script with no tests — which is exactly how the corpus arithmetic
+ * in `outcome.ts` printed a filter that excluded nothing for days. The rows this
+ * feeds are the ones whose *meaning* moved when the homepage was rebuilt, so
+ * they are the rows most worth being able to assert on.
+ */
+export function countsByType(events: { type: string }[]): Map<string, number> {
+  const byType = new Map<string, number>();
+  for (const e of events) byType.set(e.type, (byType.get(e.type) ?? 0) + 1);
+  return byType;
+}
+
 const secs = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
 
 /** The one stage that sits below `subscribed NOT BUILT` in the printout. */
@@ -158,8 +178,7 @@ function main(): void {
   const all = events.all();
   const rows = audits.list();
 
-  const byType = new Map<string, number>();
-  for (const e of all) byType.set(e.type, (byType.get(e.type) ?? 0) + 1);
+  const byType = countsByType(all);
 
   const byStatus = new Map<string, number>();
   for (const r of rows) byStatus.set(r.status, (byStatus.get(r.status) ?? 0) + 1);
@@ -203,15 +222,24 @@ function main(): void {
         `  run before this existed are absent — not a quiet week.\n`
       : ``,
     /**
-     * §8's first two stages, and they are counted differently on purpose.
+     * §8's first stages, and they are counted differently on purpose.
      *
-     * A visitor who opens the form and leaves produces no audit, so these two
+     * A visitor who opens the form and leaves produces no audit, so these
      * cannot be a percentage of anything below them and cannot be counted as
      * distinct audits the way every stage under them is. They are visits.
      * Printing them inside the same block, with the same shape, would make
      * "form opened 40" read as forty audits.
+     *
+     * **`form opened` is `/start`, not `/`.** It was `/` until 2026-08-20, when
+     * the homepage stopped being the form. The event kept its name because it
+     * kept its meaning, so rows from before the redesign are still comparable to
+     * rows from after it — but had it stayed on `/`, this row would have counted
+     * homepage views under a label that says otherwise, and the gap to the row
+     * below would have turned from the form's completion rate into a whole-site
+     * conversion rate without the number ever looking wrong.
      */
     ...[
+      `  homepage viewed        ${String(byType.get("home.viewed") ?? 0).padStart(4)}   visits, not audits`,
       `  form opened            ${String(byType.get("question.started") ?? 0).padStart(4)}   visits, not audits`,
       `  questions answered     ${String(byType.get("question.completed") ?? 0).padStart(4)}   requests queued`,
       turnedAway > 0

@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import Database from "better-sqlite3";
 import { EventLog } from "./db.js";
-import { funnelStages, percentile, stepStats } from "./funnel.js";
+import { countsByType, funnelStages, percentile, stepStats } from "./funnel.js";
 
 /**
  * §0's last unbuilt clause: "every step's events visible in the funnel
@@ -157,5 +157,53 @@ describe("funnel stages count audits that got somewhere", () => {
     const { stages } = funnelStages([]);
     assert.equal(stages[0]!.n, 0);
     for (const s of stages.slice(1)) assert.equal(s.pct, null);
+  });
+});
+
+/**
+ * The two rows above the audit funnel, and why they had to be split.
+ *
+ * `funnel.ts` prints `question.started` as **"form opened"**, which was true for
+ * as long as `/` was the form. On 2026-08-20 `/` became a marketing page and the
+ * questions moved to `/start`. Had the event stayed on `/`, that row would have
+ * counted homepage views under a label saying otherwise, and the ratio between
+ * it and "questions answered" — the form's completion rate, the one number this
+ * block exists to show — would silently have become a whole-site conversion
+ * rate. Printed to the same precision as before, and wrong.
+ *
+ * That is the shape of the 85%-uncited bug: an honest-looking figure computed
+ * over a population that changed underneath it.
+ *
+ * So `/start` kept the name, because it kept the meaning, and `/` got a new one.
+ * Keeping the name is what lets rows recorded before the redesign stay
+ * comparable to rows recorded after it.
+ */
+describe("a homepage view and a form open are counted apart", () => {
+  test("each event lands under its own label", () => {
+    const counts = countsByType([
+      { type: "home.viewed" },
+      { type: "home.viewed" },
+      { type: "home.viewed" },
+      { type: "question.started" },
+      { type: "question.completed" },
+    ]);
+    assert.equal(counts.get("home.viewed"), 3, "three people saw the homepage");
+    assert.equal(counts.get("question.started"), 1, "one of them opened the form");
+    assert.equal(counts.get("question.completed"), 1);
+  });
+
+  test("a homepage view does not count as a form open", () => {
+    // The regression this whole split exists to prevent. If somebody later
+    // records `question.started` on `/` again for convenience, the count moves
+    // and this fails.
+    const counts = countsByType([{ type: "home.viewed" }, { type: "home.viewed" }]);
+    assert.equal(counts.get("question.started"), undefined);
+  });
+
+  test("a type nobody recorded is absent, not zero", () => {
+    // The distinction the `subscribed NOT BUILT` line already depends on: a zero
+    // means people arrived and did not convert, which is a claim about a stage
+    // that may not exist.
+    assert.equal(countsByType([]).get("home.viewed"), undefined);
   });
 });
