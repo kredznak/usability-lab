@@ -271,6 +271,47 @@ Inter is SIL Open Font License 1.1; **the license file ships alongside the font.
 Stack: `Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
 sans-serif`.
 
+### 6.3 Content-Security-Policy — the blocker, and the seam
+
+`send()` sets one policy on **every** response (`server.ts:150`):
+
+```
+default-src 'none'; img-src 'self'; style-src 'unsafe-inline'
+```
+
+`default-src 'none'` denies scripts and fonts. **As written, the stepper would
+not run and the webfont would not load.** Found while planning, not while
+debugging.
+
+That policy stays exactly as it is on audit pages, and the reason is in the
+comment above it: audit pages quote content captured from a stranger's site, so
+`script-src` denied is what stops an injected `<script>` — quoted into a finding
+— from executing in a customer's browser. It is a real control against a real
+threat model, and it is not being loosened.
+
+**The seam:** `send()` takes an optional CSP argument that **defaults to the
+strict policy**. Marketing routes pass a wider one; every other call site,
+present and future, stays strict without doing anything. Safe by default, opt in
+to more.
+
+The marketing policy is:
+
+```
+default-src 'none'; img-src 'self'; style-src 'unsafe-inline';
+font-src 'self'; script-src 'sha256-<digest of the stepper>'
+```
+
+**A hash, not `'unsafe-inline'`, and not a nonce.** `'unsafe-inline'` would give
+back everything the header exists to prevent. A nonce would work but needs fresh
+randomness per response. The stepper is a fixed string we own, so its SHA-256 is
+computed once at module load from the script itself — which means the policy
+cannot drift out of sync with the code it authorises, because changing one
+changes the other.
+
+**The policy is currently untested.** `grep` finds exactly one occurrence in the
+repo: the line that sets it. Nothing would notice it being weakened. This work
+adds that test.
+
 ---
 
 ## 7. The funnel change
@@ -398,7 +439,8 @@ rendered from a stranger's text.
 | `/request` error re-renders `/start` with values echoed | No retyping five answers |
 | `/s/inter.woff2` serves; `/s/../secret` and unknown names 404 | §6.1 |
 | Source counts and price figures are derived, not literals | §5.3 and §5.5 — the two places a stale number would embarrass us |
-| Snapshot check still passes | Existing 7 request snapshots |
+| Audit pages still send `default-src 'none'` with no `script-src` | §6.3. The control is untested today; this is the test that stops it being loosened by accident. |
+| Marketing pages send the wider policy, and the script hash matches the script | §6.3 |
 
 **Every new test gets watched failing with its fix reverted before it counts as
 evidence.** Standing rule; 134 green tests once missed four capture bugs.

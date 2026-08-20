@@ -1,0 +1,176 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .q {
+    --paper:#FBFAF8; --bone:#F2EFE9; --plaster:#EAE5DC; --sand:#DDD6C9;
+    --shade:#C9C0B2; --ink:#26221E; --ink-soft:#6E665C;
+    font-family:Inter, sans-serif; color:var(--ink); background:var(--paper);
+    border-radius:22px; overflow:hidden; position:relative; min-height:520px;
+    box-shadow:0 1px 2px rgba(38,34,30,.04), 0 12px 40px -12px rgba(38,34,30,.10);
+  }
+  .q * { box-sizing:border-box; }
+
+  /* the same drifting forms, dialled right down so they don't compete with a form */
+  .qforms { position:absolute; inset:-20%; z-index:0; filter:blur(70px); opacity:.55; }
+  .qblob { position:absolute; border-radius:50%; mix-blend-mode:multiply; }
+  .qb1 { width:52%; aspect-ratio:1.3; left:-6%; top:34%; background:radial-gradient(circle at 40% 40%, var(--plaster), transparent 68%); animation:qd1 32s ease-in-out infinite; }
+  .qb2 { width:44%; aspect-ratio:1.1; left:62%; top:-8%; background:radial-gradient(circle at 50% 50%, var(--sand), transparent 66%); animation:qd2 38s ease-in-out infinite; }
+  @keyframes qd1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(8%,-5%) scale(1.1)} }
+  @keyframes qd2 { 0%,100%{transform:translate(0,0) scale(1.05)} 50%{transform:translate(-6%,7%) scale(.95)} }
+  @media (prefers-reduced-motion: reduce) { .qblob { animation:none !important; } }
+
+  .qbar { position:relative; z-index:2; display:flex; align-items:center; gap:16px; padding:26px 34px; }
+  .qmark { font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  .qcount { margin-left:auto; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+
+  .track { position:relative; z-index:2; display:flex; gap:6px; padding:0 34px 0; }
+  .seg { flex:1; height:2px; border-radius:2px; background:var(--plaster); transition:background .45s ease; }
+  .seg.done { background:var(--ink); }
+
+  .qbody { position:relative; z-index:2; max-width:560px; margin:0 auto; padding:64px 34px 34px; }
+  .qbody h3 { font-size:34px; line-height:1.2; font-weight:300; letter-spacing:-.02em; margin:0 0 10px; }
+  .qhelp { font-size:14px; color:var(--ink-soft); margin:0 0 30px; line-height:1.65; }
+
+  .field { width:100%; font:300 19px Inter, sans-serif; color:var(--ink);
+           background:transparent; border:0; border-bottom:1px solid var(--shade);
+           padding:12px 2px; outline:none; resize:none; transition:border-color .25s ease; }
+  .field::placeholder { color:var(--shade); }
+  .field:focus { border-bottom-color:var(--ink); }
+
+  .qnav { display:flex; align-items:center; gap:14px; margin-top:38px; }
+  .btn-next { font:500 15px Inter, sans-serif; background:var(--ink); color:var(--paper);
+              border:0; padding:14px 32px; border-radius:100px; cursor:pointer; letter-spacing:-.01em; }
+  .btn-back { font:400 14px Inter, sans-serif; background:transparent; color:var(--ink-soft);
+              border:0; cursor:pointer; padding:14px 4px; }
+  .btn-skip { margin-left:auto; font:400 13px Inter, sans-serif; background:transparent;
+              color:var(--ink-soft); border:0; cursor:pointer; text-decoration:underline;
+              text-decoration-color:var(--shade); text-underline-offset:4px; padding:14px 2px; }
+  .btn-back[hidden], .btn-skip[hidden] { display:none; }
+
+  .req { font-size:12px; color:var(--ink-soft); margin:14px 0 0; }
+
+  /* --- the no-JS fallback, shown as a static comparison --- */
+  .fallback { background:var(--paper); border-radius:22px; padding:34px; margin-top:16px;
+              box-shadow:0 1px 2px rgba(38,34,30,.04), 0 12px 40px -12px rgba(38,34,30,.10); }
+  .fallback h4 { font:300 26px Inter, sans-serif; margin:0 0 6px; letter-spacing:-.02em; }
+  .fallback .fl { display:block; font-size:13px; color:var(--ink-soft); margin:22px 0 2px; }
+  .fallback .ff { width:100%; font:300 16px Inter, sans-serif; background:transparent;
+                  border:0; border-bottom:1px solid var(--shade); padding:9px 2px; color:var(--shade); }
+  .note { color:#6E665C; font-size:13px; line-height:1.7; }
+  .lede { font-size:15px; }
+</style>
+
+<h2>The questions page — click through it</h2>
+<p class="subtitle">This is live, not a screenshot. Press <b>Next</b>, <b>Back</b>, and <b>Skip</b>. Six steps: the URL, then your five questions. The whole stepper is the ~30 lines at the bottom of this page.</p>
+
+<div class="q">
+  <div class="qforms"><div class="qblob qb1"></div><div class="qblob qb2"></div></div>
+
+  <div class="qbar">
+    <span class="qmark">The Usability Lab</span>
+    <span class="qcount" id="qcount">Step 1 of 6</span>
+  </div>
+  <div class="track" id="track"></div>
+
+  <div class="qbody">
+    <h3 id="qtitle">What page should we look at?</h3>
+    <p class="qhelp" id="qhelp">One page, not a whole site. We stop at any login wall.</p>
+
+    <input class="field" id="qfield" placeholder="https://yoursite.com/">
+
+    <div class="qnav">
+      <button class="btn-next" id="next">Continue</button>
+      <button class="btn-back" id="back" hidden>Back</button>
+      <button class="btn-skip" id="skip" hidden>Skip this one</button>
+    </div>
+    <p class="req" id="req">The only thing we actually need.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var STEPS = [
+    { t:"What page should we look at?",        h:"One page, not a whole site. We stop at any login wall.", p:"https://yoursite.com/", req:true,  note:"The only thing we actually need." },
+    { t:"What kind of site is it?",            h:"A shop, a product, a marketing page, something you write on — whatever fits.", p:"" },
+    { t:"What’s your biggest concern right now?", h:"Lead with the thing that actually bothers you. It decides which reviewers we put on the page.", p:"" },
+    { t:"What should a visitor do on your site?", h:"The one action that matters most.", p:"" },
+    { t:"Where do they seem to drop off?",     h:"If you know. A guess is fine, and so is not knowing.", p:"" },
+    { t:"Anything else we should know?",       h:"Constraints, history, a redesign you’re mid-way through.", p:"" }
+  ];
+  var i = 0, answers = new Array(STEPS.length).fill("");
+  var $ = function (id) { return document.getElementById(id); };
+  var track = $("track");
+  STEPS.forEach(function () { var d = document.createElement("div"); d.className = "seg"; track.appendChild(d); });
+
+  function draw() {
+    var s = STEPS[i];
+    $("qtitle").textContent = s.t;
+    $("qhelp").textContent  = s.h;
+    $("qfield").placeholder = s.p || "Type your answer…";
+    $("qfield").value       = answers[i];
+    $("qcount").textContent = "Step " + (i + 1) + " of " + STEPS.length;
+    $("back").hidden        = i === 0;
+    $("skip").hidden        = !!s.req;
+    $("next").textContent   = i === STEPS.length - 1 ? "Ask for the audit" : "Continue";
+    $("req").textContent    = s.note || "Optional — skipping is a real answer.";
+    Array.prototype.forEach.call(track.children, function (seg, n) {
+      seg.className = "seg" + (n <= i ? " done" : "");
+    });
+    $("qfield").focus();
+  }
+  function go(n) { answers[i] = $("qfield").value; i = Math.max(0, Math.min(STEPS.length - 1, n)); draw(); }
+
+  $("next").onclick = function () {
+    if (i === STEPS.length - 1) { alert("This is where it POSTs to /request — one submit, all six values, exactly the handler that exists today."); return; }
+    go(i + 1);
+  };
+  $("back").onclick = function () { go(i - 1); };
+  $("skip").onclick = function () { $("qfield").value = ""; go(i + 1); };
+  $("qfield").addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("next").click(); } });
+  draw();
+})();
+</script>
+
+<h3>With JavaScript off, it's this</h3>
+<p class="note lede">Not a degraded second implementation — <b>the same markup</b>. All six fields are in the HTML from the start; the stepper only hides five of them. Turn JS off and they all just show, which is today's form with today's handler behind it.</p>
+
+<div class="q fallback">
+  <h4>Tell us about one page</h4>
+  <span class="fl">The page you want looked at</span><input class="ff" placeholder="https://yoursite.com/" disabled>
+  <span class="fl">What kind of site is it?</span><input class="ff" placeholder="" disabled>
+  <span class="fl">What&rsquo;s your biggest concern right now?</span><input class="ff" placeholder="" disabled>
+  <span class="fl">What should a visitor do on your site?</span><input class="ff" placeholder="" disabled>
+  <span class="fl">Where do they seem to drop off?</span><input class="ff" placeholder="" disabled>
+  <span class="fl">Anything else we should know?</span><input class="ff" placeholder="" disabled>
+  <p class="note" style="margin-top:26px">All optional except the URL. One submit.</p>
+</div>
+
+<h3>Three decisions baked into what you just clicked</h3>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="url-first" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>The URL is step 1, not a separate screen</h3>
+      <p>Six steps total. It's the only required field, so it gets the only step without a Skip button and the only progress note that says it's needed.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="skip" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>"Skip" is a real button, not small print</h3>
+      <p>Every answer is optional in <code>profile.ts</code> and the profiler is built to come back honest about gaps. A stepper that hides the exit would quietly pressure people into filling boxes with noise — and noise in these answers is worse than a blank, because the spawn rules read them.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="concern" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>Question 2 tells you why it matters</h3>
+      <p>"It decides which reviewers we put on the page" is true — <code>concerns[0]</code> is what breaks the tie when more spawn rules fire than the cap of 4 allows. Telling people that gets better answers than a blank box does.</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:24px">Click through it a few times. If it feels right, say so and I'll write the spec — the design is then fully covered and everything left is code.</p>

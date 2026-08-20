@@ -1,0 +1,183 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  .ul {
+    --paper:#FBFAF8; --bone:#F2EFE9; --plaster:#EAE5DC; --sand:#DDD6C9;
+    --shade:#C9C0B2; --sage:#D6D8D0; --ink:#26221E; --ink-soft:#6E665C;
+    font-family:Inter, sans-serif; color:var(--ink);
+    background:var(--paper); border-radius:22px; overflow:hidden;
+    box-shadow:0 1px 2px rgba(38,34,30,.04), 0 12px 40px -12px rgba(38,34,30,.10);
+  }
+  .ul * { box-sizing:border-box; }
+
+  .hero { position:relative; height:520px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .forms { position:absolute; inset:-15%; z-index:0; filter:blur(56px); }
+  .blob { position:absolute; border-radius:50%; mix-blend-mode:multiply; }
+  .b1 { width:46%; aspect-ratio:1.3; left:22%; top:8%;  background:radial-gradient(circle at 35% 35%, var(--plaster), transparent 68%); animation:d1 26s ease-in-out infinite; }
+  .b2 { width:38%; aspect-ratio:1.1; left:44%; top:30%; background:radial-gradient(circle at 60% 40%, var(--sand),    transparent 66%); animation:d2 34s ease-in-out infinite; }
+  .b3 { width:34%; aspect-ratio:.85; left:30%; top:38%; background:radial-gradient(circle at 45% 55%, var(--sage),    transparent 64%); animation:d3 30s ease-in-out infinite; }
+  .b4 { width:26%; aspect-ratio:1.4; left:50%; top:14%; background:radial-gradient(circle at 50% 50%, var(--shade),   transparent 70%); animation:d1 40s ease-in-out infinite reverse; }
+  @keyframes d1 { 0%,100%{transform:translate(0,0) scale(1)}    50%{transform:translate(-7%,5%) scale(1.10)} }
+  @keyframes d2 { 0%,100%{transform:translate(0,0) scale(1.05)} 50%{transform:translate(6%,-6%) scale(.94)} }
+  @keyframes d3 { 0%,100%{transform:translate(0,0) scale(.96)}  50%{transform:translate(4%,7%)  scale(1.12)} }
+  @media (prefers-reduced-motion: reduce) { .blob { animation:none !important; } }
+
+  .brandmark { position:absolute; top:28px; left:32px; z-index:2;
+               font-size:11px; font-weight:400; letter-spacing:.08em; text-transform:uppercase; }
+  .hero-in { position:relative; z-index:1; text-align:center; padding:0 40px; max-width:780px; }
+  .hero h1 { font-size:56px; line-height:1.14; font-weight:300; letter-spacing:-.018em; margin:0 0 26px; }
+  .hero .sub { font-size:15px; color:var(--ink-soft); margin:0 0 38px; letter-spacing:.005em; }
+  .cta { font:500 15px Inter, sans-serif; background:var(--ink); color:var(--paper); border:0;
+         padding:15px 32px; border-radius:100px; letter-spacing:-.01em; cursor:default; }
+  .scrollcue { position:absolute; bottom:26px; left:50%; transform:translateX(-50%); z-index:2;
+               font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); }
+
+  .sec { max-width:720px; margin:0 auto; padding:120px 40px; text-align:center; }
+  .eyebrow { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 26px; }
+  .sec .big { font-size:27px; line-height:1.42; font-weight:300; letter-spacing:-.012em; margin:0; }
+  .sec .big b { font-weight:500; }
+
+  .counts { display:flex; justify-content:center; gap:0; margin:44px 0 0; }
+  .count { flex:1; padding:0 14px; }
+  .count .n { font-size:34px; font-weight:300; letter-spacing:-.03em; display:block; }
+  .count .l { font-size:12px; color:var(--ink-soft); line-height:1.45; display:block; margin-top:8px; }
+  .count + .count { border-left:1px solid var(--plaster); }
+  .aside { font-size:13px; color:var(--ink-soft); margin:40px 0 0; line-height:1.7; }
+
+  .sample { background:var(--bone); border-radius:20px; padding:26px; margin-top:44px;
+            text-align:left; box-shadow:0 1px 2px rgba(38,34,30,.05), 0 18px 44px -18px rgba(38,34,30,.16); }
+  .shot { height:150px; border-radius:12px; background:linear-gradient(180deg,#fff 0%,var(--paper) 100%);
+          position:relative; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(38,34,30,.05); }
+  .shot .barA { position:absolute; left:22px; top:22px; width:120px; height:9px; border-radius:5px; background:var(--sand); }
+  .shot .barB { position:absolute; left:22px; top:44px; width:220px; height:9px; border-radius:5px; background:var(--plaster); }
+  .shot .barC { position:absolute; left:22px; top:62px; width:180px; height:9px; border-radius:5px; background:var(--plaster); }
+  .shot .btn  { position:absolute; left:22px; top:92px; width:92px; height:26px; border-radius:13px; background:var(--shade); }
+  .pinmark { position:absolute; left:96px; top:88px; width:32px; height:32px; border-radius:50%;
+             background:var(--ink); color:var(--paper); font-size:13px; font-weight:500;
+             display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 6px rgba(38,34,30,.08); }
+  .finding { display:flex; gap:16px; margin-top:22px; }
+  .finding .pin { flex:0 0 30px; height:30px; border-radius:50%; background:var(--ink); color:var(--paper);
+                  font-size:13px; font-weight:500; display:flex; align-items:center; justify-content:center; }
+  .finding h4 { margin:4px 0 8px; font-size:15px; font-weight:500; letter-spacing:-.01em; }
+  .finding p  { margin:0 0 8px; font-size:14px; line-height:1.62; color:var(--ink-soft); }
+  .cite { font-size:12px; color:var(--ink-soft); }
+  .cite u { text-decoration-color:var(--shade); text-underline-offset:3px; }
+  .tag { display:inline-block; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+         background:var(--plaster); color:var(--ink-soft); padding:4px 10px; border-radius:100px; margin-left:8px; vertical-align:2px; }
+  .placeheld { font-size:12px; color:var(--ink-soft); margin:16px 0 0; font-style:italic; }
+
+  /* ---------------- footer with the price ---------------- */
+  .foot { padding:110px 40px 120px; text-align:center; background:var(--bone); }
+  .foot h3 { font-size:32px; font-weight:300; letter-spacing:-.02em; margin:0 0 34px; }
+  .price { max-width:400px; margin:0 auto 34px; }
+  .prow { display:flex; align-items:baseline; justify-content:space-between; padding:13px 0; }
+  .prow + .prow { border-top:1px solid var(--plaster); }
+  .prow .what { font-size:14px; color:var(--ink-soft); text-align:left; }
+  .prow .amt  { font-size:20px; font-weight:300; letter-spacing:-.02em; white-space:nowrap; }
+  .prow .amt small { font-size:12px; color:var(--ink-soft); font-weight:400; letter-spacing:0; }
+  .fine { font-size:12px; color:var(--ink-soft); margin:26px 0 0; line-height:1.7; }
+  .note { color:#6E665C; font-size:13px; margin:12px 0 34px; }
+  .rule { height:1px; background:var(--plaster); max-width:720px; margin:0 auto; }
+  .chg { background:rgba(228,87,46,.10); border-radius:4px; padding:0 3px; }
+</style>
+
+<h2>Both changes in</h2>
+<p class="subtitle">New hero sub-line, and a price block above the bottom CTA. The two edited spots are faintly highlighted so you can find them — the highlight isn't part of the design.</p>
+
+<div class="ul">
+
+  <div class="hero">
+    <div class="forms"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+    <div class="brandmark">The Usability Lab</div>
+    <div class="hero-in">
+      <h1>A design critique of your site,<br>backed by research</h1>
+      <p class="sub"><span class="chg">Five questions to shape your critique.</span> Under ten minutes. Real screenshots of your site.</p>
+      <button class="cta">Get started</button>
+    </div>
+    <div class="scrollcue">Scroll to discover</div>
+  </div>
+
+  <div class="sec">
+    <p class="eyebrow">What we do</p>
+    <p class="big">Your URL and five answers become a <b>research-backed critique</b> of your site — with cited findings and annotated screenshots, so you can check every one of them.</p>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="sec">
+    <p class="eyebrow">Where the research comes from</p>
+    <p class="big">Every finding points at a source, <b>or says plainly that it couldn't find one.</b></p>
+    <div class="counts">
+      <div class="count"><span class="n">15</span><span class="l">Nielsen Norman<br>Group</span></div>
+      <div class="count"><span class="n">5</span><span class="l">WCAG<br>(W3C&nbsp;WAI)</span></div>
+      <div class="count"><span class="n">5</span><span class="l">Laws<br>of&nbsp;UX</span></div>
+      <div class="count"><span class="n">2</span><span class="l">Baymard<br>Institute</span></div>
+      <div class="count"><span class="n">1</span><span class="l">Growth<br>.Design</span></div>
+    </div>
+    <p class="aside">Twenty-eight sources, and the count is the honest one — it's read straight from the table the auditors cite against.</p>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="sec">
+    <p class="eyebrow">See one</p>
+    <p class="big">Here is <b>this page</b>, audited by the thing this page is selling.</p>
+    <div class="sample">
+      <div class="shot">
+        <div class="barA"></div><div class="barB"></div><div class="barC"></div><div class="btn"></div>
+        <div class="pinmark">2</div>
+      </div>
+      <div class="finding">
+        <div class="pin">2</div>
+        <div>
+          <h4>Visibility of System Status<span class="tag">Moderate</span></h4>
+          <p>The primary action gives no indication that anything happened between the click and the next screen loading.</p>
+          <p class="cite">Cited: <u>Nielsen Norman Group — Visibility of System Status</u></p>
+        </div>
+      </div>
+      <p class="placeheld">Placeholder finding. The real one arrives when we run our own pipeline against this page.</p>
+    </div>
+  </div>
+
+  <!-- ============================ FOOT + PRICE ============================ -->
+  <div class="foot">
+    <h3>One page. Five questions.</h3>
+
+    <div class="price chg">
+      <div class="prow">
+        <span class="what">Your first audit</span>
+        <span class="amt">Free</span>
+      </div>
+      <div class="prow">
+        <span class="what">Keep watching the page</span>
+        <span class="amt">$29 <small>/ month</small></span>
+      </div>
+    </div>
+
+    <button class="cta">Get started</button>
+
+    <p class="fine">No card to start. The subscription buys re-audits — we capture the page<br>
+       again and tell you what moved. Three sites, ten re-audits a month. Cancel any time.</p>
+  </div>
+
+</div>
+
+<h3>One thing the price forced into the open</h3>
+<p class="subtitle">Writing this block made me check what $29 actually buys, and the answer matters for the copy: <b>the audit is free</b> — three findings, then an email to see the rest. The $29 is monitoring: re-audits, diffs, up to <code>SITE_LIMIT</code>&nbsp;=&nbsp;3 sites and <code>AUDITS_PER_MONTH</code>&nbsp;=&nbsp;10 re-audits a month. That's why it's two rows rather than one number. A lone "$29" above the button would have told visitors it costs $29 to try, which isn't true and would have been the only false claim on the page.</p>
+
+<div class="options">
+  <div class="option" data-choice="ok" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content"><h3>Both good, keep going</h3><p>Lock the design and let me write the spec.</p></div>
+  </div>
+  <div class="option" data-choice="hero-free" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content"><h3>Put "first audit is free" in the hero too</h3><p>It's the strongest thing we can say and it currently waits until the very bottom of the page. Would replace "Under ten minutes."</p></div>
+  </div>
+  <div class="option" data-choice="fiddle" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content"><h3>Something's off — I'll say what</h3><p>Tell me in the terminal.</p></div>
+  </div>
+</div>
