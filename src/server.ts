@@ -57,6 +57,7 @@ import {
 } from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
 import { publicHtml, escapeHtml, type PublishInput } from "./render.js";
+import { STRICT_CSP } from "./marketing.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
@@ -140,14 +141,22 @@ function send(
   body: string,
   type = "text/html; charset=utf-8",
   extra: Record<string, string> = {},
+  /**
+   * The published page embeds its own CSS and no scripts at all. Saying so in a
+   * header costs nothing and means an injected `<script>` — from a page we
+   * captured, quoted into a finding — cannot execute in a customer's browser.
+   *
+   * Defaulted rather than hardcoded, because the marketing pages need a font and
+   * the question flow needs one script, and neither of those is a reason to
+   * loosen the policy on a page that quotes a stranger's site. A route that
+   * needs more says so here; a route that says nothing gets the strict one.
+   */
+  csp = STRICT_CSP,
 ): void {
   res.writeHead(code, {
     ...extra,
     "content-type": type,
-    // The published page embeds its own CSS and no scripts at all. Saying so in
-    // a header costs nothing and means an injected `<script>` — from a page we
-    // captured, quoted into a finding — cannot execute in a customer's browser.
-    "content-security-policy": "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'",
+    "content-security-policy": csp,
     "referrer-policy": "no-referrer",
     "x-content-type-options": "nosniff",
   });

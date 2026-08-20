@@ -583,6 +583,45 @@ describe("the image route", () => {
   });
 });
 
+/**
+ * The header that had never been asserted.
+ *
+ * `send` has put `default-src 'none'; img-src 'self'; style-src 'unsafe-inline'`
+ * on every response since the server shipped, and until now `grep` found exactly
+ * one occurrence of it in the repo: the line that set it. Nothing would have
+ * noticed it being weakened.
+ *
+ * It is about to become configurable, because the marketing pages need a font
+ * and the question flow needs one script. That is the moment to pin down what
+ * must never move: **an audit page quotes text captured from a stranger's site**,
+ * so a `<script>` smuggled through a finding has to have nowhere to run. The
+ * quotation lesson applies here too — the danger is not that we render markup,
+ * it is that we render somebody else's.
+ */
+describe("content-security-policy", () => {
+  test("an audit page denies scripts and fonts, because it quotes captured pages", async () => {
+    const res = await fetch(`${BASE}/a/${A}/`);
+    const csp = res.headers.get("content-security-policy")!;
+    assert.match(csp, /default-src 'none'/);
+    assert.doesNotMatch(csp, /script-src/, "an audit page must never authorise a script");
+    assert.doesNotMatch(csp, /font-src/, "an audit page has no font to fetch");
+    assert.doesNotMatch(csp, /unsafe-eval/);
+  });
+
+  /**
+   * The default has to be the safe one. A route added later by someone not
+   * thinking about headers should come out locked down, not accidentally open —
+   * so the policy is asserted somewhere nobody would think to configure it.
+   */
+  test("a 404 is strict too", async () => {
+    const res = await fetch(`${BASE}/a/${NEVER_SEEDED}/`);
+    assert.equal(res.status, 404);
+    const csp = res.headers.get("content-security-policy")!;
+    assert.match(csp, /default-src 'none'/);
+    assert.doesNotMatch(csp, /script-src/);
+  });
+});
+
 describe("the rate limiter itself", () => {
   test("allows up to the limit and refuses the next", () => {
     const w = new SlidingWindow(3, 1000);
