@@ -654,6 +654,39 @@ describe("content-security-policy", () => {
   });
 });
 
+/**
+ * The shell every non-audit surface renders through.
+ *
+ * `/r/<made-up-uuid>` 404s, and that 404 goes through `notFound` -> `page()`.
+ * The route is not what is under test — the frame is. Asserting it here rather
+ * than on the homepage means it keeps being asserted after the homepage is
+ * rewritten.
+ *
+ * This is also the first caller to pass a non-default policy, so `font-src`
+ * arriving in the response header is what proves the seam added to `send()`
+ * actually works. Until now nothing exercised it.
+ */
+describe("the shell", () => {
+  test("carries the new tokens and points at the self-hosted font", async () => {
+    const html = await (await fetch(`${BASE}/r/${randomUUID()}`)).text();
+    assert.match(html, /--paper:\s*#FBFAF8/);
+    assert.match(html, /--ink:\s*#26221E/);
+    assert.match(html, /\/s\/inter\.woff2/);
+    assert.doesNotMatch(
+      html,
+      /#E4572E/i,
+      "the accent belongs to render.ts, where the severity pins need it",
+    );
+  });
+
+  test("asks for a font and still refuses scripts", async () => {
+    const csp = (await fetch(`${BASE}/r/${randomUUID()}`)).headers.get("content-security-policy")!;
+    assert.match(csp, /font-src 'self'/, "the seam in send() reaches the wire");
+    assert.match(csp, /default-src 'none'/);
+    assert.doesNotMatch(csp, /script-src/, "the shell runs nothing; only /start will");
+  });
+});
+
 describe("the rate limiter itself", () => {
   test("allows up to the limit and refuses the next", () => {
     const w = new SlidingWindow(3, 1000);

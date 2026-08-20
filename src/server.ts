@@ -57,7 +57,7 @@ import {
 } from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
 import { publicHtml, escapeHtml, type PublishInput } from "./render.js";
-import { STRICT_CSP } from "./marketing.js";
+import { STRICT_CSP, MARKETING_CSP, page } from "./marketing.js";
 import { asset } from "./assets.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
@@ -172,34 +172,25 @@ function send(
  * where they are already authenticated by having the machine.
  */
 function notFound(res: ServerResponse): void {
-  send(res, 404, page("Not found", `<p>No audit at this address.</p>`));
+  sendPage(res, 404, page("Not found", `<p>No audit at this address.</p>`));
 }
 
-/** The frame for the handful of pages that are not a rendered audit. */
-function page(title: string, body: string): string {
-  return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title} — The Usability Lab</title>
-<style>
-  body { margin:0; background:#fbfaf8; color:#1a1a1a;
-         font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
-  .wrap { max-width:640px; margin:0 auto; padding:64px 24px; }
-  h1 { font-size:22px; margin:0 0 12px; }
-  a { color:#E4572E; }
-  code { background:#f0eeea; padding:2px 5px; border-radius:3px; font-size:14px; }
-  .lead { font-size:17px; margin:0 0 16px; }
-  .hint { color:#6b6257; font-size:14px; margin:6px 0 22px; }
-  .err { color:#a3301a; font-size:15px; margin:0 0 16px; }
-  form label { display:block; font-weight:600; font-size:15px; margin:0 0 6px; }
-  form input, form textarea { width:100%; box-sizing:border-box; padding:9px 11px;
-        font:inherit; font-size:15px; border:1px solid #bbb; border-radius:3px;
-        background:#fff; color:inherit; }
-  form textarea { margin-bottom:20px; resize:vertical; }
-  form button { padding:10px 18px; font:inherit; font-size:15px; cursor:pointer;
-        border:0; border-radius:3px; background:#E4572E; color:#fff; }
-</style></head>
-<body><div class="wrap"><h1>${title}</h1>${body}</div></body></html>`;
+/**
+ * Every non-audit surface goes out through here, and every audit page does not.
+ *
+ * The split is the rule, made structural. `page()` output needs `font-src` for
+ * the self-hosted typeface; `publicHtml()` output must keep the strict policy,
+ * because an audit page quotes text captured from a stranger's site. Two
+ * functions rather than a remembered argument means the wrong one is a
+ * misspelling rather than an omission.
+ */
+function sendPage(
+  res: ServerResponse,
+  code: number,
+  html: string,
+  extra: Record<string, string> = {},
+): void {
+  send(res, code, html, "text/html; charset=utf-8", extra, MARKETING_CSP);
 }
 
 async function readBody(req: IncomingMessage, max = MAX_BODY): Promise<string | null> {
@@ -491,7 +482,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   // --- the question flow ---------------------------------------------------
   if (url.pathname === "/") {
     events.record({ audit_id: null, type: "question.started", data: {} });
-    return send(
+    return sendPage(
       res,
       200,
       page(
@@ -509,7 +500,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 
     const body = await readBody(req, MAX_REQUEST_BODY);
     if (body === null) {
-      return send(res, 413, page("Too long", questionForm({ error: "That was more than we can take in one go." })));
+      return sendPage(res, 413, page("Too long", questionForm({ error: "That was more than we can take in one go." })));
     }
     const form = new URLSearchParams(body);
     const answers: Answers = {};
@@ -519,7 +510,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
     const typed = (form.get("url") ?? "").trim();
     const again = (error: string, code = 400) =>
-      send(res, code, page("The Usability Lab", questionForm({ url: typed, answers, error })));
+      sendPage(res, code, page("The Usability Lab", questionForm({ url: typed, answers, error })));
 
     const tooLong = Object.values(answers).some((a) => a.length > MAX_ANSWER);
     if (tooLong) {
@@ -665,7 +656,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     // here it is the only thing between one visitor's request and another's.
     const row = asks.get(parts[1]);
     if (!row) return notFound(res);
-    return send(res, 200, statusPage(row));
+    return sendPage(res, 200, statusPage(row));
   }
 
   if (parts[0] !== "a" || !parts[1]) return notFound(res);
@@ -845,7 +836,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       // A cookie that no longer verifies is cleared, so a stale one cannot keep
       // producing this page every time the reader comes back.
       if (!fromQuery && token) headers["set-cookie"] = clearCookie(audit.audit_id);
-      return send(
+      return sendPage(
         res,
         403,
         page(
@@ -853,7 +844,6 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
           `<p>${explain[check.reason]}</p>
            <p><a href="/a/${audit.audit_id}">Ask for a new one</a>.</p>`,
         ),
-        "text/html; charset=utf-8",
         headers,
       );
     }
@@ -899,7 +889,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
         type: "token.rejected",
         data: { reason: check.reason, source: "cookie", route: "subscribe" },
       });
-      return send(
+      return sendPage(
         res,
         403,
         page(
@@ -911,10 +901,10 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
 
     const body = await readBody(req);
-    if (body === null) return send(res, 413, page("Too long", `<p>That request was too large.</p>`));
+    if (body === null) return sendPage(res, 413, page("Too long", `<p>That request was too large.</p>`));
     if (!csrfMatches(token, new URLSearchParams(body).get("csrf") ?? "")) {
       events.record({ audit_id: audit.audit_id, type: "csrf.rejected", data: { route: "subscribe" } });
-      return send(
+      return sendPage(
         res,
         403,
         page(
@@ -948,7 +938,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       // and not to the visitor, and the event records only that it happened.
       console.error(`  checkout failed for ${audit.audit_id}: ${String(err)}`);
       events.record({ audit_id: audit.audit_id, type: "checkout.failed", data: {} });
-      return send(
+      return sendPage(
         res,
         502,
         page(
@@ -982,7 +972,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
         type: "token.rejected",
         data: { reason: check.reason, source: "cookie", route: "reaudit" },
       });
-      return send(
+      return sendPage(
         res,
         403,
         page(
@@ -994,7 +984,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
 
     const body = await readBody(req);
-    if (body === null) return send(res, 413, page("Too long", `<p>That request was too large.</p>`));
+    if (body === null) return sendPage(res, 413, page("Too long", `<p>That request was too large.</p>`));
 
     /**
      * The CSRF check, and the rule it settles.
@@ -1010,7 +1000,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
      */
     if (!csrfMatches(token, new URLSearchParams(body).get("csrf") ?? "")) {
       events.record({ audit_id: audit.audit_id, type: "csrf.rejected", data: { route: "reaudit" } });
-      return send(
+      return sendPage(
         res,
         403,
         page(
@@ -1094,7 +1084,7 @@ const server = createServer((req, res) => {
       return notFound(res);
     }
     console.error(err);
-    send(res, 500, page("Something broke", `<p>That is ours, not yours. It has been logged.</p>`));
+    sendPage(res, 500, page("Something broke", `<p>That is ours, not yours. It has been logged.</p>`));
   });
 });
 
