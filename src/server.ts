@@ -58,6 +58,7 @@ import {
 import { loadPublished, NotPublishable } from "./published.js";
 import { publicHtml, escapeHtml, type PublishInput } from "./render.js";
 import { STRICT_CSP } from "./marketing.js";
+import { asset } from "./assets.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
@@ -461,6 +462,31 @@ function render(
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
   const url = new URL(req.url ?? "/", `http://localhost:${PORT}`);
   const parts = url.pathname.split("/").filter(Boolean);
+
+  // --- static assets -------------------------------------------------------
+  /**
+   * One name, one buffer, one year.
+   *
+   * `immutable` because the bytes behind `/s/inter.woff2` cannot change without
+   * a deploy, so revalidating on every page view would be a round trip to be
+   * told nothing. If the font is ever re-subset it gets a new name, not new
+   * bytes at the old one.
+   *
+   * Not routed through `send()`: that writes a string and stamps a text
+   * content-type. A Buffer with its own headers is clearer than a branch inside
+   * a function whose whole job is HTML.
+   */
+  if (parts[0] === "s" && parts.length === 2) {
+    const found = asset(parts[1]!);
+    if (!found) return notFound(res);
+    res.writeHead(200, {
+      "content-type": found.type,
+      "cache-control": "public, max-age=31536000, immutable",
+      "content-security-policy": STRICT_CSP,
+      "x-content-type-options": "nosniff",
+    });
+    return void res.end(found.body);
+  }
 
   // --- the question flow ---------------------------------------------------
   if (url.pathname === "/") {

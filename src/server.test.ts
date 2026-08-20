@@ -584,6 +584,38 @@ describe("the image route", () => {
 });
 
 /**
+ * The second allowlisted file route, over HTTP.
+ *
+ * `assets.test.ts` covers the lookup itself and watched three of its five tests
+ * fail against a path-joining implementation — one of which read the repo's
+ * `.env`. This is the thin layer above that: the right headers, and a 404 that
+ * goes through the same `notFound` as everything else.
+ */
+describe("static assets", () => {
+  test("the font is served, typed correctly, and cached hard", async () => {
+    const res = await fetch(`${BASE}/s/inter.woff2`);
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("content-type"), "font/woff2");
+    assert.match(res.headers.get("cache-control")!, /immutable/);
+    const body = Buffer.from(await res.arrayBuffer());
+    assert.equal(body.subarray(0, 4).toString("latin1"), "wOF2", "bytes arrived intact");
+  });
+
+  test("anything not on the list is a 404, traversal included", async () => {
+    for (const p of [
+      "/s/.env",
+      "/s/..%2f.env",
+      "/s/inter-LICENSE.txt", // ships beside the font, is not servable
+      "/s/nope.woff2",
+      "/s/",
+      "/s/a/b",
+    ]) {
+      assert.equal((await fetch(`${BASE}${p}`)).status, 404, p);
+    }
+  });
+});
+
+/**
  * The header that had never been asserted.
  *
  * `send` has put `default-src 'none'; img-src 'self'; style-src 'unsafe-inline'`
