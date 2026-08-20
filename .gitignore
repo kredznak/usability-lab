@@ -10,3 +10,6 @@ out/
 # Anchored to the repo root on purpose. Unanchored, `captures/` also matches
 # `fixtures/captures/`, which silently excluded the eval fixtures.
 /captures/
+
+# Brainstorming mockups — local design scratch, not product code.
+.superpowers/
