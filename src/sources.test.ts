@@ -355,3 +355,76 @@ describe("the gaps these sources were added against", () => {
     }
   });
 });
+
+/**
+ * The six rows the declines asked for, 2026-08-19.
+ *
+ * Different provenance from the seven above, and worth keeping straight: those
+ * were chosen by counting uncited findings by subject. These were chosen by
+ * reading what the model *said* when it declined — 45 `why` sentences stored in
+ * each audit's `citations.json`. It named the missing sources itself.
+ */
+describe("what the declines named", () => {
+  test("each of the ten heuristics we cite has a claim that quotes it", () => {
+    /**
+     * The decline, verbatim: "the source description only explicitly covers
+     * visibility of system status and recognition rather than recall — it does
+     * not state anything about terminology consistency, so citing it would
+     * stretch the source beyond what it says."
+     *
+     * That is not the model being timid. The prompt requires "the sentence in
+     * the source's claim that does the work", and for eight of the ten
+     * heuristics there was no sentence in the table at all. One row cannot
+     * serve ten principles while quoting two.
+     */
+    const NAMED_IN_FINDINGS = [
+      ["visibility of system status", "nng-heuristic-1-visibility"],
+      ["match between system and the real world", "nng-heuristic-2-match-real-world"],
+      ["consistency and standards", "nng-heuristic-4-consistency"],
+      ["recognition rather than recall", "nng-heuristic-6-recognition"],
+      ["aesthetic and minimalist design", "nng-heuristic-8-minimalist"],
+    ] as const;
+
+    for (const [heuristic, id] of NAMED_IN_FINDINGS) {
+      const source = sourceById(id);
+      assert.ok(source, `${id} is missing — findings citing "${heuristic}" have nothing to point at`);
+      assert.match(source!.claim, /["“]/, `${id} must quote the page, not summarise it`);
+      assert.ok(
+        sourcesFor(["heuristics"]).some((s) => s.id === id),
+        `${id} is unreachable from the heuristics lens`,
+      );
+    }
+  });
+
+  test("the general heuristics row survives, because deleting it would break published pages", () => {
+    /**
+     * `resolveCitation` reads this table. An id that disappears resolves to
+     * `none`, and 44 already-published citations point at this one — so
+     * replacing it rather than adding beside it would silently strip citations
+     * off pages a customer has already read.
+     */
+    assert.ok(sourceById("nng-ten-heuristics"), "the most-cited row in the table");
+  });
+
+  test("4.1.2 and 2.5.3 are held as different criteria, because they are", () => {
+    /**
+     * Also named by a decline: "The mismatch between visible link text and its
+     * accessible name is the Label-in-Name issue (SC 2.5.3), which is not among
+     * the provided sources; wcag-name-role-value only requires a name exist, not
+     * that it match visible text."
+     *
+     * They look interchangeable and are not — one requires a name to exist, the
+     * other requires it to match what is on screen. A single row for both would
+     * make every Label-in-Name finding either uncited or miscited.
+     */
+    const nameRole = sourceById("wcag-name-role-value");
+    const labelInName = sourceById("wcag-label-in-name");
+    assert.ok(nameRole && labelInName, "both criteria must be held separately");
+    assert.notEqual(nameRole!.url, labelInName!.url);
+    assert.match(labelInName!.claim, /contains the text that is presented visually/);
+    assert.ok(
+      sourcesFor(["a11y"]).some((s) => s.id === "wcag-label-in-name"),
+      "unreachable from the a11y lens",
+    );
+  });
+});

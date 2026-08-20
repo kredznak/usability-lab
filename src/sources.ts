@@ -3,7 +3,7 @@ import type { Citation } from "./types.js";
 
 /**
  * The evidence corpus — docs/design.md §5's `corpus_query`, as a checked-in
- * table rather than a database. Twenty-two rows do not need Postgres.
+ * table rather than a database. Twenty-eight rows do not need Postgres.
  *
  * ## Why the model never writes a URL
  *
@@ -27,9 +27,10 @@ import type { Citation } from "./types.js";
  *
  * `claim` is what the page actually says, checked by reading it — not a summary
  * of what we wish it said. Every URL here was fetched and the claim confirmed
- * against the page — the original fifteen on 2026-08-13, the seven added
- * against measured gaps on 2026-08-19. When a row cannot be confirmed it does not
- * go in; `source_type: "none"` is always legal and always better than a guess.
+ * against the page — the original fifteen on 2026-08-13, then thirteen added on
+ * 2026-08-19: seven against counted gaps, six named outright by the declines
+ * recorded in each audit's `citations.json`. When a row cannot be confirmed it
+ * does not go in; `source_type: "none"` is always legal and better than a guess.
  *
  * `topics` is the list of rubrics a source may legitimately support. It exists
  * so the Research agent is shown a shortlist rather than the whole table, and
@@ -321,6 +322,108 @@ export const SOURCES: Source[] = [
     topics: ["a11y", "conversion-cta"],
     claim:
       "WCAG 2.2 Level AA: \"The size of the target for pointer inputs is at least 24 by 24 CSS pixels\", subject to five enumerated exceptions (Spacing, Equivalent, Inline, User Agent Control, Essential).",
+    source_type: "paper",
+  },
+
+  // ==========================================================================
+  // Added 2026-08-19, second pass. Every row here was named by a decline.
+  //
+  // `out/*/citations.json` stores the model's `why` for findings it declined,
+  // and reading all 45 turned the guesswork into a specification. Two things it
+  // said, repeatedly and in its own words:
+  //
+  //   "the source description only explicitly covers visibility of system
+  //    status and recognition rather than recall — it does not state anything
+  //    about terminology consistency, so citing it would stretch the source
+  //    beyond what it says"
+  //
+  //   "which is the Label-in-Name issue (SC 2.5.3), which is not among the
+  //    provided sources; wcag-name-role-value only requires a name exist, not
+  //    that it match visible text"
+  //
+  // `nng-ten-heuristics` is one row standing in for ten principles, and its
+  // claim quotes two of them. For the other eight there is no sentence to point
+  // at — and the prompt requires one: "the sentence in the source's claim that
+  // does the work. If you cannot write that sentence, you do not have a
+  // citation." Declining was not timidity; it was the only move the row allowed.
+  //
+  // **The general row stays.** It is the most-cited in the table (44 uses), it
+  // is right when the principle itself is the claim, and removing it would
+  // strand every citation already published against it — `resolveCitation`
+  // reads this table, so a deleted id becomes `none` on a live page.
+  //
+  // Only the five heuristics that actually appear in findings are here. The
+  // other five are not written for completeness, because a row nothing cites is
+  // a row nobody maintains.
+  // ==========================================================================
+
+  {
+    id: "nng-heuristic-1-visibility",
+    title: "Visibility of System Status (Usability Heuristic #1)",
+    publisher: "Nielsen Norman Group",
+    url: "https://www.nngroup.com/articles/visibility-system-status/",
+    topics: ["heuristics", "forms"],
+    claim:
+      "\"Systems should always keep users informed about what is going on, through appropriate feedback within reasonable time.\" The requirement is grounded in what its absence costs: uninformed users \"cannot decide what to do next in order to accomplish their goals, nor can they figure out if their actions were effective.\" (Aurora Harley, 3 June 2018.)",
+    source_type: "paper",
+  },
+  {
+    id: "nng-heuristic-2-match-real-world",
+    title: "Match Between the System and the Real World (Usability Heuristic #2)",
+    publisher: "Nielsen Norman Group",
+    url: "https://www.nngroup.com/articles/match-system-real-world/",
+    topics: ["heuristics", "copy"],
+    claim:
+      "\"The system should speak the users' language, with words, phrases, and concepts familiar to the user\" rather than system-oriented terms, and should \"follow real-world conventions, making information appear in a natural and logical order\". On unfamiliar terminology: \"If people don't understand the terms used on a site, not only will they feel unsure and ignored.\" (Anna Kaley, 1 July 2018.)",
+    source_type: "paper",
+  },
+  {
+    id: "nng-heuristic-4-consistency",
+    title: "Maintain Consistency and Adhere to Standards (Usability Heuristic #4)",
+    publisher: "Nielsen Norman Group",
+    url: "https://www.nngroup.com/articles/consistency-and-standards/",
+    topics: ["heuristics", "conversion-cta", "copy", "forms"],
+    claim:
+      "\"Users should not have to wonder whether different words, situations, or actions mean the same thing.\" Two kinds are distinguished: internal consistency, \"within a product or a family of products, either within a single application or across a family or suite of applications\", and external consistency with established convention, since \"the majority of interactions should be consistent with what people expect\". (Rachel Krause, 10 January 2021.)",
+    source_type: "paper",
+  },
+  {
+    id: "nng-heuristic-6-recognition",
+    title: "Memory Recognition and Recall in User Interfaces (Usability Heuristic #6)",
+    publisher: "Nielsen Norman Group",
+    url: "https://www.nngroup.com/articles/recognition-and-recall/",
+    topics: ["heuristics", "forms"],
+    claim:
+      "The design should \"promote recognition over recall in user-interface design\" by \"making information and interface functions visible and easily accessible\", because \"interfaces that promote recognition give users extra help in remembering information\" — the user recognises the option rather than retrieving it unaided. (Raluca Budiu, 15 January 2024.)",
+    source_type: "paper",
+  },
+  {
+    id: "nng-heuristic-8-minimalist",
+    title: "Aesthetic and Minimalist Design (Usability Heuristic #8)",
+    publisher: "Nielsen Norman Group",
+    url: "https://www.nngroup.com/articles/aesthetic-minimalist-design/",
+    topics: ["heuristics", "visual-hierarchy"],
+    claim:
+      "\"Interfaces should not contain information which is irrelevant or rarely needed. Every extra unit of information in an interface competes with the relevant units of information and diminishes their relative visibility.\" (Therese Fessenden, 24 January 2021.)",
+    source_type: "paper",
+  },
+  {
+    /**
+     * Named by a decline, not chosen by me: "The mismatch between visible link
+     * text and its accessible name is the Label-in-Name issue (SC 2.5.3), which
+     * is not among the provided sources; wcag-name-role-value only requires a
+     * name exist, not that it match visible text."
+     *
+     * That distinction is exactly right and worth keeping visible here — 4.1.2
+     * and 2.5.3 look interchangeable and are not.
+     */
+    id: "wcag-label-in-name",
+    title: "Understanding Success Criterion 2.5.3: Label in Name (Level A)",
+    publisher: "W3C Web Accessibility Initiative",
+    url: "https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html",
+    topics: ["a11y", "forms"],
+    claim:
+      "WCAG 2.2 Level A: \"For user interface components with labels that include text or images of text, the name contains the text that is presented visually.\" Distinct from 4.1.2, which requires only that a name exist — this one requires it to match the visible label.",
     source_type: "paper",
   },
 ];
