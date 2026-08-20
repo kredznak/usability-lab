@@ -456,6 +456,16 @@ evidence.** Standing rule; 134 green tests once missed four capture bugs.
 3. Read the findings. Fix what is real — *this is the point, not a formality.*
 4. Embed the resulting finding in §5.4 and re-render.
 
+> **Step 2 was attempted on 2026-08-20 and refused — see B24.** The SSRF guard
+> is not only on `/request`, where a stranger picks the URL; the capture path
+> checks too, so nothing here will point a real browser at a private address,
+> including a CLI run by the machine's owner. That is the stronger design and it
+> is not being weakened for this.
+>
+> Nothing was spent — the refusal precedes any model call. **This step now waits
+> behind the deploy blocker**, and the placeholder card ships with its label
+> visible, which is the honest interim state.
+
 Ten sites will have been through the pipeline and the tenth will be ours. That is
 a better claim than any testimonial would have been, and it is the only honest way
 to fill that slot before there are customers.

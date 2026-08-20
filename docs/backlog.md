@@ -889,6 +889,55 @@ and F21 in v0, and this is a sixth failure, not one of those.
 
 ---
 
+## B24. The homepage cannot audit itself until it is deployed
+
+Opened 2026-08-20, blocked, **not a bug**.
+
+`docs/specs/2026-08-20-homepage-design.md` §5.4 puts a real finding from our own
+pipeline on the homepage, and §10 sequences it: build the page, audit it, fix
+what is real, embed the result. The first attempt was refused:
+
+```
+audit bb4ba4b6-3097-41a3-b76b-54d791bafe3a
+http://127.0.0.1:4000/
+  capture        failed after 0.0s
+CAPTURE_FAILED: that address points at a private network
+```
+
+**The guard is deeper than the HTTP route.** It was easy to assume `checkUrl`
+only defends `/request`, where a stranger picks the URL. It does not — the
+capture path checks too, so nothing in this repo will point a real browser at a
+private address, including a CLI run by the person who owns the machine. That is
+the stronger design and it stays.
+
+Nothing was spent: the refusal happens before any model call, and the audit's
+research outcome is `never`. The row is left in place as an honest record; it is
+`CAPTURE_FAILED`, which the corpus and `npm run research:replay` both already
+exclude.
+
+**Unblocked by:** a public deploy, which is itself blocked on HTTPS and
+`USABILITY_LAB_SECURE_COOKIES=1`. So this waits behind the deploy blocker rather
+than being worked around.
+
+**Do not** weaken `urlcheck.ts` or the capture guard to make this convenient. The
+placeholder card on the homepage ships with a visible line saying it is a
+placeholder, which is the honest interim state — the alternative is a fabricated
+finding on the page that sells evidence.
+
+## B25. Every homepage view writes a permanent event row
+
+Opened 2026-08-20, pre-existing, made slightly worse.
+
+`GET /` records `home.viewed` and `GET /start` records `question.started`, both
+unconditionally and both permanent under §8. A crawler can therefore grow the
+event table without limit, and neither route is rate limited — only `/request`
+is.
+
+This was already true when `/` was the form; the redesign adds a second such
+route. Named rather than fixed because the fix is a real decision — sample the
+views, rate-limit the GET, or accept the growth and prune — and folding any of
+those into a design change would have been scope creep.
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
