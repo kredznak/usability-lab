@@ -1116,6 +1116,20 @@ describe("the question flow", () => {
     assert.equal(count("home.viewed"), homeBefore + 1, "and does not double as a homepage view");
   });
 
+  test("the flow authorises its script by hash and nothing else", async () => {
+    const csp = (await fetch(`${BASE}/start`)).headers.get("content-security-policy")!;
+    assert.match(csp, /script-src 'sha256-/);
+    assert.doesNotMatch(csp, /script-src[^;]*unsafe-inline/);
+    assert.match(csp, /font-src 'self'/);
+  });
+
+  test("the homepage does not get the script policy", async () => {
+    // Only the page with a script names one. Widening the marketing policy to
+    // cover both would authorise a script on a page that has none to run.
+    const csp = (await fetch(`${BASE}/`)).headers.get("content-security-policy")!;
+    assert.doesNotMatch(csp, /script-src/);
+  });
+
   test("neither view writes anything into the permanent log", async () => {
     // §8 makes events permanent. These two carry a type and a timestamp and
     // nothing else — no URL, no referrer, nothing about who arrived.
@@ -1179,13 +1193,27 @@ describe("the question flow", () => {
     assert.equal(JSON.stringify(last.data).includes("dentists"), false);
   });
 
-  test("an over-long answer is refused, and what was typed comes back", async () => {
+  /**
+   * Deliberately the home for the re-render assertions too.
+   *
+   * The over-long check runs *before* the rate limiter, so this test costs
+   * nothing from the five-an-hour per-client allowance — and that allowance is
+   * real: adding one more `submit()` to this describe block turned the next
+   * test 429 and made it look like the router had broken.
+   */
+  test("an over-long answer is refused, and the whole flow comes back filled in", async () => {
     const before = queued();
     const res = await submit({ url: OK_URL, q0: "x".repeat(1001), q1: "keep this" });
     assert.equal(res.status, 400);
     const html = await res.text();
     assert.match(html, /longer than 1000 characters/);
     assert.match(html, /keep this/, "the other answers survive the mistake");
+    assert.match(html, /name="q4"/, "every step returns, not just the one at fault");
+    assert.match(html, /name="url"/);
+    // q0 was the long one, and step 0 is the URL — so the flow reopens on step 1.
+    // Sending them to step 0 would show the URL field under an error about an
+    // answer, which is worse than not helping.
+    assert.match(html, /data-error-step="1"/, "it reopens on the answer that was refused");
     assert.equal(queued(), before);
   });
 

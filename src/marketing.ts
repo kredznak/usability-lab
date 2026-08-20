@@ -23,8 +23,10 @@
  * this, and this imports nothing of `server.ts`.
  */
 
+import { createHash } from "node:crypto";
 import { SOURCES } from "./sources.js";
-import { PRICE_USD } from "./render.js";
+import { QUESTIONS, type Answers } from "./profile.js";
+import { PRICE_USD, escapeHtml } from "./render.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 
 /**
@@ -419,4 +421,240 @@ function publisherLabel(publisher: string): string {
     "Growth.Design": "Growth<br>.Design",
   };
   return breaks[publisher] ?? publisher;
+}
+
+/**
+ * The stepper. Six steps, one submit, and it hides fields rather than fetching
+ * them.
+ *
+ * ## What it deliberately does not do
+ *
+ * Every field is already in the DOM when this runs. That is the design, not an
+ * implementation detail, and everything good about this page follows from it:
+ * no server-side step state, so nothing half-finished is stored, so there is no
+ * expiry policy to write for a stranger's free text; no new endpoint, so no new
+ * rate-limit surface; and `/request` is the handler it always was.
+ *
+ * With the script absent, all six steps simply display and the form submits as
+ * it did before any of this — which is why `.stepped` is added *by* the script
+ * rather than rendered by the server. The hiding is opt-in from the client.
+ *
+ * A POST-per-step design was considered and rejected: it buys a progress bar in
+ * exchange for storing half-answered questions about somebody's business.
+ *
+ * ## Written plainly on purpose
+ *
+ * `var`, no arrow functions, no optional chaining. This string is hashed into
+ * the page's Content-Security-Policy, so it can never go through a build step —
+ * a transform of any kind would change the bytes and the browser would silently
+ * refuse to run it. Silently, because a CSP refusal is a console message and
+ * nothing else. Keeping it boring keeps it honest.
+ */
+export const STEPPER_JS = `
+(function () {
+  var form = document.getElementById('flow');
+  if (!form) return;
+  var steps = Array.prototype.slice.call(form.querySelectorAll('.step'));
+  if (steps.length < 2) return;
+  var segs = Array.prototype.slice.call(form.querySelectorAll('.seg'));
+  var count = document.getElementById('count');
+  var back = document.getElementById('back');
+  var skip = document.getElementById('skip');
+  var next = document.getElementById('next');
+  var submit = document.getElementById('submit');
+  var note = document.getElementById('note');
+  var i = Number(form.getAttribute('data-error-step') || 0);
+
+  form.className += ' stepped';
+
+  function field(n) { return steps[n].querySelector('input, textarea'); }
+
+  function draw() {
+    for (var n = 0; n < steps.length; n++) {
+      steps[n].hidden = n !== i;
+      segs[n].className = 'seg' + (n <= i ? ' done' : '');
+    }
+    count.textContent = 'Step ' + (i + 1) + ' of ' + steps.length;
+    back.hidden = i === 0;
+    skip.hidden = i === 0;
+    next.hidden = i === steps.length - 1;
+    submit.hidden = i !== steps.length - 1;
+    note.textContent = i === 0
+      ? 'The only thing we actually need.'
+      : 'Optional. Skipping is a real answer, and a better one than a guess.';
+    var f = field(i);
+    if (f) f.focus();
+  }
+
+  function go(n) {
+    if (n < 0) n = 0;
+    if (n > steps.length - 1) n = steps.length - 1;
+    i = n;
+    draw();
+  }
+
+  next.onclick = function (e) { e.preventDefault(); go(i + 1); };
+  back.onclick = function (e) { e.preventDefault(); go(i - 1); };
+  skip.onclick = function (e) {
+    e.preventDefault();
+    var f = field(i);
+    if (f) f.value = '';
+    go(i + 1);
+  };
+
+  form.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    if (i === steps.length - 1) return;
+    e.preventDefault();
+    go(i + 1);
+  });
+
+  draw();
+})();
+`;
+
+/**
+ * The policy for the one page that runs a script, naming that script by hash.
+ *
+ * A hash and not `'unsafe-inline'`, which would hand back everything the header
+ * exists to prevent. A hash and not a nonce, because the script is a fixed
+ * string we own — so the digest is taken from the script itself and the policy
+ * cannot drift out of sync with the code it authorises. Change one and the
+ * other changes with it.
+ */
+export const STEPPED_CSP =
+  `${MARKETING_CSP}; script-src 'sha256-` +
+  createHash("sha256").update(STEPPER_JS, "utf8").digest("base64") +
+  `'`;
+
+/** Matches `MAX_ANSWER` in server.ts, which enforces it. */
+const MAX_ANSWER = 1000;
+
+/** What each question needs said underneath it before someone answers it. */
+const HELP: Record<number, string> = {
+  0: "A shop, a product, a marketing page, something you write on — whatever fits.",
+  // True, and it is why this answer matters more than the others: `concerns[0]`
+  // is what breaks the tie when more §3 spawn rules fire than the cap of four
+  // allows. People write better answers when they know what the answer does.
+  1: "Lead with the thing that actually bothers you. It decides which reviewers we put on the page.",
+  2: "The one action that matters most.",
+  3: "If you know. A guess is fine, and so is not knowing.",
+  4: "Constraints, history, a redesign you are halfway through.",
+};
+
+const START_CSS = `
+  .flowbar { display:flex; align-items:center; gap:16px; padding:26px 34px; }
+  .flowmark { font-size:11px; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; }
+  #count { margin-left:auto; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  .track { display:flex; gap:6px; padding:0 34px; }
+  .seg { flex:1; height:2px; border-radius:2px; background:var(--plaster); transition:background .45s ease; }
+  .seg.done { background:var(--ink); }
+  .flowbody { max-width:560px; margin:0 auto; padding:72px 34px 60px; }
+  .step h2 { font-size:34px; font-weight:300; line-height:1.2; letter-spacing:-.02em; margin:0 0 10px; }
+  .step .help { font-size:14px; color:var(--ink-soft); line-height:1.65; margin:0 0 26px; }
+  .step input, .step textarea { font-size:19px; }
+  .nav { display:flex; align-items:center; gap:14px; margin-top:34px; }
+  .nav button { margin-top:0; }
+  #back { background:transparent; color:var(--ink-soft); padding:15px 4px; }
+  #back:hover { background:transparent; color:var(--ink); }
+  #skip { margin-left:auto; background:transparent; color:var(--ink-soft); font-size:13px; font-weight:400;
+          padding:15px 2px; text-decoration:underline; text-decoration-color:var(--shade);
+          text-underline-offset:4px; }
+  #skip:hover { background:transparent; color:var(--ink); }
+  #note { font-size:12px; color:var(--ink-soft); margin:16px 0 0; }
+  /*
+   * Everything above styles the stepped view. Without the script, the stepped
+   * class is never added, so these rules never apply, every step shows at once,
+   * and the page is the form this replaced. Kept as a CSS comment rather than a
+   * JSDoc block because this is inside a template literal, and a backtick in
+   * here silently ends the string.
+   */
+  form:not(.stepped) .track,
+  form:not(.stepped) #count,
+  form:not(.stepped) .nav button:not(#submit) { display:none; }
+  form:not(.stepped) .step + .step { margin-top:44px; }
+  form:not(.stepped) #note { display:none; }
+  @media (max-width:600px) {
+    .flowbar, .track { padding-left:22px; padding-right:22px; }
+    .flowbody { padding:48px 22px 44px; }
+    .step h2 { font-size:26px; }
+  }
+`;
+
+/**
+ * `/start` — the five questions, one at a time.
+ *
+ * Rendered whole, every time. `state` only ever fills values back in after
+ * `/request` refuses something, so nobody retypes five answers over a mistyped
+ * URL. This is the one page here built from a stranger's text, and every
+ * interpolation of it goes through `escapeHtml`.
+ */
+export function questionsPage(
+  state: { url?: string; answers?: Answers; error?: string; errorStep?: number } = {},
+): string {
+  const step = (n: number, heading: string, help: string, control: string) =>
+    `<div class="step">
+        <h2>${escapeHtml(heading)}</h2>
+        <p class="help">${escapeHtml(help)}</p>
+        ${control}
+      </div>`;
+
+  const urlStep = step(
+    0,
+    "What page should we look at?",
+    "One page, not a whole site. We stop at any login wall.",
+    `<input id="url" name="url" type="url" required inputmode="url"
+              placeholder="https://yoursite.com/" value="${escapeHtml(state.url ?? "")}">`,
+  );
+
+  const questionSteps = QUESTIONS.map((q, i) =>
+    step(
+      i + 1,
+      q,
+      HELP[i] ?? "",
+      `<textarea id="q${i}" name="q${i}" rows="2" maxlength="${MAX_ANSWER}"
+                  placeholder="Type your answer…">${escapeHtml(state.answers?.[q] ?? "")}</textarea>`,
+    ),
+  ).join("\n      ");
+
+  const segs = Array.from({ length: QUESTIONS.length + 1 }, () => `<div class="seg"></div>`).join("");
+
+  /**
+   * Which step to open on after a refusal.
+   *
+   * Not always 0. A rejected URL belongs on step 0, but an over-long answer
+   * belongs on the step holding that answer — and the first draft of this sent
+   * everyone to step 0 regardless, which would have shown someone the URL field
+   * and an error about a question six screens away.
+   *
+   * Clamped, because the caller computes it from an index and a mistake there
+   * should mis-aim the flow, not break it.
+   */
+  const openOn = Math.min(Math.max(state.errorStep ?? 0, 0), QUESTIONS.length);
+  const errorStep = state.error ? ` data-error-step="${openOn}"` : "";
+
+  return documentHtml(
+    "Tell us about one page — The Usability Lab",
+    START_CSS,
+    `<form id="flow" method="post" action="/request"${errorStep}>
+      <div class="flowbar">
+        <a class="flowmark" href="/">The Usability Lab</a>
+        <span id="count">Step 1 of ${QUESTIONS.length + 1}</span>
+      </div>
+      <div class="track">${segs}</div>
+      <div class="flowbody">
+        ${state.error ? `<p class="err">${escapeHtml(state.error)}</p>` : ""}
+        ${urlStep}
+      ${questionSteps}
+        <div class="nav">
+          <button type="button" id="next">Continue</button>
+          <button type="submit" id="submit">Ask for the audit</button>
+          <button type="button" id="back">Back</button>
+          <button type="button" id="skip">Skip this one</button>
+        </div>
+        <p id="note">The only thing we actually need.</p>
+      </div>
+    </form>
+<script>${STEPPER_JS}</script>`,
+  );
 }

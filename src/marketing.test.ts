@@ -1,7 +1,9 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { publisherCounts, homePage } from "./marketing.js";
+import { createHash } from "node:crypto";
+import { publisherCounts, homePage, questionsPage, STEPPER_JS, STEPPED_CSP } from "./marketing.js";
 import { SOURCES } from "./sources.js";
+import { QUESTIONS } from "./profile.js";
 import { PRICE_USD } from "./render.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 
@@ -158,5 +160,114 @@ describe("secondary text survives the forms drifting behind it", () => {
   test("--ink clears 4.5:1 there too, with room to spare", () => {
     const ratio = (DARKEST_FORM_BEHIND_TEXT + 0.05) / (luminance(token("--ink")) + 0.05);
     assert.ok(ratio >= 4.5, `--ink gives ${ratio.toFixed(2)}:1`);
+  });
+});
+
+/**
+ * The stepped question flow, and the one property the whole design rests on.
+ *
+ * **Every field is in the HTML before a line of script runs.** The stepper hides
+ * five of them; it does not fetch them, build them, or ask the server for them.
+ * That single fact is what buys everything else: no server-side step state, so
+ * nothing half-finished is stored, so no expiry policy for a stranger's free
+ * text, so no new endpoint and no new rate-limit surface — and `/request` is
+ * byte-for-byte the handler it always was.
+ *
+ * It is also what makes the page work with JavaScript off, where all six simply
+ * display and submit as the form this replaced.
+ *
+ * ## Read the last test in this block before adding to it
+ *
+ * The obvious version of this guarantee — "assert every field name is present" —
+ * **passes against an implementation that hides five of them server-side**,
+ * which is exactly the broken thing it exists to catch. It took a second,
+ * different assertion to have any teeth. The image-route tests in
+ * `server.test.ts` carry the same warning from a different day.
+ */
+describe("the stepped flow degrades to the form it replaced", () => {
+  test("all six fields are in the HTML before a line of script runs", () => {
+    const html = questionsPage();
+    assert.match(html, /name="url"/);
+    for (const [i] of QUESTIONS.entries()) {
+      assert.match(html, new RegExp(`name="q${i}"`), `q${i} must be present at first byte`);
+    }
+  });
+
+  test("every question's text is in the markup, not assembled by script", () => {
+    const html = questionsPage();
+    for (const q of QUESTIONS) {
+      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "&#39;");
+      assert.match(html, new RegExp(escaped), q);
+    }
+  });
+
+  /**
+   * The one with teeth. Presence is not enough — a step rendered `hidden` is
+   * present and invisible, and a visitor without JavaScript sees one field and
+   * no way to reach the other five.
+   */
+  test("no step is hidden server-side, because nothing may depend on the script", () => {
+    const html = questionsPage();
+    const steps = html.match(/<[^>]*class="step"[^>]*>/g) ?? [];
+    assert.equal(steps.length, QUESTIONS.length + 1, "six steps: the URL and the five questions");
+    for (const tag of steps) {
+      assert.doesNotMatch(tag, /\bhidden\b/, `a step arrives hidden: ${tag}`);
+    }
+  });
+
+  test("one form, one submit, posting where it always did", () => {
+    const html = questionsPage();
+    assert.equal(html.match(/<form/g)?.length, 1, "one submit, not one per step");
+    assert.match(html, /action="\/request"/);
+    assert.match(html, /method="post"/i);
+  });
+
+  test("the navigation buttons never submit the form on their own", () => {
+    // With the script absent or broken, a bare <button> inside a form submits
+    // it. Back and Skip would then post a half-filled flow.
+    const html = questionsPage();
+    for (const id of ["back", "skip", "next"]) {
+      const tag = html.match(new RegExp(`<button[^>]*id="${id}"[^>]*>`))?.[0];
+      assert.ok(tag, `#${id} is missing`);
+      assert.match(tag, /type="button"/, `#${id} must not be a submit button`);
+    }
+  });
+
+  test("typed answers come back escaped", () => {
+    const html = questionsPage({
+      url: `"><script>alert(1)</script>`,
+      answers: { [QUESTIONS[0]!]: `<img src=x onerror=1>` },
+      error: "nope",
+    });
+    assert.doesNotMatch(html, /<script>alert/);
+    assert.doesNotMatch(html, /<img src=x/);
+    assert.match(html, /&lt;img src=x/);
+    assert.match(html, /nope/);
+  });
+
+  test("a refusal says which step to open on", () => {
+    assert.match(questionsPage({ error: "bad url", url: "nope" }), /<form[^>]*data-error-step="0"/);
+    // Matched against the <form> tag rather than the whole document: the
+    // stepper reads this attribute by name, so a bare /data-error-step/ finds
+    // the script and passes no matter what the server rendered.
+    assert.doesNotMatch(questionsPage(), /<form[^>]*data-error-step/, "silent when all is well");
+  });
+
+  test("the CSP authorises exactly the script on the page, by hash", () => {
+    const digest = createHash("sha256").update(STEPPER_JS, "utf8").digest("base64");
+    assert.ok(
+      STEPPED_CSP.includes(`'sha256-${digest}'`),
+      "the policy must be derived from the script, so the two cannot drift apart",
+    );
+    assert.doesNotMatch(STEPPED_CSP, /script-src[^;]*unsafe-inline/);
+    assert.match(STEPPED_CSP, /font-src 'self'/);
+    assert.match(STEPPED_CSP, /default-src 'none'/);
+  });
+
+  test("the script the policy names is the script in the page", () => {
+    // If the page ever renders a modified copy — minified, or with a value
+    // interpolated in — the hash stops matching and the browser silently runs
+    // nothing. Silently, because CSP failures are a console message.
+    assert.ok(questionsPage().includes(STEPPER_JS), "byte-identical, or the policy blocks it");
   });
 });

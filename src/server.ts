@@ -57,7 +57,14 @@ import {
 } from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
 import { publicHtml, escapeHtml, type PublishInput } from "./render.js";
-import { STRICT_CSP, MARKETING_CSP, page, homePage } from "./marketing.js";
+import {
+  STRICT_CSP,
+  MARKETING_CSP,
+  STEPPED_CSP,
+  page,
+  homePage,
+  questionsPage,
+} from "./marketing.js";
 import { asset } from "./assets.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
@@ -189,8 +196,14 @@ function sendPage(
   code: number,
   html: string,
   extra: Record<string, string> = {},
+  /**
+   * `/start` is the one page here that runs a script, and it passes the policy
+   * naming that script by hash. Everything else takes the default, which
+   * authorises a font and nothing more.
+   */
+  csp = MARKETING_CSP,
 ): void {
-  send(res, code, html, "text/html; charset=utf-8", extra, MARKETING_CSP);
+  send(res, code, html, "text/html; charset=utf-8", extra, csp);
 }
 
 async function readBody(req: IncomingMessage, max = MAX_BODY): Promise<string | null> {
@@ -261,43 +274,6 @@ const byEmail = new SlidingWindow(5, 60 * MINUTE);
  */
 const asksGlobally = new SlidingWindow(50, 60 * MINUTE);
 const asksByClient = new SlidingWindow(5, 60 * MINUTE);
-
-/**
- * §0's question flow, over HTTP — five questions and a URL.
- *
- * The same five `QUESTIONS` the CLI asks. `profile.ts` has said "the CLI asks
- * these; the web flow will ask the same ones" since the profiler was written,
- * and a second list here would be two products' worth of questions feeding one
- * schema.
- *
- * Every answer is optional. The CLI lets you press enter past any of them and
- * the profile comes back honest about the gap; a web form that demanded all five
- * would be collecting worse data, not more.
- *
- * Typed values are echoed back on an error so nobody retypes five answers over
- * a mistyped URL — which makes this the first page here rendered from a
- * stranger's text, and every interpolation below goes through `escapeHtml`.
- */
-function questionForm(state: { url?: string; answers?: Answers; error?: string } = {}): string {
-  const fields = QUESTIONS.map(
-    (q, i) => `      <label for="q${i}">${escapeHtml(q)}</label>
-      <textarea id="q${i}" name="q${i}" rows="2" maxlength="${MAX_ANSWER}">${escapeHtml(
-        state.answers?.[q] ?? "",
-      )}</textarea>`,
-  ).join("\n");
-
-  return `<form method="post" action="/request">
-      <label for="url">The page you want looked at</label>
-      <input id="url" name="url" type="url" required inputmode="url"
-             placeholder="https://yoursite.com/" value="${escapeHtml(state.url ?? "")}">
-      <p class="hint">One page. We stop at any login wall.</p>
-${fields}
-      ${state.error ? `<p class="err">${escapeHtml(state.error)}</p>` : ""}
-      <button type="submit">Ask for an audit</button>
-      <p class="hint">Five questions, all optional. Skipping them means a general
-         review instead of one aimed at what you are worried about.</p>
-    </form>`;
-}
 
 /**
  * §6's "your team is assembling", told honestly.
@@ -501,17 +477,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
    */
   if (url.pathname === "/start") {
     events.record({ audit_id: null, type: "question.started", data: {} });
-    return sendPage(
-      res,
-      200,
-      page(
-        "The Usability Lab",
-        `<p class="lead">Tell us about one page and we will audit it &mdash; with the
-            element each finding is about, so you can check us.</p>${questionForm()}
-         <p class="hint">Audits live at their own address and there is no directory of
-            them, on purpose. If you already have a results link, open it.</p>`,
-      ),
-    );
+    return sendPage(res, 200, questionsPage(), {}, STEPPED_CSP);
   }
 
   if (url.pathname === "/request") {
@@ -519,7 +485,13 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 
     const body = await readBody(req, MAX_REQUEST_BODY);
     if (body === null) {
-      return sendPage(res, 413, page("Too long", questionForm({ error: "That was more than we can take in one go." })));
+      return sendPage(
+        res,
+        413,
+        questionsPage({ error: "That was more than we can take in one go." }),
+        {},
+        STEPPED_CSP,
+      );
     }
     const form = new URLSearchParams(body);
     const answers: Answers = {};
@@ -528,12 +500,26 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       if (value) answers[q] = value;
     }
     const typed = (form.get("url") ?? "").trim();
-    const again = (error: string, code = 400) =>
-      sendPage(res, code, page("The Usability Lab", questionForm({ url: typed, answers, error })));
+    /**
+     * Re-render the whole flow with what they typed still in it.
+     *
+     * `errorStep` decides which step the stepper opens on. A refused URL belongs
+     * on step 0; an over-long answer belongs on the step holding that answer,
+     * because showing someone the URL field under an error about question four
+     * is worse than not helping at all.
+     */
+    const again = (error: string, code = 400, errorStep = 0) =>
+      sendPage(res, code, questionsPage({ url: typed, answers, error, errorStep }), {}, STEPPED_CSP);
 
-    const tooLong = Object.values(answers).some((a) => a.length > MAX_ANSWER);
-    if (tooLong) {
-      return again(`One of those answers is longer than ${MAX_ANSWER} characters. A sentence or two is plenty.`);
+    // Which one, not whether — so the flow can reopen on the answer at fault.
+    // Step 0 is the URL, so question `i` is step `i + 1`.
+    const tooLong = QUESTIONS.findIndex((q) => (answers[q]?.length ?? 0) > MAX_ANSWER);
+    if (tooLong >= 0) {
+      return again(
+        `One of those answers is longer than ${MAX_ANSWER} characters. A sentence or two is plenty.`,
+        400,
+        tooLong + 1,
+      );
     }
 
     const now = Date.now();
