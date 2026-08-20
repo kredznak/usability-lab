@@ -1065,8 +1065,8 @@ describe("the question flow", () => {
     return n;
   }
 
-  test("the homepage asks the same five questions the CLI does", async () => {
-    const html = await (await fetch(`${BASE}/`)).text();
+  test("the question flow asks the same five questions the CLI does", async () => {
+    const html = await (await fetch(`${BASE}/start`)).text();
     for (const q of QUESTIONS) {
       assert.match(html, new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/'/g, "&#39;")), q);
     }
@@ -1074,9 +1074,56 @@ describe("the question flow", () => {
   });
 
   test("and still lists no audits", async () => {
+    for (const path of ["/", "/start"]) {
+      const html = await (await fetch(`${BASE}${path}`)).text();
+      assert.doesNotMatch(html, new RegExp(A), path);
+      assert.doesNotMatch(html, /example\.com/, path);
+    }
+  });
+
+  test("the homepage has no form on it — the questions moved", async () => {
     const html = await (await fetch(`${BASE}/`)).text();
-    assert.doesNotMatch(html, new RegExp(A));
-    assert.doesNotMatch(html, /example\.com/);
+    assert.doesNotMatch(html, /<form/i);
+    assert.match(html, /href="\/start"/, "and it points at where they went");
+  });
+
+  /**
+   * §7 of the spec, over HTTP.
+   *
+   * `funnel.ts` prints `question.started` as "form opened". That was true while
+   * `/` was the form. If this route had kept the name, the dashboard would have
+   * counted homepage views under a label that says otherwise, and gone on
+   * printing a completion rate to the same precision as before — the same shape
+   * as the 85%-uncited figure, which was an honest-looking number over a
+   * changed population.
+   */
+  test("a homepage view and a form open are different events", async () => {
+    const count = (type: string) => {
+      const e = new EventLog(dbPath);
+      const n = e.all().filter((x) => x.type === type).length;
+      e.close();
+      return n;
+    };
+    const startedBefore = count("question.started");
+    const homeBefore = count("home.viewed");
+
+    await fetch(`${BASE}/`);
+    assert.equal(count("question.started"), startedBefore, "a homepage view is not a form open");
+    assert.equal(count("home.viewed"), homeBefore + 1);
+
+    await fetch(`${BASE}/start`);
+    assert.equal(count("question.started"), startedBefore + 1, "opening the flow still records it");
+    assert.equal(count("home.viewed"), homeBefore + 1, "and does not double as a homepage view");
+  });
+
+  test("neither view writes anything into the permanent log", async () => {
+    // §8 makes events permanent. These two carry a type and a timestamp and
+    // nothing else — no URL, no referrer, nothing about who arrived.
+    await fetch(`${BASE}/`);
+    const events = new EventLog(dbPath);
+    const home = events.all().filter((e) => e.type === "home.viewed");
+    events.close();
+    assert.deepEqual(Object.keys(home[home.length - 1]!.data), []);
   });
 
   test("a URL pointing at our own network is refused, and queues nothing", async () => {

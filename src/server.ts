@@ -57,7 +57,7 @@ import {
 } from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
 import { publicHtml, escapeHtml, type PublishInput } from "./render.js";
-import { STRICT_CSP, MARKETING_CSP, page } from "./marketing.js";
+import { STRICT_CSP, MARKETING_CSP, page, homePage } from "./marketing.js";
 import { asset } from "./assets.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
@@ -479,8 +479,27 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return void res.end(found.body);
   }
 
-  // --- the question flow ---------------------------------------------------
+  // --- the marketing page --------------------------------------------------
+  /**
+   * A view, and only a view. This used to be the form, and the event recorded
+   * here used to be `question.started` — which the funnel prints as "form
+   * opened". Leaving that name on this route would have kept the number
+   * printing while it counted a different thing, and the ratio between it and
+   * `question.completed` — the form's completion rate — would quietly have
+   * become a whole-site conversion rate.
+   */
   if (url.pathname === "/") {
+    events.record({ audit_id: null, type: "home.viewed", data: {} });
+    return sendPage(res, 200, homePage());
+  }
+
+  // --- the question flow ---------------------------------------------------
+  /**
+   * `question.started` keeps its name here because it keeps its meaning: the
+   * form was opened. Only the address changed, so the series spans the
+   * redesign and stays comparable to every row recorded before it.
+   */
+  if (url.pathname === "/start") {
     events.record({ audit_id: null, type: "question.started", data: {} });
     return sendPage(
       res,
