@@ -13,3 +13,6 @@ out/
 
 # Brainstorming mockups — local design scratch, not product code.
 .superpowers/
+
+# Standalone exports of the served pages, for looking at. Regenerate, do not edit.
+preview/
