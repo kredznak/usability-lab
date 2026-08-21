@@ -54,6 +54,7 @@ import {
   AuditRequestStore,
   type AuditRow,
   type AuditRequestRow,
+  type AuditStatus,
 } from "./db.js";
 import { loadPublished, NotPublishable } from "./published.js";
 import { publicHtml, escapeHtml, type PublishInput } from "./render.js";
@@ -134,6 +135,56 @@ function setCookie(auditId: string, token: string, expiresAt: number): string {
 
 function clearCookie(auditId: string): string {
   return `${COOKIE}=; Path=/a/${auditId}/; Max-Age=0; HttpOnly; SameSite=Lax`;
+}
+
+/**
+ * The requests this browser has made, so a resubmission can find its own audit.
+ *
+ * ## Why a cookie and not the URL
+ *
+ * Four times in one afternoon a visitor could not tell whether anything was
+ * happening, went back to the form and submitted the same URL again. Each
+ * resubmit minted a new request, orphaned the previous one, and would have
+ * spent a second $0.55 on an identical audit.
+ *
+ * The obvious fix — match on the URL — hands the second person to ask about a
+ * popular site the **first person's** request id, and that id is the only
+ * credential guarding an audit before the email gate. Their findings are shaped
+ * by their answers about their own business. So the match is scoped to the
+ * browser that made the request, and a stranger asking about the same URL gets
+ * their own audit.
+ *
+ * ## What this is not
+ *
+ * Not a credential, and nothing is authorised by it. It holds ids the visitor
+ * was already sent to in a `Location` header, and every one of them is checked
+ * against the database before it is used — so a forged cookie can at most point
+ * at a request that already exists, which its holder could visit anyway.
+ * `ul_full` is the cookie that grants something, and the CSRF rule attached to
+ * it is untouched here.
+ */
+const MINE = "ul_mine";
+const MINE_KEEP = 5;
+const MINE_TTL_SECONDS = 7 * 24 * 60 * 60;
+/** Shape only — every id is looked up before it means anything. */
+const REQUEST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function mineIds(req: IncomingMessage): string[] {
+  const raw = cookie(req, MINE);
+  // Bounded before parsing: the value is attacker-settable and ends up in a
+  // loop of database lookups.
+  if (!raw || raw.length > (36 + 1) * MINE_KEEP) return [];
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => REQUEST_ID.test(s))
+    .slice(0, MINE_KEEP);
+}
+
+function remember(req: IncomingMessage, requestId: string): string {
+  const ids = [requestId, ...mineIds(req).filter((id) => id !== requestId)].slice(0, MINE_KEEP);
+  const secure = process.env.USABILITY_LAB_SECURE_COOKIES === "1" ? "; Secure" : "";
+  return `${MINE}=${ids.join(",")}; Path=/; Max-Age=${MINE_TTL_SECONDS}; HttpOnly; SameSite=Lax${secure}`;
 }
 
 function cookie(req: IncomingMessage, name: string): string | null {
@@ -292,6 +343,38 @@ const asksByClient = new SlidingWindow(5, 60 * MINUTE);
  * its own wording rather than being folded into "queued", which would tell
  * someone their audit had not started when it had.
  */
+/**
+ * Where an audit stops. Everything else is still moving, including
+ * `REVIEW_PENDING` — the work is done there but nothing is published, and that
+ * is the state the visitor was in when they resubmitted, so it is exactly the
+ * case a second run would waste the most money on.
+ */
+const FINISHED = new Set<AuditStatus>([
+  "PUBLISHED",
+  "AUTO_PUBLISHED",
+  "CAPTURE_FAILED",
+  "PARKED",
+  "FAILED",
+]);
+
+/**
+ * This browser's own unfinished request for `url`, if it has one.
+ *
+ * A published or failed audit is deliberately not a match: someone who fixed
+ * what we found and wants to see whether it worked is asking a new question,
+ * and that is the thing the subscription sells.
+ */
+function inFlightFor(req: IncomingMessage, url: string): string | null {
+  for (const id of mineIds(req)) {
+    const row = asks.get(id);
+    if (!row || row.url !== url) continue;
+    if (!row.audit_id) return row.request_id;
+    const audit = store.get(row.audit_id);
+    if (audit && !FINISHED.has(audit.status)) return row.request_id;
+  }
+  return null;
+}
+
 interface Status {
   html: string;
   /** Seconds until the page should fetch itself again, or null when this is the end. */
@@ -709,6 +792,19 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return again(verdict.message);
     }
 
+    /**
+     * Already asked, and still running — send them to it rather than starting
+     * a second one. Checked after the URL is normalised, so the match is on
+     * what we would actually capture rather than on what was typed, and before
+     * the global allowance is spent, because this costs nothing.
+     */
+    const already = inFlightFor(req, verdict.url);
+    if (already) {
+      events.record({ audit_id: null, type: "question.deduped", data: {} });
+      res.writeHead(303, { location: `/r/${already}`, "set-cookie": remember(req, already) });
+      return void res.end();
+    }
+
     // Spend the global allowance only once the request is one we would act on,
     // so a hundred typos do not lock the door for the next real visitor.
     asksGlobally.hit("all", now);
@@ -724,8 +820,12 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       data: { answered: Object.keys(answers).length },
     });
 
-    // 303, so a refresh of the status page is not a resubmission.
-    res.writeHead(303, { location: `/r/${requestId}` });
+    // 303, so a refresh of the status page is not a resubmission. The cookie is
+    // what makes the *next* submission of this URL find this request.
+    res.writeHead(303, {
+      location: `/r/${requestId}`,
+      "set-cookie": remember(req, requestId),
+    });
     return void res.end();
   }
 

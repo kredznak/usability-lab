@@ -169,6 +169,16 @@ before(async () => {
       USABILITY_LAB_DB: dbPath,
       USABILITY_LAB_OUT: outRoot,
       USABILITY_LAB_SECRET: SECRET,
+      /**
+       * So a test can have its own rate-limit bucket by sending this header.
+       *
+       * `asksByClient` allows five audit requests an hour per client and every
+       * test here arrives from the same socket, so a handful of submissions in
+       * one file exhausts it for the rest. Naming a header lets a test opt into
+       * its own bucket; a test that sends nothing falls back to the socket and
+       * behaves exactly as before — which is what the rate-limit tests rely on.
+       */
+      USABILITY_LAB_CLIENT_IP_HEADER: "x-test-client",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -1583,6 +1593,128 @@ describe("where is my audit", () => {
     // The rules ship only where they are used, so a finished page carries no
     // animation it will never play.
     assert.doesNotMatch(await (await statusAt("PUBLISHED")).text(), /@keyframes/);
+  });
+
+  /**
+   * Submitting a URL and keeping whatever cookie came back.
+   *
+   * Returns the request id the server sent us to, so a caller can tell a fresh
+   * request from a redirect to an existing one.
+   */
+  async function submit(
+    url: string,
+    { jar = "", client = "10.0.0.1" }: { jar?: string; client?: string } = {},
+  ): Promise<{ id: string; jar: string; status: number }> {
+    const res = await fetch(`${BASE}/request`, {
+      method: "POST",
+      redirect: "manual",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "x-test-client": client,
+        ...(jar ? { cookie: jar } : {}),
+      },
+      body: new URLSearchParams({ url, q0: "A shop" }).toString(),
+    });
+    const next = (res.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
+    return {
+      status: res.status,
+      id: (res.headers.get("location") ?? "").replace("/r/", ""),
+      jar: next.startsWith("ul_mine=") ? next : jar,
+    };
+  }
+
+  /**
+   * Literal addresses, because `checkUrl` resolves hostnames for real and a
+   * made-up `.example` name is refused as unresolvable — which is correct, and
+   * is what the visitor hit when they mistyped a URL this afternoon.
+   */
+  const IP = (n: number) => `http://93.184.216.${n}/`;
+
+  /** A submission that was accepted, with the redirect the visitor follows. */
+  async function accepted(url: string, opts?: { jar?: string; client?: string }) {
+    const r = await submit(url, opts);
+    assert.equal(r.status, 303, `expected a redirect, got ${r.status} for ${url}`);
+    assert.ok(r.id.length > 0, "the redirect must name a request");
+    return r;
+  }
+
+  test("asking twice for a URL already in flight returns the same audit", async () => {
+    /**
+     * Four times in one afternoon a visitor watched a status page, could not
+     * tell anything was happening, went back and submitted the same URL again.
+     * Each resubmit minted a new request and orphaned the previous one — and
+     * would have spent a second $0.55 on an identical audit.
+     */
+    const url = IP(34);
+    const first = await accepted(url, { client: "10.1.0.1" });
+    const again = await accepted(url, { jar: first.jar, client: "10.1.0.1" });
+    assert.equal(again.id, first.id, "the second ask should land on the audit already running");
+
+    const asks = new AuditRequestStore(dbPath);
+    const rows = asks.queue().filter((r) => r.url === url);
+    asks.close();
+    assert.equal(rows.length, 1, "and must not have written a second row");
+  });
+
+  test("a request in flight is only ever offered back to the browser that made it", async () => {
+    /**
+     * The security property, and the reason this is not keyed on the URL alone.
+     *
+     * `request_id` is the only credential guarding an audit — there is no login
+     * before the email gate. Matching on URL across visitors would hand the
+     * second person to ask about a popular site the first person's audit, whose
+     * findings were shaped by their answers about their own business.
+     */
+    const url = IP(35);
+    const mine = await accepted(url, { client: "10.2.0.1" });
+    // No jar and a different address: a different browser entirely.
+    const stranger = await accepted(url, { client: "10.2.0.2" });
+
+    assert.notEqual(stranger.id, mine.id, "a stranger must never be handed someone else's request");
+
+    const asks = new AuditRequestStore(dbPath);
+    assert.equal(asks.queue().filter((r) => r.url === url).length, 2);
+    asks.close();
+  });
+
+  test("the founder gate still counts as in flight", async () => {
+    /**
+     * The state the resubmit actually happened in: the audit was finished and
+     * waiting to be read. Spending again there is the most wasteful case of
+     * all, because the work is already done.
+     */
+    const url = IP(36);
+    const first = await accepted(url, { client: "10.3.0.1" });
+
+    const auditId = randomUUID();
+    const asks = new AuditRequestStore(dbPath);
+    asks.start(first.id, auditId);
+    asks.close();
+    const store = new AuditStore(dbPath);
+    store.create(auditId, url);
+    for (const s of PATH_TO.REVIEW_PENDING) store.transition(auditId, s);
+    store.close();
+
+    assert.equal((await accepted(url, { jar: first.jar, client: "10.3.0.1" })).id, first.id);
+  });
+
+  test("once it is published, asking again is a genuine new audit", async () => {
+    // Someone who fixed what we found and wants to see if it worked is asking
+    // a new question, not repeating an old one — that is what the subscription
+    // sells, and refusing it would be the wrong kind of thrift.
+    const url = IP(37);
+    const first = await accepted(url, { client: "10.4.0.1" });
+
+    const auditId = randomUUID();
+    const asks = new AuditRequestStore(dbPath);
+    asks.start(first.id, auditId);
+    asks.close();
+    const store = new AuditStore(dbPath);
+    store.create(auditId, url);
+    for (const s of PATH_TO.PUBLISHED) store.transition(auditId, s);
+    store.close();
+
+    assert.notEqual((await accepted(url, { jar: first.jar, client: "10.4.0.1" })).id, first.id);
   });
 
   test("a page whose whole job is to change is never cached", async () => {
