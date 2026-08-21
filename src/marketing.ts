@@ -614,7 +614,7 @@ export const HERO_JS = `
 
   var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var COUNT = 5200;
+  var COUNT = 6400;
   var TONES = ['#C2BFB9', '#B0ACA5', '#9E9992', '#8C877F', '#7A756D'];
   var REPEL = 130;
   var REPEL2 = REPEL * REPEL;
@@ -632,13 +632,39 @@ export const HERO_JS = `
   var mx = -9999, my = -9999;
   var raf = null, t0 = 0;
 
-  /* Three overlapping soft clusters, so the cloud has a denser core and a
-     ragged edge rather than reading as a circle. */
-  var SEEDS = [[0.50, 0.46, 0.30], [0.63, 0.36, 0.20], [0.40, 0.58, 0.22]];
+  /* Overlapping soft clusters, so the cloud has a denser core and a ragged edge
+     rather than reading as a circle. Each is [x, y, spread, share] as fractions
+     of the hero, and the shares are what make "a few more over there" a number
+     rather than a rewrite. The fourth is the top-left one Kelly asked for; it
+     carries the smallest share on purpose, so it reads as the cloud reaching
+     that way rather than as a second cloud. */
+  var SEEDS = [
+    [0.50, 0.46, 0.30, 32],
+    [0.63, 0.36, 0.20, 23],
+    [0.40, 0.58, 0.22, 23],
+    /* Nudged down and tightened from [0.25, 0.27, 0.20]: at that spread the
+       cluster reached y=0.07 and put dots behind the brandmark, which measured
+       3.45:1 against WCAG's 4.5. It now starts below y=0.16 and the logo sits on
+       clean paper. */
+    [0.26, 0.33, 0.17, 22]
+  ];
+  var SHARE = 0;
+  for (var k = 0; k < SEEDS.length; k++) SHARE += SEEDS[k][3];
+
+  function pick(i) {
+    /* Walked deterministically rather than sampled, so every cluster gets its
+       exact share and a reseed on resize looks like the same cloud. */
+    var at = (i / COUNT) * SHARE, acc = 0;
+    for (var k = 0; k < SEEDS.length; k++) {
+      acc += SEEDS[k][3];
+      if (at < acc) return SEEDS[k];
+    }
+    return SEEDS[SEEDS.length - 1];
+  }
 
   function seed() {
     for (var i = 0; i < COUNT; i++) {
-      var s = SEEDS[i % SEEDS.length];
+      var s = pick(i);
       /* Two uniforms summed approximate a bell, which clumps toward the centre
          without the cost of a real gaussian. */
       var rx = (Math.random() + Math.random() - 1) * s[2];
