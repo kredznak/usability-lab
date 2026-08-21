@@ -115,27 +115,45 @@ describe("what the homepage must not do", () => {
 });
 
 /**
- * The contrast floor, and the measurement behind the number.
+ * The contrast floor, and the two measurements behind it.
  *
- * Secondary text in the hero does not sit on `--paper`. It sits on whatever
- * drifting form happens to be behind it, and the forms are darker than the
- * ground. Checking `--ink-soft` against `--paper` says 5.41:1 and is the wrong
- * question.
+ * Hero text does not sit on `--paper`. It sits on whatever drifting form is
+ * behind it at that second, and since 2026-08-20 those forms are deep: Kelly
+ * asked for presence and the tonal range went from 16% of the scale to 25%.
+ * Checking a token against `--paper` says 5.41:1 and is the wrong question.
  *
- * So the real background was measured: the hero was rendered with its text
- * hidden, screenshotted at five points across the drift cycle, and every pixel
- * under each text box sampled for the darkest one. That worst case has a
- * relative luminance of **0.72**, and against it the original `#6E665C` scored
- * **4.14:1** — under WCAG 1.4.3's 4.5:1 for body text.
+ * ## Why there are two numbers now and not one
  *
- * Which is exactly why the Three.js hero was rejected. Finding the same fault in
- * the replacement is the argument for measuring rather than reasoning about it.
+ * Deepening the forms took the sub-line to **2.92:1**. Darkening the text enough
+ * to fix that needed `#463F37` — within a hair of the headline colour, which
+ * collapses the hierarchy the sub-line depends on. So the fix was a veil: a
+ * soft, edgeless lift of the page ground behind the words, leaving the forms at
+ * full depth everywhere else.
  *
- * This test holds the floor in the direction that can actually break: somebody
- * lightening `--ink-soft` because it looks heavy on a white background, where it
- * genuinely does, without knowing what it sits on in the one place that matters.
+ * That split the hero into two zones, and one constant stopped describing it:
+ *
+ * - **Inside the veil**, the ground stays near paper (0.818), and `--ink-soft`
+ *   is safe there.
+ * - **Outside it**, the forms run to 0.528, where `--ink-soft` gives 3.61:1 and
+ *   fails. The scroll cue lives there, which is why it is `--ink`.
+ *
+ * **The invariant: `--ink-soft` is only safe inside the veil.** Any hero text
+ * placed outside it — a nav link, a second cue, a badge in a corner — must use
+ * `--ink`, and this file is where that gets found out.
+ *
+ * ## These are measurements, so they go stale
+ *
+ * Taken by hiding the text, screenshotting with the pointer parked at all four
+ * corners and the centre, three samples through the drift cycle at each, and
+ * reading the darkest pixel under each text box. The first version of this said
+ * 0.720 and was already wrong by the time the parallax shipped, because moving
+ * the forms 40px pulls darker field under the text — and the test went on
+ * passing while saying it.
+ *
+ * **Re-measure after any change to the forms' colours, blur, keyframes, size,
+ * the veil, or `REACH` in `HERO_JS`. Do not adjust these to taste.**
  */
-describe("secondary text survives the forms drifting behind it", () => {
+describe("hero text survives the forms behind it", () => {
   /** WCAG 2.1 relative luminance. */
   function luminance(hex: string): number {
     const n = parseInt(hex.replace("#", ""), 16);
@@ -146,21 +164,10 @@ describe("secondary text survives the forms drifting behind it", () => {
     return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!;
   }
 
-  /**
-   * Measured, not assumed — see the block comment above.
-   *
-   * **This number is a measurement, so it goes stale.** It was 0.720 when the
-   * forms only drifted. Adding the cursor parallax moved them up to 40px further,
-   * which pulled darker parts of the field under the text and took the real worst
-   * case to 0.705 — while this constant went on saying 0.720 and the test went on
-   * passing. It was re-measured with the pointer parked at all four corners and
-   * the centre, three samples through the drift cycle at each, and set below the
-   * darkest reading rather than at it.
-   *
-   * **Anything that changes the forms invalidates it**: their colours, blur,
-   * keyframes, size, or `REACH` in `HERO_JS`. Re-measure, do not adjust to taste.
-   */
-  const DARKEST_FORM_BEHIND_TEXT = 0.7;
+  /** Behind the sub-line, where the veil holds the ground near paper. */
+  const INSIDE_THE_VEIL = 0.81;
+  /** Behind the scroll cue, where the forms run at full depth. */
+  const OUTSIDE_THE_VEIL = 0.52;
 
   function token(name: string): string {
     const found = homePage().match(new RegExp(`${name}:\\s*(#[0-9A-Fa-f]{6})`));
@@ -168,19 +175,34 @@ describe("secondary text survives the forms drifting behind it", () => {
     return found[1]!;
   }
 
-  test("--ink-soft clears 4.5:1 against the darkest pixel behind it", () => {
-    const ratio = (DARKEST_FORM_BEHIND_TEXT + 0.05) / (luminance(token("--ink-soft")) + 0.05);
+  const ratio = (bg: number, fg: string) => (bg + 0.05) / (luminance(fg) + 0.05);
+
+  test("--ink-soft clears 4.5:1 where the veil protects it", () => {
+    const r = ratio(INSIDE_THE_VEIL, token("--ink-soft"));
     assert.ok(
-      ratio >= 4.5,
-      `--ink-soft is ${token("--ink-soft")}, giving ${ratio.toFixed(2)}:1 over the hero's ` +
-        `darkest drifting form. WCAG 1.4.3 needs 4.5:1. It looks light enough on --paper ` +
-        `and is not; that is the whole point of this test.`,
+      r >= 4.5,
+      `--ink-soft is ${token("--ink-soft")}, giving ${r.toFixed(2)}:1 behind the sub-line. ` +
+        `WCAG 1.4.3 needs 4.5:1. It looks light enough on --paper and is not.`,
     );
   });
 
-  test("--ink clears 4.5:1 there too, with room to spare", () => {
-    const ratio = (DARKEST_FORM_BEHIND_TEXT + 0.05) / (luminance(token("--ink")) + 0.05);
-    assert.ok(ratio >= 4.5, `--ink gives ${ratio.toFixed(2)}:1`);
+  test("--ink clears 4.5:1 out where the forms are deepest", () => {
+    const r = ratio(OUTSIDE_THE_VEIL, token("--ink"));
+    assert.ok(r >= 4.5, `--ink gives ${r.toFixed(2)}:1 over the deepest form`);
+  });
+
+  test("--ink-soft would fail outside the veil, which is why the scroll cue is not using it", () => {
+    // Not a bug being asserted — the reason for a design decision, pinned so it
+    // does not get undone by someone tidying two greys into one.
+    assert.ok(
+      ratio(OUTSIDE_THE_VEIL, token("--ink-soft")) < 4.5,
+      "if this ever passes, the forms got lighter and the note above is stale",
+    );
+  });
+
+  test("the scroll cue uses --ink, because it sits outside the veil", () => {
+    const rule = homePage().match(/\.scrollcue \{[^}]*\}/)?.[0] ?? "";
+    assert.match(rule, /color:var\(--ink\)/, "the one hero element outside the protected zone");
   });
 });
 

@@ -222,17 +222,25 @@ const HOME_CSS = `
   .hero { position:relative; min-height:100vh; min-height:100svh; display:flex;
           align-items:center; justify-content:center; overflow:hidden; }
   /* inset -15% leaves room for HERO_JS to lean it 40px without exposing an edge. */
-  .forms { position:absolute; inset:-15%; z-index:0; filter:blur(56px); pointer-events:none;
+  .forms { position:absolute; inset:-15%; z-index:0; filter:blur(44px); pointer-events:none;
            will-change:transform; }
   .blob { position:absolute; border-radius:50%; mix-blend-mode:multiply; }
-  .b1 { width:46%; aspect-ratio:1.3; left:22%; top:8%;
-        background:radial-gradient(circle at 35% 35%, var(--plaster), transparent 68%); animation:d1 26s ease-in-out infinite; }
-  .b2 { width:38%; aspect-ratio:1.1; left:44%; top:30%;
-        background:radial-gradient(circle at 60% 40%, var(--sand), transparent 66%); animation:d2 34s ease-in-out infinite; }
-  .b3 { width:34%; aspect-ratio:.85; left:30%; top:38%;
-        background:radial-gradient(circle at 45% 55%, var(--sage), transparent 64%); animation:d3 30s ease-in-out infinite; }
-  .b4 { width:26%; aspect-ratio:1.4; left:50%; top:14%;
-        background:radial-gradient(circle at 50% 50%, var(--shade), transparent 70%); animation:d1 40s ease-in-out infinite reverse; }
+  /*
+   * The forms have their own palette, deeper than the UI tokens they started
+   * from. Reusing --plaster and --shade kept them at hairline strength, which
+   * is right for a 1px rule and far too faint for a shape three feet across.
+   * Kelly's call, 2026-08-20: more presence.
+   */
+  .b1 { width:54%; aspect-ratio:1.25; left:16%; top:2%;
+        background:radial-gradient(circle at 38% 38%, #DCD2C0, transparent 76%); animation:d1 26s ease-in-out infinite; }
+  .b2 { width:46%; aspect-ratio:1.05; left:40%; top:26%;
+        background:radial-gradient(circle at 58% 42%, #C9BBA1, transparent 74%); animation:d2 34s ease-in-out infinite; }
+  .b3 { width:42%; aspect-ratio:.9; left:24%; top:34%;
+        background:radial-gradient(circle at 45% 55%, #BDC0B2, transparent 72%); animation:d3 30s ease-in-out infinite; }
+  .b4 { width:34%; aspect-ratio:1.3; left:48%; top:8%;
+        background:radial-gradient(circle at 50% 50%, #B3A48D, transparent 78%); animation:d1 40s ease-in-out infinite reverse; }
+  .b5 { width:38%; aspect-ratio:1.15; left:6%; top:44%;
+        background:radial-gradient(circle at 55% 45%, #CDC6B6, transparent 74%); animation:d2 44s ease-in-out infinite reverse; }
   @keyframes d1 { 0%,100%{transform:translate(0,0) scale(1)}    50%{transform:translate(-7%,5%) scale(1.10)} }
   @keyframes d2 { 0%,100%{transform:translate(0,0) scale(1.05)} 50%{transform:translate(6%,-6%) scale(.94)} }
   @keyframes d3 { 0%,100%{transform:translate(0,0) scale(.96)}  50%{transform:translate(4%,7%) scale(1.12)} }
@@ -247,14 +255,44 @@ const HOME_CSS = `
    * rather than letting "THE USABILITY / LAB" break across two lines in the
    * corner of a hero.
    */
+  /*
+   * A soft lift of the page ground, sitting between the forms and the words.
+   *
+   * The forms were deepened for presence and immediately took the sub-line to
+   * 2.92:1 — WCAG 1.4.3 wants 4.5. The obvious fix, darkening the secondary
+   * text, needed #463F37 to clear it, which is within a hair of the headline
+   * colour and collapses the hierarchy the sub-line depends on.
+   *
+   * So the forms keep their depth everywhere except directly behind the text,
+   * where this lifts the ground back toward --paper. It has no edge — a blurred
+   * radial that fades to nothing well before the viewport — so it reads as
+   * atmosphere rather than as a panel, which is the whole language of the
+   * reference board.
+   *
+   * Deliberately outside .forms: the parallax must not drag it off the text it
+   * exists to protect.
+   */
+  .veil { position:absolute; z-index:0; left:50%; top:48%; transform:translate(-50%,-50%);
+          width:min(1180px,96%); height:min(660px,84%); pointer-events:none;
+          background:radial-gradient(ellipse at center,
+                     rgba(251,250,248,.97) 0%, rgba(251,250,248,.88) 34%,
+                     rgba(251,250,248,.55) 56%, rgba(251,250,248,0) 74%);
+          filter:blur(26px); }
+
   .brandmark { position:absolute; top:34px; left:38px; z-index:2;
                font-size:33px; font-weight:300; letter-spacing:-.005em;
                text-transform:uppercase; line-height:1; }
   .hero-in { position:relative; z-index:1; text-align:center; padding:0 32px; max-width:800px; }
   .hero-in h1 { font-size:56px; font-weight:300; line-height:1.14; letter-spacing:-.018em; margin:0 0 26px; }
   .hero-in .sub { font-size:15px; color:var(--ink-soft); margin:0 0 38px; letter-spacing:.005em; }
+  /*
+   * --ink, not --ink-soft. It sits below the veil's reach, on forms deep enough
+   * to take the soft grey to 3.61:1 — under WCAG 1.4.3's 4.5. At 11px with this
+   * much tracking the full ink still reads as a quiet label rather than a
+   * heading, so the fix costs nothing the design wanted.
+   */
   .scrollcue { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); z-index:2;
-               font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft);
+               font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink);
                text-decoration:none; }
 
   .sec { max-width:720px; margin:0 auto; padding:130px 32px; text-align:center; }
@@ -346,8 +384,9 @@ export function homePage(): string {
   <section class="hero">
     <div class="forms" aria-hidden="true">
       <div class="blob b1"></div><div class="blob b2"></div>
-      <div class="blob b3"></div><div class="blob b4"></div>
+      <div class="blob b3"></div><div class="blob b4"></div><div class="blob b5"></div>
     </div>
+    <div class="veil" aria-hidden="true"></div>
     <div class="brandmark">The Usability Lab</div>
     <div class="hero-in">
       <h1>A design critique of your site,<br>backed by research</h1>
