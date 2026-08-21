@@ -1501,6 +1501,50 @@ describe("where is my audit", () => {
     }
   });
 
+  test("the queue says how many are ahead, and the number is real", async () => {
+    /**
+     * Asserted by watching it move rather than by matching a fixed position:
+     * every other test in this file leaves queued rows behind, so any absolute
+     * number would be a fact about the test file. Claiming the request at the
+     * front must move everything behind it up by exactly one — which a printed
+     * constant cannot do.
+     */
+    const mine = ask();
+    const ahead = async () => {
+      const html = await (await fetch(`${BASE}/r/${mine}`)).text();
+      const m = html.match(/(\d+) ahead/);
+      if (m) return Number(m[1]);
+      return /yours is next/i.test(html) ? 0 : NaN;
+    };
+
+    const before = await ahead();
+    assert.ok(Number.isFinite(before), "a queued page must say where in the line it is");
+
+    const asks = new AuditRequestStore(dbPath);
+    const front = asks.queue()[0]!;
+    assert.notEqual(front.request_id, mine, "something must be in front, or this proves nothing");
+    asks.start(front.request_id, randomUUID());
+    asks.close();
+
+    assert.equal(await ahead(), before - 1, "a claimed request has to leave the line");
+  });
+
+  test("the queue does not promise a turnaround nobody is on the hook for", async () => {
+    /**
+     * The drain is manual — `npm run audit -- --queue` is a person deciding to
+     * spend. A page that said "about eight minutes" would be describing the
+     * audit's runtime as though it were the wait, which is the same class of
+     * untruth as the refresh promise this page already carried once.
+     */
+    const html = await (await fetch(`${BASE}/r/${ask()}`)).text();
+    assert.match(html, /by hand|a person/i, "say who starts it, since it is not a machine");
+    assert.doesNotMatch(
+      html,
+      /\b\d+\s*(second|minute|hour)/i,
+      "no duration while nothing guarantees one",
+    );
+  });
+
   test("a page whose whole job is to change is never cached", async () => {
     // Not what bit the visitor above, but a status page with no cache
     // directives at all is one heuristic away from being served stale.

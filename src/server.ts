@@ -344,6 +344,37 @@ const NOW_DOING: Record<string, string> = {
 const OPENING = `Opening your page in a real browser.`;
 const STILL_WORKING = `Your team is on it.`;
 
+/**
+ * Where this request sits in the line, and who is going to start it.
+ *
+ * ## Why the wait is not a duration
+ *
+ * `npm run audit -- --queue` is a person deciding to spend money — "no HTTP
+ * request may spend money" is why the form writes a row and stops. So there is
+ * nothing on the hook for a turnaround, and a page saying "about eight minutes"
+ * would be quoting the audit's *runtime* as though it were the wait. That is
+ * the same class of untruth as the refresh this page promised for its whole
+ * life and never performed.
+ *
+ * The position is real, read from the same ordering the runner takes them in.
+ */
+function queued(requestId: string): string {
+  const line = asks.queue();
+  const ahead = line.findIndex((r) => r.request_id === requestId);
+
+  // -1 means it was claimed between the row read and this call. The next
+  // refresh will say so; claiming it is strictly forward progress.
+  const place =
+    ahead <= 0
+      ? `In the queue, and yours is next.`
+      : `In the queue, with ${ahead} ahead of it. We take them in the order they arrive.`;
+
+  return (
+    `${place} A person starts each audit by hand, so it does not begin the moment ` +
+    `you ask &mdash; but this page moves on its own when it does.`
+  );
+}
+
 function whatIsHappening(auditId: string): string {
   const steps = events.all(auditId).filter((e) => e.type.startsWith("step."));
   const last = steps[steps.length - 1];
@@ -377,12 +408,7 @@ function statusPage(row: AuditRequestRow): Status {
     ),
   });
 
-  if (!row.audit_id) {
-    return at(
-      REFRESH.queued,
-      `In the queue. We look at these in the order they arrive, and yours has not started yet.`,
-    );
-  }
+  if (!row.audit_id) return at(REFRESH.queued, queued(row.request_id));
   if (!audit) return at(REFRESH.starting, `Starting now.`);
 
   switch (audit.status) {
