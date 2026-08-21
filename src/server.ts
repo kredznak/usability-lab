@@ -292,53 +292,88 @@ const asksByClient = new SlidingWindow(5, 60 * MINUTE);
  * its own wording rather than being folded into "queued", which would tell
  * someone their audit had not started when it had.
  */
-function statusPage(row: AuditRequestRow): string {
+interface Status {
+  html: string;
+  /** Seconds until the page should fetch itself again, or null when this is the end. */
+  refresh: number | null;
+}
+
+/**
+ * How often a page in each state comes back, in seconds.
+ *
+ * Paced to what the state can actually change on, not to look busy. The gap
+ * between a claim and the subprocess starting is seconds; a step is tens of
+ * seconds; the founder gate is a person, and might be tomorrow.
+ */
+const REFRESH = { queued: 30, starting: 5, running: 10, review: 60 } as const;
+
+function statusPage(row: AuditRequestRow): Status {
   const audit = row.audit_id ? store.get(row.audit_id) : null;
   const site = escapeHtml(row.url);
 
-  const body = (state: string, extra = "") =>
-    page(
+  /**
+   * One place decides both, and that is the point.
+   *
+   * The promise "It updates as we go" is derived from `refresh` rather than
+   * written alongside it, because for its whole life this page carried that
+   * sentence while being a single static render — true of the design, false of
+   * the code, and invisible to anyone reading either one on its own. A visitor
+   * watched it for fourteen minutes and then submitted the same URL again.
+   * Making the copy a function of the behaviour is what stops that recurring:
+   * there is no longer a version of this file where one moves without the other.
+   */
+  const at = (refresh: number | null, state: string, extra = ""): Status => ({
+    refresh,
+    html: page(
       "Your audit",
       `<p class="lead">${site}</p><p>${state}</p>${extra}
-       <p class="hint">This page is yours &mdash; keep the address. It updates as we go.</p>`,
-    );
+       <p class="hint">This page is yours &mdash; keep the address.${
+         refresh === null ? "" : " It updates as we go."
+       }</p>`,
+    ),
+  });
 
   if (!row.audit_id) {
-    return body(
+    return at(
+      REFRESH.queued,
       `In the queue. We look at these in the order they arrive, and yours has not started yet.`,
     );
   }
-  if (!audit) return body(`Starting now.`);
+  if (!audit) return at(REFRESH.starting, `Starting now.`);
 
   switch (audit.status) {
     case "PUBLISHED":
     case "AUTO_PUBLISHED":
-      return body(
+      return at(
+        null,
         `Ready.`,
         `<p><a href="/a/${escapeHtml(audit.audit_id)}/">Read the results</a></p>`,
       );
     case "REVIEW_PENDING":
-      return body(
+      return at(
+        REFRESH.review,
         `The audit is done and a person is reading it before it goes out. ` +
           `That is the slowest part and the reason we stand behind what it says.`,
       );
     case "CAPTURE_FAILED":
     case "PARKED":
-      // F1, said out loud.
-      return body(
+      // F1, said out loud. Terminal for this request: a retry is a new one.
+      return at(
+        null,
         `We could not load that page well enough to audit it &mdash; some sites block ` +
           `automated browsers, and some need a login we will not go past. Nothing was ` +
           `published and nothing was charged.`,
         `<p><a href="/">Try a different page</a></p>`,
       );
     case "FAILED":
-      return body(
+      return at(
+        null,
         `This one broke on our side. It has been logged and nothing half-finished was ` +
           `published, which is the part we care about most.`,
         `<p><a href="/">Start another</a></p>`,
       );
     default:
-      return body(`Your team is assembling. Reviewers are on the page now.`);
+      return at(REFRESH.running, `Your team is assembling. Reviewers are on the page now.`);
   }
 }
 
@@ -669,7 +704,12 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     // here it is the only thing between one visitor's request and another's.
     const row = asks.get(parts[1]);
     if (!row) return notFound(res);
-    return sendPage(res, 200, statusPage(row));
+    const status = statusPage(row);
+    return sendPage(res, 200, status.html, {
+      // A page whose entire job is to change must never be served from a cache.
+      "cache-control": "no-store",
+      ...(status.refresh === null ? {} : { refresh: String(status.refresh) }),
+    });
   }
 
   if (parts[0] !== "a" || !parts[1]) return notFound(res);

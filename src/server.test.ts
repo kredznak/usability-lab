@@ -12,6 +12,7 @@ import {
   SubscriptionStore,
   ReauditRequestStore,
   AuditRequestStore,
+  type AuditStatus,
 } from "./db.js";
 import { QUESTIONS } from "./profile.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches, TOKEN_TTL_MS } from "./tokens.js";
@@ -1317,6 +1318,112 @@ describe("where is my audit", () => {
     const html = await (await fetch(`${BASE}/r/${requestId}`)).text();
     assert.match(html, /could not load that page/);
     assert.match(html, /Nothing was published/);
+  });
+
+  /**
+   * Whether the page comes back on its own.
+   *
+   * A visitor watched this page say "In the queue" for fourteen minutes and
+   * then submitted the same URL again, because nothing about it ever changed.
+   * That is the failure being fixed: not an unfinished feeling, a duplicate
+   * request and a second audit we would have paid for.
+   */
+  /**
+   * How to reach each state from `REQUESTED`, walking only legal edges.
+   *
+   * Spelled out rather than jumped to, because `transition` enforces `LEGAL`
+   * and a test that could not reach a state is a test asserting about a state
+   * the pipeline cannot produce.
+   */
+  const PATH_TO = {
+    CAPTURING: ["CAPTURING"],
+    AUDITING: ["CAPTURING", "AUDITING"],
+    REVIEW_PENDING: ["CAPTURING", "AUDITING", "ASSEMBLING", "REVIEW_PENDING"],
+    PUBLISHED: ["CAPTURING", "AUDITING", "ASSEMBLING", "REVIEW_PENDING", "PUBLISHED"],
+    CAPTURE_FAILED: ["CAPTURING", "CAPTURE_FAILED"],
+    FAILED: ["CAPTURING", "FAILED"],
+  } satisfies Record<string, AuditStatus[]>;
+
+  type AuditAtRest = keyof typeof PATH_TO;
+
+  /**
+   * A request parked at `status`, and the status page it renders.
+   *
+   * `null` means never claimed — still in the queue, which is the state the
+   * visitor above was looking at.
+   */
+  async function statusAt(status: AuditAtRest | null): Promise<Response> {
+    const requestId = ask();
+    const auditId = randomUUID();
+
+    const asks = new AuditRequestStore(dbPath);
+    if (status !== null) asks.start(requestId, auditId);
+    asks.close();
+
+    if (status !== null) {
+      const store = new AuditStore(dbPath);
+      store.create(auditId, "https://example.com/");
+      // Walked through the transitions the pipeline actually makes, so this
+      // can never assert about a status the store itself would refuse.
+      for (const step of PATH_TO[status]) store.transition(auditId, step);
+      store.close();
+    }
+    return fetch(`${BASE}/r/${requestId}`);
+  }
+
+  const LIVE = [null, "CAPTURING", "AUDITING", "REVIEW_PENDING"] as const;
+  const DONE = ["PUBLISHED", "CAPTURE_FAILED", "FAILED"] as const;
+
+  test("a page that is still moving comes back on its own; a finished one stops", async () => {
+    for (const status of LIVE) {
+      const refresh = (await statusAt(status)).headers.get("refresh");
+      assert.ok(
+        Number(refresh) > 0,
+        `${status ?? "queued"} must refresh — a visitor should not have to reload to learn anything`,
+      );
+    }
+
+    for (const status of DONE) {
+      assert.equal(
+        (await statusAt(status)).headers.get("refresh"),
+        null,
+        `${status} is the end — a page that reloads itself forever after the answer arrives is worse than the bug`,
+      );
+    }
+  });
+
+  test("the page claims to update itself only when it actually does", async () => {
+    /**
+     * The bug, restated as a rule that holds in both directions.
+     *
+     * The hint read "It updates as we go" while the page was a single static
+     * render with no refresh of any kind — true of the design, false of the
+     * code. Asserting the sentence and the header *together* is the only thing
+     * that stops them drifting apart again: this fails if the copy appears
+     * without the behaviour, and equally if the behaviour is dropped while the
+     * promise stays on the page.
+     */
+    const CLAIM = /It updates as we go/;
+
+    for (const status of [...LIVE, ...DONE]) {
+      const res = await statusAt(status);
+      const refreshes = res.headers.get("refresh") !== null;
+      const promises = CLAIM.test(await res.text());
+      assert.equal(
+        promises,
+        refreshes,
+        refreshes
+          ? `${status ?? "queued"} refreshes but does not say so`
+          : `${status} promises to update itself and never will`,
+      );
+    }
+  });
+
+  test("a page whose whole job is to change is never cached", async () => {
+    // Not what bit the visitor above, but a status page with no cache
+    // directives at all is one heuristic away from being served stale.
+    const res = await fetch(`${BASE}/r/${ask()}`);
+    assert.match(res.headers.get("cache-control") ?? "", /no-store/);
   });
 });
 
