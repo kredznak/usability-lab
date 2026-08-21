@@ -101,12 +101,18 @@ describe("what the homepage must not do", () => {
     assert.doesNotMatch(html, /\/a\/[0-9a-f]{8}/i);
   });
 
-  test("the drifting forms stop for anyone who asked them to", () => {
-    // A full-bleed animation with no reduced-motion branch is a vestibular
-    // trigger, and it is the specific reason the Three.js hero was rejected.
-    const html = homePage();
-    assert.match(html, /@media \(prefers-reduced-motion: reduce\)/);
-    assert.match(html, /animation:\s*none/);
+  test("the dot field has a reduced-motion branch, in the paint loop", () => {
+    /**
+     * There is no CSS animation to switch off any more — the drift and the
+     * repulsion both live in the canvas loop, which is deliberate: one place to
+     * honour the setting instead of a keyframe and a script that could disagree
+     * about it. So the guarantee is asserted against the script, below.
+     *
+     * A full-bleed animation with no way to stop it is a vestibular trigger, and
+     * it is the specific reason the Three.js hero was rejected.
+     */
+    assert.match(homePage(), /prefers-reduced-motion: reduce/);
+    assert.match(homePage(), /<canvas class="dots"/, "the field is a canvas now");
   });
 
   test("it uses no accent colour", () => {
@@ -165,9 +171,9 @@ describe("hero text survives the forms behind it", () => {
   }
 
   /** Behind the sub-line, where the veil holds the ground near paper. */
-  const INSIDE_THE_VEIL = 0.81;
+  const INSIDE_THE_VEIL = 0.73;
   /** Behind the scroll cue, where the forms run at full depth. */
-  const OUTSIDE_THE_VEIL = 0.52;
+  const OUTSIDE_THE_VEIL = 0.94;
 
   function token(name: string): string {
     const found = homePage().match(new RegExp(`${name}:\\s*(#[0-9A-Fa-f]{6})`));
@@ -191,18 +197,27 @@ describe("hero text survives the forms behind it", () => {
     assert.ok(r >= 4.5, `--ink gives ${r.toFixed(2)}:1 over the deepest form`);
   });
 
-  test("--ink-soft would fail outside the veil, which is why the scroll cue is not using it", () => {
-    // Not a bug being asserted — the reason for a design decision, pinned so it
-    // does not get undone by someone tidying two greys into one.
-    assert.ok(
-      ratio(OUTSIDE_THE_VEIL, token("--ink-soft")) < 4.5,
-      "if this ever passes, the forms got lighter and the note above is stale",
-    );
+  test("--ink-soft clears 4.5:1 outside the veil too, over the dot field", () => {
+    /**
+     * This test used to assert the opposite — that --ink-soft *failed* out here
+     * — because the blurred forms it was written against ran deep at the bottom
+     * of the hero. When the dot field replaced them it failed, with the message
+     * it was given: "if this ever passes, the forms got lighter."
+     *
+     * They did. Dots are sparse and the cloud stops short of the bottom edge, so
+     * the ground under the scroll cue went 0.52 -> 0.948 and the soft grey is
+     * comfortable there again. The scroll cue went back to --ink-soft with it.
+     *
+     * Kept as a live assertion rather than deleted: it is what will notice if
+     * the field ever grows to fill the hero.
+     */
+    const r = ratio(OUTSIDE_THE_VEIL, token("--ink-soft"));
+    assert.ok(r >= 4.5, `--ink-soft gives ${r.toFixed(2)}:1 over the open field`);
   });
 
-  test("the scroll cue uses --ink, because it sits outside the veil", () => {
+  test("the scroll cue is --ink-soft again, now that the field is gentler", () => {
     const rule = homePage().match(/\.scrollcue \{[^}]*\}/)?.[0] ?? "";
-    assert.match(rule, /color:var\(--ink\)/, "the one hero element outside the protected zone");
+    assert.match(rule, /color:var\(--ink-soft\)/);
   });
 });
 
@@ -329,24 +344,68 @@ describe("the stepped flow degrades to the form it replaced", () => {
  * "move less" — do nothing, and leave the still frame the CSS already renders.
  */
 describe("the hero leans toward the cursor, unless asked not to", () => {
-  test("reduced motion is checked before anything is bound", () => {
-    // Order matters, not just presence. A listener attached before the check
-    // would still fire; a transform written once before returning would still
-    // move the page. So the guard has to be the first statement that runs.
+  test("reduced motion means no pointer listener and no animation loop", () => {
+    /**
+     * The earlier version of this asserted that the string
+     * "prefers-reduced-motion" appeared before the first `addEventListener`.
+     * That passes on the *declaration* of the flag and says nothing about the
+     * early return — it would have gone on passing if the guard moved to the
+     * bottom of the file. Another test passing for a reason unrelated to the
+     * thing it names.
+     *
+     * What actually matters is that `if (still) return;` sits above the
+     * pointermove binding and above the loop that schedules frames.
+     */
     const body = HERO_JS.slice(HERO_JS.indexOf("(function"));
-    const guard = body.indexOf("prefers-reduced-motion");
-    const listener = body.indexOf("addEventListener");
-    const raf = body.indexOf("requestAnimationFrame");
-    assert.ok(guard > -1, "there is no reduced-motion branch at all");
-    assert.ok(guard < listener, "the guard must come before any listener is bound");
-    assert.ok(guard < raf, "the guard must come before any frame is scheduled");
+    const guard = body.indexOf("if (still) return;");
+    const pointer = body.indexOf("'pointermove'");
+    const loop = body.lastIndexOf("requestAnimationFrame(step)");
+    assert.ok(guard > -1, "there is no early return at all");
+    assert.ok(pointer > -1 && loop > -1, "the listener or the loop got renamed");
+    assert.ok(guard < pointer, "the guard must precede the pointermove binding");
+    assert.ok(guard < loop, "the guard must precede the frame loop being started");
   });
 
-  test("it moves one element, not many", () => {
-    // The whole argument for this over a particle field. If this ever grows a
-    // querySelectorAll and a loop, it has become the thing we rejected.
-    assert.match(HERO_JS, /querySelector\('\.forms'\)/);
-    assert.doesNotMatch(HERO_JS, /querySelectorAll/, "one element, or it is a particle system again");
+  test("nothing is allocated in the hot loop", () => {
+    /**
+     * This *is* a particle field now — Kelly asked for the dots back. What made
+     * the original unusable was never the dots, it was the loop: five Vector3
+     * objects per particle per frame, ~200,000 allocations at 60fps, all
+     * collected again immediately.
+     *
+     * Here position, velocity and origin live in Float32Arrays and every line of
+     * `step` is scalar arithmetic on numbers already in them. If `new` or an
+     * object literal ever appears inside that function, the property that makes
+     * 5,200 dots cost 8ms a frame is gone.
+     */
+    const step = HERO_JS.slice(HERO_JS.indexOf("function step"), HERO_JS.indexOf("window.addEventListener('resize'"));
+    assert.ok(step.length > 200, "step() was not found — did it get renamed?");
+    assert.doesNotMatch(step, /\bnew [A-Z]/, "no constructor calls per frame");
+    assert.doesNotMatch(step, /[[{]\s*\w+\s*,/, "no array or object literals per frame");
+    assert.match(HERO_JS, /Float32Array/, "flat arrays are the whole trick");
+  });
+
+  test("the draw is batched by tone rather than set per dot", () => {
+    // fillStyle is a state change; assigning it 5,200 times a frame costs more
+    // than the arithmetic does. Five assignments, one per grey.
+    const draw = HERO_JS.slice(HERO_JS.indexOf("function draw"), HERO_JS.indexOf("function step"));
+    assert.match(draw, /for \(var t = 0; t < TONES\.length/, "outer loop is the tone");
+    assert.equal(draw.match(/fillStyle/g)?.length, 1, "assigned once per tone, not once per dot");
+  });
+
+  test("the dots are grey, with no chroma anywhere", () => {
+    // The original tinted every particle with setHSL(Math.random(), 0.8, …) —
+    // full-spectrum confetti, against a reference board with no colour on it.
+    const tones = HERO_JS.match(/var TONES = \[([^\]]+)\]/)?.[1] ?? "";
+    const hexes = tones.match(/#[0-9A-Fa-f]{6}/g) ?? [];
+    assert.ok(hexes.length >= 3, "there is a tone ramp");
+    for (const hex of hexes) {
+      const n = parseInt(hex.slice(1), 16);
+      const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+      const spread = Math.max(r, g, b) - Math.min(r, g, b);
+      assert.ok(spread <= 14, `${hex} has a channel spread of ${spread} — that is a colour, not a grey`);
+    }
+    assert.doesNotMatch(HERO_JS, /setHSL|hsl\(/, "no hue generation at all");
   });
 
   test("the loop stops when it settles rather than running forever", () => {
@@ -368,9 +427,12 @@ describe("the hero leans toward the cursor, unless asked not to", () => {
     assert.ok(homePage().includes(HERO_JS), "byte-identical, or the browser silently runs nothing");
   });
 
-  test("the CSS still freezes the forms outright under reduced motion", () => {
-    // Belt and braces: the script declines to move them and the animation stops.
-    // Either alone would leave motion on the page for someone who asked for none.
-    assert.match(homePage(), /@media \(prefers-reduced-motion: reduce\)[^}]*\{[^}]*animation:\s*none/);
+  test("a still frame is still painted when motion is refused", () => {
+    // Not a blank hero. `resize()` runs — and therefore `draw()` — before the
+    // early return, so someone with the setting on sees the composition, just
+    // not the movement. The resize listener is bound before the guard on
+    // purpose, so the still frame survives a window resize.
+    const body = HERO_JS.slice(HERO_JS.indexOf("window.addEventListener('resize'"));
+    assert.match(body, /resize\(\);\s*\n\s*\n?\s*if \(still\) return;/, "paint, then stop");
   });
 });

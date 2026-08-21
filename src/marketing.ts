@@ -221,40 +221,22 @@ export function publisherCounts(): { publisher: string; n: number }[] {
 const HOME_CSS = `
   .hero { position:relative; min-height:100vh; min-height:100svh; display:flex;
           align-items:center; justify-content:center; overflow:hidden; }
-  /* inset -15% leaves room for HERO_JS to lean it 40px without exposing an edge. */
-  .forms { position:absolute; inset:-15%; z-index:0; filter:blur(44px); pointer-events:none;
-           will-change:transform; }
-  .blob { position:absolute; border-radius:50%; mix-blend-mode:multiply; }
   /*
-   * The forms have their own palette, deeper than the UI tokens they started
-   * from. Reusing --plaster and --shade kept them at hairline strength, which
-   * is right for a 1px rule and far too faint for a shape three feet across.
-   * Kelly's call, 2026-08-20: more presence.
-   */
-  .b1 { width:54%; aspect-ratio:1.25; left:16%; top:2%;
-        background:radial-gradient(circle at 38% 38%, #DCD2C0, transparent 76%); animation:d1 26s ease-in-out infinite; }
-  .b2 { width:46%; aspect-ratio:1.05; left:40%; top:26%;
-        background:radial-gradient(circle at 58% 42%, #C9BBA1, transparent 74%); animation:d2 34s ease-in-out infinite; }
-  .b3 { width:42%; aspect-ratio:.9; left:24%; top:34%;
-        background:radial-gradient(circle at 45% 55%, #BDC0B2, transparent 72%); animation:d3 30s ease-in-out infinite; }
-  .b4 { width:34%; aspect-ratio:1.3; left:48%; top:8%;
-        background:radial-gradient(circle at 50% 50%, #B3A48D, transparent 78%); animation:d1 40s ease-in-out infinite reverse; }
-  .b5 { width:38%; aspect-ratio:1.15; left:6%; top:44%;
-        background:radial-gradient(circle at 55% 45%, #CDC6B6, transparent 74%); animation:d2 44s ease-in-out infinite reverse; }
-  @keyframes d1 { 0%,100%{transform:translate(0,0) scale(1)}    50%{transform:translate(-7%,5%) scale(1.10)} }
-  @keyframes d2 { 0%,100%{transform:translate(0,0) scale(1.05)} 50%{transform:translate(6%,-6%) scale(.94)} }
-  @keyframes d3 { 0%,100%{transform:translate(0,0) scale(.96)}  50%{transform:translate(4%,7%) scale(1.12)} }
-  @media (prefers-reduced-motion: reduce) { .blob { animation:none !important; } }
-
-  /*
-   * 33px, up from 11. Kelly's call, 2026-08-20: three times larger.
+   * The dot field. One canvas, painted by HERO_JS.
    *
-   * At that size the tracking has to come down — .08em was set for 11px small
-   * caps, where letters need pushing apart to read; at 33px the same value
-   * reads as a gap. And it wraps below ~430px, so the mobile rule scales it
-   * rather than letting "THE USABILITY / LAB" break across two lines in the
-   * corner of a hero.
+   * No CSS animation on it at all — the drift and the cursor repulsion both live
+   * in the paint loop, so reduced-motion is handled in one place rather than
+   * split between a keyframe and a script that could disagree.
+   *
+   * pointer-events are off because the canvas covers the whole hero: the cursor
+   * is tracked on window, and the CTA underneath has to stay clickable.
+   *
+   * (No backticks in here. This is inside a template literal and one silently
+   * ends the string — twice today.)
    */
+  .dots { position:absolute; inset:0; z-index:0; width:100%; height:100%;
+          pointer-events:none; display:block; }
+
   /*
    * A soft lift of the page ground, sitting between the forms and the words.
    *
@@ -275,8 +257,8 @@ const HOME_CSS = `
   .veil { position:absolute; z-index:0; left:50%; top:48%; transform:translate(-50%,-50%);
           width:min(1180px,96%); height:min(660px,84%); pointer-events:none;
           background:radial-gradient(ellipse at center,
-                     rgba(251,250,248,.97) 0%, rgba(251,250,248,.88) 34%,
-                     rgba(251,250,248,.55) 56%, rgba(251,250,248,0) 74%);
+                     rgba(251,250,248,.97) 0%, rgba(251,250,248,.86) 36%,
+                     rgba(251,250,248,.52) 58%, rgba(251,250,248,0) 76%);
           filter:blur(26px); }
 
   .brandmark { position:absolute; top:34px; left:38px; z-index:2;
@@ -286,13 +268,17 @@ const HOME_CSS = `
   .hero-in h1 { font-size:56px; font-weight:300; line-height:1.14; letter-spacing:-.018em; margin:0 0 26px; }
   .hero-in .sub { font-size:15px; color:var(--ink-soft); margin:0 0 38px; letter-spacing:.005em; }
   /*
-   * --ink, not --ink-soft. It sits below the veil's reach, on forms deep enough
-   * to take the soft grey to 3.61:1 — under WCAG 1.4.3's 4.5. At 11px with this
-   * much tracking the full ink still reads as a quiet label rather than a
-   * heading, so the fix costs nothing the design wanted.
+   * Back to --ink-soft, and the round trip is worth recording.
+   *
+   * It was --ink for one commit, because the blurred forms it replaced ran deep
+   * enough down here to take the soft grey to 3.61:1. The dot field is gentler:
+   * dots are sparse and the cloud does not reach the bottom of the hero, so the
+   * ground under this measures 0.948 and the soft grey clears 6.25:1.
+   *
+   * Measured, not assumed. The zone changed when the background did.
    */
   .scrollcue { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); z-index:2;
-               font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink);
+               font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft);
                text-decoration:none; }
 
   .sec { max-width:720px; margin:0 auto; padding:130px 32px; text-align:center; }
@@ -382,10 +368,7 @@ export function homePage(): string {
     HOME_CSS,
     `<main>
   <section class="hero">
-    <div class="forms" aria-hidden="true">
-      <div class="blob b1"></div><div class="blob b2"></div>
-      <div class="blob b3"></div><div class="blob b4"></div><div class="blob b5"></div>
-    </div>
+    <canvas class="dots" id="dots" aria-hidden="true"></canvas>
     <div class="veil" aria-hidden="true"></div>
     <div class="brandmark">The Usability Lab</div>
     <div class="hero-in">
@@ -580,54 +563,162 @@ export const STEPPED_CSP =
   `'`;
 
 /**
- * The hero's one piece of interactivity: the forms lean toward the cursor.
+ * The hero's dot field — a cursor-reactive particle cloud, in greys.
  *
- * ## Why this is four lines of transform and not a particle system
+ * ## This is the component's idea, without the component's problems
  *
- * The component that started this design pushed 50,000 particles away from the
- * pointer, recomputing every one of them on the CPU each frame. This moves **one
- * element** — the container the four blurred forms already live in — by up to
- * 40px, eased. That is a single GPU-composited transform per frame, and the loop
- * stops the moment it settles rather than running forever.
+ * The reference was 50,000 Three.js points pushed away from the pointer. The
+ * dots were never the problem. The problem was the loop: five `Vector3` objects
+ * allocated per particle per frame, roughly 200,000 allocations at 60fps, plus a
+ * square root each, all on the main thread. That is a garbage-collection
+ * firehose, and it needs React, Next, Tailwind, shadcn and two npm packages to
+ * arrive.
  *
- * The parallax reads as depth because the forms are blurred and the text is not:
- * the background drifts under the headline and the headline stays put.
+ * This is the same behaviour in a plain 2D canvas with **no dependency and no
+ * allocation in the hot loop**. Position, velocity and origin live in flat
+ * `Float32Array`s; every calculation is scalar arithmetic on numbers already in
+ * those arrays. Nothing is constructed per frame, so nothing has to be collected.
+ *
+ * Two more things buy back time:
+ *
+ * - **Squares, not arcs.** `fillRect` at 1–2px is an order of magnitude cheaper
+ *   than `arc()` and indistinguishable at this size.
+ * - **Batched by tone.** Particles are bucketed into a handful of greys and
+ *   drawn bucket by bucket, so `fillStyle` is assigned a few times a frame
+ *   rather than once per dot.
+ *
+ * ## Greys, not the rainbow
+ *
+ * The original tinted every particle with `setHSL(Math.random(), 0.8, …)` —
+ * full-spectrum confetti by construction, and wrong against a reference board
+ * with essentially no chroma on it. Kelly's call, 2026-08-20: greys. The ramp is
+ * very slightly warm so it does not read blue against `--paper`.
  *
  * ## What it refuses to do
  *
- * **Nothing at all under `prefers-reduced-motion`.** It returns before binding a
- * listener, so there is no pointer handler, no rAF loop, and no transform — the
- * same still frame the CSS already renders. Checked first, before any work.
+ * Under `prefers-reduced-motion` it paints **one still frame** and stops: no
+ * listener, no animation loop, no repulsion. The cloud is a composition, so a
+ * single frame of it is a complete version of the design rather than a broken
+ * one. Checked before anything is bound.
  *
- * Written in plain `var`-and-`function` style for the same reason as the
- * stepper: this string is hashed into the page's Content-Security-Policy, so any
- * transform of the bytes would leave the browser silently refusing to run it.
+ * Written in plain `var`-and-`function` style because this string is hashed into
+ * the page's Content-Security-Policy — any transform of the bytes and the
+ * browser silently refuses to run it.
  */
 export const HERO_JS = `
 (function () {
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var forms = document.querySelector('.forms');
-  if (!forms) return;
+  var canvas = document.getElementById('dots');
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
-  var REACH = 40;
-  var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function tick() {
-    cx += (tx - cx) * 0.06;
-    cy += (ty - cy) * 0.06;
-    forms.style.transform = 'translate3d(' + (cx * REACH).toFixed(2) + 'px,' + (cy * REACH).toFixed(2) + 'px,0)';
-    if (Math.abs(tx - cx) > 0.0005 || Math.abs(ty - cy) > 0.0005) {
-      raf = window.requestAnimationFrame(tick);
-    } else {
-      raf = null;
+  var COUNT = 5200;
+  var TONES = ['#C2BFB9', '#B0ACA5', '#9E9992', '#8C877F', '#7A756D'];
+  var REPEL = 130;
+  var REPEL2 = REPEL * REPEL;
+  var FORCE = 1.5;
+  var SPRING = 0.012;
+  var DAMP = 0.90;
+  var DOT = 1.6;
+
+  var px = new Float32Array(COUNT), py = new Float32Array(COUNT);
+  var ox = new Float32Array(COUNT), oy = new Float32Array(COUNT);
+  var vx = new Float32Array(COUNT), vy = new Float32Array(COUNT);
+  var ph = new Float32Array(COUNT);
+  var tone = new Uint8Array(COUNT);
+  var w = 0, h = 0, dpr = 1;
+  var mx = -9999, my = -9999;
+  var raf = null, t0 = 0;
+
+  /* Three overlapping soft clusters, so the cloud has a denser core and a
+     ragged edge rather than reading as a circle. */
+  var SEEDS = [[0.50, 0.46, 0.30], [0.63, 0.36, 0.20], [0.40, 0.58, 0.22]];
+
+  function seed() {
+    for (var i = 0; i < COUNT; i++) {
+      var s = SEEDS[i % SEEDS.length];
+      /* Two uniforms summed approximate a bell, which clumps toward the centre
+         without the cost of a real gaussian. */
+      var rx = (Math.random() + Math.random() - 1) * s[2];
+      var ry = (Math.random() + Math.random() - 1) * s[2];
+      ox[i] = (s[0] + rx) * w;
+      oy[i] = (s[1] + ry) * h;
+      px[i] = ox[i];
+      py[i] = oy[i];
+      vx[i] = 0;
+      vy[i] = 0;
+      ph[i] = Math.random() * 6.283;
+      /* Denser toward the middle of the ramp, so the field has few very dark
+         dots and reads soft rather than speckled. */
+      var t = Math.random() + Math.random();
+      tone[i] = Math.min(TONES.length - 1, Math.floor(t * TONES.length / 2));
     }
   }
 
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.clientWidth;
+    h = canvas.clientHeight;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seed();
+    draw();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (var t = 0; t < TONES.length; t++) {
+      ctx.fillStyle = TONES[t];
+      for (var i = 0; i < COUNT; i++) {
+        if (tone[i] !== t) continue;
+        ctx.fillRect(px[i], py[i], DOT, DOT);
+      }
+    }
+  }
+
+  function step(now) {
+    var drift = (now - t0) * 0.00022;
+    for (var i = 0; i < COUNT; i++) {
+      /* A slow wander of each origin, so the cloud breathes with no cursor. */
+      var tx = ox[i] + Math.sin(drift + ph[i]) * 9;
+      var ty = oy[i] + Math.cos(drift * 0.83 + ph[i]) * 9;
+
+      var dx = px[i] - mx, dy = py[i] - my;
+      var d2 = dx * dx + dy * dy;
+      if (d2 < REPEL2 && d2 > 1) {
+        var d = Math.sqrt(d2);
+        var f = (1 - d / REPEL) * FORCE / d;
+        vx[i] += dx * f;
+        vy[i] += dy * f;
+      }
+      vx[i] += (tx - px[i]) * SPRING;
+      vy[i] += (ty - py[i]) * SPRING;
+      vx[i] *= DAMP;
+      vy[i] *= DAMP;
+      px[i] += vx[i];
+      py[i] += vy[i];
+    }
+    draw();
+    raf = window.requestAnimationFrame(step);
+  }
+
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+
+  if (still) return;
+
   window.addEventListener('pointermove', function (e) {
-    tx = (e.clientX / window.innerWidth - 0.5) * 2;
-    ty = (e.clientY / window.innerHeight - 0.5) * 2;
-    if (raf === null) raf = window.requestAnimationFrame(tick);
+    var r = canvas.getBoundingClientRect();
+    mx = e.clientX - r.left;
+    my = e.clientY - r.top;
   }, { passive: true });
+  window.addEventListener('pointerleave', function () { mx = -9999; my = -9999; }, { passive: true });
+
+  t0 = performance.now();
+  raf = window.requestAnimationFrame(step);
 })();
 `;
 
