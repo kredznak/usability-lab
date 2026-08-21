@@ -62,9 +62,17 @@ read one out.
 
 ### The happy path
 
-- [ ] The preview shows **three** findings and an honest count of what is held back.
-- [ ] The withheld count names the severity spread, and it is **true** — count it against the full page afterwards.
-- [ ] Submit an address. The page tells you what just happened and what to expect.
+**Walked to the magic link on 2026-08-21 and stopped there.**
+
+- [x] The preview shows **three** findings and an honest count of what is held back.
+- [x] The withheld count names the severity spread, and it is **true**. Verified
+      against `review.json` rather than the rendered page: 14 kept, 11 issues,
+      3 positives, free three all severity 2, the 8 held back `2,2,2,2,1,1,1,2`.
+      Every number the page states is correct. **Note the free-three-by-rank
+      risk cannot be observed on this audit — it contains no severity 3 at all.
+      Only `2928c314` has any (two).**
+- [x] Submit an address → **`email.captured`, the first in the project's life.**
+      The funnel had read 0 there since it was built.
 - [ ] Follow the magic link. The full page shows every kept finding.
 - [ ] The subscribe block says **checkout is not connected** — a sentence, not a dead button.
 - [ ] The quiet "prefer to talk it through?" mailto is present and low-key (§1).
@@ -138,6 +146,28 @@ mistakes; they were one missing affordance, and the pattern only showed up
 because the "what you did next" was the same every time.
 
 ---
+
+## Found on the way, not yet decided
+
+**The magic link's TTL is seven days, and nobody chose it.** The token is a
+bearer credential in a URL that will sit in an inbox forever; `TOKEN_TTL_MS` is
+simply what it is. Seven days is not obviously wrong — it is obviously
+unconsidered. Worth deciding rather than inheriting.
+
+The payload is signed, not encrypted, and readable by anyone holding the link:
+
+```json
+{"auditId":"4f8f1271-…","email":"…","expiresAt":1787956883327}
+```
+
+That is fine — they already hold the link — but it means forwarding the link
+forwards access, and the address travels with it.
+
+**B17 proved itself.** `preview.viewed` reads 12 and roughly ten are a shell
+loop run while investigating. The funnel cannot tell a customer from us, and
+the contamination happened *during* an investigation of the funnel. Of the rows
+past the gate, only `email.captured` is currently trustworthy, because it
+cannot be produced without going through the form.
 
 ## Known, so do not re-report
 
