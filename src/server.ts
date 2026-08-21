@@ -299,6 +299,30 @@ interface Status {
 }
 
 /**
+ * The one moving thing on this page, and the argument for keeping it small.
+ *
+ * A visitor asked for "a loader animation to show the system is working", and
+ * they were right that the page gave no sign of life. But the comment above
+ * `statusPage` already had the other half: "a spinner that never resolves is
+ * the version of this page that lies." So this is not decoration shown
+ * whenever the page is unfinished — it marks machine work actually in flight,
+ * and it is absent in the queue and at the founder gate, where the honest
+ * report is that nothing is running and a person has it.
+ *
+ * `prefers-reduced-motion` stops it rather than hiding it: the dot still marks
+ * the running step, it just stops breathing.
+ */
+const WORKING_CSS = `
+  .pulse { display:inline-block; width:7px; height:7px; border-radius:50%;
+           background:var(--ink-soft); margin-right:9px; vertical-align:middle;
+           animation:breathe 2.4s ease-in-out infinite; }
+  @keyframes breathe { 0%,100% { opacity:.18; } 50% { opacity:1; } }
+  @media (prefers-reduced-motion:reduce) {
+    .pulse { animation:none; opacity:.55; }
+  }
+`;
+
+/**
  * How often a page in each state comes back, in seconds.
  *
  * Paced to what the state can actually change on, not to look busy. The gap
@@ -397,16 +421,27 @@ function statusPage(row: AuditRequestRow): Status {
    * Making the copy a function of the behaviour is what stops that recurring:
    * there is no longer a version of this file where one moves without the other.
    */
-  const at = (refresh: number | null, state: string, extra = ""): Status => ({
-    refresh,
-    html: page(
-      "Your audit",
-      `<p class="lead">${site}</p><p>${state}</p>${extra}
-       <p class="hint">This page is yours &mdash; keep the address.${
-         refresh === null ? "" : " It updates as we go."
-       }</p>`,
-    ),
-  });
+  const at = (refresh: number | null, state: string, extra = ""): Status => {
+    /**
+     * The fast cadences are exactly the states where a step is running, so the
+     * dot is derived from the refresh interval rather than passed in beside it
+     * — the same reason the "updates as we go" sentence is. Queued (30s) and
+     * the founder gate (60s) refresh without anything of ours working.
+     */
+    const working = refresh === REFRESH.running || refresh === REFRESH.starting;
+    return {
+      refresh,
+      html: page(
+        "Your audit",
+        `<p class="lead">${site}</p>
+         <p>${working ? `<span class="pulse"></span>` : ""}${state}</p>${extra}
+         <p class="hint">This page is yours &mdash; keep the address.${
+           refresh === null ? "" : " It updates as we go."
+         }</p>`,
+        working ? WORKING_CSS : "",
+      ),
+    };
+  };
 
   if (!row.audit_id) return at(REFRESH.queued, queued(row.request_id));
   if (!audit) return at(REFRESH.starting, `Starting now.`);

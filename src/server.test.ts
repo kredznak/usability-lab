@@ -1545,6 +1545,46 @@ describe("where is my audit", () => {
     );
   });
 
+  test("the live dot shows only while something is actually running", async () => {
+    /**
+     * The comment above `statusPage` has always said it: "a spinner that never
+     * resolves is the version of this page that lies." So the dot is not a
+     * decoration for every non-final state — it marks machine work in flight.
+     *
+     * Queued means nothing is happening yet, and the founder gate means a
+     * person is reading and might be tomorrow. A dot breathing away for a day
+     * is precisely the spinner that comment refuses.
+     */
+    const dot = /class="pulse"/;
+
+    for (const status of ["CAPTURING", "AUDITING"] as const) {
+      assert.match(
+        await (await statusAt(status, ["capture"])).text(),
+        dot,
+        `${status} is work in flight and should show it`,
+      );
+    }
+
+    for (const status of [null, "REVIEW_PENDING", "PUBLISHED", "FAILED"] as const) {
+      assert.doesNotMatch(
+        await (await statusAt(status)).text(),
+        dot,
+        `${status ?? "queued"} has nothing running — a dot here would be the spinner that lies`,
+      );
+    }
+  });
+
+  test("nothing animates without a way to switch it off", async () => {
+    const working = await (await statusAt("AUDITING", ["capture"])).text();
+    assert.match(working, /@keyframes/, "an indicator that does not move is just a bullet");
+    assert.match(working, /prefers-reduced-motion/, "motion needs an escape");
+    assert.match(working, /animation\s*:\s*none/, "and the escape has to actually stop it");
+
+    // The rules ship only where they are used, so a finished page carries no
+    // animation it will never play.
+    assert.doesNotMatch(await (await statusAt("PUBLISHED")).text(), /@keyframes/);
+  });
+
   test("a page whose whole job is to change is never cached", async () => {
     // Not what bit the visitor above, but a status page with no cache
     // directives at all is one heuristic away from being served stale.
