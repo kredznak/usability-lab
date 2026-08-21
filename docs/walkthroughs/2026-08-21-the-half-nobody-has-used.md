@@ -32,6 +32,37 @@ hard. The half that turns an audit into money has never been walked at all —
 and it is the half with signed tokens, a bearer cookie, and the moment somebody
 decides whether to pay.
 
+---
+
+## Next steps, in order
+
+Ordered by what unblocks the most. Everything above the line is free.
+
+| | Step | Who | Time | Cost |
+|---|---|---|---|---|
+| 1 | **Finish Session A's ugly paths** — resubmit cooldown, link twice, `/full` with no cookie, tampered token | Kelly | 20 min | $0 |
+| 2 | **Session C — the Basecamp gate** (`npm run review -- 2928c314`) | Kelly | 15 min | $0 |
+| 3 | **B24 — replace the homepage placeholder card** with a real cited finding | Claude | 30 min | $0 |
+| 4 | **Session B — the homepage on a phone** | Kelly | 15 min | $0 |
+| 5 | **Decide the magic-link TTL** (7 days, inherited) | Kelly | 2 min | $0 |
+| 6 | **B17 — stop counting ourselves as customers** in the funnel | Claude | ~1 h | $0 |
+| | | | | |
+| 7 | **Buy a domain, then a named tunnel** | Kelly, then Claude | ~1 h | ~$10/yr |
+| 8 | **B21 — Stripe against a real account** (needs 7) | Kelly, then Claude | ~1 h | $0 |
+| 9 | **v0 leftovers** — nightly priors, F11 cost ceiling, evals in CI, the F7 decision | Claude | days | small |
+
+**Why this order.** Step 2 is the keystone: it is the only audit with severity-3
+findings, so it is the only one that can answer whether a serious finding gets
+withheld by rank — and it unblocks step 3, which fixes a claim the homepage
+currently makes and cannot back. Steps 1 and 4 are the cheapest remaining
+sources of real bugs, on the evidence of today. Step 6 matters before any
+number from the funnel is used to decide anything.
+
+Steps 7–9 are the ones that need money, an account, or days. None of them
+blocks the others.
+
+---
+
 ## Two shapes to watch for
 
 Both bugs found today were one of these, and neither is a crash:
