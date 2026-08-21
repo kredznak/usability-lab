@@ -1,7 +1,7 @@
 import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
-import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -1289,7 +1289,10 @@ describe("where is my audit", () => {
     const store = new AuditStore(dbPath);
     store.create(auditId, "https://example.com/");
     store.transition(auditId, "CAPTURING");
-    assert.match(await at(), /Your team is assembling/);
+    // Was "Your team is assembling. Reviewers are on the page now." — which was
+    // said during capture, before any reviewer existed. No step has finished
+    // here, so the true sentence is the browser one.
+    assert.match(await at(), /Opening your page in a real browser/);
 
     store.transition(auditId, "AUDITING");
     store.transition(auditId, "ASSEMBLING");
@@ -1352,7 +1355,7 @@ describe("where is my audit", () => {
    * `null` means never claimed — still in the queue, which is the state the
    * visitor above was looking at.
    */
-  async function statusAt(status: AuditAtRest | null): Promise<Response> {
+  async function statusAt(status: AuditAtRest | null, done: string[] = []): Promise<Response> {
     const requestId = ask();
     const auditId = randomUUID();
 
@@ -1367,6 +1370,17 @@ describe("where is my audit", () => {
       // can never assert about a status the store itself would refuse.
       for (const step of PATH_TO[status]) store.transition(auditId, step);
       store.close();
+    }
+
+    // `done` is the steps that have *finished* — `timed()` records after the
+    // work, not before, which is the whole reason the page can name what is
+    // running rather than what ran.
+    if (done.length > 0) {
+      const log = new EventLog(dbPath);
+      for (const step of done) {
+        log.record({ audit_id: auditId, type: `step.${step}`, data: { ms: 1, ok: true } });
+      }
+      log.close();
     }
     return fetch(`${BASE}/r/${requestId}`);
   }
@@ -1415,6 +1429,74 @@ describe("where is my audit", () => {
         refreshes
           ? `${status ?? "queued"} refreshes but does not say so`
           : `${status} promises to update itself and never will`,
+      );
+    }
+  });
+
+  test("a running audit names the step working now, not the one that just finished", async () => {
+    /**
+     * `timed()` records `step.<name>` *after* the work completes, so the last
+     * event is what finished and the sentence must be about what follows it.
+     * Getting this backwards would tell someone we were capturing their page
+     * at the moment we stopped capturing it.
+     */
+    const during = async (done: string[]) => (await statusAt("AUDITING", done)).text();
+
+    assert.match(
+      await during(["capture"]),
+      /reviewers your page needs/i,
+      "capture is finished, so the choosing is what is happening",
+    );
+    assert.match(
+      await during(["capture", "orchestrate"]),
+      /Reviewers are reading/i,
+      "orchestrate is finished, so the reviewers are the ones working",
+    );
+    assert.match(await during(["capture", "orchestrate", "review", "synthesize"]), /research/i);
+  });
+
+  test("before a reviewer exists, the page does not say reviewers are reading", async () => {
+    /**
+     * The lie that was already here. Every live state rendered "Reviewers are
+     * on the page now", including the seconds when the only thing running was
+     * a headless browser opening the URL — nobody had been spawned yet.
+     */
+    const html = await (await statusAt("CAPTURING", [])).text();
+    assert.doesNotMatch(html, /Reviewers are (on|reading)/i);
+    assert.match(html, /browser/i, "say the true thing instead: we are opening the page");
+  });
+
+  test("every step the pipeline emits has something to say about it", async () => {
+    /**
+     * The drift guard. The sentences are keyed on step names owned by
+     * index.ts, so a rename there would silently downgrade this page to its
+     * generic fallback and nothing would fail. Reading the names out of the
+     * source is the only thing that notices.
+     */
+    const source = readFileSync(new URL("./index.ts", import.meta.url), "utf8");
+    const emitted = new Set([
+      ...[...source.matchAll(/timed\(\s*"(\w+)"/g)].map((m) => m[1]!),
+      // `lint` records its own event rather than going through `timed`.
+      ...[...source.matchAll(/"step\.(\w+)"/g)].map((m) => m[1]!),
+    ]);
+    assert.ok(emitted.size >= 8, `expected the pipeline's steps, found ${[...emitted].join()}`);
+
+    /**
+     * Measured against the fallback rather than against a literal.
+     *
+     * Asserting "does not say <the generic sentence>" passes trivially before
+     * the generic sentence exists, which is a test that agrees with whatever
+     * it finds. A step name the code has never heard of renders the fallback
+     * by construction, so anything rendering the *same page* as that is
+     * unnamed — true before the fix and after it.
+     */
+    const fallback = await (await statusAt("AUDITING", ["nosuchstepexists"])).text();
+    for (const step of emitted) {
+      const html = await (await statusAt("AUDITING", [step])).text();
+      assert.notEqual(
+        html,
+        fallback,
+        `"${step}" renders exactly what an unknown step renders — it is emitted but unnamed`,
       );
     }
   });

@@ -307,6 +307,50 @@ interface Status {
  */
 const REFRESH = { queued: 30, starting: 5, running: 10, review: 60 } as const;
 
+/**
+ * What is happening *now*, keyed on the last step that finished.
+ *
+ * ## Why "finished" and not "running"
+ *
+ * `timed()` records `step.<name>` after the work returns, so the newest event
+ * is the thing that just ended and the sentence has to be about what follows
+ * it. Read the other way round this page would tell someone we were capturing
+ * their site at the exact moment we stopped.
+ *
+ * ## Why a map and not an ordered list
+ *
+ * The pipeline skips steps. `profile` only runs when the visitor answered at
+ * least one question, and the first audit ever submitted through the web flow
+ * skipped it — so "the next entry in the sequence" would have named the wrong
+ * step on the very first real run. Keying on what finished is correct whatever
+ * was skipped before it.
+ *
+ * An unfamiliar name falls through to `STILL_WORKING`, so a step renamed in
+ * index.ts costs this page its detail and never its honesty.
+ */
+const NOW_DOING: Record<string, string> = {
+  capture: `Deciding which reviewers your page needs.`,
+  profile: `Deciding which reviewers your page needs.`,
+  orchestrate: `Reviewers are reading your page now. This is the long part.`,
+  review: `Bringing what the reviewers found into one account.`,
+  synthesize: `Checking each finding against the research.`,
+  research: `Last checks before a person reads it.`,
+  lint: `Last checks before a person reads it.`,
+  annotate: `Marking the screenshot up.`,
+  render: `Putting your results page together.`,
+};
+
+/** Before any step has finished, the browser is still opening the page. */
+const OPENING = `Opening your page in a real browser.`;
+const STILL_WORKING = `Your team is on it.`;
+
+function whatIsHappening(auditId: string): string {
+  const steps = events.all(auditId).filter((e) => e.type.startsWith("step."));
+  const last = steps[steps.length - 1];
+  if (!last) return OPENING;
+  return NOW_DOING[last.type.slice("step.".length)] ?? STILL_WORKING;
+}
+
 function statusPage(row: AuditRequestRow): Status {
   const audit = row.audit_id ? store.get(row.audit_id) : null;
   const site = escapeHtml(row.url);
@@ -373,7 +417,10 @@ function statusPage(row: AuditRequestRow): Status {
         `<p><a href="/">Start another</a></p>`,
       );
     default:
-      return at(REFRESH.running, `Your team is assembling. Reviewers are on the page now.`);
+      // Was one fixed sentence for every live state, which claimed reviewers
+      // were on the page during the seconds when the only thing running was a
+      // headless browser opening the URL.
+      return at(REFRESH.running, whatIsHappening(audit.audit_id));
   }
 }
 
