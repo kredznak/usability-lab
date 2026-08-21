@@ -1,7 +1,15 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { publisherCounts, homePage, questionsPage, STEPPER_JS, STEPPED_CSP } from "./marketing.js";
+import {
+  publisherCounts,
+  homePage,
+  questionsPage,
+  STEPPER_JS,
+  STEPPED_CSP,
+  HERO_JS,
+  HOME_CSP,
+} from "./marketing.js";
 import { SOURCES } from "./sources.js";
 import { QUESTIONS } from "./profile.js";
 import { PRICE_USD } from "./render.js";
@@ -138,8 +146,21 @@ describe("secondary text survives the forms drifting behind it", () => {
     return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!;
   }
 
-  /** Measured, not assumed — see the block comment above. */
-  const DARKEST_FORM_BEHIND_TEXT = 0.72;
+  /**
+   * Measured, not assumed — see the block comment above.
+   *
+   * **This number is a measurement, so it goes stale.** It was 0.720 when the
+   * forms only drifted. Adding the cursor parallax moved them up to 40px further,
+   * which pulled darker parts of the field under the text and took the real worst
+   * case to 0.705 — while this constant went on saying 0.720 and the test went on
+   * passing. It was re-measured with the pointer parked at all four corners and
+   * the centre, three samples through the drift cycle at each, and set below the
+   * darkest reading rather than at it.
+   *
+   * **Anything that changes the forms invalidates it**: their colours, blur,
+   * keyframes, size, or `REACH` in `HERO_JS`. Re-measure, do not adjust to taste.
+   */
+  const DARKEST_FORM_BEHIND_TEXT = 0.7;
 
   function token(name: string): string {
     const found = homePage().match(new RegExp(`${name}:\\s*(#[0-9A-Fa-f]{6})`));
@@ -269,5 +290,65 @@ describe("the stepped flow degrades to the form it replaced", () => {
     // interpolated in — the hash stops matching and the browser silently runs
     // nothing. Silently, because CSP failures are a console message.
     assert.ok(questionsPage().includes(STEPPER_JS), "byte-identical, or the policy blocks it");
+  });
+});
+
+/**
+ * The hero's cursor parallax.
+ *
+ * Added 2026-08-20 after Kelly looked at the live page and asked where the
+ * interaction was. There was none — the reactivity went out with the Three.js
+ * particles and only the drifting was ever rebuilt. This is that gap closed, at
+ * a cost of one transform on one element per frame instead of fifty thousand
+ * particles recomputed on the CPU.
+ *
+ * The property worth protecting is the refusal: with `prefers-reduced-motion`
+ * set, this must not bind a listener, start a loop, or write a transform. Not
+ * "move less" — do nothing, and leave the still frame the CSS already renders.
+ */
+describe("the hero leans toward the cursor, unless asked not to", () => {
+  test("reduced motion is checked before anything is bound", () => {
+    // Order matters, not just presence. A listener attached before the check
+    // would still fire; a transform written once before returning would still
+    // move the page. So the guard has to be the first statement that runs.
+    const body = HERO_JS.slice(HERO_JS.indexOf("(function"));
+    const guard = body.indexOf("prefers-reduced-motion");
+    const listener = body.indexOf("addEventListener");
+    const raf = body.indexOf("requestAnimationFrame");
+    assert.ok(guard > -1, "there is no reduced-motion branch at all");
+    assert.ok(guard < listener, "the guard must come before any listener is bound");
+    assert.ok(guard < raf, "the guard must come before any frame is scheduled");
+  });
+
+  test("it moves one element, not many", () => {
+    // The whole argument for this over a particle field. If this ever grows a
+    // querySelectorAll and a loop, it has become the thing we rejected.
+    assert.match(HERO_JS, /querySelector\('\.forms'\)/);
+    assert.doesNotMatch(HERO_JS, /querySelectorAll/, "one element, or it is a particle system again");
+  });
+
+  test("the loop stops when it settles rather than running forever", () => {
+    assert.match(HERO_JS, /raf = null/, "an rAF loop with no exit is a permanent 60fps tax");
+  });
+
+  test("the listener is passive, so moving the pointer cannot block scrolling", () => {
+    assert.match(HERO_JS, /\{ passive: true \}/);
+  });
+
+  test("the homepage authorises its script by hash and nothing else", () => {
+    const digest = createHash("sha256").update(HERO_JS, "utf8").digest("base64");
+    assert.ok(HOME_CSP.includes(`'sha256-${digest}'`), "policy derived from the script itself");
+    assert.doesNotMatch(HOME_CSP, /script-src[^;]*unsafe-inline/);
+    assert.match(HOME_CSP, /font-src 'self'/);
+  });
+
+  test("the script the policy names is the script in the page", () => {
+    assert.ok(homePage().includes(HERO_JS), "byte-identical, or the browser silently runs nothing");
+  });
+
+  test("the CSS still freezes the forms outright under reduced motion", () => {
+    // Belt and braces: the script declines to move them and the animation stops.
+    // Either alone would leave motion on the page for someone who asked for none.
+    assert.match(homePage(), /@media \(prefers-reduced-motion: reduce\)[^}]*\{[^}]*animation:\s*none/);
   });
 });

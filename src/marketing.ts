@@ -221,7 +221,9 @@ export function publisherCounts(): { publisher: string; n: number }[] {
 const HOME_CSS = `
   .hero { position:relative; min-height:100vh; min-height:100svh; display:flex;
           align-items:center; justify-content:center; overflow:hidden; }
-  .forms { position:absolute; inset:-15%; z-index:0; filter:blur(56px); pointer-events:none; }
+  /* inset -15% leaves room for HERO_JS to lean it 40px without exposing an edge. */
+  .forms { position:absolute; inset:-15%; z-index:0; filter:blur(56px); pointer-events:none;
+           will-change:transform; }
   .blob { position:absolute; border-radius:50%; mix-blend-mode:multiply; }
   .b1 { width:46%; aspect-ratio:1.3; left:22%; top:8%;
         background:radial-gradient(circle at 35% 35%, var(--plaster), transparent 68%); animation:d1 26s ease-in-out infinite; }
@@ -236,8 +238,18 @@ const HOME_CSS = `
   @keyframes d3 { 0%,100%{transform:translate(0,0) scale(.96)}  50%{transform:translate(4%,7%) scale(1.12)} }
   @media (prefers-reduced-motion: reduce) { .blob { animation:none !important; } }
 
-  .brandmark { position:absolute; top:30px; left:34px; z-index:2;
-               font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  /*
+   * 33px, up from 11. Kelly's call, 2026-08-20: three times larger.
+   *
+   * At that size the tracking has to come down — .08em was set for 11px small
+   * caps, where letters need pushing apart to read; at 33px the same value
+   * reads as a gap. And it wraps below ~430px, so the mobile rule scales it
+   * rather than letting "THE USABILITY / LAB" break across two lines in the
+   * corner of a hero.
+   */
+  .brandmark { position:absolute; top:34px; left:38px; z-index:2;
+               font-size:33px; font-weight:300; letter-spacing:-.005em;
+               text-transform:uppercase; line-height:1; }
   .hero-in { position:relative; z-index:1; text-align:center; padding:0 32px; max-width:800px; }
   .hero-in h1 { font-size:56px; font-weight:300; line-height:1.14; letter-spacing:-.018em; margin:0 0 26px; }
   .hero-in .sub { font-size:15px; color:var(--ink-soft); margin:0 0 38px; letter-spacing:.005em; }
@@ -294,7 +306,7 @@ const HOME_CSS = `
 
   @media (max-width:640px) {
     .hero-in h1 { font-size:36px; }
-    .brandmark { top:22px; left:22px; }
+    .brandmark { top:24px; left:22px; font-size:19px; }
     .sec { padding:88px 24px; }
     .big { font-size:22px; }
     .counts { flex-wrap:wrap; gap:26px 0; }
@@ -401,7 +413,8 @@ export function homePage(): string {
        page again and tell you what moved. Up to ${SITE_LIMIT} sites and
        ${AUDITS_PER_MONTH} re-audits a month. Cancel any time.</p>
   </footer>
-</main>`,
+</main>
+<script>${HERO_JS}</script>`,
   );
 }
 
@@ -525,6 +538,64 @@ export const STEPPER_JS = `
 export const STEPPED_CSP =
   `${MARKETING_CSP}; script-src 'sha256-` +
   createHash("sha256").update(STEPPER_JS, "utf8").digest("base64") +
+  `'`;
+
+/**
+ * The hero's one piece of interactivity: the forms lean toward the cursor.
+ *
+ * ## Why this is four lines of transform and not a particle system
+ *
+ * The component that started this design pushed 50,000 particles away from the
+ * pointer, recomputing every one of them on the CPU each frame. This moves **one
+ * element** — the container the four blurred forms already live in — by up to
+ * 40px, eased. That is a single GPU-composited transform per frame, and the loop
+ * stops the moment it settles rather than running forever.
+ *
+ * The parallax reads as depth because the forms are blurred and the text is not:
+ * the background drifts under the headline and the headline stays put.
+ *
+ * ## What it refuses to do
+ *
+ * **Nothing at all under `prefers-reduced-motion`.** It returns before binding a
+ * listener, so there is no pointer handler, no rAF loop, and no transform — the
+ * same still frame the CSS already renders. Checked first, before any work.
+ *
+ * Written in plain `var`-and-`function` style for the same reason as the
+ * stepper: this string is hashed into the page's Content-Security-Policy, so any
+ * transform of the bytes would leave the browser silently refusing to run it.
+ */
+export const HERO_JS = `
+(function () {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var forms = document.querySelector('.forms');
+  if (!forms) return;
+
+  var REACH = 40;
+  var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+
+  function tick() {
+    cx += (tx - cx) * 0.06;
+    cy += (ty - cy) * 0.06;
+    forms.style.transform = 'translate3d(' + (cx * REACH).toFixed(2) + 'px,' + (cy * REACH).toFixed(2) + 'px,0)';
+    if (Math.abs(tx - cx) > 0.0005 || Math.abs(ty - cy) > 0.0005) {
+      raf = window.requestAnimationFrame(tick);
+    } else {
+      raf = null;
+    }
+  }
+
+  window.addEventListener('pointermove', function (e) {
+    tx = (e.clientX / window.innerWidth - 0.5) * 2;
+    ty = (e.clientY / window.innerHeight - 0.5) * 2;
+    if (raf === null) raf = window.requestAnimationFrame(tick);
+  }, { passive: true });
+})();
+`;
+
+/** The homepage runs one script, and names it. Same rule as the stepped flow. */
+export const HOME_CSP =
+  `${MARKETING_CSP}; script-src 'sha256-` +
+  createHash("sha256").update(HERO_JS, "utf8").digest("base64") +
   `'`;
 
 /** Matches `MAX_ANSWER` in server.ts, which enforces it. */

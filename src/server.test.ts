@@ -1123,11 +1123,29 @@ describe("the question flow", () => {
     assert.match(csp, /font-src 'self'/);
   });
 
-  test("the homepage does not get the script policy", async () => {
-    // Only the page with a script names one. Widening the marketing policy to
-    // cover both would authorise a script on a page that has none to run.
-    const csp = (await fetch(`${BASE}/`)).headers.get("content-security-policy")!;
-    assert.doesNotMatch(csp, /script-src/);
+  test("each page authorises only its own script, never the other's", async () => {
+    /**
+     * Both pages run a script now — the homepage got cursor parallax on
+     * 2026-08-20 — and each names its own by hash. The failure this guards
+     * against is the tempting one: widening MARKETING_CSP to cover both so
+     * there is one policy to think about. That would authorise the stepper on
+     * the homepage and the parallax on the flow, and neither page would notice,
+     * because a CSP is only ever felt when it refuses something.
+     */
+    const home = (await fetch(`${BASE}/`)).headers.get("content-security-policy")!;
+    const start = (await fetch(`${BASE}/start`)).headers.get("content-security-policy")!;
+
+    const hashOf = (csp: string) => csp.match(/'sha256-([A-Za-z0-9+/=]+)'/)?.[1];
+    assert.ok(hashOf(home), "the homepage names a script");
+    assert.ok(hashOf(start), "the flow names a script");
+    assert.notEqual(hashOf(home), hashOf(start), "two scripts, two hashes");
+
+    assert.equal(home.match(/sha256-/g)?.length, 1, "the homepage authorises exactly one");
+    assert.equal(start.match(/sha256-/g)?.length, 1, "so does the flow");
+
+    // And the untouched surfaces still authorise nothing.
+    const shell = (await fetch(`${BASE}/r/${randomUUID()}`)).headers.get("content-security-policy")!;
+    assert.doesNotMatch(shell, /script-src/, "a page with no script must not name one");
   });
 
   test("neither view writes anything into the permanent log", async () => {

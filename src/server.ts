@@ -61,6 +61,7 @@ import {
   STRICT_CSP,
   MARKETING_CSP,
   STEPPED_CSP,
+  HOME_CSP,
   page,
   homePage,
   questionsPage,
@@ -466,7 +467,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
    */
   if (url.pathname === "/") {
     events.record({ audit_id: null, type: "home.viewed", data: {} });
-    return sendPage(res, 200, homePage());
+    return sendPage(res, 200, homePage(), {}, HOME_CSP);
   }
 
   // --- the question flow ---------------------------------------------------
