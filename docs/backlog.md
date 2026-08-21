@@ -889,6 +889,30 @@ and F21 in v0, and this is a sixth failure, not one of those.
 
 ---
 
+## B26. ~~The rate limiter collapses behind any TLS terminator~~ — DONE 2026-08-20
+
+Found while planning the deploy, not by anything failing.
+
+`asksByClient` allows five audit requests an hour per client, keyed on
+`req.socket.remoteAddress`. Honest on localhost; behind a proxy every request
+arrives from the proxy, so five an hour became the budget for the entire
+internet and the sixth visitor of the hour would have been refused. Not
+hardening — the site failing on day one, in a way that reads as a broken router.
+
+The obvious fix is worse than the bug: reading `X-Forwarded-For` by default
+turns a per-client limit into a per-header-value limit, which is none at all.
+So `clientip.ts` reads a header **only when an operator names it** in
+`USABILITY_LAB_CLIENT_IP_HEADER`, and unset behaves exactly as before.
+
+Verified, not reasoned about: six requests from one address → the sixth 429s,
+and a second address immediately after is unthrottled. With the variable unset,
+six *different* addresses share one bucket — which is both the collapse and
+proof that a forged header is ignored.
+
+`preflight.ts` now refuses to start when `USABILITY_LAB_BASE_URL` is https and
+either this or `USABILITY_LAB_SECURE_COOKIES` is missing. Both faults are
+invisible when wrong; a boot warning is read once.
+
 ## B24. The homepage cannot audit itself until it is deployed
 
 Opened 2026-08-20, blocked, **not a bug**.

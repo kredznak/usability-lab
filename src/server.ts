@@ -67,6 +67,8 @@ import {
   questionsPage,
 } from "./marketing.js";
 import { asset } from "./assets.js";
+import { clientIp } from "./clientip.js";
+import { preflight, envFromProcess, report } from "./preflight.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
@@ -524,7 +526,12 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
 
     const now = Date.now();
-    const client = req.socket.remoteAddress ?? "unknown";
+    /**
+     * Not the socket address directly — see clientip.ts. Behind a TLS
+     * terminator every request arrives from the proxy, and this limit would
+     * become five audits an hour for the entire internet.
+     */
+    const client = clientIp(req);
 
     /**
      * Global first, then per client — B16's ordering lesson, applied to a map
@@ -1094,10 +1101,31 @@ const server = createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
+/**
+ * Checked before the socket opens, so a refusal is not a server that briefly
+ * served real traffic with the wrong headers and then quit.
+ */
+const checks = preflight(envFromProcess());
+if (!checks.ok) {
+  console.error(report(checks));
+  process.exit(2);
+}
+
+/**
+ * `listen(PORT)` alone accepts connections on every interface, which is right
+ * on a laptop and wrong behind a tunnel: the app would also answer on the LAN,
+ * on plain http, with the Secure cookie flag set and therefore no cookie at all.
+ * `USABILITY_LAB_BIND=127.0.0.1` makes the proxy the only way in. Default
+ * unchanged, because changing it would break every existing local setup.
+ */
+const BIND = process.env.USABILITY_LAB_BIND;
+
+server.listen(...((BIND ? [PORT, BIND] : [PORT]) as [number, string?]), () => {
   const ready = store.list("PUBLISHED").length + store.list("AUTO_PUBLISHED").length;
   console.log(
-    `\n  The Usability Lab — http://localhost:${PORT}\n` +
+    `\n  The Usability Lab — http://${BIND ?? "localhost"}:${PORT}\n` +
+      report(checks) + `\n` +
+      `  bound to       ${BIND ?? "every interface"}\n` +
       `  ${ready} audit${ready === 1 ? "" : "s"} reachable. Links are printed by \`npm run review\`.\n` +
       `  Magic links print here; no email is sent.\n`,
   );
