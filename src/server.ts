@@ -685,6 +685,30 @@ function render(
 }
 
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  /**
+   * HSTS — set here rather than in `send()` so that it reaches **every**
+   * response: the 404s, the 403s, and the host redirect below, none of which go
+   * through the page helpers. `setHeader` before any `writeHead` survives,
+   * because nothing downstream names this header.
+   *
+   * Only when the operator has claimed https, which is `preflight.ts`'s rule
+   * again. A browser ignores this header over plain http anyway, so gating it is
+   * about not writing something misleading into a local response rather than
+   * about safety.
+   *
+   * A year, and `includeSubDomains` because `www` is the only subdomain and it
+   * is served over the same tunnel. **No `preload`**: that is a submission to a
+   * list baked into browser binaries, and it is materially hard to undo.
+   *
+   * This is defence in depth, not a hole being closed — the tunnel serves https
+   * only. It matters because the product mails a bearer credential inside a URL,
+   * and the one request HSTS protects is the first one, before any of our
+   * headers have ever been seen.
+   */
+  if (ENFORCE_HOST) {
+    res.setHeader("strict-transport-security", "max-age=31536000; includeSubDomains");
+  }
+
   // --- one host, one site --------------------------------------------------
   /**
    * The tunnel routes `www.theusabilitylab.com` here too, and without this the

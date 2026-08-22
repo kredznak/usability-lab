@@ -42,8 +42,23 @@ import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
  * `send()` takes this as a default rather than hardcoding it, so a route added
  * later by somebody not thinking about headers comes out locked down. Anything
  * that needs more has to say so at the call site.
+ *
+ * ## `frame-ancestors 'none'`, spelled out because it looks redundant
+ *
+ * It is not covered by `default-src 'none'`. `frame-ancestors` is one of the
+ * few directives with **no fallback to `default-src`** — the others being
+ * `report-uri`, `sandbox` and `base-uri` — so a policy that opens with
+ * `default-src 'none'` and stops there still permits the page to be framed by
+ * anybody. Read quickly, this line is noise; deleted, every page here is
+ * frameable.
+ *
+ * Added 2026-08-22, when the site went onto a public hostname. It cost nothing
+ * on a laptop and it costs nothing now — but `/a/<id>/subscribe` is a button
+ * that spends a customer's money, and UI-redress is the attack that exists for
+ * buttons like that. The CSRF token bounds it; this closes it.
  */
-export const STRICT_CSP = "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'";
+export const STRICT_CSP =
+  "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; frame-ancestors 'none'";
 
 /**
  * What the marketing surfaces need on top of strict: one font, from us.

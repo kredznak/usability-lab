@@ -664,6 +664,37 @@ describe("content-security-policy", () => {
     assert.match(csp, /default-src 'none'/);
     assert.doesNotMatch(csp, /script-src/);
   });
+
+  /**
+   * `frame-ancestors` gets its own test because it is the directive that looks
+   * redundant next to `default-src 'none'` and is not: it has no fallback to
+   * `default-src`, so a reviewer tidying the policy could delete it, see every
+   * other assertion here stay green, and leave every page frameable.
+   *
+   * The pages named below are the ones where it earns its keep — an audit page
+   * carries the subscribe button, and the homepage and question flow are what a
+   * stranger would be lured into framing.
+   */
+  test("nothing here may be framed, on any surface", async () => {
+    for (const path of ["/", "/start", `/a/${A}/`, `/a/${NEVER_SEEDED}/`]) {
+      const csp = (await fetch(`${BASE}${path}`)).headers.get("content-security-policy") ?? "";
+      assert.match(csp, /frame-ancestors 'none'/, `${path} can be framed`);
+    }
+  });
+
+  /**
+   * HSTS is a promise about a hostname, so it is sent only where a hostname has
+   * been claimed. Sending it from a local run would be writing something into a
+   * response that is not true of the address serving it — browsers ignore the
+   * header over plain http, so this is about honesty rather than safety.
+   *
+   * The public half is asserted in "one host, one site", which is the suite that
+   * has a server with a public base URL.
+   */
+  test("a local run makes no HSTS promise", async () => {
+    const res = await fetch(`${BASE}/`);
+    assert.equal(res.headers.get("strict-transport-security"), null);
+  });
 });
 
 /**
@@ -2137,14 +2168,18 @@ describe("one host, one site", () => {
     pathname = "/",
     method = "GET",
     port = HOST_PORT,
-  ): Promise<{ status: number; location: string | undefined }> {
+  ): Promise<{ status: number; location: string | undefined; hsts: string | undefined }> {
     return new Promise((resolve, reject) => {
       const req = http.request(
         { host: "127.0.0.1", port, path: pathname, method, headers: { host } },
         (res) => {
           res.resume();
           res.on("end", () =>
-            resolve({ status: res.statusCode ?? 0, location: res.headers.location }),
+            resolve({
+              status: res.statusCode ?? 0,
+              location: res.headers.location,
+              hsts: res.headers["strict-transport-security"] as string | undefined,
+            }),
           );
         },
       );
@@ -2233,5 +2268,33 @@ describe("one host, one site", () => {
   test("with no public base URL, any host is served and nothing is redirected", async () => {
     const { status } = await ask("anything.at.all", "/", "GET", PORT);
     assert.equal(status, 200);
+  });
+
+  /**
+   * HSTS, on a server that has claimed a public address.
+   *
+   * A year and `includeSubDomains`, because `www` is the only subdomain and it
+   * comes through the same tunnel. No `preload` — that is a submission to a list
+   * compiled into browser binaries, and getting off it takes months.
+   */
+  test("a public server promises https for a year", async () => {
+    const { hsts } = await ask("theusabilitylab.test");
+    assert.equal(hsts, "max-age=31536000; includeSubDomains");
+  });
+
+  /**
+   * The reason it is set at the top of `handle` rather than inside `send`: the
+   * responses most likely to be a visitor's *first* are the ones that never
+   * reach a page helper. A 404 from a mistyped link and the www redirect both
+   * skip `send()` entirely, and the first request is the only one HSTS protects.
+   */
+  test("and makes it on the responses that never reach a page helper", async () => {
+    const missing = await ask("theusabilitylab.test", "/no-such-page");
+    assert.equal(missing.status, 404);
+    assert.match(missing.hsts ?? "", /max-age=31536000/, "a 404 is somebody's first request");
+
+    const redirected = await ask("www.theusabilitylab.test", "/");
+    assert.equal(redirected.status, 308);
+    assert.match(redirected.hsts ?? "", /max-age=31536000/, "so is the www redirect");
   });
 });

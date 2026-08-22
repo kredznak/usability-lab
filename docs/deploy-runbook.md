@@ -349,6 +349,60 @@ router and got the same stale answer straight back. Undo with
 `networksetup -setdnsservers Wi-Fi Empty` once the router has moved on; nothing
 about the deploy depends on it.
 
+### Probed from the internet, which was never possible before
+
+Every operator surface, every guess at an index, and the unpublished audit
+`e338784b` — **404 across the board**:
+
+```
+/funnel  /funnel.html  /out/funnel.html  /out/usability-lab.db  /.env
+/package.json  /src/server.ts  /a  /a/  /audits  /admin
+/a/e338784b-…/  /a/e338784b-…/full  /a/e338784b-…/…-annotated.png
+```
+
+**Those 404s mean nothing without the control**, because a route that is simply
+broken 404s just as convincingly. So, against a *published* audit:
+
+| Request | Result |
+|---|---|
+| `/a/0e1456d9-…/` | **200** — the preview is reachable |
+| `/a/0e1456d9-…/0e1456d9-…-annotated.png` | **200** |
+| `/a/0e1456d9-…/full` | **403** — still behind the token |
+| `/a/0e1456d9-…/../../../etc/passwd` | 404 |
+| `…/..%2f..%2f..%2fetc%2fpasswd` | 400 |
+| `/a/0e1456d9-…/capture.json`, `findings.json`, `review.json` | 404 |
+| an *other* audit's PNG under this audit's id | 404 |
+
+Headers on `/`, `/start` and a published preview: `default-src 'none'`,
+`script-src` pinned to a sha256 hash, `referrer-policy: no-referrer` — which is
+the one that keeps a magic-link token out of the `Referer` on an outbound click —
+and `x-content-type-options: nosniff`.
+
+### Two header gaps this deploy created, both now closed
+
+Neither mattered on a laptop.
+
+**`frame-ancestors 'none'`** is now in `STRICT_CSP`, which `MARKETING_CSP` and
+both script-bearing policies derive from — so one line covered all three. It is
+worth knowing *why* it had to be written at all: `frame-ancestors` is one of the
+few directives with **no fallback to `default-src`**, so a policy opening with
+`default-src 'none'` still permits framing. Read quickly the line looks
+redundant; deleted, every page here is frameable, including the one carrying the
+subscribe button.
+
+**`Strict-Transport-Security: max-age=31536000; includeSubDomains`** is set at
+the top of `handle()` rather than in `send()`, deliberately: the responses most
+likely to be a visitor's *first* are the ones that never reach a page helper — a
+404 from a mistyped link, and the `www` redirect. The first request is the only
+one HSTS protects. **No `preload`**, which is a submission to a list compiled
+into browser binaries and takes months to leave.
+
+Sent only when the base URL claims https. A browser ignores the header over
+plain http anyway, so the gate is about not writing a false promise into a local
+response.
+
+Verified live on `/`, `/start`, a published preview, a 404 and the `www` 308.
+
 **Not re-verified, deliberately.** The `cf-connecting-ip` rate-limit buckets were
 proved on 2026-08-20 and re-proving them means six `POST /request` calls, which
 write six `audit_requests` rows and move every funnel number. The header is
