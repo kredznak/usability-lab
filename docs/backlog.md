@@ -1004,12 +1004,44 @@ e16569d2      ?     8      3    yes   asana.com/create-account
 
 **What this is not.** Not a regression, and not evidence the pipeline is
 broken — 332s and 10-of-13 cited on 2026-08-21 is the best run the project has
-had. It is evidence that **nobody has ever run the demo**. Three audits on
-three fresh sites, back to back, with the log watching, is roughly 20 minutes
-and about $2.50. Until that is done, §0's status is unknown rather than met.
+had. It is evidence that **nobody has ever run the demo**.
 
 **Do not** pick the three sites for citability. A streak assembled from sites
 chosen because they cite well measures the chooser.
+
+### The demo was run, 2026-08-21. The pipeline half passed.
+
+Four requests through the real route — form POST, queue row, `npm run audit --
+--queue` — run back to back in one pass, four for four, no failures:
+
+```
+audit      wall   find  cited  shot   site
+1ccc0425   110s     10      6    yes   basecamp.com/
+2ae5a280   128s     11      9    yes   myschools.nyc/en/
+b7969d20   148s     11      9    yes   ghost.org/pricing/
+96ba2ed5   278s     15      9    yes   buttondown.com/
+```
+
+Every clause of §0 that the pipeline controls is met, four times, on four
+different sites, consecutively, with every step in the event log: **under 8
+minutes** (worst 278s, against a 480s budget), **≥1 cited finding** (worst 6),
+**annotated screenshot** on all four. $1.83 for the set, against a $25 ceiling
+the same day's F11 work put in place.
+
+Three of the four are fresh sites, never audited before. The basecamp row was a
+separate submission of Kelly's with different answers from the 2026-08-21
+request, so it produces a different profile and a different audit — not a
+repeat. Two of the four question-answer sets were written by Claude rather than
+by a site owner, which is the part of this demo that is not real.
+
+**The streak is not yet complete, and the missing step is the founder gate.**
+All four sit at REVIEW_PENDING; §0 says *published* results page. Publishing is
+Kelly's, and B29 is the reason that is not a formality — the gate has cut
+nothing since 2026-08-16.
+
+Also worth reading against B15: the basecamp audit here found 10 findings where
+`2928c314` found 13 the same day on the same URL, with different answers. That
+is the reproducibility question, not a regression.
 
 ---
 
