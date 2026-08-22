@@ -1042,6 +1042,49 @@ store owns its own audit trail, and worth deciding rather than defaulting.
 
 ---
 
+## B28. The evals exist; the gate does not
+
+Opened 2026-08-21. §0 lists "Evals in CI: trajectory suite + 3 injection
+red-team fixtures" as shipping in v0, and the leftovers list has carried
+"evals in CI" as outstanding without saying which half was missing. It is the
+CI, not the evals.
+
+**Both suites exist and pass.**
+
+- `src/orchestrator/trajectory.test.ts` — the trajectory suite.
+- `src/injection.test.ts` — the hermetic injection assertions.
+- Together: 35 tests, 4.3s, green. They run inside `npm test`.
+- `npm run redteam` — **five** fixtures against real calls, not three:
+  `inject-visible`, `inject-hidden`, `inject-alt`, `inject-escape`,
+  `inject-scope`. §0 under-promised.
+
+**What is missing is enforcement.** §10 wants a PR gate: trajectory 100%,
+schema 100%, red-team 100%, any injection success blocks merge. There is
+**no git remote** on this repository, so there is no PR, no Actions workflow
+and nothing to gate. The only hook is `.githooks/pre-commit`, which scans
+staged content for credentials and **does not run a single test**.
+
+So today the evals run exactly when somebody types `npm run check`. That has
+been enough while one person commits, and it is the same shape as F11 before
+today: a control that exists on paper and is executed by discipline.
+
+**Two ways forward, and they are not equivalent.**
+
+1. **A remote and a workflow.** What §10 actually describes. Blocked on
+   creating a GitHub repository — the same "Kelly has to make an account"
+   shape as the domain and B21, and about as cheap.
+2. **A local `pre-push` or `pre-commit` step** running `npm run check`. Gives
+   the gate teeth today without a remote, at ~5s a commit. But a pre-push hook
+   with no remote to push to never fires, so this really means pre-commit —
+   which changes the commit workflow on Kelly's machine, and `--no-verify`
+   makes it advisory anyway.
+
+**Not built pending a decision**, because (2) alters how Kelly works and (1) is
+not mine to create. The honest interim is that `npm run check` is the gate and
+it is run by hand.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
