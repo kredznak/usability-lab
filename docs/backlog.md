@@ -962,6 +962,86 @@ route. Named rather than fixed because the fix is a real decision — sample the
 views, rate-limit the GET, or accept the growth and prune — and folding any of
 those into a design change would have been scope creep.
 
+## B26. The definition of done has never been met
+
+Opened 2026-08-21, measured not guessed.
+
+§0's demo sentence: *"One URL + question answers → published results page with
+≥1 cited finding and an annotated screenshot, in under 8 minutes wall-clock,
+**three consecutive runs on three different sites**, with every step's events
+visible in the funnel dashboard."*
+
+Every published audit, measured:
+
+```
+audit      wall   kept  cited  shot   site
+0e1456d9   120s     4      0    yes   our own homepage
+5112587d   182s    13     11    yes   basecamp.com
+139d5f3e   292s    13      3    yes   www.notion.com/pricing
+5d121558      ?    13      3    yes   www.irs.gov/payments
+2a5a7f87      ?     8      0    yes   www.duolingo.com
+25567a70      ?     7      4    yes   linear.app/pricing
+8ae363d2      ?    14      7    yes   basecamp.com
+52444e83      ?    14      7    yes   www.cotopaxi.com/cart
+e16569d2      ?     8      3    yes   asana.com/create-account
+4f8f1271      ?    14      0    yes   basecamp.com
+```
+
+**Each clause passes somewhere and they have never passed together.**
+
+- **Wall-clock** can only be checked on the five audits that have step events —
+  step logging landed 2026-08-17 18:35, and everything above it in the table
+  predates it. All five are well under 8 minutes (120s–332s), so the time
+  budget is not the problem.
+- **Three consecutive** is where it breaks. The three published runs on three
+  different sites, 2026-08-17 11:27/11:30/11:34 — linear, duolingo, irs —
+  predate step logging *and* duolingo returned 0 cited findings. The two
+  instrumented published runs that both cite, 139d5f3e and 5112587d, are
+  consecutive — and the next audit, 5b5b3b2a, is FAILED. The streak is two.
+- **≥1 cited** is subject-matter dependent, not pipeline dependent, and it is
+  the clause most likely to break a streak: 3 of 10 published audits cite
+  nothing. See B23 for why our own homepage is one of them.
+
+**What this is not.** Not a regression, and not evidence the pipeline is
+broken — 332s and 10-of-13 cited on 2026-08-21 is the best run the project has
+had. It is evidence that **nobody has ever run the demo**. Three audits on
+three fresh sites, back to back, with the log watching, is roughly 20 minutes
+and about $2.50. Until that is done, §0's status is unknown rather than met.
+
+**Do not** pick the three sites for citability. A streak assembled from sites
+chosen because they cite well measures the chooser.
+
+---
+
+## B27. A status can change without leaving an event
+
+Opened 2026-08-21. Found while measuring B26.
+
+`5b5b3b2a` emitted `audit.completed` at 01:30:52 on 2026-08-18 with 10
+findings, and its row was moved to `FAILED` at 01:34:32 — three minutes and
+forty seconds later, by something that recorded no event and left no trace. The
+audit's own trail says it finished; its status says it failed. Nothing in the
+tracked code sets `FAILED` except the audit runner's `catch`, which always
+records `audit.failed` first.
+
+**Why it matters.** `AuditStore.transition()` writes a status; only *some* call
+sites also record an event. So the audits table and the append-only event log
+can disagree, and here they do. This is the B5 shape again — a write that steps
+around the log — and it is how the dashboard came to print `audits failed: 1`
+directly below `FAILED 15`.
+
+**Fixed today, partly.** `npm run funnel` now counts failures from rows rather
+than events, and prints how many have no recorded cause (16 audits, 1 cause).
+That makes the disagreement *visible*; it does not make it impossible.
+
+**What would fix it properly.** Have `transition()` record the status change
+itself, so no status can move invisibly. That means `AuditStore` writing to
+`events`, which today it does not — a real design decision about whether the
+store owns its own audit trail, and worth deciding rather than defaulting.
+**Ask before building.**
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages

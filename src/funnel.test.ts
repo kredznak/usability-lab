@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import Database from "better-sqlite3";
 import { EventLog } from "./db.js";
-import { countsByType, funnelStages, percentile, stepStats } from "./funnel.js";
+import { countsByType, failureSummary, funnelStages, percentile, stepStats } from "./funnel.js";
 
 /**
  * §0's last unbuilt clause: "every step's events visible in the funnel
@@ -178,6 +178,69 @@ describe("funnel stages count audits that got somewhere", () => {
     const { stages } = funnelStages([]);
     assert.equal(stages[0]!.n, 0);
     for (const s of stages.slice(1)) assert.equal(s.pct, null);
+  });
+});
+
+/**
+ * The dashboard printed `audits failed: 1` two blocks below `FAILED 15`.
+ *
+ * Both numbers were right. The `1` counted `audit.failed` events, first
+ * recorded on 2026-08-17; the `15` counted rows. A dashboard that disagrees
+ * with itself about its worst number is worse than one that omits it.
+ */
+describe("failures are counted from rows, and the unexplained ones say so", () => {
+  const row = (id: string, status: string) => ({ audit_id: id, status });
+  const why = (id: string, error: string) => ({
+    audit_id: id,
+    type: "audit.failed",
+    data: { error },
+  });
+
+  test("a failure with no event is counted and marked unexplained", () => {
+    // The case that made the two numbers differ, and it is not only historical:
+    // `5b5b3b2a` emitted `audit.completed` and was moved to FAILED three minutes
+    // later by something that left no event.
+    const lines = failureSummary([row("a", "FAILED")], []);
+    assert.match(lines[0]!, /1 audits, 0 with a recorded cause/);
+    assert.ok(lines.some((l) => /no cause recorded/.test(l)));
+  });
+
+  test("CAPTURE_FAILED is a failure too", () => {
+    // It is a different status because the repair is different, not because the
+    // audit succeeded.
+    const lines = failureSummary(
+      [row("a", "CAPTURE_FAILED")],
+      [why("a", "that address points at a private network")],
+    );
+    assert.match(lines[0]!, /1 audits, 1 with a recorded cause/);
+    assert.ok(lines.some((l) => /private network/.test(l)));
+  });
+
+  test("published and pending audits are not failures", () => {
+    const lines = failureSummary(
+      [row("a", "PUBLISHED"), row("b", "REVIEW_PENDING"), row("c", "PARKED")],
+      [],
+    );
+    assert.deepEqual(lines, ["FAILURES  none"]);
+  });
+
+  test("the same cause twice is one line saying two", () => {
+    const lines = failureSummary(
+      [row("a", "FAILED"), row("b", "FAILED"), row("c", "FAILED")],
+      [why("a", "timeout"), why("b", "timeout"), why("c", "bot wall")],
+    );
+    assert.match(lines[0]!, /3 audits, 3 with a recorded cause/);
+    // Sorted by count, so the cause worth fixing first is the line you read first.
+    assert.match(lines[1]!, /2  timeout/);
+    assert.match(lines[2]!, /1  bot wall/);
+  });
+
+  test("an event belonging to another audit is not borrowed as this one's cause", () => {
+    // `find` on the wrong key is how a dashboard starts explaining failures with
+    // somebody else's reason.
+    const lines = failureSummary([row("a", "FAILED")], [why("b", "someone else's problem")]);
+    assert.match(lines[0]!, /1 audits, 0 with a recorded cause/);
+    assert.ok(!lines.some((l) => /someone else/.test(l)));
   });
 });
 

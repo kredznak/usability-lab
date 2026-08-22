@@ -174,6 +174,54 @@ export function funnelStages(
  * feeds are the ones whose *meaning* moved when the homepage was rebuilt, so
  * they are the rows most worth being able to assert on.
  */
+/**
+ * Failures, counted from the audits table rather than from the event log.
+ *
+ * The dashboard printed `audits failed: 1` two blocks below `FAILED 15`. Both
+ * were true — the `1` counted `audit.failed` events, which have only been
+ * recorded since 2026-08-17 — and together they were a dashboard disagreeing
+ * with itself about its worst number.
+ *
+ * Rows are the authority, because a status is a fact about an audit and an
+ * event is a fact about a moment. When they disagree, the audit is the thing
+ * that failed.
+ *
+ * The gap between the two is printed rather than closed, because it is the
+ * interesting part. `5b5b3b2a` emitted `audit.completed`, and was moved to
+ * FAILED three minutes later by something that left no event at all — so an
+ * unexplained failure is not only an old one. An audit nobody can name the
+ * cause of is a different problem from an audit that failed.
+ */
+export function failureSummary(
+  rows: { audit_id: string; status: string }[],
+  events: { audit_id: string | null; type: string; data: Record<string, unknown> }[],
+): string[] {
+  const failed = rows.filter((r) => r.status === "FAILED" || r.status === "CAPTURE_FAILED");
+  if (failed.length === 0) return [`FAILURES  none`];
+
+  const reasons = new Map<string, number>();
+  let unexplained = 0;
+  for (const r of failed) {
+    const why = events.find((e) => e.audit_id === r.audit_id && e.type === "audit.failed");
+    const msg = typeof why?.data.error === "string" ? why.data.error : null;
+    if (msg === null) unexplained += 1;
+    else reasons.set(msg, (reasons.get(msg) ?? 0) + 1);
+  }
+
+  return [
+    `FAILURES  ${failed.length} audits, ${failed.length - unexplained} with a recorded cause`,
+    ...[...reasons.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([msg, n]) => `  ${String(n).padStart(3)}  ${msg.slice(0, 62)}`),
+    ...(unexplained > 0
+      ? [
+          `  ${String(unexplained).padStart(3)}  (no cause recorded — ran before failures were logged,`,
+          `       or the status was changed by something that left no event)`,
+        ]
+      : []),
+  ];
+}
+
 export function countsByType(events: { type: string }[]): Map<string, number> {
   const byType = new Map<string, number>();
   for (const e of events) byType.set(e.type, (byType.get(e.type) ?? 0) + 1);
@@ -219,7 +267,7 @@ function main(): void {
       `                              so these were granted by \`npm run subscribe\``;
   const stats = stepStats(all);
   const { stages, outside } = funnelStages(all);
-  const failed = byType.get("audit.failed") ?? 0;
+  const failureLines = failureSummary(rows, all);
   const reaudits = all.filter((e) => e.type === "reaudit.checked");
   const quiet = reaudits.filter((e) => e.data.quiet === true).length;
 
@@ -297,7 +345,7 @@ function main(): void {
         `${secs(s.p95).padStart(8)} ${secs(s.max).padStart(8)}  ${s.failures || ""}`,
     ),
     ``,
-    `  audits failed: ${failed}`,
+    ...failureLines,
     ``,
     /**
      * F11's counter, on the one dashboard §0 allows.
