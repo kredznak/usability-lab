@@ -3,8 +3,9 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { capture, CaptureFailed } from "./capture.js";
-import { AuditStore, EventLog, ReauditRequestStore, type AuditRow } from "./db.js";
+import { AuditStore, CallLog, EventLog, ReauditRequestStore, type AuditRow } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
+import { ceilingFromEnv, spendLine, utcDay, verdict } from "./spend.js";
 import { Capture } from "./types.js";
 import { diffCaptures, isQuiet, type CaptureDiff } from "./capture-diff.js";
 import { sampledForReview } from "./sampling.js";
@@ -109,7 +110,23 @@ function runQueue(): void {
   console.error(`\n${pending.length} re-audit${pending.length === 1 ? "" : "s"} queued.\n`);
   let failed = 0;
 
-  for (const r of pending) {
+  // F11 again, and it has to be here as well as in `audit --queue`. The two
+  // runners share one bill and neither knows about the other, so a ceiling on
+  // only one of them is a ceiling on neither.
+  const calls = new CallLog();
+  const ceiling = ceilingFromEnv();
+  let deferred = 0;
+
+  for (const [i, r] of pending.entries()) {
+    const budget = verdict(calls.spentOn(utcDay(new Date())), ceiling);
+    if (budget.stop) {
+      // Left un-completed, so the row stays queued for tomorrow.
+      deferred = pending.length - i;
+      console.error(`\n${spendLine(budget)}\n`);
+      break;
+    }
+    if (budget.warn) console.error(`  ${spendLine(budget)}`);
+
     console.error(`\n─── request ${r.id}: ${r.url}  (asked ${r.requested_at.slice(0, 10)})\n`);
     try {
       execFileSync("npm", ["run", "reaudit", "--", r.url], { stdio: "inherit" });
@@ -120,10 +137,14 @@ function runQueue(): void {
     requests.complete(r.id);
   }
 
+  const ran = pending.length - failed - deferred;
   console.log(
-    `\n${pending.length - failed} of ${pending.length} completed` +
-      (failed > 0 ? `, ${failed} failed.\n` : `.\n`),
+    `\n${ran} of ${pending.length} completed` +
+      (failed > 0 ? `, ${failed} failed` : ``) +
+      (deferred > 0 ? `, ${deferred} deferred to tomorrow` : ``) +
+      `.\n`,
   );
+  calls.close();
   requests.close();
 }
 

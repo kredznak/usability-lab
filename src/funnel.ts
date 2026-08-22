@@ -1,9 +1,10 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { AuditStore, EventLog, SubscriptionStore } from "./db.js";
+import { AuditStore, CallLog, EventLog, SubscriptionStore } from "./db.js";
 import { stripeConfig } from "./stripe.js";
 import { OUT_ROOT } from "./paths.js";
+import { ceilingFromEnv, utcDay } from "./spend.js";
 
 /**
  * `npm run funnel` — §0's "every step's events visible in the funnel
@@ -222,6 +223,13 @@ function main(): void {
   const reaudits = all.filter((e) => e.type === "reaudit.checked");
   const quiet = reaudits.filter((e) => e.data.quiet === true).length;
 
+  const callLog = new CallLog();
+  const ceiling = ceilingFromEnv();
+  const today = callLog.spentOn(utcDay(new Date()));
+  const lifetime = callLog.lifetime();
+  callLog.close();
+  const money = (n: number) => `$${n.toFixed(2)}`.padStart(7);
+
   const stageLine = (s: Stage) =>
     `  ${s.label.padEnd(22)} ${String(s.n).padStart(4)}` +
     (s.pct === null ? "" : `   ${s.pct.toFixed(0)}% of requested`) +
@@ -290,6 +298,18 @@ function main(): void {
     ),
     ``,
     `  audits failed: ${failed}`,
+    ``,
+    /**
+     * F11's counter, on the one dashboard §0 allows.
+     *
+     * Until 2026-08-21 nothing anywhere reported spend: answering "what did
+     * today cost" meant writing SQL against `model_calls` by hand, which is how
+     * the $25 ceiling stayed a paper number for two weeks. A ceiling nobody can
+     * see the approach to is a ceiling that is only ever met by surprise.
+     */
+    `SPEND`,
+    `  today                  ${money(today)}   of ${money(ceiling)} (F11)`,
+    `  lifetime               ${money(lifetime.usd)}   over ${lifetime.calls} model calls`,
     ``,
   ];
 

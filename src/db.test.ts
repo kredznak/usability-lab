@@ -203,6 +203,41 @@ describe("model_calls records how many HTTP attempts a call took", () => {
     rmSync(dir, { recursive: true, force: true });
     assert.equal(row.attempts, null);
   });
+
+  /**
+   * F11's counter. The ceiling is only as good as the number it compares
+   * against, and that number is a `LIKE` against an ISO timestamp — a shape
+   * that is easy to get subtly wrong and impossible to notice, because being
+   * wrong makes it read *low* and a low number never stops anything.
+   */
+  test("a day's spend is that day's calls, failures included", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "ulab-spend-"));
+    const log = new CallLog(path.join(dir, "s.db"));
+    const call = (cost: number, ok: boolean, at: string) =>
+      log.record({
+        audit_id: "a1", agent: "researcher", model: "claude-sonnet-5",
+        prompt_version: "v1", input_tokens: 1, output_tokens: 2,
+        cache_read_tokens: 0, cache_write_tokens: 0, latency_ms: 3,
+        cost_usd: cost, ok, error: ok ? null : "timeout",
+      }) ?? at;
+
+    call(1, true, "");
+    call(2, false, ""); // billed for its tokens whatever the outcome
+    log.close();
+
+    const check = new Database(path.join(dir, "s.db"));
+    // Backdate one row: `record` stamps `now`, so a second day has to be made.
+    check.prepare(`UPDATE model_calls SET created_at = '2026-08-01T09:00:00.000Z' WHERE id = 1`).run();
+    check.close();
+
+    const reopened = new CallLog(path.join(dir, "s.db"));
+    const today = new Date().toISOString().slice(0, 10);
+    assert.equal(reopened.spentOn("2026-08-01"), 1, "the backdated call, alone on its day");
+    assert.equal(reopened.spentOn(today), 2, "the failed call still counts against the ceiling");
+    assert.equal(reopened.spentOn("2026-07-31"), 0, "a day with no calls is zero, not a crash");
+    reopened.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
 });
 
 /**

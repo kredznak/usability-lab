@@ -21,6 +21,7 @@ import { renderResults } from "./render.js";
 import { lintAudit, quarantined } from "./lint.js";
 import { CallLog, AuditStore, EventLog, AuditRequestStore, type AuditStatus } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
+import { ceilingFromEnv, spendLine, utcDay, verdict } from "./spend.js";
 import { countingFetch } from "./http.js";
 import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
 import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
@@ -175,7 +176,29 @@ function runQueue(): void {
   console.error(`\n${pending.length} audit${pending.length === 1 ? "" : "s"} queued.\n`);
   let failed = 0;
 
-  for (const r of pending) {
+  /**
+   * F11's ceiling, re-read between audits rather than once at the top.
+   *
+   * A queue of thirty is thirty chances to cross it, and the whole point is to
+   * stop at the crossing rather than after the last one. Reading it once would
+   * make the guard depend on how much was already spent when the runner
+   * happened to start.
+   */
+  const calls = new CallLog();
+  const ceiling = ceilingFromEnv();
+  let deferred = 0;
+  const spentToday = () => verdict(calls.spentOn(utcDay(new Date())), ceiling);
+
+  for (const [i, r] of pending.entries()) {
+    const budget = spentToday();
+    if (budget.stop) {
+      // Not claimed, so the row keeps its place and tomorrow's run picks it up.
+      deferred = pending.length - i;
+      console.error(`\n${spendLine(budget)}\n`);
+      break;
+    }
+    if (budget.warn) console.error(`  ${spendLine(budget)}`);
+
     const auditId = randomUUID();
     if (!asks.start(r.request_id, auditId)) {
       console.error(`  ${r.request_id.slice(0, 8)} was claimed by someone else; skipping.`);
@@ -203,11 +226,15 @@ function runQueue(): void {
     }
   }
 
+  const ran = pending.length - failed - deferred;
   console.log(
-    `\n${pending.length - failed} of ${pending.length} completed` +
-      (failed > 0 ? `, ${failed} failed.\n` : `.\n`) +
+    `\n${ran} of ${pending.length} completed` +
+      (failed > 0 ? `, ${failed} failed` : ``) +
+      (deferred > 0 ? `, ${deferred} deferred to tomorrow` : ``) +
+      `.\n` +
       `  Published audits still gate on \`npm run review\`.\n`,
   );
+  calls.close();
   asks.close();
 }
 

@@ -395,6 +395,32 @@ export class CallLog {
     return row.total;
   }
 
+  /**
+   * What a single UTC day cost — F11's counter.
+   *
+   * `day` is a `YYYY-MM-DD` prefix of `created_at`, which is an ISO-8601 UTC
+   * string on every row, so a prefix match is a day match. Failed calls are
+   * included on purpose: a call that timed out after generating tokens is still
+   * billed, and a ceiling that only counted successes would be blindest exactly
+   * when spend was running away.
+   */
+  spentOn(day: string): number {
+    const row = this.db
+      .prepare(
+        `SELECT COALESCE(SUM(cost_usd), 0) AS total FROM model_calls WHERE created_at LIKE ? || '%'`,
+      )
+      .get(day) as { total: number };
+    return row.total;
+  }
+
+  /** Everything this project has ever spent, and how many calls it took. */
+  lifetime(): { usd: number; calls: number } {
+    const row = this.db
+      .prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS usd, COUNT(*) AS calls FROM model_calls`)
+      .get() as { usd: number; calls: number };
+    return row;
+  }
+
   close(): void {
     this.db.close();
   }

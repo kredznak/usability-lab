@@ -976,8 +976,8 @@ and memory. Consolidated 2026-08-10; not new decisions.
   would be invented, so `npm run outcome` prints none.
 - **LLM judge for usefulness.** Needs ~50–100 human labels to calibrate against.
   We have 17.
-- **Not built at all:** Content agent, Inngest/Supabase, the nightly priors job,
-  F11's daily cost ceiling. *(Stripe Checkout is built, and its requests run
+- **Not built at all:** Content agent, Inngest/Supabase, the nightly priors job.
+  *(F11's daily cost ceiling shipped 2026-08-21 — see below.)* *(Stripe Checkout is built, and its requests run
   against `stripe-mock`, but no real account has ever been sent one — B21.)* *(The lint gate, re-audit
   diffing, the email gate, the subscribe surface and the question flow have
   since shipped, and Stripe with them; the web app exists as `npm run serve` on
@@ -988,9 +988,24 @@ and memory. Consolidated 2026-08-10; not new decisions.
   park. Quarantine is the better answer — a redraft loop asks a model to try
   again at the thing it just got wrong — but the doc and the code disagree and
   nothing records which one won. **Decide and amend §12, or build the loop.**
-- **F11 has nothing at all.** No spend counter anywhere. Not needed while a
-  person runs both queues by hand, which is today's actual spend control; needed
-  the day either becomes a cron. Named here so "five failures handled for real"
-  is not claimed with four.
+- **F11, built 2026-08-21.** `src/spend.ts` plus a `spentOn` counter over
+  `model_calls`, checked between audits in *both* queue runners — they share one
+  bill, so guarding one would have guarded neither. Over the ceiling, a request
+  is left unclaimed rather than started, so it keeps its place and runs
+  tomorrow. Proved end to end against a seeded database: refused at $999 of
+  $25, and the same queue ran when the ceiling was raised, which is what says
+  the ceiling stopped it rather than the environment.
+
+  **The numbers were measured before they were kept.** Lifetime spend is
+  **$21.93** over 294 calls; the worst day was **$8.04**; the worst single audit
+  **$1.16**. So §11's $25/day is about 3× the worst day we have ever had, and
+  the whole project has spent less in its life than one day is allowed. The
+  paper figure is kept — a backstop should sit well above normal — but it is now
+  a number that can be checked instead of one that could not. `npm run funnel`
+  prints today's spend against it.
+
+  What this does *not* do: the per-audit $3 ceiling (§11's DEGRADED-then-PARKED
+  path) is still unbuilt. Worst observed is $1.16, so it has never been within
+  2.5× of firing either.
 - **`docs/quality-bar.md`** still carries one `[UNRESOLVED]` (the post-publish
   correction path) and five `[PROPOSED]` items.
