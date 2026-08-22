@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { AuditStore, type AuditStatus } from "./db.js";
+import { AuditStore, EventLog, type AuditStatus } from "./db.js";
 import type { ReviewRecord } from "./types.js";
 
 /**
@@ -212,5 +212,104 @@ describe("the founder gate, end to end", () => {
     assert.notEqual(status, 0, "refusing must be a failure exit, not a quiet no-op");
     assert.match(output, /already been published/);
     assert.equal(reviewJson(fx), null);
+  });
+});
+
+/**
+ * Thinking about it should be free.
+ *
+ * `review.json` survived "not yet" from the day the gate shipped, and nothing
+ * could read it back — publishing meant answering every finding again. On five
+ * findings that is a nuisance; on the fifteen-finding audits in the queue it
+ * makes hesitation the expensive answer, at the one gate built for unhurried
+ * judgment.
+ *
+ * The second cost was quieter. Each sitting recorded its own `review.decided`,
+ * so one review that paused once left two rows saying it kept eleven findings.
+ * `funnelStages()` counts distinct audit ids and reads that correctly — its own
+ * comment describes finding the 200%-of-requested version of this bug — but
+ * §8's founder-review reject rate sums these rows, and would have inherited a
+ * doubled numerator from a founder who thought twice.
+ */
+describe("a review you already did", () => {
+  function decidedRows(fx: Fixture) {
+    const log = new EventLog(fx.dbPath);
+    const rows = log.all(AUDIT_ID).filter((e) => e.type === "review.decided");
+    log.close();
+    return rows;
+  }
+
+  test("publishes from one keystroke, without asking again", () => {
+    const fx = seed(5);
+    review(fx, [...Array(5).fill("k"), "n"]);
+    assert.equal(statusOf(fx), "REVIEW_PENDING", "the first sitting published nothing");
+
+    const { output } = review(fx, ["p"]);
+
+    assert.match(output, /already reviewed this/);
+    assert.doesNotMatch(output, /\[1\/5\]/, "no finding is put to the reviewer a second time");
+    assert.match(output, /PUBLISHED/);
+    assert.equal(statusOf(fx), "PUBLISHED");
+    assert.equal(reviewJson(fx)!.decisions.length, 5, "and the labels are the ones it saved");
+  });
+
+  test("one review is one review.decided, however many sittings it took", () => {
+    const fx = seed(5);
+    review(fx, [...Array(5).fill("k"), "n"]);
+    review(fx, ["p"]);
+
+    // Both halves, and the second one is why this test is worth having: with no
+    // resume path the `p` is eaten as the answer to finding 1, the queue runs
+    // dry, and the run aborts saving nothing. That leaves exactly one row too —
+    // the right count for the wrong reason, and a test that proves nothing.
+    assert.equal(statusOf(fx), "PUBLISHED", "the second sitting has to actually publish");
+    assert.equal(decidedRows(fx).length, 1, "pausing must not double the reject-rate numerator");
+  });
+
+  test("redoing asks every question again, and is a second decision", () => {
+    const fx = seed(4);
+    review(fx, [...Array(4).fill("k"), "n"]);
+
+    const { output } = review(fx, ["r", "c", "k", "k", "k", "y"]);
+
+    assert.match(output, /\[4\/4\]/, "every finding is put again");
+    assert.equal(reviewJson(fx)!.decisions.filter((d) => !d.keep).length, 1, "the new cut sticks");
+    assert.equal(statusOf(fx), "PUBLISHED");
+    // A redo is a genuinely different judgment, so it says so. Only republishing
+    // what was already recorded stays silent.
+    assert.equal(decidedRows(fx).length, 2);
+  });
+
+  test("quitting the offer changes nothing at all", () => {
+    const fx = seed(3);
+    review(fx, [...Array(3).fill("k"), "n"]);
+
+    const { output } = review(fx, ["q"]);
+
+    assert.match(output, /Nothing changed/);
+    assert.equal(statusOf(fx), "REVIEW_PENDING");
+    assert.equal(reviewJson(fx)!.decisions.length, 3, "the saved review is still there to publish");
+    assert.equal(decidedRows(fx).length, 1);
+  });
+
+  test("labels about findings that no longer exist are refused, out loud", () => {
+    const fx = seed(3);
+    writeFileSync(
+      path.join(fx.dir, "review.json"),
+      JSON.stringify({
+        audit_id: AUDIT_ID,
+        reviewed_at: "2026-01-01T00:00:00.000Z",
+        decisions: [
+          { finding_id: "from-an-older-run", keep: true, severity_before: 2, severity_after: 2, note: null },
+        ],
+      }),
+    );
+
+    const { output } = review(fx, ["k", "k", "k", "y"]);
+
+    assert.match(output, /does not describe these findings/);
+    assert.match(output, /\[1\/3\]/, "so it asks, rather than publishing decisions about ghosts");
+    assert.equal(statusOf(fx), "PUBLISHED");
+    assert.equal(reviewJson(fx)!.decisions.length, 3);
   });
 });

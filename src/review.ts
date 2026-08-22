@@ -186,21 +186,94 @@ if (existsSync(lintFile)) {
   );
 }
 
-console.log(
-  `\n${BOLD}${audit.url}${RESET}\n` +
-    `${DIM}${audit.audit_id} · ${findings.length} findings · $${audit.cost_usd.toFixed(2)}${RESET}\n\n` +
-    (audit.profile_summary ? `${wrap(audit.profile_summary, 74, "  ")}\n\n` : "") +
-    `  ${GREEN}k${RESET} keep     ${RED}c${RESET} cut     ${YELLOW}1-4${RESET} keep at that severity     ` +
-    `${DIM}q${RESET} quit without publishing\n` +
-    `  ${DIM}Enter alone keeps. Add a reason after the letter: ${RESET}c true but nobody would act\n\n` +
-    `  ${DIM}Keep/cut is also the usefulness label — the question is whether a founder\n` +
-    `  would change something because of this, not whether it is true.${RESET}\n`,
-);
+/**
+ * A saved review, offered back instead of thrown away.
+ *
+ * `review.json` is written before the publish prompt so that answering "not
+ * yet" keeps every judgment. Until now there was no way to *use* what it kept:
+ * the only route to publishing was to answer all of them again from the top.
+ * That made hesitating expensive, which is backwards for a gate whose whole
+ * purpose is unhurried judgment — on a fifteen-finding audit, "let me think"
+ * cost a re-read of all fifteen.
+ *
+ * It also emitted a second `review.decided` for one review. `funnelStages()`
+ * counts distinct audit ids and survives that (it is the 200%-of-requested bug
+ * its own comment describes), but §8's founder-review reject rate is a sum over
+ * these rows and would not. So publishing saved decisions records nothing new:
+ * the sitting that made them already spoke.
+ *
+ * Labels are only offered back if they describe *these* findings. Re-running an
+ * audit rewrites findings.json with fresh ids, and publishing decisions about
+ * findings that no longer exist would be worse than asking again.
+ */
+const reviewFile = path.join(dir, "review.json");
+let saved: ReviewRecord | null = null;
 
-const decisions: ReviewDecision[] = [];
+if (existsSync(reviewFile)) {
+  const parsed = JSON.parse(readFileSync(reviewFile, "utf8")) as ReviewRecord;
+  const already = new Set(parsed.decisions.map((d) => d.finding_id));
+  if (already.size === findings.length && findings.every((f) => already.has(f.id))) {
+    saved = parsed;
+  } else {
+    console.log(
+      `\n${YELLOW}A saved review is on disk, but it does not describe these findings.${RESET}\n` +
+        `  ${DIM}It decided ${parsed.decisions.length}; there are ${findings.length} here.` +
+        ` Ignoring it and asking again.${RESET}\n`,
+    );
+  }
+}
+
+/** Set only by an explicit `p`. Any other key redoes the review from the top. */
+let publishSaved = false;
+
+if (saved) {
+  const keptBefore = saved.decisions.filter((d) => d.keep).length;
+  const cutBefore = saved.decisions.length - keptBefore;
+  const movedBefore = saved.decisions.filter((d) => d.severity_after !== d.severity_before).length;
+
+  console.log(
+    `\n${BOLD}${audit.url}${RESET}\n` +
+      `${DIM}${audit.audit_id}${RESET}\n\n` +
+      `  ${GREEN}You have already reviewed this.${RESET}  ${keptBefore} kept, ${cutBefore} cut` +
+      `${movedBefore > 0 ? `, ${movedBefore} severity adjusted` : ""}\n` +
+      `  ${DIM}decided ${saved.reviewed_at}${RESET}\n\n` +
+      `  ${GREEN}p${RESET} publish those decisions     ` +
+      `${YELLOW}r${RESET} redo the review from the top     ${DIM}q${RESET} quit\n`,
+  );
+
+  const answer = await ask(`  > `);
+  const key = (answer ?? "q").trim().charAt(0).toLowerCase();
+
+  if (answer === null || key === "q") {
+    rl?.close();
+    console.log(`\n  Nothing changed. The audit is still REVIEW_PENDING.\n`);
+    store.close();
+    process.exit(0);
+  }
+
+  publishSaved = key === "p";
+}
+
+if (!publishSaved) {
+  console.log(
+    `\n${BOLD}${audit.url}${RESET}\n` +
+      `${DIM}${audit.audit_id} · ${findings.length} findings · $${audit.cost_usd.toFixed(2)}${RESET}\n\n` +
+      (audit.profile_summary ? `${wrap(audit.profile_summary, 74, "  ")}\n\n` : "") +
+      `  ${GREEN}k${RESET} keep     ${RED}c${RESET} cut     ${YELLOW}1-4${RESET} keep at that severity     ` +
+      `${DIM}q${RESET} quit without publishing\n` +
+      `  ${DIM}Enter alone keeps. Add a reason after the letter: ${RESET}c true but nobody would act\n\n` +
+      `  ${DIM}Keep/cut is also the usefulness label — the question is whether a founder\n` +
+      `  would change something because of this, not whether it is true.${RESET}\n`,
+  );
+}
+
+const decisions: ReviewDecision[] = publishSaved ? saved!.decisions : [];
 let quit = false;
 
-for (const [i, f] of findings.entries()) {
+/** Empty when publishing a saved review: the answers are already in hand. */
+const toAsk = publishSaved ? [] : [...findings.entries()];
+
+for (const [i, f] of toAsk) {
   console.log(
     `${DIM}${"─".repeat(78)}${RESET}\n` +
       `${DIM}[${i + 1}/${findings.length}]${RESET} ${BOLD}${f.heuristic}${RESET}\n` +
@@ -290,28 +363,36 @@ console.log(
  * a judgment about the audit; it says nothing about whether the seventeen calls
  * just made were right.
  */
-const record: ReviewRecord = {
-  audit_id: audit.audit_id,
-  reviewed_at: new Date().toISOString(),
-  decisions,
-};
-writeFileSync(path.join(dir, "review.json"), JSON.stringify(record, null, 2) + "\n");
+if (!publishSaved) {
+  const record: ReviewRecord = {
+    audit_id: audit.audit_id,
+    reviewed_at: new Date().toISOString(),
+    decisions,
+  };
+  writeFileSync(reviewFile, JSON.stringify(record, null, 2) + "\n");
 
-/**
- * The gate is the only step where a person's judgment enters, and until now it
- * left no trace outside review.json. Kept/cut counts are what "founder-review
- * reject rate" in §8's quality dashboard is made of.
- */
-events.record({
-  audit_id: audit.audit_id,
-  type: "review.decided",
-  data: { kept: kept.length, cut, adjusted, findings: findings.length },
-});
+  /**
+   * The gate is the only step where a person's judgment enters, and until now it
+   * left no trace outside review.json. Kept/cut counts are what "founder-review
+   * reject rate" in §8's quality dashboard is made of — which is why publishing
+   * an already-recorded review does not run this again.
+   */
+  events.record({
+    audit_id: audit.audit_id,
+    type: "review.decided",
+    data: { kept: kept.length, cut, adjusted, findings: findings.length },
+  });
+}
 
 // Reuses the one interface rather than opening a second. A fresh readline over
 // an already-ended stdin never resolves, so a piped review would hang here at
 // the last question — after every judgment had been made and none saved.
-const go = ((await ask(`  ${BOLD}Publish?${RESET} (y/N) > `)) ?? "").trim().toLowerCase();
+//
+// `p` was already the answer to this question. Asking it twice for one intent
+// is the friction this branch exists to remove.
+const go = publishSaved
+  ? "y"
+  : ((await ask(`  ${BOLD}Publish?${RESET} (y/N) > `)) ?? "").trim().toLowerCase();
 rl?.close();
 
 if (go !== "y") {
