@@ -91,6 +91,14 @@ export interface Stage {
   n: number;
   /** Percent of the audits this log actually saw start. Null for the first stage. */
   pct: number | null;
+  /**
+   * Audits that reached this stage from outside the cohort — started before the
+   * log existed, so they cannot be a percentage of it.
+   *
+   * Kept per-stage rather than only as a total because the total answers "how
+   * many" and the question a reader actually has is "did this ever happen".
+   */
+  outside: number;
 }
 
 /**
@@ -136,16 +144,20 @@ export function funnelStages(
   ] as const;
 
   const outside = new Set<string>();
-  const stages: Stage[] = [{ label: "audit requested", n: requested.size, pct: null }];
+  const stages: Stage[] = [
+    { label: "audit requested", n: requested.size, pct: null, outside: 0 },
+  ];
 
   for (const [label, type] of stageTypes) {
     const ids = idsFor(type);
-    for (const id of ids) if (!requested.has(id)) outside.add(id);
-    const counted = [...ids].filter((id) => requested.has(id)).length;
+    const strangers = [...ids].filter((id) => !requested.has(id));
+    for (const id of strangers) outside.add(id);
+    const counted = ids.size - strangers.length;
     stages.push({
       label,
       n: counted,
       pct: requested.size > 0 ? (counted / requested.size) * 100 : null,
+      outside: strangers.length,
     });
   }
 
@@ -212,7 +224,11 @@ function main(): void {
 
   const stageLine = (s: Stage) =>
     `  ${s.label.padEnd(22)} ${String(s.n).padStart(4)}` +
-    (s.pct === null ? "" : `   ${s.pct.toFixed(0)}% of requested`);
+    (s.pct === null ? "" : `   ${s.pct.toFixed(0)}% of requested`) +
+    // Sits after the percentage, never inside it. A `0` that means "not in this
+    // cohort" and a `0` that means "nobody has ever got here" are different
+    // facts, and the row said the second while meaning the first.
+    (s.outside > 0 ? `  + ${s.outside} outside` : ``);
 
   const lines = [
     ``,

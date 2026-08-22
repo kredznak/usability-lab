@@ -148,6 +148,27 @@ describe("funnel stages count audits that got somewhere", () => {
     assert.equal(stages.find((s) => s.label === "reviewed at the gate")!.n, 1);
   });
 
+  test("a stage nobody in the cohort reached still says whether anyone did", () => {
+    // Found 2026-08-21. The log held two `email.captured` events and the
+    // dashboard printed `email captured 0`, because both sat on an audit that
+    // predates the log. Every number was correct and the row was still read as
+    // "the gate has never been walked" — it had been, the day before.
+    //
+    // `n` keeps its exact meaning: of the audits this log saw start, none got
+    // here. The disclosure goes beside it rather than into it, so the cohort
+    // discipline that fixed the 200% row is untouched.
+    const captured = (id: string) => ({ type: "email.captured", audit_id: id });
+    const { stages } = funnelStages([requested("new"), captured("old"), captured("old")]);
+    const email = stages.find((s) => s.label === "email captured")!;
+    assert.equal(email.n, 0);
+    assert.equal(email.outside, 1, "two events on one outside audit are one audit");
+  });
+
+  test("a stage the whole cohort reached discloses nothing extra", () => {
+    const { stages } = funnelStages([requested("a"), reviewed("a")]);
+    assert.equal(stages.find((s) => s.label === "reviewed at the gate")!.outside, 0);
+  });
+
   test("the first stage has no percentage of itself", () => {
     const { stages } = funnelStages([requested("a")]);
     assert.equal(stages[0]!.pct, null);
