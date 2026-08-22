@@ -1085,6 +1085,69 @@ it is run by hand.
 
 ---
 
+## B29. The priors job has nothing to learn from, and the gate is why
+
+Opened 2026-08-21, measured while scoping the last v0 leftover.
+
+§0 ships a "nightly priors job (delta-capped)": the Growth agent reads the
+event log and writes versioned priors — question weights, spawn thresholds,
+evidence weights — which are, per §5, *"the only channel by which past audits
+influence future ones"*. There is no `priors` table and no Growth agent. That
+is the small half of the problem.
+
+**The large half is that there is no signal to aggregate.** Every founder
+review decision ever recorded, across all ten reviewed audits:
+
+```
+115 decisions | kept 108 | cut 7 | keep rate 94% | written reasons 0
+```
+
+And the cuts are not spread. They come from two sessions in the first week:
+
+```
+4f8f1271  n=17  cut=3   2026-08-11
+e16569d2  n=12  cut=4   2026-08-16
+0e1456d9  n= 4  cut=0   2026-08-21
+5112587d  n=13  cut=0   2026-08-17
+...        eight audits, cut=0
+```
+
+**Since 2026-08-16 not one finding has been cut, and a severity has never been
+adjusted — not once, in 115 decisions.**
+
+Per-reviewer keep rates are correspondingly flat: copy 96% (n=28), heuristics
+96% (n=27), conversion-cta 96% (n=23), a11y 100% (n=9). A priors job trained on
+this would adjust spawn thresholds on differences of one decision. That is not
+learning, it is amplifying noise — and priors are append-only and versioned
+precisely because a bad write is expensive to undo (F15).
+
+**Why the gate reads this way.** `Enter` alone keeps and records nothing, so the
+cheapest keystroke is also the least informative one. The reason field is
+offered — *"Add a reason after the letter"* — and has been used zero times in
+115 decisions. The gate's own docstring calls a cut reason *"the only record of
+why"*, and that record is empty for the entire corpus.
+
+This is not proof the gate is a rubber stamp; a 94% keep rate is also what a
+good pipeline looks like. It is proof that **the two cannot be told apart from
+the data**, which is the same problem as B17 and the 200% review row: a
+measurement that cannot discriminate. Note also that 4 of the 115 are labels
+**I** made on `0e1456d9`, not Kelly's, so even the flat signal is contaminated.
+
+**What to do, in order.**
+
+1. **Do not build the priors job yet.** It would be correct code computing
+   meaningless weights, and the versioning would preserve them.
+2. Decide whether the gate should make the informative action the cheap one —
+   e.g. require a keystroke for keep as well as cut, or prompt for a reason on
+   any severity change. **A change to how Kelly reviews, so Kelly's call.**
+3. Revisit priors when cuts and reasons carry information. `npm run corpus`
+   already excludes nothing here, so nothing is lost by waiting.
+
+**Do not** treat "the pipeline got good" as established. On the evidence it is
+untested either way.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
