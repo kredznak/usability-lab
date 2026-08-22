@@ -35,6 +35,49 @@
  * week.
  */
 
+/**
+ * `USABILITY_LAB_BASE_URL`, parsed — or null when it is not an http(s) URL.
+ *
+ * Private on purpose: callers should ask one of the two functions below rather
+ * than get a `URL` and decide for themselves what a missing scheme means.
+ */
+function parse(raw: string): URL | null {
+  try {
+    const u = new URL(raw);
+    return u.protocol === "http:" || u.protocol === "https:" ? u : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The one place `USABILITY_LAB_BASE_URL` is turned into an address, used by
+ * `server.ts` for magic links and by `stripe.ts` for the return URL. It lived in
+ * both until 2026-08-22, which is two copies of one rule and one of them tested.
+ *
+ * Trailing slashes go because a trailing slash here becomes a double slash in a
+ * magic link, and Stripe rejects a return URL shaped like that.
+ *
+ * **This never throws.** `server.ts` reads it at module scope, and a constant
+ * that throws during import kills the process before `preflight` can say a word
+ * — which would be this file's own failure mode arriving through its front door.
+ * An unparseable value is reported below, in the place built for saying why.
+ */
+export function baseUrlFrom(env: NodeJS.ProcessEnv = process.env): string {
+  return (env.USABILITY_LAB_BASE_URL || `http://localhost:${env.PORT || 4000}`).replace(/\/+$/, "");
+}
+
+/**
+ * The single host this site answers on, or **null** when the base URL does not
+ * parse. Null means "canonicalise nothing" rather than "canonicalise to
+ * garbage": the refusal below is what stops the boot, and a redirect loop to a
+ * malformed host would be a worse way to find out.
+ */
+export function canonicalHost(baseUrl: string): string | null {
+  const u = parse(baseUrl);
+  return u ? u.host.toLowerCase() || null : null;
+}
+
 export interface Env {
   baseUrl: string | undefined;
   secureCookies: string | undefined;
@@ -64,6 +107,27 @@ export function preflight(env: Env): Preflight {
   const isPublic = (env.baseUrl ?? "").toLowerCase().startsWith("https://");
   const refusals: string[] = [];
   const lines: string[] = [];
+
+  /**
+   * Checked before anything else, and **not** gated on `isPublic` — because the
+   * value that fails here is precisely the one that cannot be public. Forget the
+   * scheme and `theusabilitylab.com` is not https, so every check below stays
+   * quiet while every absolute address the site hands out is built from a string
+   * that is not an address.
+   *
+   * Added 2026-08-22, after `server.ts` began reading the base URL and a
+   * schemeless value became `TypeError: Invalid URL` at import — a stack trace
+   * where this file's whole purpose is a sentence saying which variable is wrong.
+   */
+  const raw = (env.baseUrl ?? "").trim();
+  if (raw !== "" && parse(raw) === null) {
+    refusals.push(
+      `USABILITY_LAB_BASE_URL is "${raw}", which is not an http or https URL.\n` +
+        `     Magic links, Stripe's return URL and the canonical host are all built\n` +
+        `     from it, so this is not a cosmetic setting. The usual cause is a missing\n` +
+        `     scheme: write https://theusabilitylab.com, not theusabilitylab.com.`,
+    );
+  }
 
   if (!isPublic) {
     lines.push(

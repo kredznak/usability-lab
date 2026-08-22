@@ -1,7 +1,8 @@
 # Deploy runbook — putting this behind TLS
 
-**Written 2026-08-20**, against a Cloudflare quick tunnel. Everything except the
-last section applies to any host.
+**Written 2026-08-20** against a Cloudflare quick tunnel; **§3a added 2026-08-22**
+when `theusabilitylab.com` went onto a named tunnel. Everything except §3 and §3a
+applies to any host.
 
 ---
 
@@ -75,6 +76,166 @@ real account, for letting the pipeline audit its own homepage, and for showing
 someone — and wrong for anything you would print on a business card. A named
 tunnel on a domain you own is the next step, and changes nothing above except
 the hostname.
+
+---
+
+## 3a. Named tunnel — theusabilitylab.com
+
+This is the live setup. The domain was bought at GoDaddy on 2026-08-21 and its
+nameservers moved to Cloudflare (`rachel`/`reese`) on 2026-08-22; a named tunnel
+requires that move, because the route is a record in a zone Cloudflare controls.
+
+```sh
+cloudflared tunnel login          # browser; authorise the theusabilitylab.com zone
+cloudflared tunnel create usability-lab
+cloudflared tunnel route dns usability-lab theusabilitylab.com
+cloudflared tunnel run usability-lab
+```
+
+Tunnel `usability-lab` is `87b0e6e3-8e46-4bec-a985-bbaec39fecc9`. Its ingress
+lives in `~/.cloudflared/config.yml`; the four deploy variables live in `.env`,
+which `npm run serve` already reads, so the whole thing is two commands:
+
+```sh
+cloudflared tunnel run usability-lab   # terminal 1
+npm run serve                          # terminal 2
+```
+
+Unlike a quick tunnel the hostname is stable, so the Stripe webhook is pointed
+once and stays pointed. That is the entire reason to prefer it.
+
+### The parking records
+
+A domain moved from GoDaddy arrives with its parking records imported: two `A`
+records on the apex, pointing at `13.248.243.5` and `76.223.105.230`. **Delete
+them by hand in the Cloudflare dashboard before routing.** `cloudflared tunnel
+route dns` refuses while they exist — *"An A, AAAA, or CNAME record with that
+host already exists"* — and `--overwrite-dns` does not help, because it replaces
+one record and there are two. Once they are gone the route command succeeds and
+the tunnel serves immediately.
+
+### The trap: your own resolver keeps serving the old answer
+
+This cost forty minutes on 2026-08-22 and would cost it again.
+
+After the records were deleted and the route was live, **this Mac kept resolving
+`theusabilitylab.com` to `13.248.243.5`** — the pre-migration GoDaddy parking IP,
+cached locally with a long TTL from before the nameserver move. Every check ran
+against parking while the site was up. `1.1.1.1` had the correct answer the whole
+time.
+
+Three things made it read as a zone problem rather than a cache problem:
+
+- **Parking answers 200 on every path.** `GET /` and `GET /start` both returning
+  200 says nothing about which origin replied. Six consecutive "stable" 200s were
+  recorded while the app was not being reached.
+- **Parking's `<title>` is the domain name** — `<title>The Usability Lab</title>`,
+  against our `<title>The Usability Lab — a design critique of your site, backed
+  by research</title>`. Skimmed, the wrong one looks right.
+- **`dig` against the authoritative nameserver looked fine**, because it *was*
+  fine. Asking the right question of the wrong resolver is the whole failure.
+
+**The one check that cannot be fooled** is which IP the connection actually
+reached:
+
+```sh
+curl -sS -o /dev/null -w "connected to %{remote_ip}\n" https://theusabilitylab.com/
+#   172.67.x.x / 104.21.x.x  -> Cloudflare, i.e. the tunnel
+#   13.248.243.5             -> GoDaddy parking, i.e. a stale resolver
+```
+
+`cf-ray` present in the response headers says the same thing. To test the real
+zone while a local cache is stale, pin the address:
+
+```sh
+curl -sSI --resolve theusabilitylab.com:443:172.67.161.65 https://theusabilitylab.com/
+```
+
+### Fixing the cache, and which cache it is
+
+**There are two, and `dig` shows you neither of the ones that matter.** `dig`
+talks to the configured nameserver directly and bypasses macOS's resolver
+entirely, so it answers a question nobody asked. Measured on 2026-08-22, at the
+same moment:
+
+| Cache | Held | Seen by |
+|---|---|---|
+| macOS `mDNSResponder` | `13.248.243.5` (parking) | `curl`, every browser |
+| the router, `192.168.0.1` | `13.248.243.5`, TTL 1603 | `dig @192.168.0.1` |
+| Cloudflare `1.1.1.1` | correct | `dig @1.1.1.1` |
+
+Reading `dig` against the authoritative nameserver and concluding the zone was
+broken was the whole mistake. **Use `curl -w "%{remote_ip}"`** — it is the only
+one of these that reports what an actual request did.
+
+The macOS cache can be cleared **without a password**, by toggling the resolver
+so `mDNSResponder` drops its entries and re-queries:
+
+```sh
+networksetup -setdnsservers Wi-Fi 192.168.0.1   # whatever DHCP already gave you
+networksetup -setdnsservers Wi-Fi Empty         # and straight back to DHCP
+```
+
+The documented incantation needs root and a TTY, which an agent has neither of:
+
+```sh
+sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
+```
+
+A stale **router** cannot be flushed from here at all. It expires on its own —
+check the TTL with `dig @<router>` — or reboot it, or step around it by pointing
+at a resolver that is already correct:
+
+```sh
+networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1
+```
+
+That last one is a persistent change to the machine's network settings, so it is
+a choice to make deliberately rather than a repair to apply in passing.
+
+**A browser has the same stale cache.** Anyone testing the site the day of a
+nameserver move will see parking and report the deploy broken.
+
+### www, and one host per site
+
+`www` was routed to the tunnel by the GoDaddy import — as a `CNAME` to the apex,
+which now flattens onto the tunnel — but it was not in the ingress, so it reached
+the catch-all and returned **404 from `server: cloudflare`**.
+
+Both halves are now handled, **in the repo rather than in the dashboard**:
+
+- `~/.cloudflared/config.yml` has a second ingress entry sending
+  `www.theusabilitylab.com` to the same process.
+- `server.ts` redirects any non-canonical host to `BASE_URL` before routing —
+  301 for `GET`/`HEAD`, **308 for anything with a body**, because a 301 lets a
+  client rewrite the method to `GET` and a misaddressed webhook would then be
+  silently dropped rather than redirected. The `one host, one site` suite in
+  `server.test.ts` holds all of it.
+
+A Cloudflare Single Redirect rule would have done the same job with no code, and
+survives the tunnel being down. It was rejected for one reason: **nothing in git
+would know it existed**, and nothing would fail if it were deleted. That is the
+B27 shape — state that changes without leaving a record — and this project has
+already paid for that once.
+
+Serving the app on both hostnames instead of redirecting is the wrong answer
+regardless of where the rule lives. `ul_full` is scoped to the host that set it
+and magic links are built from `BASE_URL`, always the apex — so a visitor who
+signed in on `www` would follow their link to a host that had never seen their
+cookie, and be asked to sign in again, for ever.
+
+### The magic link was addressed to localhost
+
+Found while wiring the above, on 2026-08-22. Nothing in `server.ts` read
+`USABILITY_LAB_BASE_URL`; the link was built from `http://localhost:${PORT}`
+unconditionally. On a laptop that is correct and invisible. The day the site
+became reachable at `theusabilitylab.com` it became a bearer credential
+addressed to a machine the recipient does not have — and, once mail is actually
+sent rather than printed, one that would travel over plain http.
+
+The existing tests could not have caught it: they *follow* the printed link, and
+`localhost` and `127.0.0.1` reach the same server from the test process. The
+assertion has to be on the text of the link, not on whether following it works.
 
 ---
 
@@ -161,3 +322,36 @@ Not inferred — run and observed:
 - Rate limiting with the header configured: six requests from one address → the sixth is **429**; a request from a second address immediately after → **400**, unthrottled. Separate buckets.
 - Rate limiting with the header **unset**: six requests from six *different* addresses → the sixth is **429**. Both the collapse this fixes and proof that a spoofed header is ignored by default.
 - `USABILITY_LAB_BASE_URL=https://…` with neither variable set: **exit code 2**, both reasons printed.
+
+## 9. What was verified on 2026-08-22, on the named tunnel
+
+Run and observed, with the address pinned past the stale local resolver
+(`--resolve theusabilitylab.com:443:172.67.161.65`):
+
+- Four edge connections registered — `bos01`, `bos03`, `iad22` ×2, protocol quic.
+- `GET /`, `/start`, `/s/inter.woff2`: **200, HTTP/2, `server: cloudflare`, `cf-ray` present.**
+- `GET /nonexistent-path-xyz`: **404.** This is the check worth keeping — GoDaddy
+  parking answers 200 on every path, so a 404 on a made-up path is what proves
+  our app is the origin, and a 200 on `/` is not.
+- Certificate `CN=theusabilitylab.com`, issued by Google Trust Services WE1,
+  **verify ok**, ALPN `h2`.
+- Preflight passed with all four variables from `.env`; signing key reported as
+  generated in `out/.secret`, which persists on this Mac (§5).
+- The LAN address `192.168.0.110:4000`: **connection refused**, so
+  `USABILITY_LAB_BIND=127.0.0.1` still holds on this configuration.
+- `www`: **301 to `https://theusabilitylab.com/start?ref=test`** from
+  `https://www.theusabilitylab.com/start?ref=test` — path and query intact.
+
+**This Mac's Wi-Fi DNS was set to `1.1.1.1`/`1.0.0.1`** to get past the stale
+router, which was holding the parking record with ~27 minutes left on its TTL.
+Clearing only the macOS cache did not hold — `mDNSResponder` re-queried the
+router and got the same stale answer straight back. Undo with
+`networksetup -setdnsservers Wi-Fi Empty` once the router has moved on; nothing
+about the deploy depends on it.
+
+**Not re-verified, deliberately.** The `cf-connecting-ip` rate-limit buckets were
+proved on 2026-08-20 and re-proving them means six `POST /request` calls, which
+write six `audit_requests` rows and move every funnel number. The header is
+delivered by Cloudflare, not by the tunnel type, and the app's side of it is
+covered hermetically by `clientip.test.ts`. Worth folding into Session A's ugly
+paths, where the resubmit cooldown exercises the same limiter for a reason.

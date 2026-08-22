@@ -1,6 +1,7 @@
 import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
+import http from "node:http";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -1860,6 +1861,43 @@ describe("Stripe, when it is configured", () => {
       },
     });
 
+  /**
+   * Until 2026-08-22 this link was built from `http://localhost:${PORT}`, with
+   * the configured base URL read by nobody. On a laptop that is invisible — the
+   * link works, because localhost *is* the server. It only becomes wrong when
+   * the site is reachable somewhere else, which is the day it starts mattering:
+   * a bearer credential addressed to a machine the recipient does not have.
+   *
+   * `paidSession` already fetches this link, and would have kept passing with
+   * the bug, because `localhost` and `127.0.0.1` reach the same server from
+   * here. So the assertion has to be on the text of the link, not on whether
+   * following it works.
+   */
+  test("the magic link is built from the configured base URL, not localhost", async () => {
+    const printed = new Promise<string>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("no link printed")), 5000);
+      const onData = (chunk: string) => {
+        const match = chunk.match(/(https?:\/\/\S+\/full\?t=\S+)/);
+        if (match) {
+          clearTimeout(timer);
+          paidChild.stdout?.off("data", onData);
+          resolve(match[1]!);
+        }
+      };
+      paidChild.stdout?.on("data", onData);
+    });
+    await fetch(`${APP}/a/${PAID}/email`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ email: freshEmail() }).toString(),
+    });
+    const link = await printed;
+    assert.ok(
+      link.startsWith(`${APP}/`),
+      `the link should start with the configured ${APP}, got ${link}`,
+    );
+  });
+
   test("the page offers a real button instead of an apology", async () => {
     const { html } = await paidSession(PAID);
     assert.match(html, /Subscribe &mdash; \$29 a month/);
@@ -2071,5 +2109,129 @@ describe("the question flow under pressure", () => {
     events.close();
     assert.ok(throttles.length > 0);
     assert.equal(throttles[0]!.data.key, "client");
+  });
+});
+
+/**
+ * One host, one site.
+ *
+ * The tunnel routes `www.theusabilitylab.com` to the same process as the apex,
+ * so without a redirect the app answers on both. That is not cosmetic: `ul_full`
+ * is scoped to the host that set it, and magic links are built from `BASE_URL`,
+ * which is always the apex. A visitor who signs in on `www` and then follows
+ * their link arrives at a different host without the cookie they just earned —
+ * and the page tells them to sign in again, for ever.
+ */
+describe("one host, one site", () => {
+  const HOST_PORT = PORT + 5;
+  const CANON = "https://theusabilitylab.test";
+  let hostChild: ChildProcess;
+
+  /**
+   * Raw `http.request`, not `fetch`. Undici treats `Host` as forbidden and drops
+   * it silently, and the Host header is the entire subject of this suite — a
+   * test that cannot set it would pass no matter what the server did.
+   */
+  function ask(
+    host: string,
+    pathname = "/",
+    method = "GET",
+    port = HOST_PORT,
+  ): Promise<{ status: number; location: string | undefined }> {
+    return new Promise((resolve, reject) => {
+      const req = http.request(
+        { host: "127.0.0.1", port, path: pathname, method, headers: { host } },
+        (res) => {
+          res.resume();
+          res.on("end", () =>
+            resolve({ status: res.statusCode ?? 0, location: res.headers.location }),
+          );
+        },
+      );
+      req.on("error", reject);
+      req.end();
+    });
+  }
+
+  before(async () => {
+    hostChild = spawn(process.execPath, ["--import", "tsx", path.resolve("src/server.ts")], {
+      env: {
+        ...process.env,
+        PORT: String(HOST_PORT),
+        USABILITY_LAB_DB: dbPath,
+        USABILITY_LAB_OUT: outRoot,
+        USABILITY_LAB_SECRET: SECRET,
+        // The claim that makes canonicalisation apply, per preflight.ts. The
+        // host never resolves and never needs to: nothing here dials it.
+        USABILITY_LAB_BASE_URL: CANON,
+        USABILITY_LAB_SECURE_COOKIES: "1",
+        USABILITY_LAB_CLIENT_IP_HEADER: "cf-connecting-ip",
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    for (let i = 0; i < 100; i++) {
+      try {
+        await ask("theusabilitylab.test");
+        return;
+      } catch {
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    }
+    throw new Error("host-canonical server did not start");
+  });
+
+  after(() => hostChild?.kill());
+
+  test("the canonical host is served, not redirected", async () => {
+    const { status } = await ask("theusabilitylab.test");
+    assert.equal(status, 200);
+  });
+
+  test("www is redirected to the apex, with the path and query intact", async () => {
+    const { status, location } = await ask("www.theusabilitylab.test", "/start?ref=twitter");
+    assert.equal(status, 308);
+    assert.equal(location, `${CANON}/start?ref=twitter`);
+  });
+
+  test("the comparison ignores case, as hostnames do", async () => {
+    const { status } = await ask("TheUsabilityLab.test");
+    assert.equal(status, 200, "an uppercase Host is the same host, not a stranger");
+  });
+
+  /**
+   * The open-redirect guard. `Host` is attacker-controlled, so a redirect that
+   * echoed it back would hand anyone a link on our domain that lands on theirs —
+   * which is worth more to a phisher than the site is to us, because the magic
+   * link has trained the customer to click.
+   */
+  test("the Location is never the host the client asked for", async () => {
+    const { status, location } = await ask("evil.example", "/a/x/full?t=stolen");
+    assert.equal(status, 308);
+    assert.ok(
+      location?.startsWith(`${CANON}/`),
+      `Location must be our own base URL, got ${location}`,
+    );
+    assert.doesNotMatch(location ?? "", /evil\.example/);
+  });
+
+  /**
+   * A 301 permits a client to rewrite the method to GET. For a webhook that is
+   * not a redirect, it is a silent drop — F21 arriving by status code. 308 says
+   * the same thing about permanence and forbids the rewrite, so it is used for
+   * every method rather than only the ones that carry a body.
+   */
+  test("a request with a body is redirected with 308, which preserves the method", async () => {
+    const { status } = await ask("www.theusabilitylab.test", "/stripe/webhook", "POST");
+    assert.equal(status, 308);
+  });
+
+  /**
+   * The local run must be untouched. Developers reach the server by localhost,
+   * 127.0.0.1, a LAN address and occasionally a hostname, and a canonicalisation
+   * that fired without a public base URL would break all but one of them.
+   */
+  test("with no public base URL, any host is served and nothing is redirected", async () => {
+    const { status } = await ask("anything.at.all", "/", "GET", PORT);
+    assert.equal(status, 200);
   });
 });

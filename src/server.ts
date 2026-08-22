@@ -69,7 +69,7 @@ import {
 } from "./marketing.js";
 import { asset } from "./assets.js";
 import { clientIp } from "./clientip.js";
-import { preflight, envFromProcess, report } from "./preflight.js";
+import { preflight, envFromProcess, report, baseUrlFrom, canonicalHost } from "./preflight.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
@@ -85,6 +85,35 @@ import {
 } from "./stripe.js";
 
 const PORT = Number(process.env.PORT || 4000);
+
+/**
+ * The address this site is reachable at — and the only host it will answer on.
+ *
+ * **Why this exists at all.** Until 2026-08-22 nothing in this file read the
+ * base URL, and the magic link below was built from `http://localhost:${PORT}`
+ * unconditionally. On a laptop that is correct. The day the site went onto
+ * `theusabilitylab.com` it stopped being correct and started being a bearer
+ * credential addressed to a machine the recipient does not have — and, once mail
+ * is actually sent, one that would arrive over plain http.
+ *
+ * Both of these come from `preflight.ts`, which owns what the variable means and
+ * refuses to boot when it does not parse. Neither throws here: a module-scope
+ * constant that throws would kill the process before the preflight could print
+ * the sentence explaining which variable is wrong.
+ */
+const BASE_URL = baseUrlFrom();
+
+/**
+ * Host canonicalisation applies only when the operator has claimed a public
+ * address, which is `preflight.ts`'s rule exactly: a base URL beginning `https://`
+ * **is** that claim. A local run sets nothing, matches nothing, and is untouched.
+ *
+ * `CANONICAL_HOST` is null when the base URL is unparseable, and the redirect
+ * below then does nothing — the preflight has already refused the boot, and
+ * bouncing every request at a malformed host would be a worse way to find out.
+ */
+const ENFORCE_HOST = (process.env.USABILITY_LAB_BASE_URL ?? "").toLowerCase().startsWith("https://");
+const CANONICAL_HOST = canonicalHost(BASE_URL);
 
 /**
  * A POST body cap. §10 lists 10K-character answers as a hostile input we have
@@ -656,6 +685,40 @@ function render(
 }
 
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  // --- one host, one site --------------------------------------------------
+  /**
+   * The tunnel routes `www.theusabilitylab.com` here too, and without this the
+   * app would answer on both. Two hostnames serving one site is not a cosmetic
+   * problem: `ul_full` is scoped to the host that set it, so a visitor who signs
+   * in on `www` and then follows a magic link — which is built from `BASE_URL`,
+   * always the apex — arrives without the cookie they just earned.
+   *
+   * **The redirect target is `BASE_URL`, never `req.headers.host`.** The Host
+   * header is attacker-controlled; echoing it back in a `Location` is an open
+   * redirect. Here it is only ever compared, never repeated.
+   */
+  if (
+    ENFORCE_HOST &&
+    CANONICAL_HOST !== null &&
+    (req.headers.host ?? "").toLowerCase() !== CANONICAL_HOST
+  ) {
+    /**
+     * 308 and not 301, for every method alike.
+     *
+     * The two say the same thing about permanence, and search engines treat them
+     * the same for canonicalisation. They differ in one place: a 301 permits the
+     * client to rewrite the method to GET, so a misaddressed POST arrives as a
+     * GET and its body is gone. That is not a redirect, it is a silent drop, and
+     * F21 is what a silently dropped webhook is called here.
+     *
+     * This started as a conditional — 301 for GET, 308 otherwise — which was a
+     * branch written for a case that cannot currently occur, since Stripe is
+     * configured on the canonical host. One status is correct for both.
+     */
+    res.writeHead(308, { location: `${BASE_URL}${req.url ?? "/"}` });
+    return void res.end();
+  }
+
   const url = new URL(req.url ?? "/", `http://localhost:${PORT}`);
   const parts = url.pathname.split("/").filter(Boolean);
 
@@ -1034,7 +1097,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     // count; the count is in `email_captures`.
     events.record({ audit_id: audit.audit_id, type: "email.captured", data: {} });
 
-    const link = `http://localhost:${PORT}/a/${audit.audit_id}/full?t=${sign(audit.audit_id, email)}`;
+    const link = `${BASE_URL}/a/${audit.audit_id}/full?t=${sign(audit.audit_id, email)}`;
     // Where the mail send goes. Until it does, the link is printed rather than
     // faked — a page that says "check your email" while nothing was sent is a
     // lie we would then have to remember was a lie.

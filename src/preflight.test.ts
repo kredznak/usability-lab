@@ -1,6 +1,6 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { preflight, type Env } from "./preflight.js";
+import { preflight, baseUrlFrom, canonicalHost, type Env } from "./preflight.js";
 
 /**
  * What `npm run serve` checks before it agrees to be public.
@@ -108,5 +108,92 @@ describe("what it reports when it does start", () => {
 
   test("a local run says plainly that it is not public", () => {
     assert.match(preflight(env()).lines.join("\n"), /not public|local/i);
+  });
+});
+
+/**
+ * A base URL that is not a URL.
+ *
+ * Added 2026-08-22. `server.ts` began reading this variable for magic links and
+ * the canonical host, both at module scope — so a value `new URL()` rejects
+ * became `TypeError: Invalid URL` during import, printed as a stack trace, with
+ * the process dead before this file could name the variable. A boot check that
+ * can be skipped by the thing it checks is not a boot check.
+ *
+ * The refusal is deliberately **not** gated on the https branch above, because
+ * the value that fails here is exactly the one that cannot be https: forget the
+ * scheme and `theusabilitylab.com` is not public, so every other check stays
+ * quiet while every absolute address the site issues is built from it.
+ */
+describe("a base URL that is not a URL", () => {
+  const reason = (baseUrl: string) => preflight(env({ baseUrl })).refusals.join("\n");
+
+  test("a missing scheme is refused, and the fix is spelled out", () => {
+    // The typo this exists for.
+    const r = preflight(env({ baseUrl: "theusabilitylab.com" }));
+    assert.equal(r.ok, false);
+    assert.match(r.refusals.join("\n"), /USABILITY_LAB_BASE_URL/);
+    assert.match(r.refusals.join("\n"), /https:\/\/theusabilitylab\.com/, "show the corrected value");
+  });
+
+  test("a scheme with no host is refused", () => {
+    // `new URL("https://")` throws too, and reads as complete at a glance.
+    //
+    // Asserting `ok === false` here would pass for the wrong reason: "https://"
+    // starts with "https://", so the secure-cookie and client-IP refusals fire
+    // regardless and the suite goes green with this check deleted. Measured —
+    // it did. The assertion has to name the refusal it is actually about.
+    const r = preflight(env({ ...PUBLIC, baseUrl: "https://" }));
+    assert.equal(r.ok, false);
+    assert.equal(r.refusals.length, 1, "the two https refusals are satisfied; only this one is left");
+    assert.match(r.refusals[0]!, /not an http or https URL/);
+  });
+
+  test("a scheme we do not serve over is refused", () => {
+    // Parses fine, and would silently produce ftp:// magic links.
+    assert.match(reason("ftp://lab.example"), /USABILITY_LAB_BASE_URL/);
+  });
+
+  test("unset is not a malformed value", () => {
+    // The local case, which must stay silent — see the first suite.
+    assert.deepEqual(preflight(env()).refusals, []);
+    assert.deepEqual(preflight(env({ baseUrl: "   " })).refusals, []);
+  });
+
+  test("the refusal names the variable rather than quoting a parser", () => {
+    assert.doesNotMatch(reason("theusabilitylab.com"), /TypeError|ERR_INVALID_URL/);
+  });
+});
+
+describe("one reading of the base URL, shared by everything that builds an address", () => {
+  test("a trailing slash is dropped, however many there are", () => {
+    // A trailing slash becomes a double slash in a magic link, and Stripe
+    // rejects a return URL shaped like that.
+    assert.equal(baseUrlFrom({ USABILITY_LAB_BASE_URL: "https://lab.example///" }), "https://lab.example");
+  });
+
+  test("unset falls back to localhost on the configured port", () => {
+    assert.equal(baseUrlFrom({ PORT: "4321" }), "http://localhost:4321");
+    assert.equal(baseUrlFrom({}), "http://localhost:4000");
+  });
+
+  test("it never throws, whatever it is handed", () => {
+    // The whole point: server.ts reads this at module scope, and a constant that
+    // throws during import kills the process before the refusal can be printed.
+    for (const bad of ["theusabilitylab.com", "https://", "", "   ", "::::"]) {
+      assert.doesNotThrow(() => baseUrlFrom({ USABILITY_LAB_BASE_URL: bad }));
+    }
+  });
+
+  test("the canonical host is the host, lowercased", () => {
+    assert.equal(canonicalHost("https://TheUsabilityLab.com"), "theusabilitylab.com");
+    assert.equal(canonicalHost("http://localhost:4000"), "localhost:4000");
+  });
+
+  test("an unparseable base URL has no canonical host, rather than a wrong one", () => {
+    // null means "canonicalise nothing". A malformed host would send every
+    // request to a redirect that cannot resolve.
+    assert.equal(canonicalHost("theusabilitylab.com"), null);
+    assert.equal(canonicalHost("https://"), null);
   });
 });

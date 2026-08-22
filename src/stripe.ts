@@ -44,6 +44,7 @@
 
 import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
 import type { SubscriptionStatus } from "./db.js";
+import { baseUrlFrom } from "./preflight.js";
 
 /**
  * The API version every outbound request is pinned to — B21, 2026-08-18.
@@ -103,7 +104,9 @@ export function stripeConfig(env: NodeJS.ProcessEnv = process.env): StripeConfig
     secretKey,
     priceId,
     webhookSecret,
-    baseUrl: (env.USABILITY_LAB_BASE_URL || `http://localhost:${env.PORT || 4000}`).replace(/\/+$/, ""),
+    // One rule, one place. `stripe.test.ts` still holds the trailing-slash case
+    // from this side, which is what makes moving it safe.
+    baseUrl: baseUrlFrom(env),
     apiBase: (env.STRIPE_API_BASE || "https://api.stripe.com/v1").replace(/\/+$/, ""),
   };
 }
