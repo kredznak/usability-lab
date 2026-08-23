@@ -8,6 +8,7 @@ import type { SynthesisResult } from "./agents/synthesizer.js";
 import { rubricFor } from "./agents/rubrics.js";
 import { pinNumbers } from "./annotate.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
+import { SOURCES } from "./sources.js";
 
 /**
  * Two pages, written at two different moments.
@@ -36,6 +37,18 @@ export function escapeHtml(s: string): string {
   );
 }
 
+/**
+ * `SOURCES` keyed by url. Built once: `citationLabel` runs per finding, and the
+ * list is a module constant that cannot change underneath it.
+ *
+ * Keyed by url and not by id because the id is the one thing that does not
+ * survive the trip. `citations.json` records `source_id`, but `Finding.citation`
+ * is `{source_type, url}` — so by the time a finding reaches a renderer the id
+ * is gone and the url is all that is left to recognise it by. All 28 urls are
+ * distinct, so that is enough.
+ */
+const SOURCE_BY_URL = new Map(SOURCES.map((s) => [s.url, s]));
+
 function citationLabel(finding: Finding): string {
   if (finding.citation.source_type === "none") {
     // quality-bar.md §3: `none` displays as our own evaluation, never a
@@ -43,9 +56,21 @@ function citationLabel(finding: Finding): string {
     return "Based on our evaluation";
   }
   const url = finding.citation.url;
-  return url
-    ? `<a href="${escapeHtml(url)}" rel="noreferrer">${escapeHtml(finding.citation.source_type)}</a>`
-    : escapeHtml(finding.citation.source_type);
+  if (!url) return escapeHtml(finding.citation.source_type);
+
+  /**
+   * `source_type` is a kind — "paper" — and was the link text until
+   * 2026-08-23, so twelve published audits told the reader their evidence was
+   * called "paper". Naming the publisher and the title is what makes a
+   * citation checkable by the person reading it.
+   *
+   * A url we do not hold falls back to the kind. That case is a citation
+   * pointing somewhere `sources.ts` has never verified, and inventing a name
+   * for it would be exactly the fabricated authority §3 forbids.
+   */
+  const known = SOURCE_BY_URL.get(url);
+  const label = known ? `${known.publisher} — ${known.title}` : finding.citation.source_type;
+  return `<a href="${escapeHtml(url)}" rel="noreferrer">${escapeHtml(label)}</a>`;
 }
 
 /**
