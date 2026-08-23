@@ -48,6 +48,37 @@ function citationLabel(finding: Finding): string {
     : escapeHtml(finding.citation.source_type);
 }
 
+/**
+ * What the footer says about evidence, counted from the page rather than
+ * asserted about the system.
+ *
+ * This sentence used to read "Research and citations are not built, so every
+ * finding here shows 'based on our evaluation'". True the day it was written,
+ * false the day citations shipped, and nothing failed when it went false —
+ * ghost.org/pricing rendered nine resolving sources directly above it.
+ *
+ * The honest version is the same promise the old one was making: tell the
+ * reader which findings stand on a published source and which stand on us. A
+ * `none` citation is a refusal to stretch a source to fit, not a gap, so it is
+ * worth saying out loud on the page a customer pays for.
+ */
+function sourceLine(findings: Finding[]): string {
+  const n = findings.length;
+  const cited = findings.filter((f) => f.citation.source_type !== "none").length;
+  const own = n - cited;
+  const evaluation = "&ldquo;based on our evaluation&rdquo;";
+  const because = "because no source we hold fits the claim";
+
+  if (n === 0) return "No findings survived the confidence gate on this run.";
+  if (cited === 0) {
+    return `None of the ${n} findings here cite a published source; each shows ${evaluation} ${because} &mdash; honest rather than decorated.`;
+  }
+  if (own === 0) {
+    return `All ${n} findings here cite a published source &mdash; honest rather than decorated.`;
+  }
+  return `${cited} of the ${n} findings here cite a published source; the other ${own} show ${evaluation} ${because} &mdash; honest rather than decorated.`;
+}
+
 export interface RenderInput {
   capture: Capture;
   findings: Finding[];
@@ -291,8 +322,7 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
 
   <footer>
     capture &rarr; context profile &rarr; reviewers &rarr; synthesis &rarr; derived confidence
-    &rarr; annotation &rarr; founder review. Research and citations are not built, so every
-    finding here shows &ldquo;based on our evaluation&rdquo; &mdash; honest rather than decorated.
+    &rarr; annotation &rarr; founder review. ${sourceLine(findings)}
   </footer>
 </div>
 </body>

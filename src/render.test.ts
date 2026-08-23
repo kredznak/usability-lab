@@ -398,6 +398,40 @@ describe("the internal review copy", () => {
     assert.match(html, /ran degraded/);
     assert.match(html, /forms: timed out/);
   });
+
+  /**
+   * The footer used to tell every reader "Research and citations are not
+   * built". That was true when it was written and went quietly false the day
+   * citations shipped — so ghost.org/pricing rendered nine resolving sources
+   * above a sentence denying they existed, on the page a customer pays for.
+   *
+   * A hardcoded claim about what the system does cannot stay true on its own.
+   * These tests make the footer count what is actually on the page.
+   */
+  const sourced = (n: number) =>
+    finding(n, 2, { citation: { source_type: "paper", url: "https://www.nngroup.com/articles/x/" } });
+
+  test("the footer never denies citations the page is already showing", async () => {
+    const html = await full([sourced(1), finding(2, 2)]);
+    assert.doesNotMatch(
+      html,
+      /citations are not built/i,
+      "the page shows a resolving source; saying otherwise makes the page contradict itself",
+    );
+  });
+
+  test("the footer counts the sourced findings and the ones standing on our own evaluation", async () => {
+    const html = await full([sourced(1), sourced(2), finding(3, 2)]);
+    assert.match(html, /2 of the 3 findings/i, "must state how many carry a source");
+    assert.match(html, /other 1/i, "must state how many do not, rather than leaving it implied");
+  });
+
+  test("a page with no sourced finding says that plainly, without denying the system exists", async () => {
+    const html = await full([finding(1, 2), finding(2, 2)]);
+    assert.match(html, /none of the 2 findings/i);
+    assert.doesNotMatch(html, /citations are not built/i);
+  });
+
 });
 
 /**
