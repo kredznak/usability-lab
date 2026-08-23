@@ -86,6 +86,52 @@ describe("the homepage's numbers are read, not typed", () => {
   });
 });
 
+/**
+ * The card that used to admit it was invented.
+ *
+ * "Here is this page, audited by the thing this page is selling" sat above a
+ * finding nobody's pipeline had produced, and a paragraph saying so. B24. It now
+ * quotes finding 3 of audit e338784b and links to the published page carrying
+ * it — which is a claim that can rot in ways the old placeholder could not, so
+ * two of these tests guard the rot rather than the change.
+ */
+describe("the finding on the card is real, and the page agrees with it", () => {
+  test("its citation resolves to a row in the sources table", () => {
+    const jakobs = SOURCES.find((s) => s.id === "lawsofux-jakobs");
+    // marketing.ts asserts this non-null. Renaming the row would not fail a
+    // type check — it would throw on every render of the front page.
+    assert.ok(jakobs, "the card's source must still exist");
+    assert.ok(homePage().includes(jakobs.url), "and the card links to it, not to a retyped title");
+  });
+
+  test("nothing in the sample admits to being invented", () => {
+    // Phrases, not the bare word: `input::placeholder` is in the stylesheet and
+    // matching that would be a test of the CSS reset, passing forever.
+    const html = homePage();
+    assert.doesNotMatch(html, /is a placeholder/i);
+    assert.doesNotMatch(html, /the real one lands/i);
+  });
+
+  test("the card's pin is the pin drawn on the picture beside it", () => {
+    // A forward guard, not a test of B24 — both numbers were 2 before and
+    // agreed. render.ts's comment records what disagreement looks like: three
+    // cards reading "2" beside an image pinned 1..n, connected by nothing.
+    const html = homePage();
+    const onCard = html.match(/<div class="pin">(\d+)<\/div>/)?.[1];
+    const onShot = html.match(/\.pinmark::after \{ content:"(\d+)"/)?.[1];
+    assert.ok(onCard && onShot, "both numbers must be findable");
+    assert.equal(onCard, onShot);
+  });
+
+  test("the page does not contradict the finding it publishes about itself", () => {
+    // Also a forward guard. The card says this page carries no privacy policy,
+    // terms, or contact link. The day that stops being true the card becomes a
+    // false claim about us, on the page arguing we check our claims — so adding
+    // those links has to fail here first and take the card with it.
+    assert.doesNotMatch(homePage(), /href="\/(privacy|terms|contact)/);
+  });
+});
+
 describe("what the homepage must not do", () => {
   test("it has no form and sends nobody to /request", () => {
     const html = homePage();
@@ -94,11 +140,20 @@ describe("what the homepage must not do", () => {
     assert.match(html, /href="\/start"/);
   });
 
-  test("it still lists no audits", () => {
+  test("it still lists no audits, and links to exactly one", () => {
     // §8's rule, not an omission: an index would be a cross-customer surface.
-    // The homepage is the obvious place someone would later add "recent audits".
-    const html = homePage();
-    assert.doesNotMatch(html, /\/a\/[0-9a-f]{8}/i);
+    // The homepage is the obvious place someone would later add "recent audits"
+    // — and in its first form this test caught B24 doing a smaller version of
+    // that, which is the only reason the exception below got looked at.
+    //
+    // One link is permitted: the audit of this page, hardcoded in marketing.ts.
+    // It is a constant rather than a query, so it cannot enumerate, and the page
+    // it reaches is about us and carries no one else's site. A second id here
+    // means someone has started building the index, and this fails.
+    const linked = new Set(
+      [...homePage().matchAll(/\/a\/([0-9a-f-]{8,})/gi)].map((m) => m[1]!.toLowerCase()),
+    );
+    assert.deepEqual([...linked], ["e338784b-6ae0-4cf5-926a-eeb8c0c6bfce"]);
   });
 
   test("the dot field has a reduced-motion branch, in the paint loop", () => {

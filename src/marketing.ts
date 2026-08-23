@@ -192,6 +192,27 @@ function documentHtml(title: string, css: string, body: string): string {
  * claim about honesty — and it is precisely the finding this product would
  * report about somebody else's site.
  */
+/**
+ * The audit of this page, and the source the finding on it cites.
+ *
+ * The "See one" card used to hold an invented finding with a paragraph under it
+ * admitting as much — the only honest way to fill that slot before the pipeline
+ * had ever been pointed at us. It has now: audit e338784b, 11 findings, and this
+ * is finding 3 of them, quoted exactly as the reviewers wrote it.
+ *
+ * It is one of the three the published page shows for free, which is the whole
+ * reason it is the one on the card. The severity-2 findings sit behind the email
+ * gate, so a card quoting one of those would link to a page a visitor could read
+ * end to end without ever finding it — the promise broken in the very act of
+ * making it.
+ *
+ * The citation resolves through SOURCES rather than being retyped, for the same
+ * reason `publisherCounts()` exists: a hardcoded claim about our own honesty is
+ * the finding this product would file about somebody else.
+ */
+const SELF_AUDIT = "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce";
+const JAKOBS = SOURCES.find((s) => s.id === "lawsofux-jakobs")!;
+
 export function publisherCounts(): { publisher: string; n: number }[] {
   const counts = new Map<string, number>();
   for (const s of SOURCES) counts.set(s.publisher, (counts.get(s.publisher) ?? 0) + 1);
@@ -321,7 +342,10 @@ const HOME_CSS = `
   .shot .r4 { left:24px; top:98px; width:96px; height:28px; border-radius:14px; background:var(--shade); }
   .shot .pinmark { left:102px; top:94px; width:34px; height:34px; border-radius:50%; background:var(--ink);
                    box-shadow:0 0 0 6px rgba(38,34,30,.08); }
-  .shot .pinmark::after { content:"2"; position:absolute; inset:0; display:flex; align-items:center;
+  /* Matches the card's pin. render.ts learned this the hard way: cards numbered
+     by severity beside an image pinned 1..n is three cards reading "2" and
+     nothing connecting them to the picture. */
+  .shot .pinmark::after { content:"3"; position:absolute; inset:0; display:flex; align-items:center;
                           justify-content:center; color:var(--paper); font-size:13px; font-weight:500; }
   .finding { display:flex; gap:16px; margin-top:24px; }
   .finding .pin { flex:0 0 30px; height:30px; border-radius:50%; background:var(--ink); color:var(--paper);
@@ -331,7 +355,10 @@ const HOME_CSS = `
   .tag { display:inline-block; font-size:11px; letter-spacing:.06em; text-transform:uppercase; vertical-align:2px;
          background:var(--plaster); color:var(--ink-soft); padding:4px 10px; border-radius:100px; margin-left:8px; }
   .cite { font-size:12px; }
-  .placeheld { font-size:12px; color:var(--ink-soft); font-style:italic; margin:18px 0 0; }
+  /* Closes finding 6 of the same audit: a heuristic name is our vocabulary, not
+     the reader's, and "MODERATE" beside it explains nothing on its own. */
+  .gloss { font-style:italic; }
+  .realdeal { font-size:13px; margin:18px 0 0; }
 
   .foot { padding:120px 32px 130px; text-align:center; background:var(--bone); }
   .foot h2 { font-size:32px; font-weight:300; letter-spacing:-.02em; margin:0 0 36px; }
@@ -424,17 +451,18 @@ export function homePage(): string {
         <i class="pinmark"></i>
       </div>
       <div class="finding">
-        <div class="pin">2</div>
+        <div class="pin">3</div>
         <div>
-          <h2>Visibility of System Status<span class="tag">Moderate</span></h2>
-          <p>The primary action gives no indication that anything happened between
-             the click and the next screen loading.</p>
-          <p class="cite">Cited: Nielsen Norman Group &mdash; Visibility of System Status</p>
+          <h2>Consistency and Standards<span class="tag">Severity 3</span></h2>
+          <p class="gloss">Whether a page works the way other sites have taught people to expect.</p>
+          <p>There are no links to a privacy policy, terms of service, contact/support,
+             or company information anywhere on the page.</p>
+          <p class="cite">Cited: <a href="${JAKOBS.url}">${JAKOBS.publisher} &mdash;
+             ${JAKOBS.title}</a></p>
         </div>
       </div>
-      <p class="placeheld">This finding is a placeholder and says so. The real one lands when we
-         run our own pipeline against this page, which is the only honest way to fill
-         a slot like this before there are customers.</p>
+      <p class="realdeal"><a href="/a/${SELF_AUDIT}/">Read the whole audit of this page
+         &rarr;</a></p>
     </div>
   </section>
 
