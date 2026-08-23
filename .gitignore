@@ -16,3 +16,6 @@ out/
 
 # Standalone exports of the served pages, for looking at. Regenerate, do not edit.
 preview/
+
+# nohup output from `npm run serve` / cloudflared. Runtime noise, one machine.
+.logs/
