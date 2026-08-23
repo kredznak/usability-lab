@@ -1180,6 +1180,86 @@ untested either way.
 
 ---
 
+## B30. The screenshot sees text the capture text does not
+
+Opened 2026-08-23, found at the gate while reviewing `2928c314` (basecamp.com).
+
+Finding 13 of that audit is a positive: *"The page displays a live counter:
+'people are working in Basecamp right now!' next to a number."* Verifying it
+against `capture.json` says the claim is unsupported — there is no number:
+
+```
+el_10.text        "people are working in Basecamp right now!"
+digits in it      false
+text_excerpt      no match for /[\d,]{4,}\s*people are working/
+```
+
+The screenshot says otherwise. Cropped at el_10's own bbox, it reads
+**"160,691 people are working in Basecamp right now!"** — above the fold, in the
+hero, in the same 19px link styling as the six nav links stacked with it.
+
+**This is not a flake.** basecamp.com was captured twice, eleven hours apart,
+and the two captures are the same size to the byte:
+
+```
+2928c314  2026-08-21T13:30:09Z  87/87 elements  6553/6553 chars  no number
+1ccc0425  2026-08-22T01:09:16Z  87/87 elements  6553/6553 chars  no number
+```
+
+Both screenshots have it — 160,691 on the first run, 87,688 on the second, which
+is what a live counter should do. So the extraction drops this node
+**consistently**, and has done on every capture of this page we hold.
+
+**How it surfaced, and why that is the worrying part.** Both audits found the
+counter anyway, because reviewers see the screenshot as well as the capture.
+They just found it with different confidence:
+
+```
+2928c314 f13   "...next to a number."                        (hedged)
+1ccc0425 f8    "...displays a live figure, \"87,688 people   (quoted exactly)
+                are working in Basecamp right now!\""
+```
+
+Both are true. Neither is checkable from `capture.json`. At the gate I treated
+the missing number as evidence the finding was wrong and was one keystroke from
+cutting a correct positive; it survived because I opened the PNG. **A gate that
+verifies from the capture alone will cut true findings, and will do it silently.**
+
+**Where it probably comes from.** `visibleText` in `src/capture.ts` assembles
+text itself rather than using `innerText`, and skips descendants that are
+`display:none`, `visibility:hidden`, `opacity:0`, clipped to nothing
+(`width<=1 || height<=1` with `overflow:hidden`/`clip-path`/`clip`), or
+off-canvas. Every one of those rules was added for a real defect — the
+linear.app duplicated h1, asana's 47%-of-page-text tracking iframe, Cotopaxi's
+phantom "Check Out". A rolling-digit counter is exactly the shape that trips the
+clipped-to-nothing rule: a short `overflow:hidden` window with digits animating
+through it.
+
+**That is a hypothesis, not a finding.** It has not been tested, and the
+off-canvas rule is an equally good candidate.
+
+**What to do, in order.**
+
+1. **Test it, cheaply.** Capture is Playwright only — no model calls, no spend.
+   Re-run a capture of basecamp.com with each skip rule logging what it drops,
+   and read which one eats the number. One run answers it.
+2. **Do not loosen a rule to fix this.** Each one is load-bearing and the
+   failures they prevent were worse than this one: a *false* claim on a
+   customer's page beats a *missing* true one. If the clipped rule is the
+   culprit, the fix is to record what was skipped, not to stop skipping.
+3. **Consider making the gap visible instead of closing it.** B13 is the
+   mirror of this — reviewers asserting facts the capture cannot carry, with
+   nothing marking the gap. Here the capture is the one that is short, and the
+   same fix serves both: if an element's assembled text is a strict substring
+   of its `innerText`, say so on the element. A reviewer at the gate could then
+   tell "the page does not say this" from "we did not capture what it says".
+
+**Cost.** Step 1 is minutes. Step 3 is a field on the captured element and a
+line in the founder's page, and it is the one that changes what the gate can
+conclude.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages
