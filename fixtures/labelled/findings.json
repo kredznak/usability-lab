@@ -1,9 +1,21 @@
 {
   "built_from": [
     {
+      "audit_id": "0e1456d9-b020-4917-974c-724060fe9b38",
+      "url": "https://informative-advertising-hawaii-coordinates.trycloudflare.com/",
+      "findings": 4,
+      "research": "ok"
+    },
+    {
       "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
       "url": "https://www.notion.com/pricing",
       "findings": 13,
+      "research": "ok"
+    },
+    {
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "findings": 10,
       "research": "ok"
     },
     {
@@ -19,10 +31,22 @@
       "research": "ok"
     },
     {
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "findings": 13,
+      "research": "ok"
+    },
+    {
       "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
       "url": "https://www.duolingo.com/",
       "findings": 8,
       "research": "failed"
+    },
+    {
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "findings": 11,
+      "research": "ok"
     },
     {
       "audit_id": "45567cab-13a0-43ee-a021-da09973d769b",
@@ -67,6 +91,18 @@
       "research": "never"
     },
     {
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "findings": 15,
+      "research": "ok"
+    },
+    {
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "findings": 11,
+      "research": "ok"
+    },
+    {
       "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
       "url": "https://linear.app/",
       "findings": 16,
@@ -82,6 +118,12 @@
       "audit_id": "e16569d2-9b95-48af-9732-5bafd254ef16",
       "url": "https://asana.com/create-account",
       "findings": 12,
+      "research": "ok"
+    },
+    {
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "findings": 11,
       "research": "ok"
     }
   ],
@@ -172,6 +214,96 @@
     }
   ],
   "findings": [
+    {
+      "key": "0e1456d9-b020-4917-974c-724060fe9b38:0e1456d9-b020-4917-974c-724060fe9b38-f1",
+      "audit_id": "0e1456d9-b020-4917-974c-724060fe9b38",
+      "url": "https://informative-advertising-hawaii-coordinates.trycloudflare.com/",
+      "agent": "heuristics",
+      "heuristic": "Error prevention",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_1",
+      "observation": "The top-of-page \"Get started\" button is clickable immediately after the hero heading, while the only pricing detail on the page — a $29/month subscription for re-audits — appears in the footer, roughly 3300px further down.",
+      "impact_note": "A visitor who acts on the first call to action has no way to know a paid subscription follows the free audit until reaching the very bottom of the page, risking a sense of being misled about cost.",
+      "source_type": "none",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "states 3300px, which matches nothing we measured"
+        ]
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "0e1456d9-b020-4917-974c-724060fe9b38:0e1456d9-b020-4917-974c-724060fe9b38-f2",
+      "audit_id": "0e1456d9-b020-4917-974c-724060fe9b38",
+      "url": "https://informative-advertising-hawaii-coordinates.trycloudflare.com/",
+      "agent": "heuristics",
+      "heuristic": "Match between system and the real world",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_3",
+      "observation": "The hero subtext promises \"Real screenshots of your site.\" but the \"See one\" example directly beneath it shows abstract skeleton/wireframe bars rather than an actual screenshot mockup of a page.",
+      "impact_note": "The one concrete demonstration of the product's core promise does not visually match that promise, which can weaken confidence in the claim right when it is being illustrated.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "0e1456d9-b020-4917-974c-724060fe9b38:0e1456d9-b020-4917-974c-724060fe9b38-f4",
+      "audit_id": "0e1456d9-b020-4917-974c-724060fe9b38",
+      "url": "https://informative-advertising-hawaii-coordinates.trycloudflare.com/",
+      "agent": "heuristics",
+      "heuristic": "Visibility of system status",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_3",
+      "observation": "The example finding shows a severity tag reading \"Moderate\" with no legend, scale, or list of other possible severity levels anywhere on the page.",
+      "impact_note": "Without a reference scale, a visitor cannot judge how serious \"Moderate\" is relative to other outcomes their own audit might produce.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "0e1456d9-b020-4917-974c-724060fe9b38:0e1456d9-b020-4917-974c-724060fe9b38-f3",
+      "audit_id": "0e1456d9-b020-4917-974c-724060fe9b38",
+      "url": "https://informative-advertising-hawaii-coordinates.trycloudflare.com/",
+      "agent": "heuristics",
+      "heuristic": "Error prevention",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_4",
+      "observation": "The footer states \"No card to start.\" and separately clarifies \"Cancel any time\" alongside the subscription terms.",
+      "impact_note": "Stating the low-risk entry condition and cancellation terms up front, before asking for commitment, reduces the chance a visitor feels tricked into a recurring charge.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
     {
       "key": "139d5f3e-7680-4793-bf06-8afe59bf2070:139d5f3e-7680-4793-bf06-8afe59bf2070-f1",
       "audit_id": "139d5f3e-7680-4793-bf06-8afe59bf2070",
@@ -457,6 +589,228 @@
       "human_useful": true,
       "human_note": null,
       "review_keep": true
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f1",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Action at the point of decision",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_43",
+      "observation": "The page's final section is a long list of blog-style links (\"And there's more…\") followed by legal/footer links, with no sign-up, trial, or contact call to action present near the end of the page.",
+      "impact_note": "A visitor who reads through all the trust-building content (testimonials, usage stats, CEO letter, feature Q&A) reaches the bottom of the page with no action available at the point their interest is likely highest.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f2",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Cost and commitment shown plainly",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "Pricing is only referenced indirectly through the link text \"Pricing & sign up — A free plan + paid upgrades\"; no price figures, trial length, or card-required detail appear anywhere on this page itself.",
+      "impact_note": "Visitors weighing cost must click away before learning what \"free plan\" actually includes, which can introduce hesitation for price-sensitive visitors before they commit to the click-through.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f3",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Single clear action / competing CTAs",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "The video button reading \"Take a 3 minute tour of Basecamp\" sits directly beneath the hero headline at a size and prominence comparable to the sign-up action, offering a second, different action (watch a video) in the same primary viewport.",
+      "impact_note": "Presenting two above-the-fold actions of similar weight can split attention and delay the decision to sign up in favor of the lower-commitment video.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f4",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Clear next step for an offer",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_42",
+      "observation": "The live class item shows only a date card and the text \"Intro to Basecamp Wed, Aug 26, 8:00am\" with no visible register, RSVP, or \"save my seat\" action.",
+      "impact_note": "A visitor interested in the free class has no obvious way to indicate interest or reserve a spot, so the offer may go unactioned despite drawing attention.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f5",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The area at the top of the page functions as the primary navigation but is styled as a stacked list of full-sentence links with descriptive subtext, e.g. 'Pricing & sign up — A free plan + paid upgrades', rather than a conventional compact top nav bar.",
+      "impact_note": "Visitors expecting a standard short-label menu may need extra time to recognize this block as navigation, slowing orientation on arrival.",
+      "source_type": "paper",
+      "auto": {
+        "status": "unverifiable",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f8",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Aesthetic and minimalist design",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_43",
+      "observation": "The footer presents roughly thirty links in a single dense block separated only by middle dots, spanning company culture pieces ('Kill overkill', 'Leaving the Cloud'), product topics ('Integrations', 'Apps for every platform'), and internal-style documents ('Manager Playbook', 'Employee Handbook').",
+      "impact_note": "The lack of visual grouping or headings within this list increases the effort needed to locate a specific topic among unrelated ones.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f10",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Visibility of system status",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_14",
+      "observation": "The screenshot shows a cursor graphic positioned over the 'Message Board' panel of the product mockup, suggesting an active hover, yet all six tool panels (Message Board, Docs & Files, To-dos, Chat, Schedule, Card Table) render as visually identical static tiles.",
+      "impact_note": "Without a distinct hover or focus state, visitors cannot easily tell whether these panels are interactive demo controls or purely illustrative content.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f6",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Social proof / trust before commitment",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_10",
+      "observation": "The hero area displays a live figure, \"87,688 people are working in Basecamp right now!\", alongside eight testimonial quotes each attributed to a named person and organization.",
+      "impact_note": "Concrete, named, real-time proof of active usage builds credibility before any commitment is requested, which can lower resistance to signing up.",
+      "source_type": "paper",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "quotes \"87,688 people are working in Basecamp right now!\", which is NOT on the page"
+        ]
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f7",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Human accessibility / trust signal",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_29",
+      "observation": "The letter from the co-founder is signed with a name, title, headshot, and a direct email address, \"jason@basecamp.com\".",
+      "impact_note": "Offering a named executive's direct contact is a strong trust signal that can reduce hesitation for visitors who want reassurance from a real person before committing.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "1ccc0425-6939-4517-85e3-cc075e8d8225:1ccc0425-6939-4517-85e3-cc075e8d8225-f9",
+      "audit_id": "1ccc0425-6939-4517-85e3-cc075e8d8225",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Recognition rather than recall",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_6",
+      "observation": "Several top-of-page links pair a short label with a descriptive phrase after an em-dash, for example 'Features — Remarkably simple, surprisingly capable' and 'Paths — Why people switch to Basecamp'.",
+      "impact_note": "This gives visitors a preview of destination content without needing to click, supporting faster scanning and reducing wasted navigation.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
     },
     {
       "key": "1e6d5d13-638e-4d58-8b78-9aad1f68cb72:1e6d5d13-638e-4d58-8b78-9aad1f68cb72-f1",
@@ -987,6 +1341,294 @@
       "review_keep": true
     },
     {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f1",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta+visual-hierarchy",
+      "heuristic": "Single clear call to action",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_12",
+      "observation": "Above the fold there are two distinct calls to action: a small 'Sign up free' button (113x36px) in the header, and a much larger 'Take a 3 minute tour of Basecamp' video button (476x89px) placed directly beneath the headline.",
+      "impact_note": "Two competing actions of unequal visual weight ask the visitor to choose between converting now or watching a video first, which can delay or dilute the primary conversion action.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f2",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta+heuristics",
+      "heuristic": "Continuous motivation to act",
+      "severity": 3,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The 'Sign up free' button appears once, in the top navigation. The remaining ~4300px of the page — testimonials, the founder letter, usage statistics, the support story, and the feature Q&A — contains no repeated sign-up call to action.",
+      "impact_note": "Visitors persuaded by the trust-building content lower on the page have no nearby path to act on that motivation and must scroll back to the top.",
+      "source_type": "none",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "states 4300px, which matches nothing we measured"
+        ]
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f3",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Visual Hierarchy — undifferentiated list",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The seven links above the h1 (el_4 through el_10, e.g. \"Pricing & sign up\", \"Basecamp 5 is here\", \"Features\", \"Paths\", \"API, CLI, Skills\", \"Reliable to the core\", and the live-counter link ending \"are working in Basecamp right now!\") are all rendered at nearly identical font sizes (19-24px) with the same blue-link styling.",
+      "impact_note": "With no size or weight distinction between a live social-proof counter and a static feature link, nothing signals which of these seven items is worth reading first.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": "the \"19-24px\" range is imprecise: the capture has all seven links at exactly 19px, which makes the undifferentiated-list point stronger than stated, not weaker",
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f4",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust — cost transparency",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "Pricing information is not shown on the page itself; the only reference is a nav link reading 'Pricing & sign up — A free plan + paid upgrades' that leads elsewhere.",
+      "impact_note": "Visitors considering sign-up have to leave the page to learn what the commitment costs, which can stall momentum built by the rest of the page.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f5",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "What happens after I click",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_2",
+      "observation": "The 'Sign up free' button in the header carries no supporting text nearby indicating what the free plan includes or what happens immediately after clicking.",
+      "impact_note": "Visitors clicking without knowing the immediate next step (e.g., account creation, no credit card, plan limits) may hesitate or abandon partway through.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f6",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta+visual-hierarchy",
+      "heuristic": "Single clear call to action",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_24",
+      "observation": "A large button-styled link reads 'Check out over 1,000 more customer testimonials…', positioned with similar prominence to a primary action.",
+      "impact_note": "This directs attention toward more reading rather than toward signing up, extending the path to conversion at a point where momentum could be capitalized on.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f7",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_20",
+      "observation": "Inside the product demo mockup, individual sub-elements such as the message board post, the document folder, a to-do item, and a card are implemented as clickable buttons (aria-labels 'Open: Message Board post', 'Open: Document folder', etc.), visually indistinguishable from the surrounding illustrative screenshot.",
+      "impact_note": "Interactive-looking controls embedded in what a visitor perceives as a static preview image can invite clicks that lead nowhere meaningful, undermining trust that clickable elements behave predictably.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f12",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Single clear call to action",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_36",
+      "observation": "A second video CTA, 'Meet Chase, our Head of Support', is styled and sized similarly to the earlier 'Take a 3 minute tour of Basecamp' button, but neither links toward sign-up.",
+      "impact_note": "Multiple video detours with CTA-like styling can be mistaken for or compete with the actual conversion action, spending visitor attention on content that doesn't move them toward the goal.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f13",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics+visual-hierarchy",
+      "heuristic": "Recognition rather than recall / Aesthetic and minimalist design",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_43",
+      "observation": "The footer 'And there's more…' section lists roughly 30 links in a single undifferentiated block (e.g. 'Basecamp 5 is here', 'Kill overkill', 'Leaving the Cloud', 'Employee Handbook') with no grouping headers or visual categorization.",
+      "impact_note": "Without categorization, a visitor scanning for a specific topic (e.g. accessibility or pricing) has to read every link individually rather than recognizing a relevant group, slowing wayfinding.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f8",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Visual Hierarchy — focal point",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_11",
+      "observation": "The h1 (\"The refreshingly straightforward project management system that's rock-solid and easy to use.\") is set at 42px, far larger than any other text above the fold, including the seven links stacked above it at 19-24px.",
+      "impact_note": "A single dominant heading gives the eye a clear entry point on first view, which supports scanning before any decision about scrolling is made.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": "same \"19-24px\" imprecision as finding 3; the 42px-vs-19px contrast it rests on is intact",
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f9",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "heuristics",
+      "heuristic": "Match between system and the real world",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_15",
+      "observation": "The homepage embeds a mockup of the actual product workspace, showing named panels like Message Board, Docs & Files, Chat, Schedule, and Workflow populated with realistic sample content (people's names, a project calendar, a Kanban-style board).",
+      "impact_note": "Showing the real interface rather than abstract marketing graphics lets a visitor form an accurate mental model of the product before signing up, which can reduce post-signup surprise.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f10",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust — named social proof",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "Testimonials throughout the page are attributed with a named person, their role, and their organization (e.g., 'Patrick Sheffield, Moore Communications Group', 'Shannon Kropf, Full Sail University').",
+      "impact_note": "Specific, attributed quotes rather than anonymous praise are a stronger trust signal and can reduce perceived risk before a visitor commits.",
+      "source_type": "paper",
+      "auto": {
+        "status": "unverifiable",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8:2928c314-4cb0-4a96-a106-36ed5b9cd3d8-f11",
+      "audit_id": "2928c314-4cb0-4a96-a106-36ed5b9cd3d8",
+      "url": "https://basecamp.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Motivation before commitment",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_10",
+      "observation": "The page displays a live counter: 'people are working in Basecamp right now!' next to a number.",
+      "impact_note": "A real-time usage figure is a concrete, hard-to-fake trust signal that can reassure a visitor before they are asked to commit.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": "the number is real but capture.json dropped it — el_10 text is \"people are working in Basecamp right now!\" while the screenshot reads \"160,691 people...\". Verified from the screenshot, not the JSON",
+      "review_keep": true
+    },
+    {
       "key": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7:2a5a7f87-c3dd-46d9-853e-d1eae478a1a7-f1",
       "audit_id": "2a5a7f87-c3dd-46d9-853e-d1eae478a1a7",
       "url": "https://www.duolingo.com/",
@@ -1161,6 +1803,248 @@
       "human_useful": true,
       "human_note": null,
       "review_keep": true
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f1",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "heuristics",
+      "heuristic": "Match Between System and the Real World",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_14",
+      "observation": "A \"Forgot your password?\" link sits below the \"Create New Account\" button, but no login form (username/password fields) is visible anywhere on this page.",
+      "impact_note": "A password-recovery link with no accompanying login form nearby can read as out of place, leaving a visitor unsure what it is attached to until they click it.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f2",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "copy",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_8",
+      "observation": "The page mentions a link labeled \"NYC Schools Account\" in the sentence \"Keep tabs on grades, emergency updates, progress towards graduation and more with your NYC Schools Account.\", introduced separately from the \"MySchools\" account discussed just above it.",
+      "impact_note": "Two differently named accounts (\"MySchools\" and \"NYC Schools Account\") appear on the same screen without an explanation of how they relate, which can leave a visitor unsure which one to create or log into.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f3",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "copy",
+      "heuristic": "Match between system and the real world / Plain language",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_0",
+      "observation": "The topmost banner reads: \"MySchools.nyc is dedicated to our friend and colleague, Dave Yang, who spearheaded the creation of this enrollment platform, and who was a force for change and progress at NYC DOE.\"",
+      "impact_note": "This is the very first sentence a new visitor reads, yet it is a personal tribute referencing an unfamiliar name and the unexplained acronym \"NYC DOE\" rather than orienting the visitor to what the service does; it delays comprehension of the page's purpose.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f4",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "copy",
+      "heuristic": "Recognition rather than recall / clear headline",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_7",
+      "observation": "The main heading on the page is simply \"Welcome!\"",
+      "impact_note": "A headline this generic could belong to any organization's site and carries no information about the service on its own; comprehension depends entirely on the smaller paragraph beneath it being read.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f5",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and Standards",
+      "severity": 1,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_18",
+      "observation": "The action to sign in is labelled \"Log In\" in the header (el_6) and hero panel (el_12), but rendered as \"Login\" (one word) in the footer navigation (el_18).",
+      "impact_note": "Minor label drift for the same action across the page can create small doubts about whether it is the same function.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f7",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "copy+heuristics",
+      "heuristic": "Aesthetic and Minimalist Design",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_9",
+      "observation": "The links \"School Directory\", \"Calendar\" and \"Enrollment Support\" appear a second time inside the hero panel (el_9, el_10, el_11), duplicating the identical links already present in the top navigation bar (el_2, el_3, el_4) just above them.",
+      "impact_note": "Repeating the same destinations twice within the same screen adds visual clutter and forces the visitor to determine whether the two sets of links go anywhere different, which they do not appear to.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f8",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "heuristics",
+      "heuristic": "Visibility of System Status",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_22",
+      "observation": "None of the thirteen language buttons in the footer (el_23-el_50) show any distinguishing mark such as a highlight or checkmark to indicate which language is currently active, though \"English\" is shown selected in the header dropdown.",
+      "impact_note": "Without a visible indicator of the current language among the footer options, a visitor scanning that row cannot tell at a glance which one is already applied.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f9",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and Standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_20",
+      "observation": "The footer link visibly labelled \"Enrollment Support\" (el_20) carries a different accessible name referring to a customer portal, while the equivalently labelled links in the header (el_4) and hero panel (el_11) do not carry that alternate name.",
+      "impact_note": "The same visible label pointing to what appears to be a differently-framed destination can create uncertainty about whether all three \"Enrollment Support\" links lead to the same place.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f10",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and Standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_22",
+      "observation": "Language selection exists in two different forms on the page: a single dropdown labelled \"English\" in the header (el_5), and a footer block with thirteen separate buttons, one per language, each wrapped in its own form (el_22 through el_50).",
+      "impact_note": "Two different interaction patterns for the same task (choosing a language) can make the page feel inconsistent and forces the visitor to learn the control twice.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f6",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "heuristics",
+      "heuristic": "Recognition Rather Than Recall",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_13",
+      "observation": "The two primary next steps, \"Log In\" (el_12) and \"Create New Account\" (el_13), are grouped together as two clearly labelled, similarly-styled buttons directly under the welcome copy.",
+      "impact_note": "Placing both onboarding paths side by side, with a full sentence of context above them, helps a new or returning visitor recognize the right action without having to search the page.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
+    },
+    {
+      "key": "2ae5a280-5c5f-4d27-b407-92aa46d404be:2ae5a280-5c5f-4d27-b407-92aa46d404be-f11",
+      "audit_id": "2ae5a280-5c5f-4d27-b407-92aa46d404be",
+      "url": "https://myschools.nyc/en/",
+      "agent": "copy",
+      "heuristic": "Clarity / audience and purpose stated up front",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The intro paragraph reads: \"NYC families can use MySchools to apply to public schools from 2-K to high school. Get started by creating an account.\"",
+      "impact_note": "In two short sentences the copy names the intended audience, the action available, and the immediate next step, giving a first-time visitor a quick, concrete answer to what the service is and what to do.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": null,
+      "human_note": null,
+      "review_keep": null
     },
     {
       "key": "45567cab-13a0-43ee-a021-da09973d769b:recovered-f1",
@@ -3413,6 +4297,580 @@
       "review_keep": null
     },
     {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f1",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Visibility of cost / trust before commitment",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "No price, plan tier, or cost figure appears anywhere in the page body; \"Pricing\" exists only as a separate nav link, and the only cost-related phrase on the page itself is \"create your account for free\" buried in the migration section near the bottom.",
+      "impact_note": "Visitors are asked to click a signup CTA multiple times before the page tells them, in the flow of the page itself, what the commitment actually costs — a common reason for people to abandon before converting.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f2",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Match between system and real world / CTA consistency",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_6",
+      "observation": "The fixed header button reads \"Build your newsletter\" while every in-page CTA reads \"Join your last newsletter platform\" — two different labels likely pointing at the same signup action.",
+      "impact_note": "Different wording for what appears to be the same commitment can make a visitor pause to figure out whether the two buttons lead to different things, adding friction to an otherwise simple decision.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f3",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta+heuristics",
+      "heuristic": "Minimalist design",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_29",
+      "observation": "A full multi-field customer-support form -- name, email, a nine-option support-topic dropdown, username, and a free-text message box -- is embedded directly in the marketing homepage rather than linked out to a dedicated support page.",
+      "impact_note": "Bundling an unrelated support workflow into the sales narrative substantially lengthens the page and mixes two different visitor intents -- evaluating the product versus seeking account help -- in a single flow.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f4",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta+forms",
+      "heuristic": "Clarity of next step",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_9",
+      "observation": "The CTA \"Join your last newsletter platform\" states an outcome (joining a platform) but does not indicate what happens immediately after the click — for example whether it leads to a signup form, a trial, or a paid checkout.",
+      "impact_note": "Without a hint of the immediate next step, a hesitant visitor may be less willing to click, since the size of the commitment feels open-ended.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f5",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Motivation before commitment",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_27",
+      "observation": "The migration offer (\"one-click concierge migration\", account created \"for free\", migrated \"within one business day\") appears far down the page, well after the first two instances of the join CTA.",
+      "impact_note": "A concrete, reassuring detail like free account creation and a one-day migration turnaround is placed after the CTA has already been shown twice, so early visitors act (or don't) without seeing this reassurance.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": "the page has two join CTAs, not three (y=584 and y=5177); only one of them precedes the migration section at y=4246, so \"well after the first two\" is not what the capture shows",
+      "review_keep": false
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f6",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Visual Hierarchy - Consistency of heading levels",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_8",
+      "observation": "The h2 \"Buttondown is the last email platform you'll switch to.\" is set at 24px, while three other h2 headings further down the page (\"The last email platform you'll migrate to.\", \"And we're here to help.\", \"Busy? Let us handle it.\") are set at 60px — 2.5x larger.",
+      "impact_note": "Using the same heading tag at wildly different sizes means font size no longer reliably signals section importance, making it harder to scan the page by heading weight alone.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f7",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust signals / social proof",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "Two named testimonials (Jeremy Singer-Vine, Clive Thompson) appear with quoted endorsements, but no logos, subscriber counts, newsletter counts, or other quantifiable proof points accompany them.",
+      "impact_note": "Named quotes build some credibility, but without a number (customers, newsletters sent, uptime) a visitor has less concrete evidence to weigh before committing.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f8",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "heuristics",
+      "heuristic": "Match between system and the real world",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_29",
+      "observation": "The section heading \"Busy? Let us handle it.\" and its copy focus entirely on list migration, but the form beneath it presents a \"Support topic\" dropdown listing unrelated categories such as \"Billing / plans\", \"Bug report\", and \"Deliverability / DNS\" alongside \"Importing / migration\".",
+      "impact_note": "A visitor arriving specifically for migration help is handed a generic support ticket form, which can create uncertainty about whether the request will be routed and handled as the surrounding copy promised.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f10",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "heuristics",
+      "heuristic": "Recognition rather than recall (affordance)",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_10",
+      "observation": "The names \"Jeremy Singer-Vine\" and \"Clive Thompson\" beneath the pull-quotes are coded as links but are styled identically to plain text on the yellow sticky-note graphics, with no underline or color distinction marking them as clickable.",
+      "impact_note": "Visitors are unlikely to recognize these as interactive, so whatever destination they lead to is effectively hidden from most of the audience.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f11",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "forms",
+      "heuristic": "Minimize user input / efficiency of use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_29",
+      "observation": "The support/migration contact form asks for five inputs before it can be sent: Your name, Your email, Support topic (a dropdown), Buttondown username, and a free-text \"How can we help?\" message.",
+      "impact_note": "Each additional field adds a small amount of friction to what is otherwise framed as a quick way to get migration help; visitors in a hurry may abandon before finishing all five.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f12",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "heuristics",
+      "heuristic": "Visibility of system status (affordance)",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_40",
+      "observation": "The \"Send us a message\" submit button is rendered in a lighter, lower-contrast blue than the primary \"Join your last newsletter platform\" buttons used elsewhere on the page.",
+      "impact_note": "A lighter fill commonly signals a disabled or inactive control, so some visitors may hesitate to click or assume the form is not yet ready to submit.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": "understated: white on rgb(121,175,251) measures 2.25:1 across the whole fill, below the WCAG AA 3:1 floor for large bold text. The primary CTA is 4.70:1 and passes. An accessibility failure, not a styling inconsistency",
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f14",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "forms",
+      "heuristic": "Error prevention / visibility of system status",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_31",
+      "observation": "Only the \"Buttondown username\" field is explicitly marked optional (\"if you have one\"). The Your name, Your email, Support topic, and How can we help? fields carry no asterisk or \"required\"/\"optional\" marker.",
+      "impact_note": "Visitors cannot tell in advance which fields must be completed to submit successfully, which can cause a failed submission attempt or uncertainty about how much detail is expected.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f15",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "heuristics",
+      "heuristic": "Flexibility and efficiency of use",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_1",
+      "observation": "The fixed top navigation offers only \"Features,\" \"Resources,\" \"Pricing,\" and \"Log in\"; there are no in-page anchor links or table of contents for the roughly 5500px of content below it, including testimonials, feature sections, the migration offer, and the support form.",
+      "impact_note": "A visitor wanting to jump straight to, for example, the migration form or testimonials must scroll through the entire page rather than navigate directly, adding friction on a long single-page layout.",
+      "source_type": "none",
+      "auto": {
+        "status": "contradicted",
+        "contradictions": [
+          "states 5500px, which matches nothing we measured"
+        ]
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f9",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta+heuristics+visual-hierarchy",
+      "heuristic": "Consistency & standards (CTA repetition)",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_9",
+      "observation": "The button text \"Join your last newsletter platform\" appears three times on the page (hero, mid-page, and footer area) with identical wording and styling.",
+      "impact_note": "Repeating one clear action reduces decision fatigue and reinforces what the visitor should do at multiple points in a long page.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": "counts three instances of the join CTA; the capture has two, at y=584 and y=5177. The repetition it praises is the thing it miscounted",
+      "review_keep": false
+    },
+    {
+      "key": "96ba2ed5-460e-49af-b038-1a508a9bc671:96ba2ed5-460e-49af-b038-1a508a9bc671-f13",
+      "audit_id": "96ba2ed5-460e-49af-b038-1a508a9bc671",
+      "url": "https://buttondown.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust / reassurance in the ask",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_28",
+      "observation": "The migration paragraph explicitly reassures \"we'll get you migrated within one business day\" and offers a human contact link for concerns about lost or broken data.",
+      "impact_note": "Addressing a specific, named fear (data loss during migration) with a concrete timeframe is a good example of motivating action by removing a stated objection.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f1",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust signals / disclosure of commitment",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_16",
+      "observation": "The \"Try for free\" buttons on the Starter, Publisher, and Business tiles do not state trial length or whether payment details are needed to start.",
+      "impact_note": "Visitors weighing a trial commonly look for these terms before clicking; their absence next to the button can create hesitation right at the point of action.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f2",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Visibility of the primary action",
+      "severity": 3,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "After the pricing tiles' own \"Try for free\" buttons, the long feature-comparison table (covering Website, Audience, Growth, Email Newsletters, Analytics, Integrations, Platform, Security, and Support) runs for thousands of pixels with no repeated call-to-action, until \"Start publishing now\" appears at the very bottom of the page.",
+      "impact_note": "A visitor scrolling through the comparison table to evaluate a decision has no nearby way to act on it and must scroll back up, which risks losing the moment of intent.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f3",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Price transparency",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_13",
+      "observation": "\"Yearly billing\" appears selected by default alongside \"Monthly billing\", and each tile shows a large monthly-equivalent figure (e.g. \"$15 USD / mo\") with the smaller caption \"Billed yearly\" beneath it.",
+      "impact_note": "A visitor scanning the large price figure without noticing the smaller billing caption may misjudge the actual charge and commitment period, which can surface as friction at checkout.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f4",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "Three different action labels appear across the page for what appears to be the same underlying signup action: \"Get Started — free\" in the header, \"Try for free\" on each pricing tile, and \"Start publishing now\" at the page footer.",
+      "impact_note": "Varying the label for the same destination action can make a visitor pause to check whether the buttons lead somewhere different, adding friction at the decision point.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f5",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Motivation before commitment",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_82",
+      "observation": "The social-proof statistic — that \"16,718 brand new publications got started with Ghost\" last week — is placed only in the closing section near the page footer, after the entire multi-section feature comparison table.",
+      "impact_note": "Placing motivational proof after the comparison and decision content means it cannot help build confidence while the visitor is still evaluating tiers.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f6",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "heuristics",
+      "heuristic": "Help and documentation",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_24",
+      "observation": "Dozens of small \"?\" icon links scattered throughout the comparison table (roughly 40 instances) all carry the identical tooltip label \"Help\" rather than text describing the specific row they sit next to.",
+      "impact_note": "Visitors seeking clarification on a particular feature get no differentiation between rows from the tooltip label itself, so the help affordance does not narrow down which explanation applies.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": false,
+      "human_note": "observation holds but the count is wrong: the capture has 50 identical \"Help\" tooltips, not \"roughly 40\"",
+      "review_keep": false
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f7",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and standards",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_15",
+      "observation": "A \"NEW\" badge appears next to \"Free custom domain\" only on the Starter pricing card, while the detailed comparison table shows \"Free custom domain\" checked for every tier including Publisher, Business, and Custom.",
+      "impact_note": "Placing the badge on only one tier's card can suggest the feature is new or exclusive to Starter, which conflicts with the table showing it is available across all plans.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f8",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Setting expectations for next steps",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_22",
+      "observation": "The Custom tier's action button reads \"Get in touch\" with no indication of what follows — a form, an email, or a scheduled call.",
+      "impact_note": "Enterprise-scale buyers often want to know the effort involved before committing to an inquiry; an unspecified next step can reduce willingness to click.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f9",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust before commitment",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_8",
+      "observation": "The primary header call-to-action reads \"Get Started — free\", stating cost (or lack of it) directly in the button label.",
+      "impact_note": "Naming the cost condition in the CTA itself reduces hesitation before a visitor has to click to find out whether payment is required.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f10",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "conversion-cta",
+      "heuristic": "Trust signals",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The \"Transaction fees\" row in the comparison table explicitly lists \"0%\" for every paid tier.",
+      "impact_note": "Stating the absence of transaction fees plainly, rather than leaving it to be discovered later, removes a common source of pricing-page doubt.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "b7969d20-cfc8-4d05-b08e-132b23881f2e:b7969d20-cfc8-4d05-b08e-132b23881f2e-f11",
+      "audit_id": "b7969d20-cfc8-4d05-b08e-132b23881f2e",
+      "url": "https://ghost.org/pricing/",
+      "agent": "heuristics",
+      "heuristic": "Visibility of system status",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_10",
+      "observation": "The audience slider shows a floating value bubble reading \"1,000\" above its handle, matching the adjacent text \"Based on an audience up to 1,000 members\".",
+      "impact_note": "Immediate, synchronized feedback on the selected audience size lets visitors confirm their configuration before reading the resulting prices, reducing uncertainty during setup.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
       "key": "c44b7d32-c004-4005-b7f4-fb059df063b9:recovered-f1",
       "audit_id": "c44b7d32-c004-4005-b7f4-fb059df063b9",
       "url": "https://linear.app/",
@@ -4283,6 +5741,248 @@
       "observation": "The email input (el_5, 251x50px) and \"Continue\" button (el_6, 174x50px) are both sized at 50px tall, noticeably larger than the 13-16px surrounding nav, label, and footer text.",
       "impact_note": "Giving the input/CTA pair the largest box size on the page helps them read as the primary interactive target even though their font size matches surrounding text.",
       "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f1",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "conversion-cta+copy",
+      "heuristic": "Trust & Credibility",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_3",
+      "observation": "The single demonstration of the product's output, a sample finding card labeled 'Visibility of System Status', is followed by italic text stating \"This finding is a placeholder and says so. The real one lands when we run our own pipeline against this page.\"",
+      "impact_note": "The only proof offered that the service works is explicitly admitted to be fabricated, which undercuts the persuasive value of showing a sample finding before asking a visitor to commit.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f2",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "conversion-cta",
+      "heuristic": "Cost Disclosure Timing",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "Pricing (\"Free\" for the first audit, \"$29 / month\" for ongoing re-audits) appears only in the footer section, after all persuasive content and two earlier instances of the \"Get started\" button.",
+      "impact_note": "A visitor who clicks the first or second CTA has not yet seen what the offer costs or what the paid tier entails, which can create hesitation or a sense of surprise at the point of commitment.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f3",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "heuristics",
+      "heuristic": "Consistency and Standards",
+      "severity": 3,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "The footer contains only the pricing recap and a 'Get started' button; there are no links to a privacy policy, terms of service, contact/support, or company information anywhere on the page.",
+      "impact_note": "For a page selling a paid subscription ($29/month), the absence of standard legal and support links departs from common web conventions and can leave visitors unable to find basic policy information before committing.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f4",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "copy",
+      "heuristic": "Ambiguous labeling",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_4",
+      "observation": "The pricing row is labeled \"Keep watching the page\" priced at \"$29 / month\".",
+      "impact_note": "On its own the phrase does not convey what the subscription actually does; a visitor has to read the smaller disclaimer sentence below to learn it means recurring re-audits.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f5",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "copy",
+      "heuristic": "Match between system and the real world",
+      "severity": 2,
+      "confidence": "medium",
+      "positive": false,
+      "element_ref": null,
+      "observation": "The stats row is followed by the line: \"28 sources in all — and that number is read from the table the reviewers cite against, not typed onto this page.\"",
+      "impact_note": "The sentence references \"the table\" without ever showing or linking to it, leaving the claim unverifiable and the referent unclear to a visitor reading only the page.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f6",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "copy",
+      "heuristic": "Jargon / internal vocabulary",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_3",
+      "observation": "The sample finding heading reads \"Visibility of System Status\" with a \"MODERATE\" severity tag, a Nielsen Norman Group heuristic name presented without a plain-language gloss.",
+      "impact_note": "A visitor unfamiliar with UX heuristics may not know what the term or the severity scale means, weakening the persuasive force of the sample finding.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f7",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "conversion-cta+heuristics",
+      "heuristic": "Action Clarity",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_1",
+      "observation": "The \"Get started\" button gives no indication near it of what immediately follows the click (e.g., a URL entry form, a signup, or the five questions referenced in the subtext).",
+      "impact_note": "Without a hint of the next step, some visitors may hesitate to click since they cannot anticipate the level of commitment involved.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f10",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "visual-hierarchy",
+      "heuristic": "Visual Hierarchy — typographic scale consistency",
+      "severity": 2,
+      "confidence": "high",
+      "positive": false,
+      "element_ref": "el_3",
+      "observation": "The heading \"Visibility of System Status Moderate\" is set as an <h2> at 15px font size, while the other <h2> on the page, \"One page. Five questions.\", is set at 32px — more than double the size for the same semantic heading level.",
+      "impact_note": "Using one heading tag at two very different sizes breaks the visual scale a reader relies on to judge relative importance of sections, making the page's structure less predictable.",
+      "source_type": "paper",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f8",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "copy",
+      "heuristic": "Match between system and the real world / plain language",
+      "severity": 1,
+      "confidence": "medium",
+      "positive": true,
+      "element_ref": null,
+      "observation": "The intro copy reads: \"Your URL and five answers become a research-backed critique of your site — with cited findings and annotated screenshots, so you can check every one of them.\"",
+      "impact_note": "This sentence states the mechanism and the deliverable in concrete, checkable terms, which helps a first-time visitor understand what happens after signup.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f9",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "conversion-cta+copy",
+      "heuristic": "Plain language / clarity",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_4",
+      "observation": "The footer disclaimer reads: \"No card to start. The subscription buys re-audits — we capture the page again and tell you what moved. Up to 3 sites and 10 re-audits a month. Cancel any time.\"",
+      "impact_note": "This sentence spells out exactly what is billed, what happens each cycle, and how to stop, which reduces ambiguity around the paid plan.",
+      "source_type": "none",
+      "auto": {
+        "status": "verified",
+        "contradictions": []
+      },
+      "human_true": null,
+      "human_useful": true,
+      "human_note": null,
+      "review_keep": true
+    },
+    {
+      "key": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce:e338784b-6ae0-4cf5-926a-eeb8c0c6bfce-f11",
+      "audit_id": "e338784b-6ae0-4cf5-926a-eeb8c0c6bfce",
+      "url": "https://theusabilitylab.com/",
+      "agent": "conversion-cta+heuristics+visual-hierarchy",
+      "heuristic": "Consistency of CTA",
+      "severity": 1,
+      "confidence": "high",
+      "positive": true,
+      "element_ref": "el_1",
+      "observation": "The primary call to action \"Get started\" appears with identical wording and no competing secondary action at both the top (el_1) and bottom (el_6) of the page.",
+      "impact_note": "A single repeated action label removes any ambiguity about what the page wants a visitor to do, which supports rather than dilutes conversion intent.",
+      "source_type": "paper",
       "auto": {
         "status": "verified",
         "contradictions": []
