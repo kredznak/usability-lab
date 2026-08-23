@@ -1347,6 +1347,52 @@ describe("where is my audit", () => {
     store.close();
   });
 
+  /**
+   * DECLINED fell through to `default:`, which tells a waiting visitor their
+   * audit is still running and refreshes forever. It will never publish.
+   *
+   * A declined audit is a judgment we made, not a fault of the page, and the
+   * page saying so is the difference between a decision and a hang.
+   */
+  test("an audit we declined stops, and does not pretend to still be working", async () => {
+    const requestId = ask();
+    const auditId = randomUUID();
+    const asks = new AuditRequestStore(dbPath);
+    asks.start(requestId, auditId);
+    asks.close();
+
+    const store = new AuditStore(dbPath);
+    store.create(auditId, "https://example.com/");
+    for (const s of ["CAPTURING", "AUDITING", "ASSEMBLING", "REVIEW_PENDING"] as const) {
+      store.transition(auditId, s);
+    }
+    store.transition(auditId, "DECLINED");
+    store.close();
+
+    const html = await (await fetch(`${BASE}/r/${requestId}`)).text();
+    assert.doesNotMatch(html, /It updates as we go/, "terminal: nothing more is coming");
+    assert.doesNotMatch(html, /http-equiv="refresh"/i, "and it must not poll forever");
+    assert.doesNotMatch(html, /a person is reading it/, "nobody is still reading it");
+    assert.match(html, /not to publish/i, "it says what happened");
+    assert.match(html, /nothing was charged/i);
+  });
+
+  test("a declined audit is not readable at its own address", async () => {
+    // The serving check is an allowlist — PUBLISHED or AUTO_PUBLISHED — so this
+    // should already hold. Asserted because "should already hold" is how a
+    // cut finding reaches a stranger.
+    const auditId = randomUUID();
+    const store = new AuditStore(dbPath);
+    store.create(auditId, "https://example.com/");
+    for (const s of ["CAPTURING", "AUDITING", "ASSEMBLING", "REVIEW_PENDING"] as const) {
+      store.transition(auditId, s);
+    }
+    store.transition(auditId, "DECLINED");
+    store.close();
+
+    assert.equal((await fetch(`${BASE}/a/${auditId}/`)).status, 404);
+  });
+
   test("a capture that failed tells the visitor so — F1", async () => {
     const requestId = ask();
     const auditId = randomUUID();

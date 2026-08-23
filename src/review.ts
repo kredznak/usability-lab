@@ -112,6 +112,63 @@ if (audit.status !== "REVIEW_PENDING") {
   process.exit(2);
 }
 
+/**
+ * `--decline=<reason>` — the gate's only other way out.
+ *
+ * Until 2026-08-23 REVIEW_PENDING led to PUBLISHED and nowhere else, so an
+ * audit the founder did not want published had no state to be in. Leaving it
+ * pending recorded nothing and kept it in this queue forever; FAILED was the
+ * only reachable terminal state and would have been a lie, since the audit
+ * worked. `2ae5a280` — myschools.nyc, a public school enrolment service — is
+ * the one that made the gap real.
+ *
+ * A flag and not a prompt. The refusal is about the audit, not its findings,
+ * and making someone answer eleven keep/cut questions to reach a publish
+ * prompt they already intend to refuse is the friction the resume path exists
+ * to remove. It also means no keep/cut labels are invented for findings nobody
+ * judged.
+ *
+ * The reason is required. B29 measured the alternative: the optional reason
+ * offered on every cut has been used zero times in 115 decisions. An optional
+ * one here would go the same way, and DECLINED would then say no more than
+ * leaving the audit pending already did.
+ */
+const declineArg = args.find((a) => a === "--decline" || a.startsWith("--decline="));
+if (declineArg) {
+  const reason = declineArg.slice("--decline".length).replace(/^=/, "").trim();
+  const short = audit.audit_id.slice(0, 8);
+
+  if (!reason) {
+    console.error(
+      `\nDeclining ${short} needs a reason.\n\n` +
+        `  npm run review -- ${short} --decline="why this should not be published"\n\n` +
+        `  ${DIM}The reason is the point. DECLINED without one says no more than` +
+        ` leaving it pending already did.${RESET}\n`,
+    );
+    store.close();
+    events.close();
+    process.exit(2);
+  }
+
+  store.transition(audit.audit_id, "DECLINED");
+  events.record({
+    audit_id: audit.audit_id,
+    type: "review.declined",
+    data: { reason, findings: audit.findings_total },
+  });
+  store.close();
+  events.close();
+
+  console.log(
+    `\n${YELLOW}DECLINED${RESET}  ${audit.url}\n` +
+      `  ${DIM}${short} — ${audit.findings_total} findings, none published, none labelled.${RESET}\n\n` +
+      `  ${reason}\n\n` +
+      `  ${DIM}Terminal. It will not appear in this queue again, and there is no` +
+      ` path back to PUBLISHED.${RESET}\n`,
+  );
+  process.exit(0);
+}
+
 const dir = path.join(OUT_ROOT, audit.audit_id);
 const findingsFile = path.join(dir, "findings.json");
 if (!existsSync(findingsFile)) {

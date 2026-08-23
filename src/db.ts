@@ -95,6 +95,7 @@ export type AuditStatus =
   | "AUTO_PUBLISHED"
   | "CAPTURE_FAILED"
   | "PARKED"
+  | "DECLINED"
   | "FAILED";
 
 /**
@@ -120,18 +121,27 @@ const LEGAL: Record<AuditStatus, AuditStatus[]> = {
   AUDITING: ["RESEARCHING", "ASSEMBLING"],
   RESEARCHING: ["ASSEMBLING"],
   ASSEMBLING: ["REVIEW_PENDING", "AUTO_PUBLISHED"],
-  REVIEW_PENDING: ["PUBLISHED"],
+  // DECLINED is the founder saying no, and it is the only other way out. Before
+  // it existed the gate could publish or leave an audit pending forever, so a
+  // deliberate refusal — 2ae5a280, a public school enrolment service we do not
+  // want to critique under our name — was indistinguishable from a queue nobody
+  // had got to. FAILED was the only terminal state available and it would have
+  // been a lie: the audit worked.
+  REVIEW_PENDING: ["PUBLISHED", "DECLINED"],
   // Terminal. A published audit that turns out to be wrong gets a correction
   // path, not a status rewind — quality-bar.md still has that UNRESOLVED.
   PUBLISHED: [],
   AUTO_PUBLISHED: ["REVIEW_PENDING"],
   CAPTURE_FAILED: ["CAPTURING", "PARKED"],
   PARKED: ["CAPTURING"],
+  // Terminal, and deliberately not a detour. An audit that could be declined
+  // and then published would make the record a suggestion, not a decision.
+  DECLINED: [],
   FAILED: [],
 };
 
 /** Live states can always fail; §6's "any step → FAILED". */
-const TERMINAL: AuditStatus[] = ["PUBLISHED", "FAILED"];
+const TERMINAL: AuditStatus[] = ["PUBLISHED", "DECLINED", "FAILED"];
 
 export class IllegalTransition extends Error {
   constructor(

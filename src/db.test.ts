@@ -71,6 +71,60 @@ describe("audits: the state machine", () => {
     });
   });
 
+  /**
+   * The gate could say "publish" and could not say "no".
+   *
+   * myschools.nyc (`2ae5a280`) was audited successfully and then declined —
+   * we do not want a critique of a public school enrolment service published
+   * under our name. Before this there was nowhere to put that: leaving it
+   * REVIEW_PENDING forever recorded nothing, and FAILED would have filed a
+   * working audit among the fifteen that genuinely broke.
+   */
+  test("a reviewed audit can be declined, and that is the end of it", () => {
+    withStore((s) => {
+      s.create("a1", "https://example.com");
+      for (const next of HAPPY) {
+        if (next === "PUBLISHED") break;
+        s.transition("a1", next);
+      }
+      assert.equal(s.get("a1")?.status, "REVIEW_PENDING");
+      s.transition("a1", "DECLINED");
+      assert.equal(s.get("a1")?.status, "DECLINED");
+    });
+  });
+
+  test("declining is not a detour to publishing", () => {
+    // The whole value of the state is that it means the founder said no. A
+    // DECLINED audit that could still be published would make the record a
+    // suggestion rather than a decision.
+    withStore((s) => {
+      s.create("a1", "https://example.com");
+      for (const next of HAPPY) {
+        if (next === "PUBLISHED") break;
+        s.transition("a1", next);
+      }
+      s.transition("a1", "DECLINED");
+      assert.throws(() => s.transition("a1", "PUBLISHED"), IllegalTransition);
+      assert.throws(() => s.transition("a1", "REVIEW_PENDING"), IllegalTransition);
+      assert.throws(() => s.transition("a1", "FAILED"), IllegalTransition);
+      assert.equal(s.get("a1")?.status, "DECLINED", "a refused transition changes nothing");
+    });
+  });
+
+  test("declining does not stamp published_at", () => {
+    // published_at is what the funnel and the corpus read to mean "a visitor
+    // could see this". A declined audit was never visible to anyone.
+    withStore((s) => {
+      s.create("a1", "https://example.com");
+      for (const next of HAPPY) {
+        if (next === "PUBLISHED") break;
+        s.transition("a1", next);
+      }
+      s.transition("a1", "DECLINED");
+      assert.equal(s.get("a1")?.published_at, null);
+    });
+  });
+
   test("any live state can fail", () => {
     for (const from of ["CAPTURING", "AUDITING", "ASSEMBLING", "REVIEW_PENDING"] as AuditStatus[]) {
       withStore((s) => {

@@ -313,3 +313,95 @@ describe("a review you already did", () => {
     assert.equal(reviewJson(fx)!.decisions.length, 3);
   });
 });
+
+/**
+ * The gate could say "publish" and could not say "no".
+ *
+ * `2ae5a280` is an audit of myschools.nyc — a New York City public-school
+ * enrolment service. It ran clean and Kelly declined it: we do not want a
+ * critique of a public service published under our name. Before this there was
+ * nowhere to put that decision. Leaving it REVIEW_PENDING recorded nothing and
+ * left it in the queue forever; FAILED was the only terminal state reachable
+ * and would have filed a working audit among the fifteen that genuinely broke.
+ *
+ * A flag rather than a prompt, because the decision is about the audit and not
+ * about its findings. Walking eleven keep/cut questions to reach a publish
+ * prompt you already intend to refuse is the same friction the resume path was
+ * built to remove.
+ */
+describe("an audit the founder will not publish", () => {
+  function decline(fx: Fixture, arg: string): { output: string; status: number } {
+    try {
+      const stdout = execFileSync(
+        process.execPath,
+        ["--import", "tsx", path.resolve("src/review.ts"), AUDIT_ID.slice(0, 8), arg],
+        {
+          input: "",
+          encoding: "utf8",
+          env: { ...process.env, USABILITY_LAB_DB: fx.dbPath, USABILITY_LAB_OUT: fx.outRoot },
+        },
+      );
+      return { output: stdout, status: 0 };
+    } catch (err) {
+      const e = err as { stdout?: string; stderr?: string; status?: number };
+      return { output: (e.stdout ?? "") + (e.stderr ?? ""), status: e.status ?? 1 };
+    }
+  }
+
+  function events(fx: Fixture, type: string) {
+    const log = new EventLog(fx.dbPath);
+    const rows = log.all(AUDIT_ID).filter((e) => e.type === type);
+    log.close();
+    return rows;
+  }
+
+  test("declining sets the status and records the reason in the founder's words", () => {
+    const fx = seed(11);
+    const { status } = decline(fx, '--decline=dont want to publish a gov website');
+
+    assert.equal(status, 0);
+    assert.equal(statusOf(fx), "DECLINED");
+
+    const rows = events(fx, "review.declined");
+    assert.equal(rows.length, 1, "one decision, one row");
+    assert.equal(
+      (rows[0]!.data as { reason: string }).reason,
+      "dont want to publish a gov website",
+      "recorded verbatim — a paraphrase would be my judgment wearing Kelly's label",
+    );
+  });
+
+  test("declining does not walk the findings or invent decisions about them", () => {
+    // The refusal is about the audit. Writing eleven keep/cut labels nobody
+    // made would feed the corpus judgments that were never formed — the exact
+    // contamination B29 already found four of.
+    const fx = seed(11);
+    decline(fx, "--decline=a public service, not a customer");
+
+    assert.equal(reviewJson(fx), null, "no review.json");
+    assert.equal(events(fx, "review.decided").length, 0, "no decisions recorded");
+  });
+
+  test("a decline with no reason declines nothing", () => {
+    // B29: the reason field has been offered on every cut for the life of the
+    // project and used zero times in 115 decisions. An optional reason here
+    // would go the same way, and then DECLINED would mean no more than
+    // REVIEW_PENDING did.
+    const fx = seed(11);
+    const { output, status } = decline(fx, "--decline=");
+
+    assert.notEqual(status, 0, "it must refuse, not shrug");
+    assert.equal(statusOf(fx), "REVIEW_PENDING", "nothing changed");
+    assert.match(output, /reason/i, "and it says what was missing");
+  });
+
+  test("a declined audit cannot be reviewed back into existence", () => {
+    const fx = seed(11);
+    decline(fx, "--decline=a public service, not a customer");
+    const { output, status } = review(fx, ["k", "y"]);
+
+    assert.notEqual(status, 0);
+    assert.match(output, /DECLINED/, "the refusal names the state it is refusing from");
+    assert.equal(statusOf(fx), "DECLINED");
+  });
+});

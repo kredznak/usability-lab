@@ -383,6 +383,9 @@ const FINISHED = new Set<AuditStatus>([
   "AUTO_PUBLISHED",
   "CAPTURE_FAILED",
   "PARKED",
+  // A declined audit is done with. Matching a new request to it would hand a
+  // visitor the progress page of something that will never publish.
+  "DECLINED",
   "FAILED",
 ]);
 
@@ -588,6 +591,26 @@ function statusPage(row: AuditRequestRow): Status {
         `This one broke on our side. It has been logged and nothing half-finished was ` +
           `published, which is the part we care about most.`,
         `<p><a href="/">Start another</a></p>`,
+      );
+    case "DECLINED":
+      /**
+       * The audit ran and we chose not to publish it — the founder gate's
+       * second exit, added 2026-08-23.
+       *
+       * Without this case DECLINED fell to `default:`, which tells the visitor
+       * reviewers are still working and refreshes every few seconds against a
+       * state that is terminal. A decision presented as a hang.
+       *
+       * It says the choice was ours. A page that reads "we decided not to
+       * publish this" invites "why?"; a page that implies the site was the
+       * problem is worse, because it is not true and cannot be argued with.
+       */
+      return at(
+        null,
+        `We looked at this one and decided not to publish it. That is a call on our ` +
+          `side rather than anything wrong with the page &mdash; nothing was published ` +
+          `and nothing was charged.`,
+        `<p><a href="/">Audit a different page</a></p>`,
       );
     default:
       // Was one fixed sentence for every live state, which claimed reviewers
