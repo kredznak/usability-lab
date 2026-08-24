@@ -389,17 +389,26 @@ export function buildCorpus(): Corpus {
       research: research.get(auditId) ?? "never",
     });
 
-    // The founder gate's keep/cut decisions, where this audit has been through
-    // it. See LabelledFinding.review_keep for why these stay in their own field.
+    /**
+     * The founder gate's keep/cut decisions, where this audit has been through
+     * it. See LabelledFinding.review_keep for why these stay in their own field.
+     *
+     * **An auto-published record is not a label.** Since 2026-08-24 an audit
+     * that nothing mechanical disputed publishes itself and writes a
+     * `review.json` keeping everything, because `published.ts` reads the kept
+     * set from that file and no other. Those decisions say "claims.ts did not
+     * object" — a different claim from "a founder would act on this", and a
+     * unanimous one. Counted here they would arrive as an unbroken run of
+     * keeps and bury the 165 human decisions B29 is measured against.
+     */
     const reviewFile = path.join(dir, "review.json");
-    const review = existsSync(reviewFile)
-      ? new Map(
-          (JSON.parse(readFileSync(reviewFile, "utf8")) as ReviewRecord).decisions.map((d) => [
-            d.finding_id,
-            d,
-          ]),
-        )
-      : new Map<string, ReviewDecision>();
+    const record = existsSync(reviewFile)
+      ? (JSON.parse(readFileSync(reviewFile, "utf8")) as ReviewRecord)
+      : null;
+    const review =
+      record && record.decided_by !== "auto"
+        ? new Map(record.decisions.map((d) => [d.finding_id, d]))
+        : new Map<string, ReviewDecision>();
 
     for (const f of findings) {
       const key = `${auditId}:${f.id}`;

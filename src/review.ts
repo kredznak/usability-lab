@@ -515,6 +515,9 @@ if (!publishSaved) {
   const record: ReviewRecord = {
     audit_id: audit.audit_id,
     reviewed_at: new Date().toISOString(),
+    // Said explicitly now that a machine can write this file too. Records
+    // before 2026-08-24 carry no field and are read as founder, which they were.
+    decided_by: "founder",
     decisions,
   };
   writeFileSync(reviewFile, JSON.stringify(record, null, 2) + "\n");

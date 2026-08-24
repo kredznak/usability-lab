@@ -326,3 +326,61 @@ describe("the uncited rate counts only findings Research actually saw", () => {
     assert.deepEqual(b.seen, { total: 10, uncited: 5 });
   });
 });
+
+/**
+ * An auto-published audit writes a `review.json` because `published.ts` reads
+ * the kept set from that file and no other. Those decisions are not usefulness
+ * labels — they say "claims.ts did not object", which is a different claim and
+ * a unanimous one.
+ *
+ * B29's whole problem is that the human signal is thin: 165 decisions, 10 cuts,
+ * 7 written reasons. Machine keeps counted alongside them would arrive as an
+ * unbroken run of agreement and bury it, and every metric would keep looking
+ * healthy while measuring nothing.
+ */
+describe("a machine's keep is not a founder's label", () => {
+  function withReview(fx: Fixture, id: string, decidedBy: "founder" | "auto" | undefined) {
+    const record: Record<string, unknown> = {
+      audit_id: id,
+      reviewed_at: "2026-08-24T00:00:00.000Z",
+      decisions: [
+        { finding_id: `${id}-f1`, keep: true, severity_before: 2, severity_after: 2, note: null },
+      ],
+    };
+    if (decidedBy) record.decided_by = decidedBy;
+    writeFileSync(path.join(fx.outRoot, id, "review.json"), JSON.stringify(record));
+  }
+
+  test("an auto-published review contributes no label", () => {
+    const fx = fixture();
+    seedAudit(fx, "auto0001", "https://example.com/a", "REVIEW_PENDING");
+    withReview(fx, "auto0001", "auto");
+
+    const row = build(fx).findings.find((f) => f.key.startsWith("auto0001"));
+    assert.ok(row, "the finding is still in the corpus");
+    assert.equal(row.review_keep, null, "but nobody judged it, so there is no label");
+    rmSync(fx.root, { recursive: true, force: true });
+  });
+
+  test("a founder's review still does", () => {
+    const fx = fixture();
+    seedAudit(fx, "human001", "https://example.com/b", "REVIEW_PENDING");
+    withReview(fx, "human001", "founder");
+
+    const row = build(fx).findings.find((f) => f.key.startsWith("human001"));
+    assert.equal(row?.review_keep, true);
+    rmSync(fx.root, { recursive: true, force: true });
+  });
+
+  test("a record written before the field existed is read as a founder's", () => {
+    // Every review.json on disk before 2026-08-24 was a person at the gate.
+    // Treating absence as "auto" would silently discard all 165 of them.
+    const fx = fixture();
+    seedAudit(fx, "legacy01", "https://example.com/c", "REVIEW_PENDING");
+    withReview(fx, "legacy01", undefined);
+
+    const row = build(fx).findings.find((f) => f.key.startsWith("legacy01"));
+    assert.equal(row?.review_keep, true);
+    rmSync(fx.root, { recursive: true, force: true });
+  });
+});

@@ -17,13 +17,14 @@ import { orchestrate } from "./orchestrator/index.js";
 import { deriveSignals } from "./signals.js";
 import { deriveConfidence } from "./confidence.js";
 import { annotate } from "./annotate.js";
-import { renderResults } from "./render.js";
+import { renderResults, renderPublic } from "./render.js";
 import { lintAudit, quarantined } from "./lint.js";
+import { disputedFindings } from "./publishing.js";
 import { CallLog, AuditStore, EventLog, AuditRequestStore, type AuditStatus } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
 import { ceilingFromEnv, spendLine, utcDay, verdict } from "./spend.js";
 import { countingFetch } from "./http.js";
-import { Finding, normalizeSeverity, type RawFinding } from "./types.js";
+import { Finding, normalizeSeverity, type RawFinding, type ReviewRecord } from "./types.js";
 import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
 
 /**
@@ -32,9 +33,14 @@ import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
  *   capture -> profile -> signals -> orchestrate (R0-R5, cap 4)
  *     -> sub-agents -> synthesize -> derived confidence -> annotate -> page
  *
- * The run ends at REVIEW_PENDING, not at a published page. Nothing reaches a
- * customer until a person has read it — §6's gate, and CLAUDE.md's "first audits
- * gate on founder review". `npm run review <audit-id>` is the other half.
+ * The run ends at AUTO_PUBLISHED, or at REVIEW_PENDING when something
+ * mechanical disputes a finding — changed 2026-08-24, and it used to end at
+ * REVIEW_PENDING always. The gate narrowed from "a person reads every audit" to
+ * "a person reads the ones `claims.ts` can show are wrong about the page",
+ * because that is the failure the gate actually caught: 10 of 165 findings cut,
+ * and every written reason a count stated as fact and wrong.
+ *
+ * `npm run review <audit-id>` still publishes a held one, and is unchanged.
  *
  * Research runs on the survivors of synthesis and cites from a curated corpus
  * only (src/sources.ts). No web search: a source id resolves to a URL in code,
@@ -590,11 +596,68 @@ async function main(): Promise<void> {
       },
     });
 
-    setStatus("REVIEW_PENDING", {
-      profile_summary: profile.summary,
-      findings_total: findings.length,
-      cost_usd: costUsd,
-    });
+    // Whether a person has to read this one — see publishing.ts for the rule
+    // and the 165 decisions behind it. A held audit is delayed, not binned:
+    // `npm run review` still publishes it.
+    const disputed = disputedFindings(publishable, captured);
+
+    if (disputed.length > 0) {
+      setStatus("REVIEW_PENDING", {
+        profile_summary: profile.summary,
+        findings_total: findings.length,
+        cost_usd: costUsd,
+      });
+    } else {
+      /**
+       * `published.ts` reads the kept set from `review.json` and never from
+       * `findings.json`, and refuses to render without it. That rule is older
+       * than this path and worth keeping, so the machine writes a review record
+       * rather than routing around the one file that decides what a customer
+       * sees.
+       *
+       * `decided_by: "auto"` is what stops it poisoning the corpus. These
+       * decisions are not usefulness labels — they are "nothing mechanical
+       * objected", which is a different claim and a unanimous one. Mixed into
+       * the 165 human decisions they would read as perfect agreement and drown
+       * the only signal B29 has. `corpus.ts` skips them.
+       */
+      const record: ReviewRecord = {
+        audit_id: auditId,
+        reviewed_at: new Date().toISOString(),
+        decided_by: "auto",
+        decisions: publishable.map((f) => ({
+          finding_id: f.id,
+          keep: true,
+          severity_before: f.severity,
+          severity_after: f.severity,
+          note: null,
+        })),
+      };
+      writeFileSync(path.join(outDir, "review.json"), JSON.stringify(record, null, 2) + "\n");
+
+      await renderPublic(
+        {
+          capture: captured,
+          kept: publishable,
+          allFindings: publishable,
+          annotatedImage: annotated.path,
+          summary: profile.summary,
+        },
+        outDir,
+      );
+
+      setStatus("AUTO_PUBLISHED", {
+        profile_summary: profile.summary,
+        findings_total: findings.length,
+        findings_published: publishable.length,
+        cost_usd: costUsd,
+      });
+      events.record({
+        audit_id: auditId,
+        type: "audit.published",
+        data: { kept: publishable.length, auto: true },
+      });
+    }
 
     const total = timings.reduce((s, t) => s + t.ms, 0);
     const high = findings.filter((f) => f.confidence === "high").length;

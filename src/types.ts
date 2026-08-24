@@ -255,4 +255,18 @@ export interface ReviewRecord {
   audit_id: string;
   reviewed_at: string;
   decisions: ReviewDecision[];
+  /**
+   * Who made these decisions.
+   *
+   * Absent on every record written before 2026-08-24, all of which were a
+   * person at `npm run review`, so absent reads as "founder". `auto` means no
+   * mechanical check objected and the audit published itself — which is a
+   * claim about `claims.ts`, not a judgment about usefulness.
+   *
+   * The distinction is load-bearing rather than decorative: `npm run corpus`
+   * trains on these as usefulness labels, and an auto record is a unanimous
+   * keep. Counted alongside the 165 human decisions they would read as perfect
+   * agreement and bury the only signal B29 has.
+   */
+  decided_by?: "founder" | "auto";
 }
