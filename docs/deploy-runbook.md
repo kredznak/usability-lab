@@ -207,10 +207,16 @@ Both halves are now handled, **in the repo rather than in the dashboard**:
 - `~/.cloudflared/config.yml` has a second ingress entry sending
   `www.theusabilitylab.com` to the same process.
 - `server.ts` redirects any non-canonical host to `BASE_URL` before routing —
-  301 for `GET`/`HEAD`, **308 for anything with a body**, because a 301 lets a
-  client rewrite the method to `GET` and a misaddressed webhook would then be
-  silently dropped rather than redirected. The `one host, one site` suite in
-  `server.test.ts` holds all of it.
+  **308 for every method alike**, because a 301 lets a client rewrite the method
+  to `GET` and a misaddressed webhook would then be silently dropped rather than
+  redirected. The `one host, one site` suite in `server.test.ts` holds all of it.
+
+  *(Corrected 2026-08-24. This said "301 for `GET`/`HEAD`, 308 for anything with
+  a body", which was true when it was written and is not true of the code. The
+  conditional was removed as a branch written for a case that cannot occur —
+  Stripe is configured on the canonical host — and `server.ts` says so where the
+  status is written. Caught by re-verifying §9 on a new machine and reading 308
+  where the doc predicted 301.)*
 
 A Cloudflare Single Redirect rule would have done the same job with no code, and
 survives the tunnel being down. It was rejected for one reason: **nothing in git
@@ -341,6 +347,8 @@ Run and observed, with the address pinned past the stale local resolver
   `USABILITY_LAB_BIND=127.0.0.1` still holds on this configuration.
 - `www`: **301 to `https://theusabilitylab.com/start?ref=test`** from
   `https://www.theusabilitylab.com/start?ref=test` — path and query intact.
+  *(Re-measured 2026-08-24: it is a **308**, and always was by the time anyone
+  read this. See the correction in §3a.)*
 
 **This Mac's Wi-Fi DNS was set to `1.1.1.1`/`1.0.0.1`** to get past the stale
 router, which was holding the parking record with ~27 minutes left on its TTL.
@@ -409,3 +417,70 @@ write six `audit_requests` rows and move every funnel number. The header is
 delivered by Cloudflare, not by the tunnel type, and the app's side of it is
 covered hermetically by `clientip.test.ts`. Worth folding into Session A's ugly
 paths, where the resubmit cooldown exercises the same limiter for a reason.
+
+---
+
+## 10. Restoring the deploy on a different machine — 2026-08-24
+
+The repo and `out/` moved to a new Mac; the site answered **530** (Cloudflare
+1033, origin unreachable) on every path while DNS resolved correctly. `cloudflared
+tunnel list` showed `usability-lab` alive with **zero connections**, which is the
+same fact from the other side.
+
+**What did not come across, and neither is in the repo:** `~/.cloudflared/`
+(the `cert.pem`, the credentials JSON, and `config.yml` holding both ingress
+entries) and the `cloudflared` binary itself. `out/` did come across, which
+matters more than it sounds — `out/.secret` is the signing key, and a regenerated
+one silently invalidates every magic link and session ever issued (§5).
+
+**The ingress now lives in the repo**, at `deploy/cloudflared-config.yml`, and is
+passed explicitly. §3a rejected a Cloudflare dashboard redirect rule because
+"nothing in git would know it existed" — and then put the tunnel's own ingress in
+an untracked dotfile with exactly that problem. This is that argument applied to
+itself. `credentials-file` is deliberately not named: it would be an absolute
+path with a username in it, and with `tunnel:` set cloudflared defaults to
+`~/.cloudflared/<UUID>.json` on any machine.
+
+```sh
+# No Homebrew on the new machine, and it is one binary
+curl -sSL -o cf.tgz https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-darwin-arm64.tgz
+tar xzf cf.tgz && mv cloudflared ~/.local/bin/ && chmod +x ~/.local/bin/cloudflared
+
+cloudflared tunnel login          # browser; authorise the theusabilitylab.com zone
+
+# Credentials for the EXISTING tunnel. Creating a new one would mean re-routing
+# DNS, and the apex already points at 87b0e6e3-8e46-4bec-a985-bbaec39fecc9.
+cloudflared tunnel token --cred-file ~/.cloudflared/87b0e6e3-8e46-4bec-a985-bbaec39fecc9.json usability-lab
+
+npm run serve                     # terminal 1 — start the origin first, or the tunnel 502s
+cloudflared tunnel --config deploy/cloudflared-config.yml run usability-lab   # terminal 2
+```
+
+**`tunnel login` needs the Authorize click, not just a login.** The first attempt
+sat at `Waiting for login...` for eight minutes and exited 1 with "Failed to
+fetch resource" — the dashboard was open, the zone was never authorised. The
+callback URL is single-use, so a retry needs a fresh one.
+
+**`--config` goes before the subcommand** — `tunnel --config X run`, not
+`tunnel run --config X`. The latter is accepted and ignored, and prints usage
+instead of failing, which reads like a flag that did nothing rather than an
+error.
+
+### Verified live, 2026-08-24
+
+```
+/                        200, http/2, remote_ip 104.21.34.128, server: cloudflare
+/nonexistent-path-xyz    404      <- the check that matters; parking answers 200 everywhere
+/start                   200
+www/start?ref=test       308 -> https://theusabilitylab.com/start?ref=test
+<title>                  The Usability Lab — a design critique of your site, backed by research
+headers                  CSP default-src 'none' + frame-ancestors 'none', HSTS
+                         max-age=31536000, referrer-policy: no-referrer, nosniff
+```
+
+Preflight passed on all four variables and reported the signing key as the
+existing `out/.secret`, so no link issued before the move was invalidated.
+
+**Not re-verified**, for the same reason as §9: the `cf-connecting-ip` rate-limit
+buckets, which cost six `POST /request` rows and move every funnel number. The
+app's side is covered hermetically by `clientip.test.ts`.

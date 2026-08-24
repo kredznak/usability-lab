@@ -1,0 +1,50 @@
+# Named tunnel ingress for theusabilitylab.com.
+#
+# This file lives in the repo rather than in `~/.cloudflared/config.yml`, which
+# is where it was until 2026-08-24. The runbook (§3a) rejected a Cloudflare
+# dashboard redirect rule on the grounds that "nothing in git would know it
+# existed" — and then put the tunnel's own ingress in an untracked dotfile with
+# exactly that problem. Moving to a new Mac is the failure that argument
+# predicted: the repo and `out/` came across, the ingress did not, and the site
+# answered 530 until this was rebuilt by hand.
+#
+# Run it explicitly, since cloudflared will not look here on its own:
+#
+#     cloudflared tunnel --config deploy/cloudflared-config.yml run usability-lab
+#
+# `credentials-file` is deliberately absent. Naming it means writing an absolute
+# path with a username in it, which is the machine-specific half of the problem
+# this file exists to fix. With `tunnel:` set and `cert.pem` present, cloudflared
+# defaults to `~/.cloudflared/<UUID>.json`, which is portable and correct on any
+# machine that has run `cloudflared tunnel login`.
+#
+# The credentials JSON itself is a secret and stays out of the repo. On a new
+# machine, fetch it for this existing tunnel rather than creating a second one:
+#
+#     cloudflared tunnel token --cred-file ~/.cloudflared/<UUID>.json usability-lab
+#
+# Creating a new tunnel would also mean re-routing DNS, and the apex already
+# points at this one.
+
+tunnel: 87b0e6e3-8e46-4bec-a985-bbaec39fecc9
+
+ingress:
+  # Both hostnames reach the same process. `server.ts` redirects the
+  # non-canonical one to USABILITY_LAB_BASE_URL — 301 for GET/HEAD, 308 for
+  # anything carrying a body, so a misaddressed webhook is redirected rather
+  # than silently rewritten to GET and dropped.
+  #
+  # Serving both here instead of redirecting is the wrong answer: `ul_full` is
+  # scoped to the host that set it and magic links are always built from the
+  # apex, so a visitor who signed in on `www` would follow their link to a host
+  # that had never seen their cookie and be asked to sign in again, for ever.
+  - hostname: theusabilitylab.com
+    service: http://127.0.0.1:4000
+
+  - hostname: www.theusabilitylab.com
+    service: http://127.0.0.1:4000
+
+  # Required: cloudflared refuses a config whose last rule has a hostname.
+  # A 404 from the tunnel is distinguishable from our app's 404 by the absence
+  # of our headers — worth knowing when checking which origin actually replied.
+  - service: http_status:404
