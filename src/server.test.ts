@@ -1632,7 +1632,7 @@ describe("where is my audit", () => {
   test("the page shows the whole road, and marks where this request is", async () => {
     const html = await (await fetch(`${BASE}/r/${ask()}`)).text();
 
-    for (const stage of ["In the queue", "Auditing your page", "A person reads it", "Published"]) {
+    for (const stage of ["In the queue", "Auditing your page", "Published"]) {
       assert.ok(html.includes(stage), `the road has to name "${stage}"`);
     }
     assert.match(
@@ -1640,6 +1640,19 @@ describe("where is my audit", () => {
       /<li class="now">In the queue<\/li>/,
       "and mark the one this request is actually in",
     );
+  });
+
+  test("a road with no human stage does not advertise one", async () => {
+    // Changed 2026-08-24: an audit publishes itself unless claims.ts disputes a
+    // finding, so most requests never reach a person. Listing a review stage
+    // for all of them would describe something ~96% of them skip.
+    const html = await (await fetch(`${BASE}/r/${ask()}`)).text();
+    assert.doesNotMatch(html, /A person checks it/, "not on the ordinary road");
+  });
+
+  test("an audit that IS held says a person is in its road", async () => {
+    const html = await (await statusAt("REVIEW_PENDING")).text();
+    assert.match(html, /<li class="now">A person checks it<\/li>/);
   });
 
   test("a finished audit shows the road behind it, not ahead of it", async () => {

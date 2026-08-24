@@ -29,6 +29,7 @@
     "correct": "node --import tsx src/correct.ts",
     "serve": "node --env-file-if-exists=.env --import tsx src/server.ts",
     "subscribe": "node --import tsx src/subscribe.ts",
+    "worker": "node --env-file-if-exists=.env --import tsx src/worker.ts",
     "reconcile": "node --env-file-if-exists=.env --import tsx src/reconcile.ts",
     "stripe:check": "node --env-file-if-exists=.env --import tsx src/stripe-check.ts",
     "research:replay": "node --env-file-if-exists=.env --import tsx src/replay.ts"

@@ -14,7 +14,11 @@ One URL + answers → published results page with ≥1 cited finding and annotat
 - Six sub-agents only (spawn rules R0–R5, cap 4). Don't invent new ones.
 - Every finding needs an evidence pointer; every citation resolves or `source_type: none`.
 - Confidence is derived, not declared.
-- First audits gate on founder review; re-audits auto-publish with 1-in-5 sampling.
+- Audits publish themselves unless `claims.ts` **contradicts** a finding; those
+  stop at REVIEW_PENDING for a person. Changed 2026-08-24 — this rule used to
+  read "first audits gate on founder review", and the gate's own record is why
+  it narrowed rather than vanished: 10 of 165 findings cut, and every written
+  reason a count stated as fact and wrong. Re-audits keep 1-in-5 sampling.
 - Only build failure handling for F1, F7, F9, F11, F21 in v0. Ask before adding more.
 
 ## Habits

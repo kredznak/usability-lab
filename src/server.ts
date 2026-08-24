@@ -459,7 +459,20 @@ const REFRESH = { queued: 30, starting: 5, running: 10, review: 60 } as const;
  * expects, and a wait that has been named reads differently from one that has
  * not.
  */
-const STAGES = ["In the queue", "Auditing your page", "A person reads it", "Published"] as const;
+/**
+ * The human stage is shown only to audits that actually have one.
+ *
+ * Since 2026-08-24 an audit publishes itself unless `claims.ts` disputes a
+ * finding, so most requests never see a person at all. Listing "A person checks
+ * it" for everyone would describe a stage that ~96% of them skip — the same
+ * class of untruth as the refresh this page promised for its whole life and
+ * never performed, and this file has been rewritten once already for it.
+ */
+function stagesFor(reviewed: boolean): readonly string[] {
+  return reviewed
+    ? ["In the queue", "Auditing your page", "A person checks it", "Published"]
+    : ["In the queue", "Auditing your page", "Published"];
+}
 
 const STAGES_CSS = `
   .road { list-style:none; margin:22px 0 26px; padding:0; }
@@ -483,8 +496,9 @@ const STAGES_CSS = `
  * because listing "Published" under an audit that never will be is the kind of
  * decorated untruth this page keeps being rewritten to remove.
  */
-function roadAhead(current: number, stopped = false): string {
-  const shown = stopped ? STAGES.slice(0, current + 1) : STAGES;
+function roadAhead(current: number, stopped = false, reviewed = false): string {
+  const stages = stagesFor(reviewed);
+  const shown = stopped ? stages.slice(0, current + 1) : stages;
   const items = shown.map((label, i) => {
     const cls = i < current ? "done" : i === current ? (stopped ? "stopped" : "now") : "";
     return `<li class="${cls}">${label}</li>`;
@@ -586,7 +600,7 @@ function statusPage(row: AuditRequestRow): Status {
   const at = (
     refresh: number | null,
     state: string,
-    stage: { at: number; stopped?: boolean },
+    stage: { at: number; stopped?: boolean; reviewed?: boolean },
     extra = "",
   ): Status => {
     /**
@@ -602,7 +616,7 @@ function statusPage(row: AuditRequestRow): Status {
         "Your audit",
         `<p class="lead">${site}</p>
          <p>${working ? `<span class="pulse"></span>` : ""}${state}</p>${extra}
-         ${roadAhead(stage.at, stage.stopped)}
+         ${roadAhead(stage.at, stage.stopped, stage.reviewed)}
          <p class="hint">This page is yours &mdash; keep the address.${
            // "As we go" described work; this describes the page. A motionless
            // render is ambiguous between waiting and broken, and the thing
@@ -629,7 +643,9 @@ function statusPage(row: AuditRequestRow): Status {
       return at(
         null,
         `Ready.`,
-        { at: 3 },
+        // Two different roads, and the row records which one this took: a
+        // person published PUBLISHED, and nothing disputed AUTO_PUBLISHED.
+        audit.status === "PUBLISHED" ? { at: 3, reviewed: true } : { at: 2 },
         `<p><a href="/a/${escapeHtml(audit.audit_id)}/">Read the results</a></p>`,
       );
     case "REVIEW_PENDING":
@@ -637,7 +653,7 @@ function statusPage(row: AuditRequestRow): Status {
         REFRESH.review,
         `The audit is done and a person is reading it before it goes out. ` +
           `That is the slowest part and the reason we stand behind what it says.`,
-        { at: 2 },
+        { at: 2, reviewed: true },
       );
     case "CAPTURE_FAILED":
     case "PARKED":
@@ -677,7 +693,7 @@ function statusPage(row: AuditRequestRow): Status {
           `side rather than anything wrong with the page &mdash; nothing was published ` +
           `and nothing was charged.`,
         // Stopped at the gate, not before it: a person did read this one.
-        { at: 2, stopped: true },
+        { at: 2, stopped: true, reviewed: true },
         `<p><a href="/">Audit a different page</a></p>`,
       );
     default:

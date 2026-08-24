@@ -1,13 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import {
-  DEFAULT_DAILY_CEILING_USD,
-  ceilingFromEnv,
-  spendLine,
-  utcDay,
-  verdict,
-} from "./spend.js";
+import { DEFAULT_DAILY_CEILING_USD, ceilingFromEnv, spendLine, utcDay, verdict, perAuditCeilingFromEnv, DEFAULT_PER_AUDIT_CEILING_USD } from "./spend.js";
 
 /**
  * F11's arithmetic, driven by numbers rather than by history.
@@ -95,5 +89,36 @@ describe("the message says what happened to the queue", () => {
     const line = spendLine(verdict(3, 25));
     assert.match(line, /\$3\.00 of \$25\.00/);
     assert.doesNotMatch(line, /ceiling\./);
+  });
+});
+
+/**
+ * §11's per-audit ceiling, unenforced from the day it was written until
+ * 2026-08-24. It was survivable while a person typed the command that spent the
+ * money; the worker removed that person, and the daily ceiling alone would let
+ * one pathological page spend a whole day's budget by itself.
+ */
+describe("the ceiling on a single audit", () => {
+  test("defaults to §11's figure", () => {
+    assert.equal(perAuditCeilingFromEnv({}), 3);
+    assert.equal(DEFAULT_PER_AUDIT_CEILING_USD, 3);
+  });
+
+  test("an operator can lower it", () => {
+    assert.equal(perAuditCeilingFromEnv({ USABILITY_LAB_AUDIT_CEILING_USD: "1.5" }), 1.5);
+  });
+
+  test("a typo falls back rather than spending nothing or everything", () => {
+    // Same rule as the daily ceiling: an unreadable value is an operator's
+    // mistake, and switching to "spend nothing, ever" would look like a hang.
+    for (const raw of ["", "   ", "abc", "0", "-4"]) {
+      assert.equal(perAuditCeilingFromEnv({ USABILITY_LAB_AUDIT_CEILING_USD: raw }), 3, raw);
+    }
+  });
+
+  test("it is well above anything this project has ever spent on one audit", () => {
+    // Worst observed is $1.16 across every audit run. A ceiling below that
+    // would degrade ordinary work; this one is a backstop, not a budget.
+    assert.ok(DEFAULT_PER_AUDIT_CEILING_USD > 1.16 * 2);
   });
 });

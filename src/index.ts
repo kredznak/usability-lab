@@ -22,7 +22,7 @@ import { lintAudit, quarantined } from "./lint.js";
 import { disputedFindings } from "./publishing.js";
 import { CallLog, AuditStore, EventLog, AuditRequestStore, type AuditStatus } from "./db.js";
 import { OUT_ROOT } from "./paths.js";
-import { ceilingFromEnv, spendLine, utcDay, verdict } from "./spend.js";
+import { ceilingFromEnv, perAuditCeilingFromEnv, spendLine, utcDay, verdict } from "./spend.js";
 import { countingFetch } from "./http.js";
 import { Finding, normalizeSeverity, type RawFinding, type ReviewRecord } from "./types.js";
 import { QUESTIONS, ContextProfile, type Answers } from "./profile.js";
@@ -355,6 +355,8 @@ async function main(): Promise<void> {
    * already produced findings — so a failed transition is reported and the
    * pipeline continues.
    */
+  const perAuditCeiling = perAuditCeilingFromEnv();
+
   const setStatus = (to: AuditStatus, fields = {}) => {
     try {
       audits.transition(auditId, to, fields);
@@ -417,6 +419,31 @@ async function main(): Promise<void> {
     // genuinely independent and run concurrently — bounded by §6's limit of 2.
     const runs = await timed("review", timings, () =>
       inPools(plan.spawn, MAX_CONCURRENT_AGENTS, async (agent) => {
+        /**
+         * §11's per-audit ceiling, and the only place it can be enforced
+         * without making things worse.
+         *
+         * `verdict`'s own note says why an audit is never killed mid-run: the
+         * tokens are already spent and abandoning the work buys nothing, which
+         * is the most expensive outcome available. So this does not stop the
+         * audit — it stops *more* spending. A lane that would push past the
+         * ceiling is not spawned, the run finishes with the reviewers it has,
+         * and the shortfall is recorded as DEGRADED rather than hidden.
+         *
+         * Unenforced until 2026-08-24, which was survivable while a person
+         * typed the command that spent the money. Automation removes that
+         * person, and the daily ceiling alone would let one pathological page
+         * spend a whole day's budget by itself.
+         */
+        const soFar = log.totalCost(auditId);
+        if (soFar >= perAuditCeiling) {
+          degraded.push(
+            `${agent} not spawned: this audit reached $${soFar.toFixed(2)} of its ` +
+              `$${perAuditCeiling.toFixed(2)} ceiling`,
+          );
+          return { agent, findings: [] as RawFinding[], latencyMs: 0, costUsd: 0 };
+        }
+
         try {
           return await runSubAgent(client, rubricFor(agent), captured, log, tiles);
         } catch (err) {

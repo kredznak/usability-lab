@@ -44,6 +44,24 @@
 /** §11's hard ceiling. Overridable so an operator can lower it, and so tests do not hunt for $25. */
 export const DEFAULT_DAILY_CEILING_USD = 25;
 
+/**
+ * §11's per-audit ceiling — "≈2× expected", against a measured worst case of
+ * $1.16 across every audit this project has run.
+ *
+ * It bounds *further* spend inside one audit rather than aborting it: see
+ * `verdict` below for why nothing is ever killed mid-run. Unenforced until
+ * 2026-08-24, when the queue stopped waiting for a person to decide to spend.
+ */
+export const DEFAULT_PER_AUDIT_CEILING_USD = 3;
+
+export function perAuditCeilingFromEnv(env: NodeJS.ProcessEnv = process.env): number {
+  const raw = env.USABILITY_LAB_AUDIT_CEILING_USD;
+  if (raw === undefined || raw.trim() === "") return DEFAULT_PER_AUDIT_CEILING_USD;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) return DEFAULT_PER_AUDIT_CEILING_USD;
+  return n;
+}
+
 /** §11: "At 80%: alert". Below the stop, and it does not stop anything. */
 const WARN_AT = 0.8;
 
