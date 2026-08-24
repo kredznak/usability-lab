@@ -1091,10 +1091,29 @@ denominators, and the published page is the one that owes the ≥1.
    on 2026-08-24, not performed. Every clause is evidenced, and no human has
    ever sat through the demo end to end in one sitting.
 
-**So both of these are true, and the entry stays open on the second:** the
-definition of done has been *met*, and the demo has never been *performed*.
-Which of those §0 was asking for is Kelly's call, not this file's. What is no
-longer defensible is the claim that the clauses have never co-occurred.
+**So both of these are true:** the definition of done has been *met*, and the
+demo has never been *performed*. Which of those §0 was asking for is Kelly's
+call, not this file's. What is no longer defensible is the claim that the
+clauses have never co-occurred.
+
+### Closed 2026-08-24 — met, not performed
+
+Kelly's call, made with the four caveats above in front of him: the evidence is
+sufficient, and **no fresh runs were bought to decorate it**. Three audits would
+have cost about $1.40 and produced a second streak that proved the same thing
+the first one already proves.
+
+**Performing it live is a demo-day task, not engineering work.** It needs a
+person watching and a person at the gate, and neither is a code change. When it
+happens, the thing to capture is the wall clock of the *whole* sitting —
+request through founder review to published page — because that is the number
+this entry never had. Every measurement here stops at `audit.completed` and the
+gate has always been hours or days later.
+
+What stays true and unfixed: the streak's third leg is us, and two of the four
+answer sets from 2026-08-21 were written by Claude. A demo run for an audience
+should use three sites that are not ours and answers from someone who owns the
+site. That is a sourcing problem, not a pipeline one.
 
 ---
 
