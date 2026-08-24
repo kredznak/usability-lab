@@ -1,0 +1,70 @@
+# The gate B28 said was missing.
+#
+# Both eval suites have existed and passed since 2026-08-21 — the trajectory
+# suite (`src/orchestrator/trajectory.test.ts`) and the hermetic injection
+# assertions (`src/injection.test.ts`). What did not exist was anything that
+# ran them other than a person typing `npm run check`. design.md §10 asks for a
+# PR gate; there was no remote, so there was no PR to gate.
+#
+# There is a remote now, so here is the gate.
+#
+# ## Why `push` and not only `pull_request`
+#
+# Work on this repository lands as direct commits to `main`. A gate that only
+# fires on pull requests would never once have run — which is the same defect
+# B28 opened against, wearing a green badge. `push` is what actually has teeth
+# here; `pull_request` is here for the day the workflow changes.
+#
+# ## What this does NOT enforce
+#
+# `npm run redteam` — five injection fixtures against real model calls — is not
+# here. It spends money on every run and needs a repository secret. §10 puts
+# red-team in the PR gate, so this delivers the hermetic half of that line and
+# no more. B28 stays open on the rest.
+#
+# And a passing run blocks nothing on its own. Until `main` lists this check as
+# required, it reports. See B28 for the two clicks.
+
+name: check
+
+on:
+  push:
+  pull_request:
+
+# Least privilege: this job reads the tree and nothing else. It has no reason to
+# write to the repository, and saying so means a compromised action cannot.
+permissions:
+  contents: read
+
+# A second push to the same branch makes the first run's answer worthless.
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Measured at ~2 min. This ceiling is for a hang, not for slow.
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Matches `engines.node`. `node:sqlite` and `--env-file-if-exists`
+          # both need 24, so this is a floor, not a preference.
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # The capture suite drives a real browser. Without this it fails with
+      # "Executable doesn't exist" — the same wall a new machine hits, which is
+      # exactly why it is written down as a step rather than assumed.
+      - run: npx playwright install --with-deps chromium
+
+      # The gate itself: typecheck, then every test, then the prompt snapshots.
+      # Deliberately the same command a person runs by hand, so CI cannot come
+      # to mean something different from local.
+      - run: npm run check
