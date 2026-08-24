@@ -1238,25 +1238,81 @@ through it.
 **That is a hypothesis, not a finding.** It has not been tested, and the
 off-canvas rule is an equally good candidate.
 
-**What to do, in order.**
+### Tested 2026-08-24. Both hypotheses are wrong, and so is the proposed fix.
 
-1. **Test it, cheaply.** Capture is Playwright only — no model calls, no spend.
-   Re-run a capture of basecamp.com with each skip rule logging what it drops,
-   and read which one eats the number. One run answers it.
-2. **Do not loosen a rule to fix this.** Each one is load-bearing and the
-   failures they prevent were worse than this one: a *false* claim on a
-   customer's page beats a *missing* true one. If the clipped rule is the
-   culprit, the fix is to record what was skipped, not to stop skipping.
-3. **Consider making the gap visible instead of closing it.** B13 is the
-   mirror of this — reviewers asserting facts the capture cannot carry, with
-   nothing marking the gap. Here the capture is the one that is short, and the
-   same fix serves both: if an element's assembled text is a strict substring
-   of its `innerText`, say so on the element. A reviewer at the gate could then
-   tell "the page does not say this" from "we did not capture what it says".
+Step 1 was run against the live page — capture's exact load sequence (1440x900,
+same UA, `networkidle`, the full scroll), then the `visibleText` walk
+instrumented to name the rule that drops each node. **No rule fires.** Every
+node in the counter's subtree survives every check:
 
-**Cost.** Step 1 is minutes. Step 3 is a field on the captured element and a
-line in the founder's page, and it is the one that changes what the gate can
-conclude.
+```
+a.live-ready         448.5x24.0  overflow:visible  clip:auto   kept
+  span               137.1x24.0  overflow:visible  clip:auto   kept
+    number-flow       71.7x27.0  overflow:visible  clip:auto   kept   <- empty
+  u                  306.7x25.9  overflow:visible  clip:auto   kept
+```
+
+**The digits are in a closed shadow root.** The number is rendered by
+`<number-flow>`, a custom element whose light DOM has **zero child nodes**;
+`el.shadowRoot` is `null`, `::before`/`::after` are `none`, and there is no
+`aria-label`. So `textContent`, `innerText` and shadow traversal are all blind
+to it, and no skip rule ever had to fire — there was nothing there to skip.
+
+**This kills step 3 as written.** The proposal was to flag an element whose
+assembled text is a strict substring of its `innerText`. Measured on the live
+page:
+
+```
+document.body.innerText  matches /[\d,]{4,}\s*people/   false
+document.body.textContent  same                         false
+```
+
+`innerText` does not have the number either, so the flag would never fire on
+the one case that motivated it. **The gap is not between our walk and
+`innerText`; it is between the DOM and the rendering.**
+
+**One source does see it: the accessibility tree**, which is computed from the
+rendering and is what a screen reader reads. Playwright's `ariaSnapshot()` on
+the visible link, and CDP `Accessibility.getFullAXTree`:
+
+```
+link  "112,942 people are working in Basecamp right now!"
+image "112,942"                       <- the closed-shadow element, exposed
+```
+
+The two hidden duplicate `/live` links on the page return an empty snapshot,
+which is worth noting: the AX tree respects `visibility:hidden` on its own.
+
+**Why our capture still misses it.** `accessibleName` in `capture.ts` is
+hand-rolled and reads **attributes only** — `aria-label`, `aria-labelledby`,
+`<label>`, `title`, `alt`, `placeholder`. It never falls back to computed
+content, so `el_10.accessible_name` is `null` and `pageSources` gets nothing.
+We compute a name where the browser already computes a better one.
+
+**What to do, in order — revised.**
+
+1. ~~Test it.~~ Done. The answer is above and it cost one Playwright run.
+2. **Do not loosen a rule.** Unchanged, and now for a better reason: no rule is
+   implicated.
+3. **Record the browser's accessible name on captured elements**, from
+   `ariaSnapshot` or the CDP AX tree, alongside the one we compute rather than
+   replacing it. That is the only source that can carry pixels-and-shadow-DOM
+   text, and it makes finding 13 checkable instead of unfalsifiable.
+4. **Keep it out of `pageSources`, at least at first.** This is B6's trade-off
+   again and the answer there was the narrow one. The AX tree includes
+   screen-reader-only text — which is exactly linear.app's duplicated headline,
+   the case `claims.test.ts` pins as a correct contradiction. Folding AX names
+   into the general quote sources would re-open it. A separate source that only
+   the quote check consults is the shape that worked for the title.
+
+**Cost.** Step 3 is a capture change plus a field; the AX call is one CDP
+round-trip per capture, no model spend. Step 4 is the decision, and it is the
+part worth arguing before writing.
+
+**What this does not fix.** The gate still cannot tell "the page does not say
+this" from "we did not capture what it says" for anything the AX tree also
+misses — text baked into an image with `alt=""` is still B10, and still
+unreachable. This closes one mechanism, not the class.
 
 ---
 
