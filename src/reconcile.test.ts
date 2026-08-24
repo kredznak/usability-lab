@@ -33,6 +33,9 @@ function ours(over: Partial<SubscriptionRow> = {}): SubscriptionRow {
     current_period_end: FUTURE,
     created_at: "2026-08-01T00:00:00.000Z",
     updated_at: "2026-08-01T00:00:00.000Z",
+    // B22. Null is what reconciliation sees on a row it wrote itself, and the
+    // only value that matters here: this file never orders anything.
+    last_event_at: null,
     ...over,
   };
 }

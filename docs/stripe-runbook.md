@@ -151,6 +151,16 @@ numbers are real and only a person can say which is right.
 
 You need a published audit to buy from, and an email session on it.
 
+> **Worth watching here — B22, shipped 2026-08-24 and never yet exercised by a
+> real webhook.** Subscription writes are now applied in Stripe's order rather
+> than the socket's: an event whose `created` is older than the newest one
+> already applied is refused, answered `200 stale`, and recorded as
+> `webhook.stale`. Nothing you do in this step should trigger it — the events
+> arrive in order on a healthy connection. If `npm run funnel` shows a
+> `webhook.stale` after this step, that is the guard doing its job on a
+> redelivery, and the row it protected is the one that would otherwise have
+> been revived.
+
 ```
 npm run serve                          # in one terminal
 stripe listen --forward-to ... # in another (step 3)

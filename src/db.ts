@@ -628,6 +628,13 @@ export interface SubscriptionRow {
   current_period_end: string | null;
   created_at: string;
   updated_at: string;
+  /**
+   * B22. Stripe's `created` on the newest event applied to this row, in unix
+   * seconds. Null means no ordered event has been applied — either the row
+   * predates the column, or it was written by reconciliation rather than a
+   * webhook. Either way the next webhook wins.
+   */
+  last_event_at: number | null;
 }
 
 /**
@@ -674,6 +681,14 @@ export class SubscriptionStore {
         updated_at             TEXT NOT NULL
       );
     `);
+
+    // B22. `CREATE TABLE IF NOT EXISTS` does nothing to a table that already
+    // exists. NULL on existing rows is the correct answer: no ordered event has
+    // been applied to them, so the first webhook to arrive should win.
+    const columns = this.db.prepare(`PRAGMA table_info(subscriptions)`).all() as { name: string }[];
+    if (!columns.some((c) => c.name === "last_event_at")) {
+      this.db.exec(`ALTER TABLE subscriptions ADD COLUMN last_event_at INTEGER`);
+    }
   }
 
   get(email: string): SubscriptionRow | null {
@@ -685,13 +700,35 @@ export class SubscriptionStore {
   }
 
   /**
-   * Last writer wins, on purpose.
+   * Last writer wins, except where Stripe has told us the order — B22.
    *
    * Stripe webhooks arrive out of order and get retried; the reconciliation job
-   * re-states the same facts daily. All three of those are writes that must be
-   * safe to repeat, so this is an upsert with no version check. When ordering
-   * starts to matter — it will, the first time a cancel lands before the renewal
-   * it followed — the fix is Stripe's own event timestamp, not a lock.
+   * re-states the same facts daily. All of those are writes that must be safe
+   * to repeat, so this stays an upsert. What it is not any more is blind to
+   * sequence: the note that used to end this paragraph said that when ordering
+   * started to matter the fix would be "Stripe's own event timestamp, not a
+   * lock", and `eventAt` is that timestamp.
+   *
+   * ## Which writes are ordered, and which are not
+   *
+   * `eventAt` is Stripe's `created` on the event being applied, and only the
+   * webhook has one. A write without it — `npm run reconcile`, `npm run
+   * subscribe` — always applies and leaves `last_event_at` alone. That is
+   * deliberate in both directions: reconciliation is the repair for everything
+   * this guard cannot see, so it must never be blocked by it, and leaving the
+   * timestamp untouched means a stale webhook arriving *after* a reconcile is
+   * still correctly refused.
+   *
+   * ## Strictly older, not older-or-equal
+   *
+   * Stripe stamps `created` in whole seconds and sends several events inside
+   * one — `customer.subscription.created` and `.updated` routinely share a
+   * timestamp. Rejecting ties would drop legitimate events, and dropping a real
+   * update is worse than briefly applying a same-second one, which
+   * reconciliation covers anyway.
+   *
+   * @returns whether the write was applied. `false` means an older event was
+   * refused, which the caller should record rather than swallow.
    */
   upsert(
     email: string,
@@ -701,29 +738,44 @@ export class SubscriptionStore {
       stripeSubscriptionId?: string | null;
       currentPeriodEnd?: string | null;
     },
-  ): void {
+    opts: { eventAt?: number } = {},
+  ): boolean {
+    const key = email.trim().toLowerCase();
+
+    if (opts.eventAt !== undefined) {
+      const prior = this.db
+        .prepare(`SELECT last_event_at FROM subscriptions WHERE email = ?`)
+        .get(key) as { last_event_at: number | null } | undefined;
+      if (prior?.last_event_at != null && opts.eventAt < prior.last_event_at) return false;
+    }
+
     const now = new Date().toISOString();
     this.db
       .prepare(
         `INSERT INTO subscriptions
            (email, status, stripe_customer_id, stripe_subscription_id,
-            current_period_end, created_at, updated_at)
-         VALUES (@email, @status, @customer, @subscription, @period_end, @now, @now)
+            current_period_end, created_at, updated_at, last_event_at)
+         VALUES (@email, @status, @customer, @subscription, @period_end, @now, @now, @event_at)
          ON CONFLICT(email) DO UPDATE SET
            status                 = @status,
            stripe_customer_id     = COALESCE(@customer, stripe_customer_id),
            stripe_subscription_id = COALESCE(@subscription, stripe_subscription_id),
            current_period_end     = @period_end,
-           updated_at             = @now`,
+           updated_at             = @now,
+           -- COALESCE keeps the stored value when this write carries no event,
+           -- so a reconcile cannot erase the ordering a webhook established.
+           last_event_at          = COALESCE(@event_at, last_event_at)`,
       )
       .run({
-        email: email.trim().toLowerCase(),
+        email: key,
         status: fields.status,
         customer: fields.stripeCustomerId ?? null,
         subscription: fields.stripeSubscriptionId ?? null,
         period_end: fields.currentPeriodEnd ?? null,
         now,
+        event_at: opts.eventAt ?? null,
       });
+    return true;
   }
 
   /**

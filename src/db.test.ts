@@ -425,6 +425,125 @@ describe("subscriptions", () => {
   });
 });
 
+/**
+ * B22. Stripe retries and reorders delivery, so the sequence a subscription
+ * actually moved through is the one in the event timestamps, not the one the
+ * socket handed us. Before this, `upsert` was last-writer-wins and a delayed
+ * `updated` landing after a `deleted` gave a cancelled customer their access
+ * back until reconciliation noticed, up to 24 hours later.
+ *
+ * The failure direction is free access, which nobody reports.
+ */
+describe("subscriptions applied in Stripe's order, not the socket's", () => {
+  const future = new Date(Date.now() + 86_400_000).toISOString();
+
+  test("a cancel that arrives first is not undone by the renewal it followed", () => {
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+
+    s.upsert("e@example.com", { status: "canceled", currentPeriodEnd: null }, { eventAt: 200 });
+    const applied = s.upsert(
+      "e@example.com",
+      { status: "active", currentPeriodEnd: future },
+      { eventAt: 100 },
+    );
+
+    assert.equal(applied, false, "the caller is told, so it can record it");
+    const row = s.get("e@example.com")!;
+    assert.equal(row.status, "canceled");
+    assert.equal(row.current_period_end, null);
+    assert.equal(s.isActive("e@example.com"), false, "and no access is granted");
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("a newer event still applies, which is the whole point of ordering", () => {
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+
+    s.upsert("e@example.com", { status: "active", currentPeriodEnd: future }, { eventAt: 100 });
+    assert.equal(
+      s.upsert("e@example.com", { status: "canceled", currentPeriodEnd: null }, { eventAt: 200 }),
+      true,
+    );
+    assert.equal(s.get("e@example.com")!.status, "canceled");
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("two events in the same second both apply", () => {
+    // Stripe stamps `created` in whole seconds and sends `created` and
+    // `updated` inside one. Rejecting ties would drop a real update, which is
+    // worse than briefly applying a same-second one.
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+
+    s.upsert("e@example.com", { status: "past_due", currentPeriodEnd: null }, { eventAt: 100 });
+    assert.equal(
+      s.upsert("e@example.com", { status: "active", currentPeriodEnd: future }, { eventAt: 100 }),
+      true,
+    );
+    assert.equal(s.get("e@example.com")!.status, "active");
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("reconciliation is never blocked by the guard", () => {
+    // It is the repair for everything this guard cannot see — a webhook Stripe
+    // never delivered leaves no timestamp to compare against. A reconcile write
+    // carries no event and must always land.
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+
+    s.upsert("e@example.com", { status: "canceled", currentPeriodEnd: null }, { eventAt: 500 });
+    assert.equal(
+      s.upsert("e@example.com", { status: "active", currentPeriodEnd: future }),
+      true,
+      "no eventAt, no ordering",
+    );
+    assert.equal(s.get("e@example.com")!.status, "active");
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("a reconcile does not erase the order a webhook established", () => {
+    // The subtle one. If a write without an event cleared `last_event_at`, a
+    // stale webhook arriving after the nightly job would be applied again.
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+
+    s.upsert("e@example.com", { status: "canceled", currentPeriodEnd: null }, { eventAt: 500 });
+    s.upsert("e@example.com", { status: "canceled", currentPeriodEnd: null }); // reconcile
+    assert.equal(s.get("e@example.com")!.last_event_at, 500, "the timestamp survives");
+
+    assert.equal(
+      s.upsert("e@example.com", { status: "active", currentPeriodEnd: future }, { eventAt: 400 }),
+      false,
+      "and the stale event is still refused",
+    );
+    assert.equal(s.get("e@example.com")!.status, "canceled");
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("a row that predates the column takes the first event it sees", () => {
+    // Existing rows migrate to NULL, which means no ordered event has been
+    // applied. Refusing writes against NULL would freeze every live row.
+    const { file, dir } = tempPath();
+    const s = new SubscriptionStore(file);
+
+    s.upsert("e@example.com", { status: "active", currentPeriodEnd: future });
+    assert.equal(s.get("e@example.com")!.last_event_at, null);
+    assert.equal(
+      s.upsert("e@example.com", { status: "canceled", currentPeriodEnd: null }, { eventAt: 1 }),
+      true,
+    );
+    assert.equal(s.get("e@example.com")!.last_event_at, 1);
+    s.close();
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
+
 describe("the re-audit queue", () => {
   test("pending is per reader and per audit, and clears when acted on", () => {
     const { file, dir } = tempPath();

@@ -864,6 +864,57 @@ was written.
 **Cost.** Small. **Worth doing before the first real subscriber, not after** —
 the failure direction is free access, which nobody complains about.
 
+### Shipped 2026-08-24, before the runbook is walked
+
+Done in the order the entry asked for: before a real subscriber exists, and
+before step 6 of `docs/stripe-runbook.md` creates one.
+
+`subscriptions.last_event_at` — Stripe's `created` on the newest event applied
+to the row, unix seconds, migrated with the same `PRAGMA table_info` +
+`ALTER TABLE` pattern as `baseline_audit_id` and `attempts`. `upsert` takes an
+optional `eventAt` and returns whether it applied; the webhook passes
+`check.event.created`, which meant adding `created` to `StripeEvent` — it was
+parsing `id`, `type` and `data` and throwing the timestamp away.
+
+**The prediction in `db.ts` was right, including the fix.** That comment said
+ordering would start to matter "the first time a cancel lands before the
+renewal it followed", and that the answer would be "Stripe's own event
+timestamp, not a lock". Both stood.
+
+**Three decisions worth the words.**
+
+*Strictly older, never older-or-equal.* Stripe stamps `created` in whole
+seconds and sends several events inside one — `customer.subscription.created`
+and `.updated` routinely share a timestamp. Rejecting ties would drop
+legitimate events, and dropping a real update is worse than briefly applying a
+same-second one, which reconciliation covers anyway.
+
+*A write with no `eventAt` always applies, and leaves `last_event_at` alone.*
+Reconciliation is the repair for everything this guard cannot see — an event
+Stripe never delivered leaves no timestamp to compare against — so it must
+never be blocked by it. And `COALESCE` rather than assignment, so a nightly
+reconcile cannot erase the ordering a webhook established; without that, a
+stale webhook arriving after the job would be applied all over again. That is
+the subtlest of the tests and the one worth keeping.
+
+*A refused write still answers 200, and records `webhook.stale`.* Delivery
+succeeded; we chose not to apply it, and a non-200 would have Stripe redeliver
+the same stale event forever. Recorded rather than dropped, because a write
+that silently does nothing is exactly the shape B27 is about.
+
+**Verified with four reverts, each watched failing:** removing the guard fails
+3 tests, rejecting ties fails exactly 1, dropping the `COALESCE` fails exactly
+1, and not passing the timestamp from the webhook fails exactly 1. 711 tests,
+0 fail.
+
+**What it does not do.** It orders writes that arrive out of order. It does
+nothing about an event Stripe never delivers at all — still reconciliation's
+job, still F21's ≤24h. And it is not replay protection: deduplicating by event
+id is a different problem, deliberately not conflated with this one.
+
+**Unproven by measurement**, like B30 and B32 before it: no real webhook has
+ever reached this code. Step 6 of the runbook is where it first will.
+
 ---
 
 ## B23. A research step died and the metric read it as a thin corpus

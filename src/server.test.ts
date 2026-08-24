@@ -2091,6 +2091,70 @@ describe("Stripe, when it is configured", () => {
     subs.close();
   });
 
+  /**
+   * B22, over the wire rather than at the store.
+   *
+   * Stripe retries and reorders delivery. An `updated` delayed behind a
+   * `deleted` arrives after it, and the write used to be last-writer-wins — so
+   * a cancelled customer got their access back until reconciliation noticed,
+   * up to 24 hours later. Nobody reports being given something for free.
+   */
+  test("a cancellation is not undone by a renewal Stripe delivers late", async () => {
+    const email = freshEmail();
+    const at = Math.floor(Date.now() / 1000);
+
+    const cancelled = JSON.stringify({
+      id: "evt_cancel",
+      type: "customer.subscription.deleted",
+      created: at,
+      data: { object: { id: "sub_x", status: "canceled", metadata: { ul_email: email } } },
+    });
+    await webhook(cancelled, signWebhook(cancelled, WHSEC));
+
+    const subs = new SubscriptionStore(dbPath);
+    assert.equal(subs.isActive(email), false);
+
+    // Made a minute earlier, delivered now.
+    const late = JSON.stringify({
+      id: "evt_renew",
+      type: "customer.subscription.updated",
+      created: at - 60,
+      data: {
+        object: {
+          id: "sub_x",
+          customer: "cus_x",
+          status: "active",
+          current_period_end: Math.floor(Date.now() / 1000) + 30 * 86_400,
+          metadata: { ul_email: email },
+        },
+      },
+    });
+    const res = await webhook(late, signWebhook(late, WHSEC));
+
+    // 200, because delivery succeeded. A non-200 would have Stripe redeliver
+    // this same stale event forever.
+    assert.equal(res.status, 200);
+    assert.equal(await res.text(), "stale");
+    assert.equal(subs.isActive(email), false, "the cancelled customer stays cancelled");
+    subs.close();
+
+    const log = new EventLog(dbPath);
+    const stale = log.all().filter((e) => e.type === "webhook.stale");
+    log.close();
+    assert.equal(stale.length >= 1, true, "refusing a write silently is the bug next door");
+  });
+
+  test("an event with no timestamp is applied, exactly as before", async () => {
+    // `created` is Stripe's field, not ours to require. Every event this suite
+    // built before today omits it, and they must keep working.
+    const email = freshEmail();
+    const body = subscriptionEvent(email);
+    await webhook(body, signWebhook(body, WHSEC));
+    const subs = new SubscriptionStore(dbPath);
+    assert.equal(subs.isActive(email), true);
+    subs.close();
+  });
+
   test("a status Stripe invents tomorrow grants nothing", async () => {
     const email = freshEmail();
     const body = subscriptionEvent(email, { status: "quantum_superposition" });

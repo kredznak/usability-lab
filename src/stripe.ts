@@ -177,6 +177,18 @@ export type WebhookFailure = "no-header" | "malformed" | "bad-signature" | "stal
 export interface StripeEvent {
   id: string;
   type: string;
+  /**
+   * When Stripe made the event, in unix seconds — B22.
+   *
+   * Not for freshness (that is `WEBHOOK_TOLERANCE_MS`, signed and checked
+   * above) but for **order**. Stripe retries and reorders delivery, so the
+   * sequence a subscription actually moved through is the one in these
+   * timestamps, not the one the socket happened to hand us.
+   *
+   * Optional because it is Stripe's field and not ours to require: an event
+   * without it is applied unordered, exactly as everything was before.
+   */
+  created?: number;
   data: { object: Record<string, unknown> };
 }
 

@@ -1000,12 +1000,39 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       const sub = readSubscription(object);
       const status =
         check.event.type === "customer.subscription.deleted" ? "canceled" : mapStatus(sub.status);
-      subs.upsert(email, {
-        status,
-        stripeCustomerId: sub.customerId || null,
-        stripeSubscriptionId: sub.id || null,
-        currentPeriodEnd: status === "canceled" ? null : sub.currentPeriodEnd,
-      });
+      /**
+       * B22. Applied in Stripe's order, not the socket's.
+       *
+       * Stripe retries and reorders delivery, so an `updated` delayed behind a
+       * `deleted` arrives after it — and the write used to be last-writer-wins,
+       * which handed a cancelled customer their access back until the next
+       * reconciliation noticed. The failure direction is free access, which
+       * nobody reports.
+       */
+      const applied = subs.upsert(
+        email,
+        {
+          status,
+          stripeCustomerId: sub.customerId || null,
+          stripeSubscriptionId: sub.id || null,
+          currentPeriodEnd: status === "canceled" ? null : sub.currentPeriodEnd,
+        },
+        { eventAt: check.event.created },
+      );
+
+      if (!applied) {
+        // 200, because delivery succeeded — we chose not to apply it, and a
+        // non-200 would have Stripe redeliver this same stale event forever.
+        // Recorded rather than dropped: a write that silently does nothing is
+        // the shape B27 is about.
+        events.record({
+          audit_id: null,
+          type: "webhook.stale",
+          data: { type: check.event.type, created: check.event.created ?? null },
+        });
+        return send(res, 200, "stale", "text/plain; charset=utf-8");
+      }
+
       events.record({ audit_id: null, type: "subscription.changed", data: { status } });
       return send(res, 200, "ok", "text/plain; charset=utf-8");
     }
