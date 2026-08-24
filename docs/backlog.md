@@ -1761,10 +1761,50 @@ wording is what it is and why a test pins it.
 whole-element matching fails exactly 1, letting it contradict fails exactly 1,
 removing the gate line fails 2. 703 tests, 0 fail.
 
-**Left undone, deliberately.** The `19-24px` half — a range asserted about a
-set of elements — is untouched. The existing measurement check will keep
-passing it, for the reason described above. That is the other half of B32 and
-it wants its own measurement, not a bolt-on.
+### The range half: measured 2026-08-24, and deliberately not built
+
+The `19-24px` case was left for its own measurement rather than bolted on. The
+measurement says not to build it.
+
+**Three findings in 381 state a pixel range at all**, and they are three
+different problems:
+
+```
+2928c314-f3   "el_4 through el_10 ... nearly identical font sizes (19-24px)"
+              all seven measure exactly 19px            <- checkable, and wrong
+
+2928c314-f8   "...the seven links stacked above it at 19-24px"
+              names no resolvable refs                  <- not checkable
+
+e16569d2-f11  "el_5 and el_6 are both 50px tall, noticeably larger THAN THE
+               13-16px surrounding nav, label, and footer text"
+              el_5 and el_6 measure 16px                <- a trap
+```
+
+**The third one is why there is no check.** The obvious rule — compare the
+stated range against the font sizes of the refs the finding names — reports
+that `f11` "says 13-16px but its elements measure 16px". The finding claims
+nothing of the sort: `el_5` and `el_6` are the *subject*, and the range
+describes the surrounding text, which is never named. That is the count check's
+`f5` mispairing again, one sentence-shape over.
+
+**And the fix that worked there does not work here.** Distance separated the
+count cases (10 and 41 against 115). Here it inverts: the named refs sit
+*closer* to the range in the false case than in the true one, so an adjacency
+rule would reject the real error and accept the false alarm. Only a semantic
+guard — a comparative marker like "larger than" or "surrounding" between the
+refs and the range, in the spirit of `NOT_A_QUOTATION` — separates them.
+
+So the ceiling is a check that **fires on one finding in 381**, kept honest by
+a rule fitted to exactly one counter-example. That is how the quote check
+earned its 0-for-5 record, and this file's own header already says it: a
+checker that cries wolf is worse than none.
+
+**Decided 2026-08-24: not built.** The defect is real — the model inventing a
+spread it never measured, flagged by hand twice in one session — but it is a
+prompt problem wearing a checker's clothes, and the honest place to attack it
+is the rubric, not `claims.ts`. Left here so it stays visible if a fourth case
+turns up. **A fourth case should reopen this; three is not a corpus.**
 
 **And still unproven:** no reviewer has yet seen one of these lines at the
 gate. Same sentence as B30 and B13 — a fix by construction, not by
