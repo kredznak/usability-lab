@@ -1459,8 +1459,49 @@ the same lie — it does not even have to be wrong to be useless.
 already builds, instead of depending on the developer's own. No change to
 `.githooks/pre-commit` — the hook is not implicated, the test is.
 
-**Not built pending a decision**, only because it was found mid-B28 and belongs
-in its own commit rather than smuggled into a CI change.
+~~**Not built pending a decision**, only because it was found mid-B28 and
+belongs in its own commit rather than smuggled into a CI change.~~
+
+### Shipped 2026-08-24, same day
+
+The guard is gone. The test writes `PLACEHOLDER=not-a-secret` to `.env` when
+there is no `.env`, runs the case, and deletes only what it wrote.
+
+**Two details that are the whole of the fix.**
+
+*Only when absent.* `CREATED_ENV` is empty unless this script created the file,
+and the `EXIT` trap checks it before removing anything. Clobbering a real `.env`
+would destroy the one file this repo tells people to keep secrets in — a steep
+price for a fixture, and the reason the original author reached for
+`if [ -f .env ]` in the first place. That instinct was right; the conclusion
+was not.
+
+*Deliberately boring content.* A key-shaped placeholder would have been blocked
+by the hook's **content** scan, and the case would have passed without ever
+exercising the rule it names. `PLACEHOLDER=not-a-secret` means only rule 1 —
+the filename rule — can produce the block.
+
+Verified in a clean clone with no `.env`, which is what CI is:
+
+```
+committed code        passed 5, failed 0     ← the case is simply absent
+with the fix          passed 6, failed 0     ← and the throwaway is cleaned up
+fix + rule 1 deleted  passed 5, failed 1     ← "expected exit 1, got 0"
+                      script exits 1, not 0
+```
+
+That third line is the one worth having. A restored case that passes no matter
+what the hook does would be worse than the guard it replaced — it would report
+coverage instead of merely omitting it. And the exit code is checked because
+this file's own header exists to remember a guard that printed failure and
+exited 0.
+
+On a machine that *has* a real `.env`: still 6 passing, and the file's checksum
+is identical before and after (`9b450d62…`).
+
+**Not yet observed:** the CI log saying `passed 6`. The clean-clone run above is
+the same situation — fresh checkout, no `.env` — but on macOS `sh` rather than
+Ubuntu's `dash`. The next run on `main` settles it.
 
 ---
 
