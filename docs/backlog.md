@@ -1102,9 +1102,10 @@ today: a control that exists on paper and is executed by discipline.
 
 **Two ways forward, and they are not equivalent.**
 
-1. **A remote and a workflow.** What §10 actually describes. Blocked on
+1. ~~**A remote and a workflow.** What §10 actually describes. Blocked on
    creating a GitHub repository — the same "Kelly has to make an account"
-   shape as the domain and B21, and about as cheap.
+   shape as the domain and B21, and about as cheap.~~ **Taken 2026-08-24**, and
+   it was as cheap as the comparison predicted. See below.
 2. **A local `pre-push` or `pre-commit` step** running `npm run check`. Gives
    the gate teeth today without a remote, at ~5s a commit. But a pre-push hook
    with no remote to push to never fires, so this really means pre-commit —
@@ -1114,6 +1115,68 @@ today: a control that exists on paper and is executed by discipline.
 **Not built pending a decision**, because (2) alters how Kelly works and (1) is
 not mine to create. The honest interim is that `npm run check` is the gate and
 it is run by hand.
+
+### Shipped 2026-08-24 — and it still does not block a merge
+
+`.github/workflows/check.yml`. Ubuntu, Node 24, `npm ci`,
+`npx playwright install --with-deps chromium`, `npm run check`. That last line
+is the whole design: **CI runs the command a person runs**, not a CI-only
+variant. Two gates that can drift eventually mean different things, and then a
+green badge is a claim nobody has checked.
+
+Measured on a clean clone before any of it was written — `git clone` of the
+committed tree, `npm ci`, `npm run check` with no `.env` in the environment:
+
+```
+exit 0   685 tests   675 pass   0 fail   10 skipped (stripe-mock absent)
+snapshots unchanged (7 agents)
+```
+
+**Watched failing before it was trusted passing.** Branch `ci-gate-proof`
+carried one changed character — `d.spawn.length <= SPAWN_CAP` weakened to `<`
+in `trajectory.test.ts`, an invariant reality violates because some profiles
+legitimately spawn exactly four.
+
+```
+check #1  43e1f24  ci-gate-proof  FAIL   1m38s   "checkout: spawned 4"
+check #2  426eba0  main           PASS
+```
+
+Branch deleted after. A gate nobody has seen red is a badge.
+
+**Triggered on `push`, not only `pull_request`.** Everything here lands as a
+direct commit to `main`, so a PR-only gate — which is literally what §10 asks
+for — would never once have fired. That would have been this entry's own defect
+with better decoration.
+
+Also `engines.node: ">=24"` in `package.json`. CI had to name a version and the
+repo stated one nowhere; `node:sqlite` and `--env-file-if-exists` make it a
+floor rather than a preference.
+
+**This entry stays open, on two things it does not do.**
+
+1. **It blocks nothing.** A workflow reports; only a branch ruleset requiring
+   the `check` status stops a red commit landing on `main`. That is a
+   repository setting, and the same "Kelly has to click it" shape as the two
+   accounts. Until it is ticked, the enforcement gap this entry opened against
+   is narrowed — a failure is now loud and dated instead of invisible — but not
+   closed.
+2. **It does not run `npm run redteam`.** Five injection fixtures against real
+   model calls: real money per run, and a repository secret to hold the key.
+   §10 puts red-team in the PR gate at 100%, so **half that line is kept** —
+   the hermetic assertions in `src/injection.test.ts` run on every push, the
+   five live fixtures still run only when someone types the command. A nightly
+   schedule is the obvious shape and is not built.
+
+Neither is a surprise; both were named before the work started rather than
+discovered after.
+
+**One thing was discovered after**, while reading what CI would actually
+execute: `src/hooks.test.sh` guards its `.env` case behind `if [ -f .env ]`,
+and `.env` is gitignored. On Kelly's machine that is 6 passing hook tests; on
+any fresh checkout, including every CI run, it is 5. The case that never runs
+is *"blocks a staged `.env` file"* — the most consequential of them. Logged
+separately.
 
 ---
 
@@ -1354,6 +1417,50 @@ unreachable. This closes one mechanism, not the class.
 audit of a page with a shadow-DOM counter is the evidence. B13 made exactly this
 claim about `position` and it is still unproven four days later — a fix by
 construction is not a fix by measurement.
+
+---
+
+## B31. The hook test that a fresh checkout does not run
+
+Opened 2026-08-24, found while reading what CI would actually execute rather
+than what the suite claims to cover.
+
+`src/hooks.test.sh` runs six cases against `.githooks/pre-commit`. One of them
+is guarded:
+
+```sh
+if [ -f .env ]; then
+  ...
+  check $? 1 "blocks a staged .env file"
+fi
+```
+
+`.env` is gitignored, so it exists on Kelly's machine and nowhere else.
+
+```
+this working copy   passed 6, failed 0
+clean clone / CI    passed 5, failed 0
+```
+
+**The case that silently vanishes is the one that matters most.** The other
+five prove the hook catches a *pattern* — an Anthropic-shaped key, an AWS id, a
+private-key block — in a file somebody edited. This one proves it catches the
+file that holds all of them at once, staged whole. B28's gate now runs the hook
+suite on every push, so the effect is that the check with the highest
+consequence is the only one CI has never executed, and its absence is reported
+as a pass.
+
+Same shape as the bug this file's own header describes: the first pre-commit
+hook piped patterns into `while`, exited 0 from a subshell, and blocked nothing
+while looking like it worked. A test that does not run is a weaker version of
+the same lie — it does not even have to be wrong to be useless.
+
+**Cost: small.** Write a throwaway `.env` into the temp worktree the test
+already builds, instead of depending on the developer's own. No change to
+`.githooks/pre-commit` — the hook is not implicated, the test is.
+
+**Not built pending a decision**, only because it was found mid-B28 and belongs
+in its own commit rather than smuggled into a CI change.
 
 ---
 
