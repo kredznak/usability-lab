@@ -1505,7 +1505,10 @@ describe("where is my audit", () => {
      * without the behaviour, and equally if the behaviour is dropped while the
      * promise stays on the page.
      */
-    const CLAIM = /It updates as we go/;
+    // The wording changed 2026-08-24 (it now describes the page rather than
+    // the work). The regex follows the copy; the assertion below is the part
+    // that matters and is unchanged.
+    const CLAIM = /It updates on its own/;
 
     for (const status of [...LIVE, ...DONE]) {
       const res = await statusAt(status);
@@ -1615,6 +1618,50 @@ describe("where is my audit", () => {
     asks.close();
 
     assert.equal(await ahead(), before - 1, "a claimed request has to leave the line");
+  });
+
+  /**
+   * The road ahead, added 2026-08-24 after the first visitor to see this page
+   * without knowing the answer asked whether it had stalled.
+   *
+   * Every state named what was happening and none named the *sequence*, so "In
+   * the queue" read as either one step from done or one of six. The stages are
+   * information rather than decoration, which is why they are asserted for
+   * content and not for looks.
+   */
+  test("the page shows the whole road, and marks where this request is", async () => {
+    const html = await (await fetch(`${BASE}/r/${ask()}`)).text();
+
+    for (const stage of ["In the queue", "Auditing your page", "A person reads it", "Published"]) {
+      assert.ok(html.includes(stage), `the road has to name "${stage}"`);
+    }
+    assert.match(
+      html,
+      /<li class="now">In the queue<\/li>/,
+      "and mark the one this request is actually in",
+    );
+  });
+
+  test("a finished audit shows the road behind it, not ahead of it", async () => {
+    const html = await (await statusAt("PUBLISHED")).text();
+    assert.match(html, /<li class="now">Published<\/li>/);
+    assert.match(html, /<li class="done">In the queue<\/li>/, "the earlier stages read as done");
+  });
+
+  test("a road that ended does not list a stage it will never reach", async () => {
+    // The stage list is a claim about what happens next. On an audit that failed
+    // or was declined, "Published" is not a later stage — it is a thing that will
+    // not happen, and greying it out would be a decorated untruth of exactly the
+    // kind this page keeps being rewritten to remove.
+    for (const status of ["CAPTURE_FAILED", "FAILED"] as const) {
+      const html = await (await statusAt(status)).text();
+      assert.match(html, /class="stopped"/, `${status} marks where it stopped`);
+      assert.doesNotMatch(
+        html,
+        /<li[^>]*>Published<\/li>/,
+        `${status} must not list a publish that will never come`,
+      );
+    }
   });
 
   test("the queue does not promise a turnaround nobody is on the hook for", async () => {

@@ -447,6 +447,53 @@ const WORKING_CSS = `
 const REFRESH = { queued: 30, starting: 5, running: 10, review: 60 } as const;
 
 /**
+ * The road ahead, because the page has never shown one.
+ *
+ * Every state here says what is happening now and none of them said what the
+ * *sequence* is, so "In the queue" read as either one step from done or one of
+ * six, with nothing on the page to tell them apart. The first visitor to see it
+ * without knowing the answer in advance asked whether it had stalled.
+ *
+ * Four stages, because four is what actually happens. "A person reads it" is
+ * listed rather than hidden: it is the slowest stage, it is the one nobody
+ * expects, and a wait that has been named reads differently from one that has
+ * not.
+ */
+const STAGES = ["In the queue", "Auditing your page", "A person reads it", "Published"] as const;
+
+const STAGES_CSS = `
+  .road { list-style:none; margin:22px 0 26px; padding:0; }
+  .road li { position:relative; padding:0 0 0 26px; margin:0 0 9px;
+             font-size:15px; color:var(--shade); }
+  .road li::before { content:""; position:absolute; left:0; top:.52em;
+                     width:8px; height:8px; border-radius:50%;
+                     background:var(--sand); }
+  .road .done { color:var(--ink-soft); }
+  .road .done::before { background:var(--ink-soft); }
+  .road .now { color:var(--ink); font-weight:500; }
+  .road .now::before { background:var(--ink); }
+  .road .stopped { color:var(--ink); }
+  .road .stopped::before { background:#8C3A22; }
+`;
+
+/**
+ * @param current which stage the request is in, as an index into STAGES.
+ * @param stopped the sequence ended here — a failure, or a decision not to
+ * publish. Everything after `current` is dropped rather than greyed out,
+ * because listing "Published" under an audit that never will be is the kind of
+ * decorated untruth this page keeps being rewritten to remove.
+ */
+function roadAhead(current: number, stopped = false): string {
+  const shown = stopped ? STAGES.slice(0, current + 1) : STAGES;
+  const items = shown.map((label, i) => {
+    const cls = i < current ? "done" : i === current ? (stopped ? "stopped" : "now") : "";
+    return `<li class="${cls}">${label}</li>`;
+  });
+  return `<ol class="road">${items.join("")}</ol>`;
+}
+
+
+/**
  * What is happening *now*, keyed on the last step that finished.
  *
  * ## Why "finished" and not "running"
@@ -536,7 +583,12 @@ function statusPage(row: AuditRequestRow): Status {
    * Making the copy a function of the behaviour is what stops that recurring:
    * there is no longer a version of this file where one moves without the other.
    */
-  const at = (refresh: number | null, state: string, extra = ""): Status => {
+  const at = (
+    refresh: number | null,
+    state: string,
+    stage: { at: number; stopped?: boolean },
+    extra = "",
+  ): Status => {
     /**
      * The fast cadences are exactly the states where a step is running, so the
      * dot is derived from the refresh interval rather than passed in beside it
@@ -550,16 +602,26 @@ function statusPage(row: AuditRequestRow): Status {
         "Your audit",
         `<p class="lead">${site}</p>
          <p>${working ? `<span class="pulse"></span>` : ""}${state}</p>${extra}
+         ${roadAhead(stage.at, stage.stopped)}
          <p class="hint">This page is yours &mdash; keep the address.${
-           refresh === null ? "" : " It updates as we go."
+           // "As we go" described work; this describes the page. A motionless
+           // render is ambiguous between waiting and broken, and the thing
+           // that resolves it is knowing the page is doing the checking.
+           //
+           // Deliberately without the interval. The first version said "every
+           // 30 seconds" and `server.test.ts` refused it: any duration on the
+           // queued page reads as a turnaround, and nobody is on the hook for
+           // one. The number was for the page; a reader would take it for the
+           // wait.
+           refresh === null ? "" : " It updates on its own &mdash; nothing to reload."
          }</p>`,
-        working ? WORKING_CSS : "",
+        STAGES_CSS + (working ? WORKING_CSS : ""),
       ),
     };
   };
 
-  if (!row.audit_id) return at(REFRESH.queued, queued(row.request_id));
-  if (!audit) return at(REFRESH.starting, `Starting now.`);
+  if (!row.audit_id) return at(REFRESH.queued, queued(row.request_id), { at: 0 });
+  if (!audit) return at(REFRESH.starting, `Starting now.`, { at: 1 });
 
   switch (audit.status) {
     case "PUBLISHED":
@@ -567,6 +629,7 @@ function statusPage(row: AuditRequestRow): Status {
       return at(
         null,
         `Ready.`,
+        { at: 3 },
         `<p><a href="/a/${escapeHtml(audit.audit_id)}/">Read the results</a></p>`,
       );
     case "REVIEW_PENDING":
@@ -574,6 +637,7 @@ function statusPage(row: AuditRequestRow): Status {
         REFRESH.review,
         `The audit is done and a person is reading it before it goes out. ` +
           `That is the slowest part and the reason we stand behind what it says.`,
+        { at: 2 },
       );
     case "CAPTURE_FAILED":
     case "PARKED":
@@ -583,6 +647,7 @@ function statusPage(row: AuditRequestRow): Status {
         `We could not load that page well enough to audit it &mdash; some sites block ` +
           `automated browsers, and some need a login we will not go past. Nothing was ` +
           `published and nothing was charged.`,
+        { at: 1, stopped: true },
         `<p><a href="/">Try a different page</a></p>`,
       );
     case "FAILED":
@@ -590,6 +655,7 @@ function statusPage(row: AuditRequestRow): Status {
         null,
         `This one broke on our side. It has been logged and nothing half-finished was ` +
           `published, which is the part we care about most.`,
+        { at: 1, stopped: true },
         `<p><a href="/">Start another</a></p>`,
       );
     case "DECLINED":
@@ -610,13 +676,15 @@ function statusPage(row: AuditRequestRow): Status {
         `We looked at this one and decided not to publish it. That is a call on our ` +
           `side rather than anything wrong with the page &mdash; nothing was published ` +
           `and nothing was charged.`,
+        // Stopped at the gate, not before it: a person did read this one.
+        { at: 2, stopped: true },
         `<p><a href="/">Audit a different page</a></p>`,
       );
     default:
       // Was one fixed sentence for every live state, which claimed reviewers
       // were on the page during the seconds when the only thing running was a
       // headless browser opening the URL.
-      return at(REFRESH.running, whatIsHappening(audit.audit_id));
+      return at(REFRESH.running, whatIsHappening(audit.audit_id), { at: 1 });
   }
 }
 
