@@ -1043,6 +1043,59 @@ Also worth reading against B15: the basecamp audit here found 10 findings where
 `2928c314` found 13 the same day on the same URL, with different answers. That
 is the reproducibility question, not a regression.
 
+### The gate ran, and the streak completed. Measured 2026-08-24.
+
+The four runs above sat at REVIEW_PENDING. Kelly reviewed three of them on the
+22nd and 23rd, and ran a fifth audit in between. What the record now holds, in
+run order:
+
+```
+1ccc0425  basecamp.com/         REVIEW_PENDING   never reviewed
+2ae5a280  myschools.nyc/en/     DECLINED
+b7969d20  ghost.org/pricing/    PUBLISHED   148s   kept 10   cited 8
+96ba2ed5  buttondown.com/       PUBLISHED   278s   kept 13   cited 8
+e338784b  theusabilitylab.com/  PUBLISHED   218s   kept 11   cited 6
+```
+
+**The last three are consecutive runs on three different sites, and every
+clause holds on all three.** Published, annotated screenshot, ≥1 cited finding,
+under 8 minutes against a 480s budget, every step in the event log and visible
+in `npm run funnel`. All 28 citations across the set resolve (`npm run
+sources:check`, 28/28, one redirect). No run between them: `audit.requested` in
+the event log goes ghost → buttondown → us with nothing in between.
+
+So the sentence at the top of this entry — *"nobody has ever run the demo"* —
+was true when it was written on 2026-08-21 and is false now.
+
+**Why the cited counts differ from the table above.** That one counts citations
+across every finding the pipeline produced; this one counts only findings that
+survived the founder gate. Ghost went 9 → 8 and buttondown 9 → 8 because review
+cut a cited finding from each. Neither is wrong; they have different
+denominators, and the published page is the one that owes the ≥1.
+
+**Four things that make this weaker than it reads, none of which unmake it.**
+
+1. **The third site is our own.** §0 says three different sites, not three
+   third-party sites, so this passes as written — but a streak whose third leg
+   is us auditing ourselves is the least persuasive version of the claim.
+   Notably it was not chosen for citability: B23 is the entry about our
+   homepage citing badly, and this run cited 6 of 11.
+2. **Two of the four answer sets in the 2026-08-21 demo were written by Claude,
+   not a site owner** — the caveat above still stands and now sits inside the
+   streak. The homepage run's answers are Kelly's own, and they read like it
+   (*"Nobody has ever bought one"*).
+3. **Publication was not consecutive.** The runs were, minutes apart; the
+   reviews came days later and out of order — the homepage published at
+   2026-08-22T23:30, before either of the two audits that ran ahead of it.
+4. **Nobody watched it happen.** This streak was found by querying the database
+   on 2026-08-24, not performed. Every clause is evidenced, and no human has
+   ever sat through the demo end to end in one sitting.
+
+**So both of these are true, and the entry stays open on the second:** the
+definition of done has been *met*, and the demo has never been *performed*.
+Which of those §0 was asking for is Kelly's call, not this file's. What is no
+longer defensible is the claim that the clauses have never co-occurred.
+
 ---
 
 ## B27. A status can change without leaving an event
