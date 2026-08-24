@@ -791,6 +791,57 @@ cancel it, reconcile.
 from a green `stripe-live.test.ts` either.** Both prove shape. Neither proves a
 payment, and the failure they cannot see is the expensive one.
 
+### The green suite was never green. 2026-08-24.
+
+The paragraph above warns against trusting `stripe-live.test.ts`. It was worse
+than that: **the suite had never run.** `stripe-mock` was never installed —
+not on the machine that wrote the tests on 2026-08-19, and not in CI once that
+existed on 2026-08-24. Every full run reported
+
+```
+pass 675   skipped 10
+```
+
+and those ten were all of them. The only check that our requests match Stripe's
+own schema was reporting a pass by not running — B31's defect with a different
+filename, and it survived five days and a machine move because a skip looks
+exactly like a thing that did not need doing.
+
+The runbook said `brew install stripe-mock`, and there is no Homebrew on this
+Mac. The release tarball needs none; `docs/stripe-runbook.md` step 0 has it.
+
+**Now:**
+
+```
+703 passing, 0 skipped
+```
+
+**And the suite has teeth, watched rather than assumed.** B21 claims "misspell
+`line_items` and the request is now refused". Done, on this machine: changing
+`line_items[0][price]` to `line_itemz[0][price]` in `src/stripe.ts` fails 4 of
+the 10 tests. Restored.
+
+**CI cannot skip them.** The workflow installs stripe-mock (pinned to 0.202.0,
+the spec B21's findings were measured against) and sets
+`STRIPE_MOCK_REQUIRED=1`, which turns a missing binary into a failure. Verified
+in all three combinations:
+
+```
+flag set + stripe-mock absent   -> exit 1
+flag set + stripe-mock present  -> exit 0
+no flag  + stripe-mock absent   -> exit 0    (a skip is still fine locally)
+```
+
+Skipping locally stays allowed on purpose: a contributor should not be blocked
+by a binary they may not want. CI installs it a step earlier and has no excuse.
+
+**None of this moves the entry.** It changes "ten tests exist" into "ten tests
+run", which is a smaller claim than it sounded like yesterday. Nothing has
+charged a card, delivered a webhook, or round-tripped `ul_email` back out
+through a `customer.subscription.*` event, and **`subscription_data[metadata]`
+is still covered by documentation alone** — stripe-mock validates top-level
+names only, which is measured above. B21 stays open on an account and a card.
+
 ---
 
 ## B22. A late webhook can revive a cancelled subscription

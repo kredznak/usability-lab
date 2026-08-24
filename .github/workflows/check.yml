@@ -64,7 +64,28 @@ jobs:
       # exactly why it is written down as a step rather than assumed.
       - run: npx playwright install --with-deps chromium
 
+      # B21. Ten tests check our Stripe requests against Stripe's own OpenAPI
+      # spec, and they skipped silently on every run until 2026-08-24 — the
+      # whole suite reported `skipped 10` and nobody had installed the binary.
+      # A suite that reports a pass by not running is B31 with a new filename.
+      #
+      # Pinned to the version B21's field-name findings were measured against:
+      # a different spec is a different answer to "does Stripe accept this".
+      - name: install stripe-mock
+        run: |
+          curl -sSfL -o /tmp/stripe-mock.tar.gz \
+            https://github.com/stripe/stripe-mock/releases/download/v0.202.0/stripe-mock_0.202.0_linux_amd64.tar.gz
+          tar -xzf /tmp/stripe-mock.tar.gz -C /tmp stripe-mock
+          sudo mv /tmp/stripe-mock /usr/local/bin/
+          stripe-mock --version
+
       # The gate itself: typecheck, then every test, then the prompt snapshots.
       # Deliberately the same command a person runs by hand, so CI cannot come
       # to mean something different from local.
       - run: npm run check
+        env:
+          # Locally a missing stripe-mock skips, so a contributor is not blocked
+          # by a binary they may not want. Here it is a failure — CI has the
+          # step above and has no excuse for reporting green on tests it did
+          # not run.
+          STRIPE_MOCK_REQUIRED: "1"

@@ -126,12 +126,35 @@ function startRecorder(upstreamPort: number): Promise<number> {
  */
 const SECRET = "sk_test_NEVERLOGTHIS9f3a";
 
+/**
+ * Where a skip is allowed, and where it is a lie.
+ *
+ * Every test in this file skipped silently for five days — on the machine that
+ * wrote them and, once CI existed, on every push. `npm test` reported
+ * `pass 675, skipped 10` and the ten were all of these: the only tests that
+ * check our requests against Stripe's own schema, reported as a pass by not
+ * running. That is B31's defect with a different filename.
+ *
+ * Skipping locally stays fine; a contributor without stripe-mock should not be
+ * blocked by a binary they may not want. CI has no such excuse, so the workflow
+ * sets this and a missing stripe-mock becomes a failure instead of a shrug.
+ */
+const REQUIRED = process.env.STRIPE_MOCK_REQUIRED === "1";
+
 before(async () => {
   let mockPort: number;
   try {
     mockPort = await startMock();
-  } catch {
+  } catch (err) {
     mock = null;
+    if (REQUIRED) {
+      throw new Error(
+        "STRIPE_MOCK_REQUIRED=1 but stripe-mock could not be started: " +
+          `${(err as Error).message}. These tests are the only check that our ` +
+          "requests match Stripe's schema; skipping them here would report a pass " +
+          "for a suite that did not run. See docs/stripe-runbook.md to install it.",
+      );
+    }
     return; // not installed — every test below skips
   }
   const recorderPort = await startRecorder(mockPort);

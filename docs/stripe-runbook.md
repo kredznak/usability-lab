@@ -9,9 +9,8 @@ Nothing here touches real money. Test mode uses a separate set of keys and a
 separate dashboard, and the only card involved is Stripe's fake one.
 
 > **What was done instead, and why it is not enough** — 2026-08-19.
-> `src/stripe-live.test.ts` sends the real requests to `stripe-mock`
-> (`brew install stripe-mock`), Stripe's own server built from their OpenAPI
-> spec. That is why the form encoding, the headers, the paging and the response
+> `src/stripe-live.test.ts` sends the real requests to `stripe-mock`, Stripe's
+> own server built from their OpenAPI spec. That is why the form encoding, the headers, the paging and the response
 > parsing are no longer on my word. Two things it cannot do, and both are why
 > this document still exists:
 >
@@ -25,6 +24,38 @@ separate dashboard, and the only card involved is Stripe's fake one.
 >
 > If you are reading this hoping to skip step 6: step 6 is the only part that
 > tests the failure that costs money.
+
+---
+
+## 0. Install stripe-mock (2 min, and it was never done)
+
+**Those ten tests ran nowhere for five days.** They were written on 2026-08-19
+and `stripe-mock` was never installed — not on Kelly's machine, and once CI
+existed on 2026-08-24, not there either. `npm test` reported `pass 675,
+skipped 10`, and the ten were all of these: the only check that our requests
+match Stripe's schema, reported as a pass by not running.
+
+This document said `brew install stripe-mock`, and there is no Homebrew on this
+Mac. The release tarball needs neither:
+
+```sh
+ARCH=$(uname -m); case "$ARCH" in arm64) A=darwin_arm64;; x86_64) A=darwin_amd64;; esac
+curl -sL -o /tmp/sm.tar.gz \
+  "https://github.com/stripe/stripe-mock/releases/download/v0.202.0/stripe-mock_0.202.0_${A}.tar.gz"
+tar xzf /tmp/sm.tar.gz -C /tmp stripe-mock
+mv /tmp/stripe-mock ~/.local/bin/ && stripe-mock --version   # 0.202.0
+```
+
+Pinned to 0.202.0 deliberately: B21's field-name findings were measured against
+that spec, and a different spec is a different answer to *"does Stripe accept
+this"*.
+
+Then `npm test` reports **703 passing, 0 skipped**.
+
+**Locally a missing stripe-mock still skips** — a contributor should not be
+blocked by a binary they may not want. **In CI it fails**, via
+`STRIPE_MOCK_REQUIRED=1` in `.github/workflows/check.yml`, because CI installs
+it a step earlier and has no excuse for reporting green on tests it did not run.
 
 ---
 
