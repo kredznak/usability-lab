@@ -221,6 +221,32 @@ async function ask(prompt: string): Promise<string | null> {
 }
 
 /**
+ * B29. The reason a cut or a severity change cannot be recorded without.
+ *
+ * The gate's own docstring called a cut reason "the only record of why", and
+ * for the first 115 decisions that record was empty — not because reviewers
+ * refused, but because `Enter` alone kept and asked nothing, so the cheapest
+ * keystroke was also the least informative one.
+ *
+ * Blocking outright would extract "bad" from someone who has no words to hand,
+ * and a corpus of "bad" is worse than silence because it looks like signal. So
+ * a dash is an answer: it records that the question was asked and declined,
+ * which is a thing the data can currently never say.
+ */
+async function reasonFor(what: string): Promise<{ note: string | null; declined: boolean } | null> {
+  for (;;) {
+    const answer = await ask(
+      `  ${YELLOW}Why ${what}?${RESET} ${DIM}(a dash records that you would rather not say)${RESET}\n  > `,
+    );
+    if (answer === null) return null;
+    const text = answer.trim();
+    if (text === "-") return { note: null, declined: true };
+    if (text) return { note: text, declined: false };
+    console.log(`  ${DIM}A reason, or - to decline. This is the only record of why.${RESET}`);
+  }
+}
+
+/**
  * Lint flags first, before any finding.
  *
  * They are the reason lint runs before this gate rather than after it: a
@@ -318,7 +344,8 @@ if (!publishSaved) {
       (audit.profile_summary ? `${wrap(audit.profile_summary, 74, "  ")}\n\n` : "") +
       `  ${GREEN}k${RESET} keep     ${RED}c${RESET} cut     ${YELLOW}1-4${RESET} keep at that severity     ` +
       `${DIM}q${RESET} quit without publishing\n` +
-      `  ${DIM}Enter alone keeps. Add a reason after the letter: ${RESET}c true but nobody would act\n\n` +
+      `  ${DIM}Enter alone keeps. Add a reason after the letter: ${RESET}c true but nobody would act\n` +
+      `  ${DIM}A cut or a severity change asks for a reason if you did not type one.${RESET}\n\n` +
       `  ${DIM}Keep/cut is also the usefulness label — the question is whether a founder\n` +
       `  would change something because of this, not whether it is true.${RESET}\n`,
   );
@@ -364,7 +391,11 @@ for (const [i, f] of toAsk) {
     );
   }
 
+  // B29. Timed from the prompt, not from the print above it: what is being
+  // measured is the pause before the judgment, not how fast a terminal draws.
+  const askedAt = Date.now();
   const answer = await ask(`\n  ${BOLD}Keep it?${RESET}\n  > `);
+  const ms = Date.now() - askedAt;
   if (answer === null) {
     quit = true;
     break;
@@ -372,35 +403,48 @@ for (const [i, f] of toAsk) {
 
   const raw = answer.trim();
   const key = raw.charAt(0).toLowerCase();
-  const note = raw.slice(1).trim() || null;
+  let note = raw.slice(1).trim() || null;
 
   if (key === "q") {
     quit = true;
     break;
   }
 
-  if (/^[1-4]$/.test(key)) {
-    const severity = normalizeSeverity(Number(key)).value;
-    decisions.push({
-      finding_id: f.id,
-      keep: true,
-      severity_before: f.severity,
-      severity_after: severity,
-      note,
-    });
-    console.log(`${DIM}  kept, severity ${f.severity} -> ${severity}${RESET}\n`);
-    continue;
+  const severity = /^[1-4]$/.test(key) ? normalizeSeverity(Number(key)).value : f.severity;
+  const keep = key !== "c";
+  const moved = severity !== f.severity;
+
+  /**
+   * The two informative actions, and the only two that are asked about. Keeps
+   * stay a single keystroke — 155 of the first 165 decisions were keeps, and
+   * making the common path expensive buys noise, not signal.
+   *
+   * Typing the severity it already had is not a change and is not questioned.
+   */
+  let declined = false;
+  if ((!keep || moved) && !note) {
+    const given = await reasonFor(keep ? `severity ${f.severity} -> ${severity}` : "cut");
+    if (given === null) {
+      quit = true;
+      break;
+    }
+    note = given.note;
+    declined = given.declined;
   }
 
-  const keep = key !== "c";
   decisions.push({
     finding_id: f.id,
     keep,
     severity_before: f.severity,
-    severity_after: f.severity,
+    severity_after: severity,
     note,
+    // Omitted rather than false, so a keep records exactly what it did before.
+    ...(declined ? { reason_declined: true } : {}),
+    ms,
   });
-  console.log(`${DIM}  ${keep ? "kept" : "cut"}${RESET}\n`);
+  console.log(
+    `${DIM}  ${keep ? "kept" : "cut"}${moved ? `, severity ${f.severity} -> ${severity}` : ""}${RESET}\n`,
+  );
 }
 
 if (quit && decisions.length < findings.length) {
@@ -460,7 +504,17 @@ if (!publishSaved) {
   events.record({
     audit_id: audit.audit_id,
     type: "review.decided",
-    data: { kept: kept.length, cut, adjusted, findings: findings.length },
+    data: {
+      kept: kept.length,
+      cut,
+      adjusted,
+      findings: findings.length,
+      // B29. Counts, not text — the reasons themselves stay in review.json.
+      // A session that cut three findings and explained none is the shape the
+      // funnel should be able to show without opening a file.
+      reasons: decisions.filter((d) => d.note && d.note.trim()).length,
+      declined: decisions.filter((d) => d.reason_declined).length,
+    },
   });
 }
 

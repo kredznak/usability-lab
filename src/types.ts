@@ -224,8 +224,31 @@ export interface ReviewDecision {
   keep: boolean;
   severity_before: number;
   severity_after: number;
-  /** Why it was cut, or why severity moved. Optional, and worth typing. */
+  /**
+   * Why it was cut, or why severity moved. Required for both of those since
+   * B29 — a cut or an adjustment cannot be recorded without one.
+   */
   note: string | null;
+  /**
+   * B29. The reviewer was asked for a reason and chose not to give one.
+   *
+   * Without this, a null note means two different things — "never asked" and
+   * "would rather not say" — and the corpus cannot tell them apart. Every
+   * decision recorded before 2026-08-24 is the first kind, indistinguishably.
+   * Optional because those 165 do not carry the field at all.
+   */
+  reason_declined?: boolean;
+  /**
+   * Milliseconds from the prompt appearing to the keystroke that answered it.
+   *
+   * B29's real complaint is that a 94% keep rate is equally consistent with a
+   * careful pipeline and a rubber stamp, and nothing in the record can separate
+   * them. Reasons only exist on the ~7% of decisions that cut or adjust; this
+   * covers all of them. It is a proxy and a noisy one — an interrupted review
+   * inflates it and an obvious finding is genuinely quick — so it is worth
+   * reading as a session median and not as a score.
+   */
+  ms?: number | null;
 }
 
 export interface ReviewRecord {

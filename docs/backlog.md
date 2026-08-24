@@ -1313,6 +1313,79 @@ measurement that cannot discriminate. Note also that 4 of the 115 are labels
 **Do not** treat "the pipeline got good" as established. On the evidence it is
 untested either way.
 
+### Re-measured 2026-08-24. The gate started talking on its own.
+
+Before writing any code against the numbers above, they were taken again. They
+had moved:
+
+```
+                  2026-08-21     2026-08-24
+decisions              115            165
+cut                      7             10
+severity adjusted        0              1
+written reasons          0              7
+keep rate              94%            94%
+```
+
+**Every new reason was typed on 2026-08-23, and no code changed in between.**
+Three sessions — `b7969d20`, `96ba2ed5`, `2928c314` — produced 3 cuts, the
+first severity adjustment in the project's history, and 7 written reasons. The
+entry's central sentence, *"that record is empty for the entire corpus"*, was
+true when written and false two days later.
+
+They are also not box-ticking:
+
+> *"observation holds but the count is wrong: the capture has 50 identical
+> 'Help' tooltips, not 'roughly 40'"*
+
+> *"understated: white on rgb(121,175,251) measures 2.25:1 across the whole
+> fill, below the WCAG AA 3:1 floor for large bold text. The primary CTA is
+> 4.70:1 and passes. An accessibility failure, not a styling inconsistency"*
+
+So the diagnosis needed changing before the fix did. The gate was not being
+rubber-stamped; it was being read carefully and recording almost none of it.
+
+### Shipped 2026-08-24
+
+**A cut or a severity change cannot be recorded without a reason.** If none is
+typed inline, the gate asks. Keeps are untouched — 155 of the 165 decisions
+were keeps, and charging a keystroke for the common path buys noise, not
+signal. Answering the severity a finding already has is not a change and is not
+questioned.
+
+**A dash is an answer.** It records `reason_declined: true` with a null note.
+Blocking outright would extract *"bad"* from a reviewer with no words to hand,
+and a corpus of *"bad"* is worse than an empty one because it looks like
+signal. The dash separates **declined to explain** from **was never asked** —
+and all 165 decisions to date are the second, indistinguishably.
+
+**Every decision now records how long it took** (`ms`). This is the part aimed
+at the entry's actual complaint: reasons only ever exist on the ~7% of
+decisions that cut or adjust, so they cannot settle whether a 94% keep rate is
+a careful pipeline or a rubber stamp. Dwell time covers all of them. It is a
+noisy proxy — an interrupted review inflates it, an obvious finding is honestly
+quick — so it is worth reading as a session median and never as a score.
+
+**`review.decided` carries `reasons` and `declined` counts**, so the funnel can
+show a session that cut three findings and explained none without opening a
+file. Counts, not text.
+
+Verified the way this repo verifies: five separate reverts, each watched
+failing. Removing the requirement fails 8 tests; asking on keeps too fails 19;
+dropping `ms` fails exactly 1; dropping the event counts fails exactly 1;
+making a dash ordinary text fails 2. 693 tests, 0 fail.
+
+**What is still open, and it is the original point.** The priors job is still
+not built and should not be — 7 reasons is not a training set, and steps 1 and
+3 above stand unchanged. Nothing here has been exercised by a real session
+either: no review has yet run under the new rule, so every claim above is a fix
+by construction rather than by measurement, exactly as B13 and B30 were. The
+next audit through the gate is the evidence.
+
+**And the reasons pointed somewhere this entry did not expect** — four of the
+seven are the reviewer checking the pipeline's arithmetic, not its usefulness.
+That is B32.
+
 ---
 
 ## B30. The screenshot sees text the capture text does not
@@ -1574,6 +1647,51 @@ is identical before and after (`9b450d62…`).
 **Not yet observed:** the CI log saying `passed 6`. The clean-clone run above is
 the same situation — fresh checkout, no `.env` — but on macOS `sh` rather than
 Ubuntu's `dash`. The next run on `main` settles it.
+
+---
+
+## B32. The founder gate is being used as a fact-checker
+
+Opened 2026-08-24, out of B29's re-measurement rather than by looking for it.
+
+Seven written reasons exist in the whole corpus. **Four of them are the
+reviewer correcting the pipeline's arithmetic**, not judging whether a finding
+is worth acting on:
+
+```
+b7969d20  CUT   "the count is wrong: the capture has 50 identical 'Help'
+                 tooltips, not 'roughly 40'"
+96ba2ed5  CUT   "the page has two join CTAs, not three (y=584 and y=5177)"
+96ba2ed5  CUT   "counts three instances of the join CTA; the capture has two"
+2928c314  KEEP  "the '19-24px' range is imprecise: the capture has all seven
+                 links at exactly 19px"
+```
+
+Every one of these is checkable against `capture.json` by a machine. A count of
+matching elements, a claimed range against measured values — the reviewer is
+doing by eye what the data already holds exactly.
+
+**Why this matters more than four notes.** Two of the four are *cuts* — the
+finding was thrown away because its number was wrong, not because it was
+unhelpful. That is the pipeline spending money to produce a true observation
+wrapped in a false quantity, and a person spending attention to catch it. It
+also contaminates the usefulness labels B29 wants to learn from: a cut for
+"miscounted" and a cut for "nobody would act on this" mean opposite things
+about the finding and are recorded identically.
+
+**Related and not the same.** `src/claims.ts` already checks quoted text
+against the page. This is the numeric sibling — counts, ranges, and
+measurements rather than quotes. B15 is the reproducibility question and B10
+the alt-text one; neither covers arithmetic.
+
+**Cost: unknown, and worth scoping before committing.** The cheap version is a
+lint rule over a small set of shapes — "N of these", "roughly N", "between X
+and Y px" — resolved against the elements the finding cites. The expensive
+version is general numeric verification, which is a research problem. Do not
+start with the second.
+
+**Not built.** Four notes is a lead, not a measurement, and three of them come
+from two audits on one day.
 
 ---
 

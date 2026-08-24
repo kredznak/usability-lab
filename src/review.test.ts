@@ -137,7 +137,11 @@ function reviewJson(fx: Fixture): ReviewRecord | null {
 describe("the founder gate, end to end", () => {
   test("every piped answer is recorded — the bug that shipped", () => {
     const fx = seed(17);
-    const answers = Array.from({ length: 17 }, (_, i) => (i % 5 === 0 ? "c" : "k"));
+    // A cut now costs two lines, not one — the second is the reason B29 made
+    // mandatory. Keeps are still a single keystroke.
+    const answers = Array.from({ length: 17 }, (_, i) =>
+      i % 5 === 0 ? ["c", "not worth acting on"] : ["k"],
+    ).flat();
     const { output } = review(fx, [...answers, "y"]);
 
     const record = reviewJson(fx);
@@ -162,7 +166,7 @@ describe("the founder gate, end to end", () => {
     // Findings 1 and 2 cut, so the free three are ranks 3, 4, 5 — which were
     // drawn on the image as pins 3, 4 and 5, and must not be renumbered 1-3.
     const fx = seed(6);
-    review(fx, ["c", "c", "k", "k", "k", "k", "y"]);
+    review(fx, ["c", "duplicate", "c", "already fixed", "k", "k", "k", "k", "y"]);
 
     const html = readFileSync(path.join(fx.dir, "results.html"), "utf8");
     for (const pin of [3, 4, 5]) {
@@ -270,7 +274,7 @@ describe("a review you already did", () => {
     const fx = seed(4);
     review(fx, [...Array(4).fill("k"), "n"]);
 
-    const { output } = review(fx, ["r", "c", "k", "k", "k", "y"]);
+    const { output } = review(fx, ["r", "c", "wrong on a second read", "k", "k", "k", "y"]);
 
     assert.match(output, /\[4\/4\]/, "every finding is put again");
     assert.equal(reviewJson(fx)!.decisions.filter((d) => !d.keep).length, 1, "the new cut sticks");
@@ -403,5 +407,115 @@ describe("an audit the founder will not publish", () => {
     assert.notEqual(status, 0);
     assert.match(output, /DECLINED/, "the refusal names the state it is refusing from");
     assert.equal(statusOf(fx), "DECLINED");
+  });
+});
+
+/**
+ * B29. The gate's own docstring called a cut reason "the only record of why",
+ * and across the first 165 decisions that record held 7 lines — all of them
+ * typed on one day, after the entry was written. Nothing was stopping a cut
+ * from being unexplained, so most were.
+ *
+ * These pin the two informative actions to a reason, and pin the common one to
+ * a single keystroke. A gate that asked about every keep would be a gate that
+ * gets answered with whatever ends the prompt fastest.
+ */
+describe("a cut has to say why", () => {
+  const decisionsOf = (fx: Fixture) => reviewJson(fx)!.decisions;
+
+  test("a cut with no reason typed is asked, and the answer becomes the record", () => {
+    const fx = seed(3);
+    const { output } = review(fx, ["c", "the count is wrong: 50 tooltips, not 40", "k", "k", "y"]);
+
+    assert.match(output, /Why cut\?/, "the question is actually put");
+    const first = decisionsOf(fx)[0]!;
+    assert.equal(first.keep, false);
+    assert.equal(first.note, "the count is wrong: 50 tooltips, not 40");
+    assert.equal(first.reason_declined, undefined, "answering is not declining");
+  });
+
+  test("a dash records that the question was asked and declined", () => {
+    const fx = seed(3);
+    review(fx, ["c", "-", "k", "k", "y"]);
+
+    const first = decisionsOf(fx)[0]!;
+    assert.equal(first.note, null);
+    assert.equal(first.reason_declined, true);
+    // The distinction the corpus could never make: every decision before this
+    // change has a null note because nothing ever asked.
+    assert.equal(decisionsOf(fx)[1]!.reason_declined, undefined);
+  });
+
+  test("silence is not an answer — an empty line asks again", () => {
+    const fx = seed(3);
+    const { output } = review(fx, ["c", "", "duplicate of finding 2", "k", "k", "y"]);
+
+    assert.match(output, /A reason, or - to decline/, "it says what it wants");
+    assert.equal(decisionsOf(fx)[0]!.note, "duplicate of finding 2");
+    assert.equal(statusOf(fx), "PUBLISHED", "and the run survives the extra prompt");
+  });
+
+  test("a keep is never asked — the common path stays one keystroke", () => {
+    const fx = seed(3);
+    // Exactly three keeps and a publish. If a keep asked anything the queue
+    // would run dry, the review would abort part-way and nothing would publish.
+    review(fx, ["k", "k", "k", "y"]);
+
+    assert.equal(statusOf(fx), "PUBLISHED");
+    assert.equal(decisionsOf(fx).length, 3);
+    for (const d of decisionsOf(fx)) {
+      assert.equal(d.note, null);
+      assert.equal(d.reason_declined, undefined);
+    }
+  });
+
+  test("moving a severity is asked about too", () => {
+    const fx = seed(3);
+    review(fx, ["4", "white on blue measures 2.25:1, below the 3:1 floor", "k", "k", "y"]);
+
+    const first = decisionsOf(fx)[0]!;
+    assert.equal(first.keep, true, "a severity change is still a keep");
+    assert.equal(first.severity_before, 2);
+    assert.equal(first.severity_after, 4);
+    assert.equal(first.note, "white on blue measures 2.25:1, below the 3:1 floor");
+  });
+
+  test("typing the severity a finding already has is not a change, and is not questioned", () => {
+    const fx = seed(3);
+    // Every fixture finding is severity 2. Answering "2" agrees with the
+    // reviewers; there is nothing to explain, so nothing is asked — and the
+    // queue proves it, because an extra prompt would eat the publish.
+    review(fx, ["2", "k", "k", "y"]);
+
+    const first = decisionsOf(fx)[0]!;
+    assert.equal(first.severity_before, 2);
+    assert.equal(first.severity_after, 2);
+    assert.equal(first.note, null);
+    assert.equal(statusOf(fx), "PUBLISHED");
+  });
+
+  test("every decision carries how long it took", () => {
+    const fx = seed(3);
+    review(fx, ["k", "k", "k", "y"]);
+
+    for (const d of decisionsOf(fx)) {
+      assert.equal(typeof d.ms, "number", "a decision with no duration cannot be told from a fast one");
+      assert.ok(d.ms! >= 0, "and it is not negative");
+    }
+  });
+
+  test("the event counts reasons and declines, without carrying the text", () => {
+    const fx = seed(4);
+    review(fx, ["c", "miscounted the CTAs", "c", "-", "k", "k", "y"]);
+
+    const log = new EventLog(fx.dbPath);
+    const row = log.all(AUDIT_ID).filter((e) => e.type === "review.decided").at(-1)!;
+    log.close();
+
+    const data = row.data as unknown as Record<string, number>;
+    assert.equal(data.cut, 2);
+    assert.equal(data.reasons, 1, "one written reason");
+    assert.equal(data.declined, 1, "and one deliberate silence");
+    assert.ok(!JSON.stringify(data).includes("miscounted"), "the funnel gets counts, not quotes");
   });
 });
