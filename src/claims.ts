@@ -37,7 +37,7 @@ import { normalize, pageSources, pageContains } from "./confidence.js";
 export type ClaimStatus = "verified" | "contradicted" | "unverifiable";
 
 export interface ClaimCheck {
-  kind: "element" | "tag" | "quote" | "measurement";
+  kind: "element" | "tag" | "quote" | "measurement" | "count";
   ok: boolean;
   detail: string;
   /**
@@ -115,6 +115,90 @@ const TAG_RE = /<([a-z][a-z0-9]*)>/gi;
 
 function num(s: string): number {
   return Number(s.replace(/,/g, ""));
+}
+
+/**
+ * B32. A count of repeated things — "appears three times", "roughly 40
+ * instances". Written out to twelve because prose above that reaches for
+ * digits, and "dozens" is deliberately absent: it is a hedge, not a count.
+ */
+const COUNT_WORDS: Record<string, number> = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
+  seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
+};
+
+const COUNT_RE = new RegExp(
+  String.raw`\b(\d[\d,]*|${Object.keys(COUNT_WORDS).join("|")})\s+` +
+    String.raw`(?:\w+\s+){0,2}?(?:times|instances|occurrences|copies)\b`,
+  "gi",
+);
+
+/**
+ * How far a quotation may sit from the count that refers to it.
+ *
+ * A count is meaningless without its noun, and the noun is often not quoted at
+ * all — "well after the first two instances of the join CTA" counts join CTAs,
+ * a phrase the capture cannot resolve. Without a distance rule that sentence
+ * pairs its `two` with the only quotation that *does* resolve, 115 characters
+ * away, and reports a mismatch the finding never claimed. It flagged a finding
+ * that was in fact cut for miscounting — the right answer for the wrong reason,
+ * which is the failure mode this repo keeps meeting.
+ *
+ * **This number is fitted to three observations** — gaps of 10 and 41 on the
+ * two true pairings, 115 on the false one. It is a separation, not a law, and
+ * the next counter-example should move it rather than be explained away.
+ */
+const MAX_COUNT_GAP = 60;
+
+interface LocatedQuote {
+  text: string;
+  start: number;
+  end: number;
+}
+
+/** Quoted spans with their positions, so a count can be paired with the nearest. */
+function locatedQuotes(s: string): LocatedQuote[] {
+  const parts = s.split(/["“”]/);
+  const out: LocatedQuote[] = [];
+  let pos = 0;
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i] ?? "";
+    if (i % 2 === 1) {
+      const trimmed = trimQuotePunctuation(part);
+      if (trimmed.length > 0) out.push({ text: trimmed, start: pos, end: pos + part.length });
+    }
+    pos += part.length + 1; // +1 for the quotation mark the split consumed
+  }
+  return out;
+}
+
+/** Characters between a quotation and a count phrase, either side, 0 if they overlap. */
+function gapTo(q: LocatedQuote, at: number, len: number): number {
+  if (at >= q.end) return at - q.end;
+  if (q.start >= at + len) return q.start - (at + len);
+  return 0;
+}
+
+function countOf(token: string): number | null {
+  const word = COUNT_WORDS[token.toLowerCase()];
+  if (word !== undefined) return word;
+  const n = num(token);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * How many captured elements *are* this string — visible text or accessible
+ * name, exact after normalising whitespace and case.
+ *
+ * Exact rather than `includes` on purpose: a nav link reading "Pricing" is not
+ * an occurrence of the heading that contains the word.
+ */
+function occurrences(quote: string, capture: Capture): number {
+  const want = normalize(quote);
+  if (!want) return 0;
+  return capture.elements.filter(
+    (e) => normalize(e.text) === want || normalize(e.accessible_name ?? "") === want,
+  ).length;
 }
 
 function near(a: number, b: number): boolean {
@@ -340,6 +424,61 @@ export function checkClaim(finding: RawFinding | Finding, capture: Capture): Cla
         ? `says ${cited.ref} has no accessible name, but it is named "${cited.accessible_name}" via ${cited.name_source}`
         : `says ${cited.ref} has no accessible name, and it has none`,
     });
+  }
+
+  /**
+   * 6. A stated count of repeated things matches how many the capture holds.
+   *
+   * B32. Four of the seven reasons a founder has ever written at the gate were
+   * this — the observation true, the number wrong:
+   *
+   *   "The button text "Join…platform" appears three times"   capture holds 2
+   *   "roughly 40 instances … the identical tooltip "Help""   capture holds 50
+   *
+   * Both were cut. The pipeline spent money producing a true observation
+   * wrapped in a false quantity, and a person spent attention counting.
+   *
+   * ## Why the pairing rule is this strict
+   *
+   * A count means nothing without knowing what is being counted, and reading
+   * that out of prose is the attribution problem that made the tag check hard.
+   * So this only speaks when there is exactly one count and exactly one quoted
+   * string that resolves to any element at all. On the tooltip finding that is
+   * what disambiguates: it quotes "?" and "Help", and only "Help" is a string
+   * the capture has.
+   *
+   * Matching is exact against visible text or accessible name — not
+   * `includes`, which would count a nav link inside a longer heading. Exact
+   * matching reproduced both hand counts above precisely, 50 and 2.
+   *
+   * ## And why it cannot contradict
+   *
+   * It is new, and B11 is the precedent: the quote check shipped with teeth,
+   * flagged five findings, and was wrong all five times. A check with no
+   * measured precision has not earned the right to call a finding false — so
+   * this reports the arithmetic and leaves the judgment where it already is.
+   */
+  const countClaims = [...text.matchAll(COUNT_RE)];
+  if (countClaims.length === 1) {
+    const m = countClaims[0]!;
+    const claimed = countOf(m[1] ?? "");
+    const resolved = locatedQuotes(text)
+      .filter((s) => gapTo(s, m.index, m[0].length) <= MAX_COUNT_GAP)
+      .map((s) => ({ q: s.text, n: occurrences(s.text, capture) }))
+      .filter((x) => x.n > 0);
+
+    if (claimed !== null && resolved.length === 1) {
+      const { q, n } = resolved[0]!;
+      checks.push({
+        kind: "count",
+        ok: n === claimed,
+        inconclusive: true,
+        detail:
+          n === claimed
+            ? `says ${claimed} of "${q}", and the capture holds ${n}`
+            : `says ${claimed} of "${q}", but the capture holds ${n}`,
+      });
+    }
   }
 
   // Inconclusive checks are reported and do not contradict. Only the checks

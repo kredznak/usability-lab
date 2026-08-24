@@ -519,3 +519,80 @@ describe("a cut has to say why", () => {
     assert.ok(!JSON.stringify(data).includes("miscounted"), "the funnel gets counts, not quotes");
   });
 });
+
+/**
+ * B32. `checkClaim` has existed since the first false positives reached a
+ * results page, and was imported by exactly one file — `corpus.ts`, an offline
+ * builder. It had never run during an audit or at this gate.
+ *
+ * So the four numeric errors a founder has ever caught here were caught by
+ * counting by hand, while the capture holding the answer sat on disk.
+ */
+describe("what the capture says, while the decision is being made", () => {
+  /** Replaces the seeded fixture with one finding and the elements it counts. */
+  function withCount(fx: Fixture, observation: string, labels: string[]) {
+    writeFileSync(
+      path.join(fx.dir, "findings.json"),
+      JSON.stringify([{ ...finding(1), observation, element_ref: null }]),
+    );
+    writeFileSync(
+      path.join(fx.dir, "capture.json"),
+      JSON.stringify({
+        ...CAPTURE,
+        elements: labels.map((text, i) => ({
+          ref: `el_${i}`,
+          tag: "a",
+          role: null,
+          text,
+          bbox: { x: 0, y: 0, width: 60, height: 20 },
+          above_fold: true,
+          input_type: null,
+          accessible_name: null,
+          name_source: null,
+          font_size: 19,
+        })),
+        elements_total: labels.length,
+      }),
+    );
+  }
+
+  test("a miscount is put in front of the reviewer, in the capture's words", () => {
+    const fx = seed(1);
+    withCount(fx, 'The "Get started" button appears three times on the page.', [
+      "Get started",
+      "Get started",
+    ]);
+
+    const { output } = review(fx, ["k", "y"]);
+    assert.match(output, /Checked against the capture/);
+    assert.match(output, /says 3 of "Get started", but the capture holds 2/);
+  });
+
+  test("it is shown as data, and the finding can still be kept", () => {
+    const fx = seed(1);
+    withCount(fx, 'The "Get started" button appears three times on the page.', [
+      "Get started",
+      "Get started",
+    ]);
+
+    const { output } = review(fx, ["k", "y"]);
+    // The wording matters as much as the number. A gate line that reads as a
+    // verdict would make a keep feel like overruling the machine, and one of
+    // these lines is a known false alarm — the closed-shadow-root counter in
+    // B30, contradicted for quoting digits the capture could not read.
+    assert.match(output, /not a verdict/);
+    assert.equal(statusOf(fx), "PUBLISHED", "the reviewer is still the one deciding");
+    assert.equal(reviewJson(fx)!.decisions[0]!.keep, true);
+  });
+
+  test("a finding the capture agrees with says nothing at all", () => {
+    const fx = seed(1);
+    withCount(fx, 'The "Get started" button appears two times on the page.', [
+      "Get started",
+      "Get started",
+    ]);
+
+    const { output } = review(fx, ["k", "y"]);
+    assert.doesNotMatch(output, /Checked against the capture/, "silence when there is no news");
+  });
+});

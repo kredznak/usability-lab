@@ -1690,8 +1690,85 @@ and Y px" — resolved against the elements the finding cites. The expensive
 version is general numeric verification, which is a research problem. Do not
 start with the second.
 
-**Not built.** Four notes is a lead, not a measurement, and three of them come
-from two audits on one day.
+~~**Not built.** Four notes is a lead, not a measurement, and three of them come
+from two audits on one day.~~
+
+### Shipped 2026-08-24, both halves
+
+**First, the thing that made this worth doing at all.** `checkClaim` was
+imported by exactly one file — `corpus.ts`, an offline builder. **It had never
+run during an audit or at the gate.** The truth-checker this project built
+after two false positives reached a results page was not present at the only
+moment a person is deciding. Run against the seven annotated findings it
+returns `verified` on all seven, including the three cut for miscounting — and
+on the `19-24px` finding it reports *"states 24px, which matches a measured
+value"*, passing the exact claim the reviewer flagged, because it asks whether
+a number exists somewhere rather than whether the sentence is true.
+
+**A `count` check.** When a finding states one count of repeated things and
+exactly one quoted string near it resolves to any element, it compares the
+claim against the capture. Matching is exact against visible text *or*
+accessible name — the tooltip case lives on `accessible_name` and the button
+case on `text`, and exact matching reproduced both hand counts precisely, 50
+and 2.
+
+Measured across every finding on disk before it was wired anywhere:
+
+```
+381 findings | count check fires on 3 (0.8%) | 2 mismatches, 1 agreement
+
+96ba2ed5-f9  says 3 of "Join your last newsletter platform", capture holds 2   <- cut by hand
+b7969d20-f6  says 40 of "Help", capture holds 50                               <- cut by hand
+e338784b-f2  says 2 of "Get started", capture holds 2                          <- agrees
+```
+
+Both hand-caught errors, no false alarms, on a check that speaks about 1 finding
+in 125.
+
+**The first version had three mismatches, and the third was luck.** It flagged
+`96ba2ed5-f5` — *"well after the first two instances of the join CTA"* — as
+claiming 2 of `"one-click concierge migration"`. The count refers to join CTAs,
+an unquoted phrase the capture cannot resolve, so it paired with the only
+quotation that did resolve, 115 characters away. It flagged a finding that was
+genuinely cut for miscounting, for a reason the finding never gave: the right
+answer for the wrong reason, which is this project's recurring failure. A
+distance rule (`MAX_COUNT_GAP`, 60 characters) separates it — gaps of 10 and 41
+on the true pairings against 115 on the false one. **That constant is fitted to
+three observations.** It is a separation, not a law, and the next
+counter-example should move it rather than be explained away.
+
+**It cannot contradict.** B11's precedent applied before the fact rather than
+after: the quote check shipped with teeth, flagged five findings and was wrong
+all five times. A check with no precision record has not earned the right to
+call a finding false, so this reports and the judgment stays where it was.
+
+**Second half: `checkClaim` now runs at the founder gate**, printing failing
+checks under the finding as *"what the data holds, not a verdict"*. This is
+where the value is — the arithmetic arrives while the decision is being made
+rather than in a corpus build nobody runs. On the audits we have it prints on
+**16 of 381 findings (4.2%)**.
+
+**One of those lines is knowingly wrong.** `1ccc0425` quotes basecamp's live
+counter — *"87,688 people are working in Basecamp right now!"* — and the quote
+check calls it contradicted, because the digits are in a closed shadow root
+that `capture.json` never saw. That is B30 exactly, and B30's `Rendered:` line
+prints immediately above it to say so. A gate line that read as a verdict would
+make keeping a true finding feel like overruling the machine, which is why the
+wording is what it is and why a test pins it.
+
+**Verified** with five reverts, each watched failing: removing the check fails
+7 tests, removing the distance rule fails exactly 1, substring instead of
+whole-element matching fails exactly 1, letting it contradict fails exactly 1,
+removing the gate line fails 2. 703 tests, 0 fail.
+
+**Left undone, deliberately.** The `19-24px` half — a range asserted about a
+set of elements — is untouched. The existing measurement check will keep
+passing it, for the reason described above. That is the other half of B32 and
+it wants its own measurement, not a bolt-on.
+
+**And still unproven:** no reviewer has yet seen one of these lines at the
+gate. Same sentence as B30 and B13 — a fix by construction, not by
+measurement. `1ccc0425` is sitting at REVIEW_PENDING and would show one.
 
 ---
 

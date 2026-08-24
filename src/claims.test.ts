@@ -423,3 +423,136 @@ test("a real sentence boundary still ends the clause", () => {
   );
   assert.equal(v.status, "contradicted");
 });
+
+/**
+ * B32. The founder gate's own record says what this is for: of the seven
+ * reasons ever written there, four were the reviewer checking arithmetic. Two
+ * of those were cuts — a true observation binned because its number was wrong.
+ *
+ * Both live cases are reproduced here from the captures that produced them.
+ */
+describe("claims: counting what the finding says it counted", () => {
+  const buttons = (n: number, label: string) =>
+    Array.from({ length: n }, (_, i) => element({ ref: `el_${i}`, text: label }));
+
+  test("a button said to appear three times, where the capture holds two", () => {
+    // 96ba2ed5-f9, cut at the gate: "the capture has two, at y=584 and y=5177".
+    const v = checkClaim(
+      finding({
+        element_ref: null,
+        observation:
+          'The button text "Join your last newsletter platform" appears three times on the page ' +
+          "(hero, mid-page, and footer area) with identical wording and styling.",
+      }),
+      capture(buttons(2, "Join your last newsletter platform")),
+    );
+
+    const count = v.checks.find((c) => c.kind === "count");
+    assert.ok(count, "the check has to fire at all");
+    assert.equal(count.ok, false);
+    assert.match(count.detail, /says 3 .*but the capture holds 2/);
+  });
+
+  test("a tooltip said to appear roughly 40 times, where the capture holds fifty", () => {
+    // b7969d20-f6, cut at the gate. The label is on accessible_name, not text —
+    // the reason the check looks at both. It also quotes "?" alongside "Help",
+    // and only one of those is a string the capture has.
+    const v = checkClaim(
+      finding({
+        element_ref: null,
+        observation:
+          'Dozens of small "?" icon links (roughly 40 instances) all carry the identical ' +
+          'tooltip label "Help" rather than text describing the row they sit next to.',
+      }),
+      capture(
+        Array.from({ length: 50 }, (_, i) =>
+          element({ ref: `el_${i}`, text: "", accessible_name: "Help" }),
+        ),
+      ),
+    );
+
+    const count = v.checks.find((c) => c.kind === "count");
+    assert.ok(count);
+    assert.match(count.detail, /says 40 of "Help", but the capture holds 50/);
+  });
+
+  test("a count that is right says so, and says nothing louder", () => {
+    const v = checkClaim(
+      finding({
+        element_ref: null,
+        observation: 'The "Get started" button appears two times above the fold.',
+      }),
+      capture(buttons(2, "Get started")),
+    );
+
+    const count = v.checks.find((c) => c.kind === "count");
+    assert.ok(count?.ok, "two claimed, two measured");
+    assert.equal(v.status, "verified");
+  });
+
+  test("a wrong count never contradicts, because this check has no precision record yet", () => {
+    // B11's lesson, applied before the fact rather than after: the quote check
+    // shipped with teeth, flagged five findings and was wrong all five times.
+    const v = checkClaim(
+      finding({
+        element_ref: null,
+        observation: 'The "Get started" button appears five times on the page.',
+      }),
+      capture(buttons(2, "Get started")),
+    );
+
+    assert.equal(v.checks.find((c) => c.kind === "count")?.ok, false);
+    assert.equal(v.status, "verified", "reported, not held against the finding");
+    assert.equal(v.contradictions.length, 0);
+  });
+
+  test("a count whose noun is not quoted is left alone", () => {
+    // 96ba2ed5-f5. "two" counts join CTAs — a phrase the capture cannot
+    // resolve. Without a distance rule the count pairs with the only quotation
+    // that does resolve, 115 characters away, and reports a mismatch the
+    // finding never claimed. It would have flagged a finding that was in fact
+    // cut for miscounting: the right answer for the wrong reason.
+    const v = checkClaim(
+      finding({
+        element_ref: null,
+        observation:
+          'The migration offer ("one-click concierge migration", account created "for free") ' +
+          "appears far down the page, well after the first two instances of the join CTA.",
+      }),
+      capture([element({ ref: "el_1", text: "one-click concierge migration" })]),
+    );
+
+    assert.equal(v.checks.find((c) => c.kind === "count"), undefined, "silence is the right answer");
+  });
+
+  test("two counts in one sentence are not guessed between", () => {
+    const v = checkClaim(
+      finding({
+        element_ref: null,
+        observation:
+          'The "Get started" button appears two times, and the footer link appears three times.',
+      }),
+      capture(buttons(2, "Get started")),
+    );
+
+    assert.equal(v.checks.find((c) => c.kind === "count"), undefined);
+  });
+
+  test("an occurrence is the whole element, not a substring of a longer one", () => {
+    // A nav link reading "Pricing" is not an occurrence of a heading that
+    // happens to contain the word.
+    const v = checkClaim(
+      finding({
+        element_ref: null,
+        observation: 'The word "Pricing" appears two times on the page.',
+      }),
+      capture([
+        element({ ref: "el_1", text: "Pricing" }),
+        element({ ref: "el_2", text: "Pricing and plans for teams" }),
+      ]),
+    );
+
+    const count = v.checks.find((c) => c.kind === "count");
+    assert.match(count!.detail, /but the capture holds 1/);
+  });
+});

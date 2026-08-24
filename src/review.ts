@@ -11,6 +11,7 @@ import {
   type ReviewRecord,
 } from "./types.js";
 import { renderPublic, locationLine, FREE_FINDINGS } from "./render.js";
+import { checkClaim } from "./claims.js";
 
 /**
  * `npm run review <audit-id>` — the founder gate. §6's REVIEW_PENDING → PUBLISHED,
@@ -394,6 +395,29 @@ for (const [i, f] of toAsk) {
   // B29. Timed from the prompt, not from the print above it: what is being
   // measured is the pause before the judgment, not how fast a terminal draws.
   const askedAt = Date.now();
+  /**
+   * B32. What the capture says about the finding's own assertions, at the
+   * moment the decision is made.
+   *
+   * `checkClaim` has existed since the first false positives and was imported
+   * by exactly one file — `corpus.ts`, an offline builder. It had never run
+   * during an audit or at this gate, which is why the four numeric errors a
+   * founder has caught here were all caught by counting them by hand.
+   *
+   * Shown as data, never as a verdict. One of these lines is a known false
+   * alarm: a finding quoting basecamp's live counter reads as contradicted
+   * because the digits live in a closed shadow root, and the `Rendered:` line
+   * immediately above exists to say so. Measured on every audit on disk, this
+   * prints on about 4% of findings.
+   */
+  const failed = checkClaim(f, capture).checks.filter((c) => !c.ok);
+  if (failed.length > 0) {
+    console.log(
+      `\n${YELLOW}  Checked against the capture — what the data holds, not a verdict:${RESET}\n` +
+        failed.map((c) => `${YELLOW}${wrap(`· ${c.detail}`, 72, "    ")}${RESET}`).join("\n"),
+    );
+  }
+
   const answer = await ask(`\n  ${BOLD}Keep it?${RESET}\n  > `);
   const ms = Date.now() - askedAt;
   if (answer === null) {
