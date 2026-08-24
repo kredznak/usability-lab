@@ -341,6 +341,29 @@ for (const [i, f] of toAsk) {
   console.log(`\n${DIM}${wrap(f.impact_note)}${RESET}`);
   console.log(`\n${DIM}${wrap(`Location: ${locationLine(f, capture)}`)}${RESET}`);
 
+  /**
+   * B30. The cited element's rendered name, shown only when it carries text the
+   * capture could not — which is exactly when verifying against `capture.json`
+   * would mislead you.
+   *
+   * This exists because of a near miss. `2928c314` finding 13 quoted a live
+   * counter; `capture.json` had the sentence and no number, so the finding read
+   * as unsupported and was one keystroke from being cut. It was true — the
+   * digits live in a closed shadow root and reach the screenshot but not the
+   * DOM. The line below is what would have said so without opening the PNG.
+   */
+  const citedEl = f.element_ref
+    ? capture.elements.find((e) => e.ref === f.element_ref)
+    : undefined;
+  if (citedEl?.rendered_name) {
+    console.log(
+      `\n${YELLOW}${wrap(
+        `Rendered: “${citedEl.rendered_name}” — the browser reports text here that ` +
+          `the capture could not read. Check the screenshot, not capture.json.`,
+      )}${RESET}`,
+    );
+  }
+
   const answer = await ask(`\n  ${BOLD}Keep it?${RESET}\n  > `);
   if (answer === null) {
     quit = true;

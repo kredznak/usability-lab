@@ -1,4 +1,4 @@
-import { chromium, type Browser, type Page } from "playwright";
+import { chromium, type Browser, type CDPSession, type Page } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 import { request as httpRequest } from "node:http";
 import { request as httpsRequest } from "node:https";
@@ -201,6 +201,16 @@ async function extractElements(
         position: "fixed" | "sticky" | null;
         priority: number;
         order: number;
+        /**
+         * The live node, kept so the selected ones can be stamped with their
+         * ref — B30 reads the accessibility tree afterwards over CDP and needs
+         * a way back from an AX node to `el_12`.
+         *
+         * Never returned. `page.evaluate` serialises its result, and an Element
+         * does not survive that; it is dropped by the final `map` below, which
+         * names every field it keeps.
+         */
+        el: HTMLElement;
       }
 
 
@@ -527,6 +537,7 @@ async function extractElements(
           position: pinnedBy(el),
           priority,
           order: order++,
+          el,
         });
       }
 
@@ -591,19 +602,25 @@ async function extractElements(
         // disagreed a reviewer could quote text no visitor can see and have it
         // verified as evidence.
         fullText: visibleText(document.body, fullTextLimit),
-        elements: selected.map((c, i) => ({
-          ref: `el_${i}`,
-          tag: c.tag,
-          role: c.role,
-          text: c.text,
-          bbox: c.bbox,
-          above_fold: c.above_fold,
-          input_type: c.input_type,
-          accessible_name: c.accessible_name,
-          name_source: c.name_source,
-          font_size: c.font_size,
-          position: c.position,
-        })),
+        elements: selected.map((c, i) => {
+          // B30. Stamped on the live node so the accessibility-tree pass can
+          // find its way back here; `capture()` removes every one of these
+          // before the screenshot, so nothing we photograph carries it.
+          c.el.setAttribute("data-ul-ref", `el_${i}`);
+          return {
+            ref: `el_${i}`,
+            tag: c.tag,
+            role: c.role,
+            text: c.text,
+            bbox: c.bbox,
+            above_fold: c.above_fold,
+            input_type: c.input_type,
+            accessible_name: c.accessible_name,
+            name_source: c.name_source,
+            font_size: c.font_size,
+            position: c.position,
+          };
+        }),
         total,
       };
     },
@@ -616,6 +633,131 @@ async function extractElements(
       fullTextLimit: FULL_TEXT_CEILING,
     },
   );
+}
+
+/**
+ * The name the *rendering* gives each element, which is not always the name the
+ * DOM can tell us — B30.
+ *
+ * basecamp.com puts a live counter inside `<number-flow>`, a custom element with
+ * no light-DOM children and a **closed** shadow root. `textContent`, `innerText`
+ * and `shadowRoot` are all blind to the digits, so `capture.json` said the number
+ * was not on the page while the screenshot plainly showed it, and a true finding
+ * quoting it was one keystroke from being cut at the gate.
+ *
+ * The accessibility tree is computed from the rendering, so it sees through
+ * this. Chromium exposes the counter as `image "112,942"` inside
+ * `link "112,942 people are working in Basecamp right now!"`.
+ *
+ * **Why CDP and not `locator.ariaSnapshot()`.** The snapshot renders a YAML-ish
+ * subtree meant for humans, so reading a name back out means parsing quoting and
+ * escaping we do not control. `Accessibility.getPartialAXTree` returns the name
+ * as a field.
+ *
+ * **Why we ask per element rather than reading the whole tree.** `getFullAXTree`
+ * returns nodes keyed by `backendDOMNodeId`, and mapping several hundred of those
+ * back to our hundred elements means resolving each one. Going the other way —
+ * from the nodes we already selected, via the `data-ul-ref` stamp — is one query
+ * plus one call per captured element, and it cannot mismatch.
+ *
+ * Best effort by construction. Every failure path leaves names empty and the
+ * capture continues: this enriches a capture that already succeeded, and F1 owns
+ * the failures that should stop one.
+ */
+async function renderedNames(page: Page): Promise<Map<string, string>> {
+  const names = new Map<string, string>();
+  let session: CDPSession | undefined;
+  try {
+    session = await page.context().newCDPSession(page);
+    await session.send("DOM.enable");
+    await session.send("Accessibility.enable");
+
+    const { root } = (await session.send("DOM.getDocument", { depth: -1 })) as {
+      root: { nodeId: number };
+    };
+    const { nodeIds } = (await session.send("DOM.querySelectorAll", {
+      nodeId: root.nodeId,
+      selector: "[data-ul-ref]",
+    })) as { nodeIds: number[] };
+
+    for (const nodeId of nodeIds) {
+      try {
+        const { attributes } = (await session.send("DOM.getAttributes", { nodeId })) as {
+          attributes: string[];
+        };
+        // A flat [name, value, name, value, ...] list, which is the shape the
+        // protocol returns rather than a choice made here.
+        const at = attributes.indexOf("data-ul-ref");
+        const ref = at >= 0 ? attributes[at + 1] : undefined;
+        if (!ref) continue;
+
+        const { nodes } = (await session.send("Accessibility.getPartialAXTree", {
+          nodeId,
+          fetchRelatives: false,
+        })) as { nodes: Array<{ ignored?: boolean; name?: { value?: unknown } }> };
+
+        // An ignored node is one the tree deliberately hides — `aria-hidden`,
+        // or presentational. Reading its name would put text in front of a
+        // reviewer that no assistive technology would ever announce.
+        const node = nodes.find((n) => !n.ignored && typeof n.name?.value === "string");
+        const value = typeof node?.name?.value === "string" ? node.name.value.trim() : "";
+        if (value) names.set(ref, value);
+      } catch {
+        // One element failing to resolve is not a reason to lose the rest.
+        continue;
+      }
+    }
+  } catch {
+    return names;
+  } finally {
+    await session?.detach().catch(() => {});
+  }
+  return names;
+}
+
+/**
+ * Does the rendered name carry text our own extraction did not?
+ *
+ * The comparison is deliberately about *containment*, not equality. On most
+ * elements the AX name simply restates the visible text, and storing that on
+ * every row would double the size of a capture to say nothing. What matters is
+ * the residue: strip out what we already hold, and see whether anything is left.
+ */
+export function addedByRendering(
+  rendered: string,
+  text: string,
+  accessibleName: string | null,
+): boolean {
+  const norm = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+  const r = norm(rendered);
+  if (r.length === 0) return false;
+
+  /**
+   * A rendered name that is *contained* in what we already hold adds nothing,
+   * and the subtraction below cannot see that on its own.
+   *
+   * Found on the live page rather than reasoned about. basecamp's `el_42` reads
+   * "Aug 26 Intro to Basecamp Wed, Aug 26, 8:00am" and its accessible name is
+   * "Intro to Basecamp Wed, Aug 26, 8:00am" — the date chip is `aria-hidden`, so
+   * the name is *shorter* than the text. Subtracting a longer needle from a
+   * shorter haystack matches nothing, the whole name survived as residue, and it
+   * was recorded as though the rendering had revealed something. It had not.
+   */
+  if (norm(text).includes(r)) return false;
+  if (accessibleName && norm(accessibleName).includes(r)) return false;
+
+  // Whatever the rendered name adds beyond the text we already hold. Subtract
+  // each known string only if we have one — an empty needle would match at
+  // position 0 and quietly change the residue.
+  let residue = r;
+  for (const known of [norm(text), norm(accessibleName ?? "")]) {
+    if (known.length > 0) residue = residue.replace(known, " ");
+  }
+
+  // Letters or digits left over is the whole test. A name that merely restates
+  // the visible text leaves nothing, and a difference of spacing or punctuation
+  // is not worth a reviewer's attention.
+  return /[a-z0-9]/.test(norm(residue));
 }
 
 export async function capture(url: string, auditId: string, outDir: string): Promise<Capture> {
@@ -723,6 +865,31 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
       throw new CaptureFailed("page rendered no visible elements", url);
     }
 
+    /**
+     * B30. Read the accessibility tree while the `data-ul-ref` stamps are still
+     * on the page, keep only the names that carry text we do not already have,
+     * then take the stamps off again — before the screenshot, so nothing we
+     * photograph carries an attribute we added.
+     */
+    const rendered = await renderedNames(page);
+    const enriched = elements.map((e) => {
+      const name = rendered.get(e.ref);
+      return {
+        ...e,
+        rendered_name:
+          name && addedByRendering(name, e.text, e.accessible_name) ? name : null,
+      };
+    });
+    await page
+      .evaluate(() => {
+        // Array.from rather than for-of: the DOM lib this project compiles
+        // against types NodeListOf as non-iterable.
+        for (const el of Array.from(document.querySelectorAll("[data-ul-ref]"))) {
+          el.removeAttribute("data-ul-ref");
+        }
+      })
+      .catch(() => {});
+
     const screenshotId = `${auditId}-page`;
     const screenshotPath = path.join(outDir, `${screenshotId}.png`);
     await page.screenshot({ path: screenshotPath, fullPage: true });
@@ -741,7 +908,7 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
       screenshot_path: screenshotPath,
       viewport: VIEWPORT,
       full_height: fullHeight,
-      elements,
+      elements: enriched,
       elements_total: elementsTotal,
       text_excerpt: textExcerpt,
       text_total_chars: fullText.length,

@@ -1294,25 +1294,66 @@ We compute a name where the browser already computes a better one.
 1. ~~Test it.~~ Done. The answer is above and it cost one Playwright run.
 2. **Do not loosen a rule.** Unchanged, and now for a better reason: no rule is
    implicated.
-3. **Record the browser's accessible name on captured elements**, from
-   `ariaSnapshot` or the CDP AX tree, alongside the one we compute rather than
-   replacing it. That is the only source that can carry pixels-and-shadow-DOM
-   text, and it makes finding 13 checkable instead of unfalsifiable.
-4. **Keep it out of `pageSources`, at least at first.** This is B6's trade-off
-   again and the answer there was the narrow one. The AX tree includes
-   screen-reader-only text — which is exactly linear.app's duplicated headline,
-   the case `claims.test.ts` pins as a correct contradiction. Folding AX names
-   into the general quote sources would re-open it. A separate source that only
-   the quote check consults is the shape that worked for the title.
+3. ~~Record the browser's accessible name on captured elements.~~ Done.
+4. ~~Keep it out of `pageSources`.~~ Decided, and pinned by a test.
 
-**Cost.** Step 3 is a capture change plus a field; the AX call is one CDP
-round-trip per capture, no model spend. Step 4 is the decision, and it is the
-part worth arguing before writing.
+### Shipped 2026-08-24
+
+`CapturedElement.rendered_name` — the browser's own accessible name, recorded
+**only when it carries text `text` and `accessible_name` do not**. Read over CDP
+(`DOM.querySelectorAll` on a `data-ul-ref` stamp, then
+`Accessibility.getPartialAXTree` per element), best-effort by construction: every
+failure path leaves it null and the capture continues, because this enriches a
+capture that already succeeded and F1 owns the failures that should stop one.
+
+Live on the page that produced the entry — capture only, no model spend:
+
+```
+ref             el_10
+text            "people are working in Basecamp right now!"
+accessible_name null
+rendered_name   "140,973 people are working in Basecamp right now!"
+
+1 of 87 elements carry a rendered name
+```
+
+**One in eighty-seven is the number to keep.** The failure mode of a field like
+this is noise — annotate every row and the annotation stops being read.
+
+Two surfaces consume it, and they are the point: `runner.ts` hands it to the
+reviewer as `rendered="…"`, and `review.ts` prints a warning at the gate saying
+the capture could not read this and to check the screenshot. That is the half
+B30 said would change what the gate can conclude.
+
+**`pageSources` does not read it, and `confidence.test.ts` now fails if that
+changes.** The AX tree carries screen-reader-only text — linear.app's clipped
+duplicate h1, which `claims.test.ts` holds as a *correct* contradiction — so a
+reviewer quoting a rendered-only figure still gets no credit from the quote
+check. That cost is accepted deliberately: the gate is told instead.
+
+**A bug the tests did not catch and the live page did.** basecamp's `el_42`
+reads "Aug 26 Intro to Basecamp Wed, Aug 26, 8:00am" and its accessible name
+omits the `aria-hidden` date chip — so the rendered name is a strict *subset* of
+the visible text. The first rule subtracted the long text from the short name,
+matched nothing, kept the whole name as residue and recorded a revelation where
+there was none. Fixed, and in the fixture as its own case. **Two elements became
+one**, which is the entire difference between a signal and a decoration.
+
+**Cost, as spent.** One capture change, one field, two render lines, seven
+tests. Each new test was watched failing with its fix reverted; the negative ones
+against a rule forced always-true, the `pageSources` pins against a widened
+source list.
 
 **What this does not fix.** The gate still cannot tell "the page does not say
 this" from "we did not capture what it says" for anything the AX tree also
 misses — text baked into an image with `alt=""` is still B10, and still
 unreachable. This closes one mechanism, not the class.
+
+**Still unproven, and stated plainly:** no reviewer has yet *used* a
+`rendered_name`. Every capture before today has null everywhere, and the next
+audit of a page with a shadow-DOM counter is the evidence. B13 made exactly this
+claim about `position` and it is still unproven four days later — a fix by
+construction is not a fix by measurement.
 
 ---
 

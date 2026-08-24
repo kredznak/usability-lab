@@ -214,6 +214,36 @@ describe("renderCapture sends every field a rubric promises", () => {
     assert.doesNotMatch(renderCapture({ ...capture, elements: [plain] }), /position:/);
   });
 
+  /**
+   * B30. The mirror of the two above: there the capture carried a fact the
+   * screenshot could not show, here the screenshot shows text the capture could
+   * not read.
+   *
+   * basecamp's live counter is a custom element with a closed shadow root. The
+   * element line says "people are working in Basecamp right now!" and carries no
+   * number, so a reviewer working from the element list alone would conclude the
+   * page states no figure — and be wrong, confidently, in the direction every
+   * downstream check would wave through.
+   */
+  test("text that exists only in the rendering is handed over", () => {
+    const counter = {
+      ...capture.elements[0]!,
+      ref: "el_test",
+      text: "people are working right now!",
+      rendered_name: "112,942 people are working right now!",
+    };
+    const out = renderCapture({ ...capture, elements: [counter] });
+    assert.match(out, /rendered="112,942 people are working right now!"/);
+  });
+
+  test("an element whose rendering adds nothing is not annotated", () => {
+    // Same rule as the accessible name a line above it: only worth the tokens
+    // when it says something the visible text does not. Null is the common case
+    // and every capture before 2026-08-24 has it everywhere.
+    const plain = { ...capture.elements[0]!, ref: "el_test", rendered_name: null };
+    assert.doesNotMatch(renderCapture({ ...capture, elements: [plain] }), /rendered=/);
+  });
+
   test("the reviewer is told when the page was captured", () => {
     const out = buildRequest(
       RUBRICS.heuristics!,

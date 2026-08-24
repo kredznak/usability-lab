@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+  B30. Text that reaches the rendering, and the screenshot, but not the DOM.
+
+  Modelled on basecamp.com, where a live visitor counter is a <number-flow>
+  custom element with no light-DOM children and a CLOSED shadow root. The digits
+  are painted, announced to assistive technology, and present in the screenshot —
+  and `textContent`, `innerText` and `shadowRoot` are all blind to them.
+
+  The capture recorded "people are working in Basecamp right now!" with no
+  number, so a true finding quoting the figure read as unsupported at the gate
+  and was one keystroke from being cut.
+
+  Closed rather than open is the point. An open shadow root could be walked;
+  this one cannot, from any script we control, which is what forces the
+  accessibility tree to be the source.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>A counter the DOM cannot read</title>
+    <style>
+      body { font: 16px/1.5 system-ui, sans-serif; margin: 40px; }
+      a { font-size: 19px; }
+      .plain { display: block; margin-top: 24px; }
+    </style>
+  </head>
+  <body>
+    <h1>Rendered, not written</h1>
+
+    <!-- The case under test. `<live-count>` is empty in the light DOM. -->
+    <a href="/live" id="counter"><live-count></live-count> people are working right now!</a>
+
+    <!--
+      Controls. Neither should acquire a rendered_name: the first because its
+      accessible name is exactly its visible text, the second because its name
+      comes from an attribute we already capture as accessible_name.
+    -->
+    <a class="plain" href="/pricing">See pricing</a>
+    <button class="plain" aria-label="Close the dialog">×</button>
+
+    <!--
+      The opposite shape, and the one that caught a bug in the rule itself.
+
+      An `aria-hidden` chip is visible text we capture and the accessible name
+      omits, so the rendered name is a strict SUBSET of `text`. Found on
+      basecamp's `el_42` ("Aug 26 Intro to Basecamp…" against an accessible name
+      with no date), where the first version of `addedByRendering` subtracted a
+      longer needle from a shorter haystack, matched nothing, and recorded the
+      whole name as a revelation. Nothing was revealed.
+    -->
+    <a class="plain" href="/events"
+      ><span aria-hidden="true">Aug 26</span> Intro to the product, 8:00am</a
+    >
+
+    <script>
+      /**
+       * A closed shadow root, so nothing outside can read it — the whole reason
+       * this fixture exists. `attachShadow({mode: "closed"})` returns the root
+       * to this scope only; `el.shadowRoot` is null for every other caller.
+       */
+      class LiveCount extends HTMLElement {
+        connectedCallback() {
+          const root = this.attachShadow({ mode: "closed" });
+          const span = document.createElement("span");
+          // Fixed, unlike the real one, because a test that asserts on a moving
+          // number is a test that fails on its own schedule.
+          span.textContent = "112,942";
+          root.append(span);
+        }
+      }
+      customElements.define("live-count", LiveCount);
+    </script>
+  </body>
+</html>

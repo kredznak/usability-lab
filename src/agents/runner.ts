@@ -55,11 +55,22 @@ function renderElement(e: Capture["elements"][number]): string {
   // and silence is what the rest of this renderer already means.
   const pinned = e.position ? ` position:${e.position}` : "";
 
+  /**
+   * B30. Said only when the rendering carries text the capture could not — a
+   * closed shadow root, most often a live counter or an animated figure.
+   *
+   * Worth the tokens precisely because it contradicts the line it sits on:
+   * `el_10` reads "people are working in Basecamp right now!" with no number,
+   * and without this a reviewer reasoning from the element list alone would
+   * conclude the page states no figure. It does; the digits are not in the DOM.
+   */
+  const renderedName = e.rendered_name ? ` rendered="${e.rendered_name}"` : "";
+
   return (
     `${e.ref} <${e.tag}${attrs}> ` +
     `[${e.above_fold ? "above fold" : "below fold"}]${pinned} ` +
     `${Math.round(e.bbox.width)}x${Math.round(e.bbox.height)}px ${e.font_size}px :: ` +
-    `${e.text || "(no text)"}${name}`
+    `${e.text || "(no text)"}${name}${renderedName}`
   );
 }
 

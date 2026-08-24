@@ -380,3 +380,100 @@ describe("robots.txt connects to the address we validated", () => {
     assert.equal(allowed, true);
   });
 });
+
+/**
+ * B30. Text the rendering carries and the DOM does not.
+ *
+ * `2928c314` finding 13 quoted basecamp's live visitor counter. Verified against
+ * `capture.json` the claim was unsupported — the sentence was there, the number
+ * was not — and at the gate it was one keystroke from being cut as false. It was
+ * true: the digits live in a closed shadow root, so they reach the screenshot and
+ * assistive technology while `textContent`, `innerText` and `shadowRoot` all
+ * report nothing.
+ *
+ * The probe that produced this fix also refuted the entry's own hypothesis. B30
+ * blamed a `visibleText` skip rule; instrumenting every rule against the live
+ * page showed **none of them fire**. There was never anything to skip.
+ */
+describe("text the browser renders and the DOM cannot carry", () => {
+  let shadow: Capture;
+  let shadowDir: string;
+
+  before(async () => {
+    shadowDir = mkdtempSync(path.join(tmpdir(), "ulab-shadow-"));
+    shadow = await capture(
+      pathToFileURL(path.resolve("fixtures/pages/shadow-counter.html")).href,
+      "test-shadow",
+      shadowDir,
+    );
+  });
+
+  after(() => {
+    rmSync(shadowDir, { recursive: true, force: true });
+  });
+
+  const byText = (needle: string) =>
+    shadow.elements.find((e) => (e.text ?? "").includes(needle));
+
+  test("the capture still cannot see the number, which is the premise", () => {
+    // If this ever starts failing, the DOM has become readable and the rest of
+    // this suite is testing a problem that no longer exists.
+    const counter = byText("people are working right now");
+    assert.ok(counter, "the counter link should be captured");
+    assert.ok(
+      !/\d/.test(counter.text),
+      `text should carry no digits, got ${JSON.stringify(counter.text)}`,
+    );
+  });
+
+  test("the rendered name carries the digits the text does not", () => {
+    const counter = byText("people are working right now");
+    assert.ok(
+      counter?.rendered_name?.includes("112,942"),
+      `expected the rendered name to hold the figure, got ${JSON.stringify(
+        counter?.rendered_name,
+      )}`,
+    );
+  });
+
+  test("an element whose name merely restates its text records nothing", () => {
+    // Otherwise every row on the page grows a duplicate string, and a capture
+    // doubles in size to say what it already said.
+    assert.equal(byText("See pricing")?.rendered_name ?? null, null);
+  });
+
+  test("a name we already captured as accessible_name is not repeated", () => {
+    const closer = shadow.elements.find((e) => e.accessible_name === "Close the dialog");
+    assert.ok(closer, "the aria-labelled button should be captured");
+    assert.equal(closer.rendered_name ?? null, null);
+  });
+
+  /**
+   * The rule's own bug, pinned. Caught on the live page, not in review: an
+   * `aria-hidden` date chip is text we capture and the accessible name leaves
+   * out, so the rendered name is *shorter* than `text`. The first version
+   * subtracted the long text from the short name, matched nothing, kept the
+   * whole thing as residue, and reported a revelation where there was none.
+   */
+  test("a rendered name contained in the visible text adds nothing", () => {
+    const event = byText("Intro to the product");
+    assert.ok(event, "the aria-hidden-chip link should be captured");
+    assert.ok(
+      event.text.includes("Aug 26"),
+      "the chip should be in the visible text, or this tests nothing",
+    );
+    assert.equal(event.rendered_name ?? null, null);
+  });
+
+  test("the stamps used to map elements are gone from the page", () => {
+    // `data-ul-ref` is written onto live nodes so the accessibility pass can
+    // find its way back. It is removed before the screenshot; if that ever
+    // stops happening, we are photographing our own instrumentation.
+    for (const el of shadow.elements) {
+      assert.ok(
+        !JSON.stringify(el).includes("data-ul-ref"),
+        `${el.ref} still carries the capture stamp`,
+      );
+    }
+  });
+});

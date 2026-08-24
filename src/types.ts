@@ -67,6 +67,34 @@ export const CapturedElement = z.object({
    * says nothing at all rather than saying "not sticky".
    */
   position: z.enum(["fixed", "sticky"]).nullish(),
+  /**
+   * The browser's own accessible name, recorded only when it carries text that
+   * `text` and `accessible_name` do not — B30.
+   *
+   * basecamp.com renders a live counter as `<number-flow>`, a custom element
+   * with **zero light-DOM children and a closed shadow root**. `textContent`,
+   * `innerText` and `shadowRoot` traversal are all blind to the digits, so
+   * `el_10.text` is "people are working in Basecamp right now!" and every check
+   * we had said the number was not on the page. It is:
+   *
+   *     link  "112,942 people are working in Basecamp right now!"
+   *     image "112,942"        <- the closed-shadow element, exposed
+   *
+   * A true positive was one keystroke from being cut at the gate for quoting
+   * it. The accessibility tree is computed from the *rendering* rather than the
+   * DOM, which is why it sees what nothing else here can.
+   *
+   * **Deliberately not a quote source.** `pageSources` does not read this, and
+   * `confidence.test.ts` pins that. The AX tree also carries screen-reader-only
+   * text — linear.app's clipped duplicate h1, which `claims.test.ts` holds as a
+   * *correct* contradiction — so feeding it to the quote check would re-open
+   * exactly the false finding that made us assemble text by hand. This is B6's
+   * trade-off and B6's answer: the narrow one.
+   *
+   * Null means "nothing extra, or captured before 2026-08-24". Never "the
+   * rendering agrees" — silence has to keep meaning unknown.
+   */
+  rendered_name: z.string().nullish(),
 });
 export type CapturedElement = z.infer<typeof CapturedElement>;
 

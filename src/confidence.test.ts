@@ -2,7 +2,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { Capture, type CapturedElement, type RawFinding } from "./types.js";
-import { deriveConfidence } from "./confidence.js";
+import { deriveConfidence, pageSources, pageContains } from "./confidence.js";
 
 /**
  * deriveConfidence is the whole of §9.1 — the single place confidence is set,
@@ -201,5 +201,66 @@ describe("confidence: behaviour against a real frozen capture", () => {
   test("the gate is a pure function of its inputs", () => {
     const f = finding({ element_ref: real.elements[0]!.ref });
     assert.deepEqual(deriveConfidence(f, real), deriveConfidence(f, real));
+  });
+});
+
+/**
+ * B30 step 4, pinned rather than left to memory.
+ *
+ * `rendered_name` records text the browser paints and the DOM cannot carry —
+ * basecamp's live counter, whose digits sit in a closed shadow root. It is
+ * deliberately **not** a quote source, and this suite is the reason a future
+ * edit has to argue with something before changing that.
+ *
+ * The argument, in one case: the accessibility tree also carries
+ * screen-reader-only text. linear.app's h1 is duplicated by a clipped sr-only
+ * copy, a reviewer reported the headline as duplicated, and `claims.ts`
+ * correctly contradicted it — that test is in `claims.test.ts` and it is the
+ * whole reason `visibleText` assembles text by hand instead of using
+ * `innerText`. Feeding AX names to the quote check reopens exactly that.
+ *
+ * This is B6's trade-off (the page title, added as a quote-only source and kept
+ * out of `pageSources`) and it takes B6's answer: the narrow one.
+ */
+describe("what the rendering carries is not a quote source", () => {
+  test("pageSources ignores rendered_name", () => {
+    const cap = capture({
+      elements: [
+        element({
+          ref: "el_10",
+          tag: "a",
+          text: "people are working right now!",
+          rendered_name: "112,942 people are working right now!",
+        }),
+      ],
+    });
+
+    const sources = pageSources(cap);
+    assert.ok(
+      sources.some((s) => s.includes("people are working right now!")),
+      "the visible text is still a source",
+    );
+    assert.ok(
+      !sources.some((s) => s.includes("112,942")),
+      "the rendered-only figure must not be quotable — see the header above",
+    );
+  });
+
+  test("a quote that exists only in the rendering does not verify", () => {
+    // The consequence, stated as behaviour rather than as a list of sources: a
+    // reviewer quoting the counter's figure gets no credit from the quote
+    // check. That is the accepted cost. The gate is told instead — review.ts
+    // prints the rendered name on any finding citing such an element.
+    const cap = capture({
+      elements: [
+        element({
+          ref: "el_10",
+          tag: "a",
+          text: "people are working right now!",
+          rendered_name: "112,942 people are working right now!",
+        }),
+      ],
+    });
+    assert.equal(pageContains(pageSources(cap), "112,942"), false);
   });
 });
