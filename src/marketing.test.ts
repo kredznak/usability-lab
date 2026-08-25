@@ -9,6 +9,8 @@ import {
   STEPPED_CSP,
   HERO_JS,
   HOME_CSP,
+  billingPage,
+  accountPage,
 } from "./marketing.js";
 import { SOURCES } from "./sources.js";
 import { QUESTIONS } from "./profile.js";
@@ -568,5 +570,128 @@ describe("the site says who writes the audits", () => {
       /class="aside"/,
       "the disclosure is set in the footnote voice",
     );
+  });
+});
+
+
+/**
+ * What a customer is told about their own money.
+ *
+ * This page renders from one row and nothing else — no card, no last-four, no
+ * expiry, because `results.html` promises the reader that card details never
+ * touch us and a placeholder would imply they had. What it does hold is the
+ * status, and until 2026-08-25 it printed that status straight into the markup
+ * for every state except `active`.
+ */
+describe("the billing tab gives each state its own words", () => {
+  const view = (over: Partial<Parameters<typeof billingPage>[1]> = {}) =>
+    billingPage("someone@example.com", {
+      status: "active",
+      renewsAt: "2026-10-25T20:06:12.000Z",
+      manageable: true,
+      csrf: "c",
+      ...over,
+    });
+
+  test("no state renders the column value", () => {
+    /**
+     * The whole class of bug in one assertion. `past_due` is a value in a
+     * SQLite column, and it reached a real customer's screen because the page
+     * had a branch for `active` and an `else` for everything else.
+     */
+    for (const status of ["active", "past_due", "canceled", null] as const) {
+      const html = view({ status });
+      assert.doesNotMatch(html, /past_due|canceled\b/, `${status} leaks the column value`);
+    }
+  });
+
+  test("a refused card is not reported as having no subscription", () => {
+    /**
+     * Measured live on 2026-08-25, against a Stripe test clock with a declining
+     * card. The page said, in this order: `past_due`, "Access ran to
+     * 2026-10-25", and "There is no active subscription on this address."
+     *
+     * The third line is the one that matters. There *is* a subscription —
+     * Stripe is retrying the card and will go on retrying it for days. Denying
+     * that it exists to someone who is still being charged for it is the
+     * worst available sentence, and it was the last thing on the page.
+     */
+    const html = view({ status: "past_due" });
+    assert.doesNotMatch(
+      html,
+      /no active subscription/i,
+      "the subscription exists; Stripe is still trying the card",
+    );
+    assert.match(html, /Payment failed/, "say what happened");
+    assert.match(html, /try it again/i, "and that it is not over yet");
+  });
+
+  test("a refused card shows no date at all", () => {
+    /**
+     * Stripe advances `current_period_end` when it raises the invoice, so a
+     * failed renewal leaves a *future* date in the row — and the page rendered
+     * it under "Access ran to", which is both the wrong tense and the wrong
+     * month. The date a customer would want is when the card was refused, and
+     * that is not something this row holds.
+     */
+    const html = view({ status: "past_due" });
+    assert.doesNotMatch(html, /2026-10-25/, "that date is the end of a month nobody paid for");
+    assert.doesNotMatch(html, /Access ran to|Runs to/, "no date label without a date to put in it");
+  });
+
+  test("the button names the one thing a refused card needs", () => {
+    assert.match(view({ status: "past_due" }), /<button[^>]*>Update your card<\/button>/);
+    assert.match(view({ status: "active" }), /<button[^>]*>Manage billing<\/button>/);
+  });
+
+  test("the states that were already right stayed right", () => {
+    // The refactor from a ternary chain to a switch is the kind that quietly
+    // rewords a branch nobody was looking at.
+    assert.match(view({ status: "active" }), /<dd>Active<\/dd>/);
+    assert.match(view({ status: "active" }), /Runs to<\/dt><dd>2026-10-25/);
+
+    const cancelled = view({ status: "canceled" });
+    assert.match(cancelled, /<dd>Cancelled<\/dd>/);
+    assert.match(cancelled, /Access ran to<\/dt><dd>2026-10-25/);
+    assert.match(cancelled, /no active subscription/i, "true here, and only here");
+
+    // manageable:false because the server cannot produce the other combination
+    // — `manageable` is `Boolean(billing && row?.stripe_customer_id)`, and with
+    // no row there is no customer id. The first draft of this test passed
+    // `true` and failed here, which is the fixture being wrong rather than the
+    // page.
+    const none = view({ status: null, renewsAt: null, manageable: false });
+    assert.match(none, /No subscription on this address/);
+    assert.doesNotMatch(none, /<button/, "nothing to manage");
+  });
+});
+
+describe("the dashboard agrees with the billing tab about who is paying", () => {
+  const dash = (sub: Parameters<typeof accountPage>[2]) =>
+    accountPage("someone@example.com", [], sub);
+
+  test("a failed payment is not the absence of a subscription", () => {
+    /**
+     * The same defect as the billing tab's "There is no active subscription on
+     * this address", reached from the other direction: this page took a single
+     * `subscribed: boolean`, so every state that was not paid-and-current
+     * collapsed into one word. A customer whose card Stripe is still retrying
+     * was told, on two tabs at once, that they had no subscription.
+     */
+    assert.match(dash({ active: false, status: "past_due" }), /payment failed/);
+    assert.doesNotMatch(dash({ active: false, status: "past_due" }), /no subscription/);
+  });
+
+  test("the other two states keep their words", () => {
+    assert.match(dash({ active: true, status: "active" }), /&middot; subscribed/);
+    assert.match(dash({ active: false, status: "canceled" }), /no subscription/);
+    assert.match(dash({ active: false, status: null }), /no subscription/);
+  });
+
+  test("an active row whose period has run out is not subscribed", () => {
+    // `active` and `isActive` are different questions — db.ts refuses access on
+    // a row that says active with an expired period end, and this page has to
+    // ask the same one it does.
+    assert.doesNotMatch(dash({ active: false, status: "active" }), /&middot; subscribed/);
   });
 });

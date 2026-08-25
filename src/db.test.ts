@@ -384,8 +384,28 @@ describe("subscriptions", () => {
     s.upsert("c@example.com", { status: "active", currentPeriodEnd: null });
     assert.equal(s.isActive("c@example.com"), false, "active with no end date is not access");
 
+    /*
+     * The free month, and it is not hypothetical any more.
+     *
+     * Written by construction, and measured on 2026-08-25 against a real Stripe
+     * test clock: a good card was swapped for a declining one and the clock
+     * advanced past renewal. Stripe raised the invoice, the charge was refused,
+     * the subscription went `past_due` — and `current_period_end` moved *up*,
+     * from 2026-09-25 to 2026-10-25. Stripe advances the period when it issues
+     * the invoice, not when the invoice is paid.
+     *
+     * So the row of a customer who has paid nothing holds a date a month in the
+     * future, and the status is the only thing standing between them and free
+     * access. Anyone tempted to simplify `isActive` down to "is the end date in
+     * the future" would be handing out an unpaid month, and the row would look
+     * entirely reasonable while they did it.
+     */
     s.upsert("d@example.com", { status: "past_due", currentPeriodEnd: future });
-    assert.equal(s.isActive("d@example.com"), false);
+    assert.equal(
+      s.isActive("d@example.com"),
+      false,
+      "a refused renewal carries a future period end; the status is what refuses access",
+    );
 
     s.close();
     rmSync(dir, { recursive: true, force: true });

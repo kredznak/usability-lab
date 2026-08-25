@@ -2170,6 +2170,103 @@ sentence.
 
 ---
 
+## B34. ~~The failed renewal has never happened~~ — DONE 2026-08-25
+
+Opened out of B21's close, as the last unexercised branch of the money path.
+`mapStatus` maps `past_due`, `unpaid` and `incomplete` onto one status and
+always had; nothing had ever produced one. A fix by construction, and the
+construction turned out to be the only part that was right.
+
+### Proved with a test clock and a card that stops working
+
+A customer subscribed with a good card, the card swapped for
+`tok_chargeCustomerFail`, the clock advanced past the period end, then the card
+put back and the invoice paid. The whole round trip, measured:
+
+```
+subscribed          stripe active     ours active     ends 2026-09-25   access granted
+renewal declines    stripe past_due   ours past_due   ends 2026-10-25   access refused
+card fixed, paid    stripe active     ours active     ends 2026-10-25   access restored
+```
+
+**Access came back on its own.** No manual step, no reconciliation run — which
+is the F21 failure ("customer paid, still locked out") not happening, on the
+path most likely to produce it.
+
+### The date moves the wrong way, and only the status stops a free month
+
+Look at the middle row. `current_period_end` went **up** on the failure, from
+2026-09-25 to 2026-10-25, because Stripe advances the period when it *raises*
+the invoice rather than when the invoice is paid. So the row of a customer who
+has paid nothing holds a date a month in the future.
+
+`isActive` requires `status === "active"` as well as a future date, so access is
+refused correctly. But db.ts's own note says access "hangs on"
+`current_period_end`, and anyone who took that at face value and simplified the
+check to the date would hand out an unpaid month against a row that looked
+entirely reasonable. `db.test.ts` had the case by construction; it now carries
+the measurement.
+
+### What the customer was actually told
+
+The reason this became a copy fix rather than a status fix. Read off the live
+site, from the account of someone whose card had just been refused:
+
+```
+Status          past_due
+Access ran to   2026-10-25
+There is no active subscription on this address.
+```
+
+Four wrong things in five lines. **`past_due` is a value in a SQLite column**,
+rendered straight into the page because `billingPage` had a branch for `active`
+and an `else` for everything else. **The date is in the future under a
+past-tense label** — that unpaid period end again. And **the last line is
+false**: there is a subscription, Stripe is retrying the card for days, and the
+page denied it existed to someone who was still being charged.
+
+The dashboard tab said the same thing from the other direction — it took a
+single `subscribed: boolean`, so every state that was not paid-and-current
+collapsed into "no subscription". **A customer mid-dunning was told they had no
+subscription on two tabs at once.**
+
+### What shipped
+
+- **`billingPage` is a switch over `SubscriptionStatus`, not a ternary chain**,
+  with a `never` in the default. A fourth status now fails the build instead of
+  printing itself to a customer. `BillingView.status` was narrowed from `string`
+  to the row's own union, which is what it always was.
+- **A real `past_due` branch**: status reads "Payment failed", and the copy says
+  the card was refused, that Stripe will keep trying, that everything comes back
+  on its own if it succeeds, and where to change the card if it will not.
+- **No date on that branch, deliberately.** The only date the row holds is the
+  unpaid period end, and the one the customer wants — when the card was refused
+  — is not stored. A sentence with no date is honest; the one this page could
+  build from what it has would not be.
+- **The button says "Update your card"** in that state and "Manage billing"
+  otherwise. Same portal, but a customer sent here by a declined card has one
+  thing to do and should not have to guess whether it is the right door.
+- **`accountPage` takes `{ active, status }`** instead of a boolean, and says
+  "payment failed" where it used to say "no subscription". Both are needed: a
+  row can say `active` with an expired period end, which is not access.
+
+### Not done
+
+- **Nothing tells them.** All of this is on a page they have to visit. Stripe
+  can send dunning mail itself (Settings → Billing → Manage failed payments),
+  which is a dashboard setting and therefore exactly the kind of thing
+  `deploy-runbook.md` has already been burned by — it belongs in the runbook
+  with the rest of the live config, and it is not there yet.
+- **No grace period.** Access stops on the first decline while Stripe retries
+  for days. That is the harsher default and consistent with how this store
+  chooses to fail, but it is now a *choice* rather than an oversight, and it was
+  never argued anywhere. A customer whose bank reissued a card loses monitoring
+  the same day.
+- **`renewal-test@theusabilitylab.com` is still in the table**, cancelled and
+  inert, from yesterday's renewal proof. This entry's own row was removed.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages

@@ -28,6 +28,7 @@ import { SOURCES } from "./sources.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { PRICE_USD, escapeHtml } from "./render.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
+import type { SubscriptionStatus } from "./db.js";
 
 /**
  * What every response gets unless it asks for otherwise — unchanged from the
@@ -1075,8 +1076,17 @@ const TABS_CSS = `.tabs { display:flex; gap:22px; margin:0 0 8px;
    .tabs a.tab:hover { color:var(--ink); }`;
 
 export interface BillingView {
-  /** Null when no subscription row exists at all. */
-  status: string | null;
+  /**
+   * Null when no subscription row exists at all.
+   *
+   * Narrowed from `string` on 2026-08-25. It was the row's own union all along,
+   * but typed loosely here — and the page paid for that by rendering whatever
+   * arrived straight into the markup, which is how a customer came to be shown
+   * the word `past_due`. Now each state must be given words on purpose, and a
+   * status added to `SubscriptionStatus` without a branch here fails the build
+   * instead of leaking a column value onto the page.
+   */
+  status: SubscriptionStatus | null;
   /** ISO, from the row. Null on a status that has no next date. */
   renewsAt: string | null;
   /** A Stripe customer exists to send them to. */
@@ -1102,24 +1112,78 @@ export function billingPage(email: string, view: BillingView): string {
   const price = `$${PRICE_USD} a month`;
   const date = view.renewsAt ? view.renewsAt.slice(0, 10) : null;
 
-  const body =
-    view.status === "active"
-      ? `<dl class="facts">
-           <dt>Plan</dt><dd>Continuous monitoring &middot; ${price}</dd>
-           <dt>Status</dt><dd>Active</dd>
-           ${date ? `<dt>Runs to</dt><dd>${escapeHtml(date)}</dd>` : ""}
-         </dl>`
-      : view.status
-        ? `<dl class="facts">
-             <dt>Plan</dt><dd>Continuous monitoring &middot; ${price}</dd>
-             <dt>Status</dt><dd>${escapeHtml(view.status)}</dd>
-             ${date ? `<dt>Access ran to</dt><dd>${escapeHtml(date)}</dd>` : ""}
-           </dl>
-           <p class="hint">There is no active subscription on this address.</p>`
-        : `<p class="lead">No subscription on this address.</p>
-           <p class="hint">Audits you run stay free to start; the subscription is for
-              re-audits and monitoring.</p>
-           <p><a class="btn" href="/">Audit a page</a></p>`;
+  const facts = (status: string, dateLabel?: string) =>
+    `<dl class="facts">
+       <dt>Plan</dt><dd>Continuous monitoring &middot; ${price}</dd>
+       <dt>Status</dt><dd>${status}</dd>
+       ${dateLabel && date ? `<dt>${dateLabel}</dt><dd>${escapeHtml(date)}</dd>` : ""}
+     </dl>`;
+
+  /*
+   * A switch rather than the ternary chain this was, because the chain ended in
+   * `view.status ? <render it> : <no subscription>` — every state that was not
+   * `active` rendered the column value into the page and told the reader there
+   * was no subscription. That was one branch too few, and the missing one was
+   * the failed renewal.
+   *
+   * The `never` in the default is the point: `SubscriptionStatus` gaining a
+   * fourth member now fails the build here rather than shipping a database word
+   * to a customer.
+   */
+  let body: string;
+  switch (view.status) {
+    case "active":
+      body = facts("Active", "Runs to");
+      break;
+
+    /*
+     * Proved against a real Stripe test clock on 2026-08-25 — a good card
+     * swapped for a declining one and a month advanced. What the customer whose
+     * card had just been refused was shown, live:
+     *
+     *     Status          past_due
+     *     Access ran to   2026-10-25
+     *     There is no active subscription on this address.
+     *
+     * Four wrong things. `past_due` is a column value, not English. The date is
+     * in the *future* under a past-tense label — Stripe advances
+     * `current_period_end` when it raises the invoice, so the row holds the end
+     * of a month nobody has paid for. And the last line is flatly false: there
+     * is a subscription, Stripe is still retrying the card, and the page denied
+     * it existed while the customer was being charged for it.
+     *
+     * No date is rendered on purpose. The only one we hold is that unpaid
+     * period end, and the date they would actually want — when the card was
+     * refused — is not in the row. A sentence with no date is honest; the one
+     * this page could build from what it has would not be.
+     */
+    case "past_due":
+      body =
+        facts("Payment failed") +
+        `<p class="hint">Your card was refused, so re-audits are paused. Stripe will
+            try it again over the next few days &mdash; if it goes through, everything
+            comes back on its own and there is nothing for you to do. If it was the
+            wrong card, update it below.</p>`;
+      break;
+
+    case "canceled":
+      body =
+        facts("Cancelled", "Access ran to") +
+        `<p class="hint">There is no active subscription on this address.</p>`;
+      break;
+
+    case null:
+      body = `<p class="lead">No subscription on this address.</p>
+         <p class="hint">Audits you run stay free to start; the subscription is for
+            re-audits and monitoring.</p>
+         <p><a class="btn" href="/">Audit a page</a></p>`;
+      break;
+
+    default: {
+      const unreachable: never = view.status;
+      throw new Error(`unhandled subscription status: ${String(unreachable)}`);
+    }
+  }
 
   /**
    * A POST, not a link. The URL Stripe hands back lets its holder cancel a
@@ -1127,10 +1191,15 @@ export function billingPage(email: string, view: BillingView): string {
    * can make" is the rule this codebase already applies one step down in
    * consequence, on the re-audit button.
    */
+  // Same destination, different word. Stripe's portal does all of it, but a
+  // customer sent here by a declined card has exactly one thing to do and
+  // "Manage billing" makes them guess whether it is the right door.
+  const action = view.status === "past_due" ? "Update your card" : "Manage billing";
+
   const manage = view.manageable
     ? `<form method="post" action="/account/billing">
          <input type="hidden" name="csrf" value="${escapeHtml(view.csrf)}">
-         <button type="submit">Manage billing</button>
+         <button type="submit">${action}</button>
        </form>
        <p class="hint">Cancel, change your card, or read past invoices. This opens
           Stripe, who hold the card &mdash; we never have.</p>`
@@ -1167,7 +1236,27 @@ export function billingPage(email: string, view: BillingView): string {
  * showed only finished work would leave someone wondering where the audit they
  * just asked for went, which is the question it exists to answer.
  */
-export function accountPage(email: string, audits: AccountAudit[], subscribed: boolean): string {
+/**
+ * @param sub `active` is `isActive` — paid and inside the period. `status` is
+ * the row's own word, and both are needed: a row can say `active` with an
+ * expired period end, which is not access.
+ *
+ * It was a single `subscribed: boolean` until 2026-08-25, which forced a
+ * customer mid-dunning into "no subscription" — the same untruth the billing
+ * tab was telling them one tab over, from the same missing distinction. A
+ * failed payment is not the absence of a subscription.
+ */
+export function accountPage(
+  email: string,
+  audits: AccountAudit[],
+  sub: { active: boolean; status: SubscriptionStatus | null },
+): string {
+  const standing = sub.active
+    ? "subscribed"
+    : sub.status === "past_due"
+      ? "payment failed"
+      : "no subscription";
+
   const rows = audits
     .map(
       (a) =>
@@ -1192,9 +1281,7 @@ export function accountPage(email: string, audits: AccountAudit[], subscribed: b
     // would know a dashboard setting existed. Inert if Cloudflare is not in
     // front — it is an HTML comment.
     `${tabs("/account")}
-     <p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--> &middot; ${
-       subscribed ? "subscribed" : "no subscription"
-     }</p>
+     <p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--> &middot; ${standing}</p>
      ${audits.length === 0 ? empty : `<ul class="rows">${rows}</ul>`}
      ${audits.length === 0 ? "" : `<p><a class="btn" href="/">Audit another page</a></p>`}
      ${SCHEDULE_TEASER}`,

@@ -1258,7 +1258,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return sendPage(
       res,
       200,
-      accountPage(email, rows, subs.isActive(email)),
+      accountPage(email, rows, { active: subs.isActive(email), status: subs.get(email)?.status ?? null }),
       { "cache-control": "no-store" },
       MARKETING_CSP,
     );
