@@ -968,6 +968,27 @@ export function signInPage(opts: { error?: string; sent?: string } = {}): string
   );
 }
 
+/**
+ * The next thing this could do, shown rather than claimed.
+ *
+ * §0 already lists "scheduled change-detection monitoring" under *designed, not
+ * built* — v0 re-audits are customer-triggered. This makes that visible on the
+ * page where it would live, so the direction is legible to someone looking at
+ * the product rather than the design doc.
+ *
+ * **Deliberately not a link and not a button.** A control that looks live and
+ * does nothing is the failure this repo keeps correcting — the footer that said
+ * a person had read an audit when nobody had was the same mistake with higher
+ * stakes. Nothing here is clickable, so nothing can be clicked in hope.
+ */
+const SCHEDULE_TEASER = `<div class="soon">
+    <div class="tag">Not built yet</div>
+    <div class="head">Schedule audits</div>
+    <p>Re-check your pages on a schedule &mdash; weekly, or after you ship &mdash; and
+       get told what moved without asking. Today a re-audit happens when you press
+       the button.</p>
+  </div>`;
+
 export interface AccountAudit {
   url: string;
   when: string;
@@ -1015,10 +1036,17 @@ export function accountPage(email: string, audits: AccountAudit[], subscribed: b
       subscribed ? "subscribed" : "no subscription"
     }</p>
      ${audits.length === 0 ? empty : `<ul class="rows">${rows}</ul>`}
-     ${audits.length === 0 ? "" : `<p><a class="btn" href="/">Audit another page</a></p>`}`,
+     ${audits.length === 0 ? "" : `<p><a class="btn" href="/">Audit another page</a></p>`}
+     ${SCHEDULE_TEASER}`,
     `.rows { list-style:none; margin:26px 0 30px; padding:0; }
      .rowitem { padding:16px 0; border-bottom:1px solid var(--plaster); }
      .site { font-size:17px; word-break:break-all; }
-     .meta { color:var(--ink-soft); font-size:14px; margin-top:3px; }`,
+     .meta { color:var(--ink-soft); font-size:14px; margin-top:3px; }
+     .soon { margin-top:34px; padding:18px 20px; border:1px dashed var(--sand);
+             border-radius:10px; color:var(--ink-soft); }
+     .soon .tag { display:inline-block; font-size:12px; letter-spacing:.06em;
+                  text-transform:uppercase; color:var(--shade); margin-bottom:6px; }
+     .soon .head { color:var(--ink); font-size:16px; margin-bottom:4px; }
+     .soon p { margin:0; font-size:14px; }`,
   );
 }

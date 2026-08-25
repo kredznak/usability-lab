@@ -2537,6 +2537,23 @@ describe("your audits, and only yours", () => {
     assert.notEqual(res.status, 200);
   });
 
+  test("the schedule teaser shows the idea without pretending it works", async () => {
+    /**
+     * §0 lists scheduled monitoring as designed-and-not-built, and this is that
+     * said on the page where it would live. The assertion that matters is the
+     * negative one: it must not be a link or a button, because a control that
+     * looks live and does nothing is the failure this repo keeps correcting —
+     * most recently a footer claiming a person had read an audit nobody read.
+     */
+    const html = await (await account(signAccount(MINE))).text();
+    assert.match(html, /Schedule audits/);
+    assert.match(html, /Not built yet/, "and says so where a reader will see it");
+
+    const block = html.slice(html.indexOf('class="soon"'));
+    const teaser = block.slice(0, block.indexOf("</div>", block.indexOf("<p")));
+    assert.doesNotMatch(teaser, /<a\s|<button|href=/, "nothing here may be clickable");
+  });
+
   test("no token at all is refused", async () => {
     assert.equal((await fetch(`${BASE}/account`, { redirect: "manual" })).status, 401);
   });
