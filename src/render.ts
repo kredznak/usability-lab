@@ -372,6 +372,16 @@ export interface PublishInput {
   allFindings: Finding[];
   annotatedImage: string;
   /**
+   * How this audit came to be published, because the footer says so out loud.
+   *
+   * Until 2026-08-24 there was one answer and the footer hardcoded it: "read by
+   * a person before publishing". Automating the gate made that sentence false
+   * on every audit that published itself — a trust claim, on a customer's page,
+   * about the exact thing that changed. Optional so a caller that does not know
+   * gets the cautious wording rather than the flattering one.
+   */
+  decidedBy?: "founder" | "auto";
+  /**
    * The profile's one-line summary. Deliberately not the whole ContextProfile:
    * the publish path does not have one, and the version it used to build to
    * satisfy the type was four invented values — `goal: "unknown"`, `site_kind:
@@ -849,8 +859,16 @@ ${
   }
 ${offerBlock(input.offer)}
   <footer>
-    Every finding above was checked against the page as captured, read by a person before
-    publishing, and carries the element it refers to so you can verify it yourself.
+    ${
+      input.decidedBy === "founder"
+        ? `Every finding above was checked against the page as captured, read by a person
+           before publishing, and carries the element it refers to so you can verify it
+           yourself.`
+        : `Every finding above was checked against the page as captured &mdash; the element
+           it names, the text it quotes and the measurements it states &mdash; and carries
+           that element so you can verify it yourself. Those checks are automatic; an audit
+           is held for a person only when one of them disagrees.`
+    }
     Findings show &ldquo;based on our evaluation&rdquo; where we have no external source to cite.
   </footer>
 </div>

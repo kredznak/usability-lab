@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { Capture, Finding, type CapturedElement } from "./types.js";
-import { renderPublic, renderResults, locationLine, FREE_FINDINGS, type RenderInput } from "./render.js";
+import { renderPublic, renderResults, locationLine, FREE_FINDINGS, type RenderInput, publicHtml } from "./render.js";
 import { deriveSignals } from "./signals.js";
 
 /**
@@ -574,5 +574,43 @@ describe("a corrected page carries its corrections", () => {
       corrections: [{ at: "2026-08-17T10:00:00.000Z", reason: `<script>alert(1)</script>` }],
     });
     assert.doesNotMatch(html, /<script>alert/);
+  });
+});
+
+/**
+ * The footer is a promise to a customer, and for one day it was a false one.
+ *
+ * It read "read by a person before publishing" for its whole life, which was
+ * true while every audit stopped at the founder gate. Automating that gate on
+ * 2026-08-24 made it false on every audit that published itself — a trust
+ * claim, on a paying customer's page, about the exact thing that had changed.
+ * Found by reading a live page rather than by any test, which is why these
+ * exist now.
+ */
+describe("the footer claims only what actually happened", () => {
+  const base = () => ({
+    capture: capture([element()]),
+    kept: [finding(1, 2)],
+    allFindings: [finding(1, 2)],
+    annotatedImage: "/tmp/x-annotated.png",
+    summary: "A page.",
+    reveal: true,
+  });
+
+  test("an audit a person read says so", () => {
+    const html = publicHtml({ ...base(), decidedBy: "founder" } as Parameters<typeof publicHtml>[0]);
+    assert.match(html, /read by a person/);
+  });
+
+  test("an audit that published itself does not", () => {
+    const html = publicHtml({ ...base(), decidedBy: "auto" } as Parameters<typeof publicHtml>[0]);
+    assert.doesNotMatch(html, /read by a person/, "nobody read it, so it must not say so");
+    assert.match(html, /checks are automatic/, "and it says what did happen instead");
+  });
+
+  test("a caller that does not say gets the cautious wording", () => {
+    // The flattering claim is the one that must be earned explicitly.
+    const html = publicHtml(base() as Parameters<typeof publicHtml>[0]);
+    assert.doesNotMatch(html, /read by a person/);
   });
 });

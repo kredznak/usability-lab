@@ -573,6 +573,7 @@ const publicPath = await renderPublic(
     allFindings: findings,
     annotatedImage: path.join(dir, `${audit.audit_id}-annotated.png`),
     summary: audit.profile_summary ?? "A review of this page.",
+    decidedBy: "founder",
   },
   dir,
 );

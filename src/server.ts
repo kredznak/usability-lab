@@ -823,6 +823,7 @@ function render(
     allFindings: loaded.allFindings,
     annotatedImage: loaded.annotatedImage,
     summary: loaded.summary,
+    decidedBy: loaded.decidedBy,
     corrections,
     reveal: opts.reveal,
     offer: opts.offer,

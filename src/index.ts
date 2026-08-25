@@ -669,6 +669,9 @@ async function main(): Promise<void> {
           allFindings: publishable,
           annotatedImage: annotated.path,
           summary: profile.summary,
+          // This one published itself, and the footer says so rather than
+          // claiming a person read it.
+          decidedBy: "auto",
         },
         outDir,
       );

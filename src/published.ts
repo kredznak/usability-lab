@@ -36,6 +36,8 @@ interface ReviewDecision {
 
 interface ReviewRecord {
   decisions: ReviewDecision[];
+  /** Absent on every record written before 2026-08-24, all of which a person made. */
+  decided_by?: "founder" | "auto";
 }
 
 export interface PublishedAudit {
@@ -47,6 +49,8 @@ export interface PublishedAudit {
   kept: Finding[];
   annotatedImage: string;
   summary: string;
+  /** Whether a person read this audit, or nothing mechanical disputed it. */
+  decidedBy: "founder" | "auto";
 }
 
 export type LoadFailure = "no-review" | "no-findings" | "no-capture";
@@ -97,6 +101,10 @@ export function loadPublished(audit: AuditRow, outRoot = OUT_ROOT): PublishedAud
     allFindings,
     kept,
     annotatedImage: file(`${audit.audit_id}-annotated.png`),
+    // Read from the record rather than the status, because the record is what
+    // actually decided. An absent field is a review written before the field
+    // existed, and every one of those was a person.
+    decidedBy: review.decided_by === "auto" ? ("auto" as const) : ("founder" as const),
     summary: audit.profile_summary ?? "A review of this page.",
   };
 }
