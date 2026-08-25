@@ -1,18 +1,23 @@
 /**
- * The magic link, minus the mail.
+ * The magic link.
  *
  * §6 puts the full results behind "the magic-link session for the capturing
- * email". There is no Supabase and no mail sender in this repo, so the link is
- * generated, signed and *verified* here, and printed to the terminal instead of
- * posted. The token is real — swapping `console.log` for a send later touches
- * one function in `server.ts` and nothing in this file.
+ * email". This file mints, signs and verifies the token; `mail.ts` decides
+ * whether it goes to an inbox or to the terminal, and with `RESEND_API_KEY` set
+ * it is genuinely sent — 2026-08-25. That prediction held: it was one function
+ * in `server.ts` and nothing here.
  *
- * The property that matters is not "the visitor proved they own the address".
- * A printed link proves nothing about an inbox. It is that **a token issued for
- * one audit cannot open another** — the audit id is inside the signature, so a
- * customer who receives a link to their own results cannot walk it sideways
- * into someone else's. That is the leak the gate exists to prevent, and it is
- * fully testable without an email server.
+ * The property that matters is not "the visitor proved they own the address" —
+ * which is only true now, and was not for this file's whole first life. It is
+ * that **a token issued for one audit cannot open another**: the audit id is
+ * inside the signature, so a customer who receives a link to their own results
+ * cannot walk it sideways into someone else's. That is the leak the gate exists
+ * to prevent, it holds either way, and it is fully testable with no mail
+ * account at all.
+ *
+ * One thing the send does change here: the link is a bearer credential, and it
+ * is now written into a third party's request body. `mail.ts` keeps it out of
+ * every error path for that reason.
  */
 
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";

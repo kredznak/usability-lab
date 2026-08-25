@@ -82,10 +82,26 @@ because the card form is Stripe's page and not ours.
 
 ## 3. Point webhooks at localhost (5 min)
 
+**Already installed**, 2026-08-25, the same way step 0 installs stripe-mock and
+for the same reason — there is no Homebrew on this Mac. The line here used to
+read `brew install stripe`, which is step 0's defect a second time in the same
+document:
+
+```sh
+ARCH=$(uname -m); case "$ARCH" in arm64) A=mac-os_arm64;; x86_64) A=mac-os_x86_64;; esac
+curl -sL -o /tmp/stripe.tar.gz \
+  "https://github.com/stripe/stripe-cli/releases/download/v1.50.5/stripe_1.50.5_${A}.tar.gz"
+tar xzf /tmp/stripe.tar.gz -C /tmp stripe
+mv /tmp/stripe ~/.local/bin/
 ```
-brew install stripe            # or: npm install -g @stripe/cli   (Node 18+)
-stripe login
-stripe listen --forward-to localhost:4000/stripe/webhook \
+
+**`~/.local/bin` is not on the login PATH here**, so a fresh terminal cannot
+find it — use the full path or add the directory to `~/.zshrc`. A command that
+silently does not exist is what a Cloudflare 1033 looked like on 2026-08-24.
+
+```sh
+~/.local/bin/stripe login
+~/.local/bin/stripe listen --forward-to localhost:4000/stripe/webhook \
   --events=customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,checkout.session.completed
 ```
 
@@ -162,13 +178,19 @@ You need a published audit to buy from, and an email session on it.
 > been revived.
 
 ```
-npm run serve                          # in one terminal
-stripe listen --forward-to ... # in another (step 3)
+npm run serve                                    # in one terminal
+~/.local/bin/stripe listen --forward-to ...      # in another (step 3)
 ```
 
 1. Open a published audit's preview: `http://localhost:4000/a/<audit-id>/`
-2. Enter an email. The magic link is **printed to the server's terminal**; no
-   mail is sent.
+2. Enter an email. **Where the link arrives depends on `RESEND_API_KEY`.** This
+   step used to say "printed to the server's terminal; no mail is sent", which
+   was true until 2026-08-25 and is now the wrong half of a branch:
+   - **Key set** (the current machine): it is emailed, and nothing is printed —
+     the link is a bearer credential and a log is not a place for one. The
+     Resend domain is unverified, so it delivers **only to the account owner's
+     own address**. Use that address here; any other silently goes nowhere.
+   - **No key**: printed to the server's terminal, as before.
 3. Open the link → full results → **Subscribe — $29 a month**.
 4. Pay with `4242 4242 4242 4242`, any future expiry, any CVC, any postcode.
 
