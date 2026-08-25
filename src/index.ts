@@ -589,6 +589,32 @@ async function main(): Promise<void> {
       { log: events, auditId },
     );
 
+    /*
+     * The screenshot did not cover the page, and until 2026-08-25 nothing said
+     * so — the pins were simply clamped onto the bottom row of the image.
+     *
+     * `capture.ts` takes the page height from `document.body.scrollHeight`, and
+     * Playwright's `fullPage` uses the same number. On a page that scrolls an
+     * inner panel rather than the body, that number is the viewport:
+     * posthog.com/pricing reported 900px while the DOM walk found elements down
+     * to y=4775, so three quarters of the page was audited from text alone with
+     * a one-screen picture attached to it.
+     *
+     * Capturing container-scrolled pages properly means scrolling the container
+     * and stitching, which is a real piece of work and not this one. Saying it
+     * happened is neither, and the DEGRADED note already renders on both pages.
+     */
+    if (annotated.offImage > 0) {
+      const deepest = captured.elements.reduce(
+        (m, e) => Math.max(m, e.bbox.y + e.bbox.height),
+        0,
+      );
+      degraded.push(
+        `screenshot covers ${annotated.height}px of a ${Math.round(deepest)}px page: ` +
+          `${annotated.offImage} finding(s) point below it and carry no pin`,
+      );
+    }
+
     const costUsd = log.totalCost(auditId);
     const resultsPath = await timed("render", timings, () =>
       renderResults(

@@ -2410,6 +2410,92 @@ this runbook has already been burned by, and it belongs in §6a with the rest.
 
 ---
 
+## B36. ~~A page that scrolls inside a container captures as one screen~~ — HALF DONE 2026-08-25
+
+Found by Kelly looking at an annotated screenshot and saying "I only see the top
+half of the page". The picture was right; everything around it was wrong.
+
+`capture.ts` takes the page height from `document.body.scrollHeight`, and
+Playwright's `fullPage: true` uses the same number. **posthog.com/pricing scrolls
+an inner panel rather than the body**, so that number was 900 — the viewport —
+while the DOM walk found elements down to y=4775.
+
+```
+screenshot        1440 x 900
+full_height       900
+deepest element   4775
+below the picture 87 of 121 elements  (72% of the page)
+```
+
+Three quarters of the page was audited from extracted text with a one-screen
+photograph attached to it, and **nothing anywhere said so**.
+
+### The pins made it worse than silence
+
+`annotate` clamped every off-image box with `Math.min(box.y, height - 1)`, so 8
+findings whose elements sat thousands of pixels below the crop were drawn as a
+row of numbered badges along the bottom edge — each one pointing at whatever
+happened to be cropped there. A pin is a promise that the reader can check the
+claim against the picture, and `results.html` makes that promise in words:
+"carries the element it refers to so you can verify it yourself".
+
+The clamp is not the bug and has been left alone. Its reason is good — a box
+measured a pixel or two past the edge is a rounding artefact, and dropping it
+would lose a real pin. It was simply never written for a box 3,700 pixels out.
+
+### Only this page, out of eight
+
+Measured before anything was changed, because "the screenshotter is broken"
+would have been the wrong conclusion:
+
+```
+allbirds        shot 3662px   deepest 3662   below 0/65
+posthog         shot  900px   deepest 4775   below 87/121   <--
+gov.uk          shot 2790px   deepest 2790   below 0/74
+ocelotchocolate shot 9043px   deepest 9043   below 0/62
+farmtopeople    shot 4931px   deepest 4931   below 0/84
+theusabilitylab shot 3327px   deepest 3327   below 0/7
+buttondown      shot 5492px   deepest 5428   below 0/66
+ghost           shot 5904px   deepest 5832   below 0/122
+```
+
+Full-page capture works. Container-scrolled layouts defeat it, and they are
+common enough — app-shell marketing sites, anything with fixed rails — that this
+will recur.
+
+### Shipped: it stops lying about it
+
+- **`isOffImage`**, one predicate, used by both `annotate` (what gets drawn) and
+  `pinNumbers` (what the cards offer). They had to be shared: `annotate.ts`
+  already carried the comment "the drawn number and the rendered number cannot
+  disagree", and fixing only the drawing would have produced a card offering pin
+  12 beside a picture with no pin 12 on it.
+- **A tolerance of 8px**, which is the clamp's original purpose kept and its
+  accidental scope removed. Revert-tested in both directions: removing the check
+  redraws the clamped pins, and setting the tolerance to 0 drops legitimate
+  edge boxes.
+- **The run says so.** `annotated.offImage > 0` pushes a DEGRADED line naming
+  both numbers — "screenshot covers 900px of a 4775px page: 8 finding(s) point
+  below it and carry no pin" — and the degraded note already renders on both the
+  internal and the public page.
+- **`annotate.ts` had no tests at all** before this. It has six now.
+
+### Not done: the capture itself
+
+The screenshot is still one screen on these pages. Fixing that means detecting
+the scrolling container, scrolling it, and stitching — a real piece of work, and
+the wrong thing to attempt in the same change as making the existing behaviour
+honest. **The audit is degraded rather than wrong**, which is the state this
+project prefers, but it is not the state it should stay in.
+
+Also unaddressed: the reviewers read the full DOM text, so their findings about
+the lower page are as good as their evidence ever was — it is only the
+*screenshot* evidence that is missing. Whether an audit where 72% of elements
+have no visual evidence should publish at all is a policy question this entry
+does not answer.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages

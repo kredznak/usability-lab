@@ -173,7 +173,10 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
   // keep/cut calls — three views of one judgment, so they show one order.
   const issues = findings.filter((f) => !f.positive);
   const positives = findings.filter((f) => f.positive);
-  const pins = pinNumbers(findings);
+  // Dimensions passed so a card cannot offer a pin the picture does not carry.
+  // `full_height` is what the screenshot was taken at, and on every audit on
+  // disk the PNG measures exactly that.
+  const pins = pinNumbers(findings, { width: capture.viewport.width, height: capture.full_height });
 
   const findingCard = (finding: Finding) => `
     <article class="finding ${finding.positive ? "positive" : ""}">
@@ -761,7 +764,10 @@ export function publicHtml(input: PublishInput): string {
     );
   }
 
-  const pins = pinNumbers(allFindings);
+  const pins = pinNumbers(allFindings, {
+    width: capture.viewport.width,
+    height: capture.full_height,
+  });
 
   /**
    * Selection is by rank, presentation is by severity, and the two are
