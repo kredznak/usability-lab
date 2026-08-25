@@ -70,6 +70,7 @@ import {
   accountPage,
 } from "./marketing.js";
 import { asset } from "./assets.js";
+import { mailConfig, deliver } from "./mail.js";
 import { clientIp } from "./clientip.js";
 import { preflight, envFromProcess, report, baseUrlFrom, canonicalHost } from "./preflight.js";
 import { QUESTIONS, type Answers } from "./profile.js";
@@ -335,6 +336,13 @@ const TALK_TO = process.env.USABILITY_LAB_CONTACT ?? "kredznak@gmail.com";
  * error state — it is today's state, and every surface below is written to say
  * so out loud rather than to half-work.
  */
+/**
+ * Null when no key is set, and then every link is printed instead of sent —
+ * see mail.ts. Read once at boot like the Stripe config, so a half-configured
+ * process cannot send some mail and print the rest.
+ */
+const mail = mailConfig();
+
 const stripe = stripeConfig();
 const billing: StripeClient | null = stripe ? liveStripe(stripe) : null;
 
@@ -367,6 +375,23 @@ const byEmail = new SlidingWindow(5, 60 * MINUTE);
  */
 const asksGlobally = new SlidingWindow(50, 60 * MINUTE);
 const asksByClient = new SlidingWindow(5, 60 * MINUTE);
+
+/**
+ * Sign-in's own pair, and they are not the question flow's.
+ *
+ * `/signin` shipped with only the per-address limit, which bounds how often one
+ * person can be mailed and not how many people can be. While the link was
+ * printed to a terminal that was harmless. With real mail behind it, one script
+ * walking a list of addresses mails every customer we have, five times an hour
+ * each, for free — a mail-bomb surface built out of a login form.
+ *
+ * Separate windows from the question flow's so a sign-in flood cannot exhaust
+ * the allowance real audit requests need, and vice versa. Same order as B16
+ * taught: the global one is peeked first, so the per-client map cannot gain a
+ * key until the whole server has spent its budget.
+ */
+const signinGlobally = new SlidingWindow(100, 60 * MINUTE);
+const signinByClient = new SlidingWindow(10, 60 * MINUTE);
 
 /**
  * §6's "your team is assembling", told honestly.
@@ -963,12 +988,23 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
      * enumerate customers at any speed.
      */
     const now = Date.now();
-    const allowed = byEmail.hit(`signin|${email}`, now).allowed;
+    const client = clientIp(req);
+    const overall = signinGlobally.peek("all", now);
+    const mine = overall.allowed ? signinByClient.hit(client, now) : { allowed: false };
+    if (overall.allowed) signinGlobally.hit("all", now);
+
+    const allowed = overall.allowed && mine.allowed && byEmail.hit(`signin|${email}`, now).allowed;
 
     if (allowed && captures.auditsFor(email).length > 0) {
       const link = `${BASE_URL}/account?t=${signAccount(email)}`;
-      // Same as the magic link: printed rather than faked, until mail exists.
-      console.log(`\n  sign-in link for ${email}\n  ${link}\n`);
+      void deliver(
+        {
+          to: email,
+          subject: "Your audits",
+          text: `Here are your audits:\n\n${link}\n\nThe link opens them and expires.`,
+        },
+        mail,
+      );
       events.record({ audit_id: null, type: "signin.requested", data: {} });
     }
 
@@ -1368,10 +1404,22 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     events.record({ audit_id: audit.audit_id, type: "email.captured", data: {} });
 
     const link = `${BASE_URL}/a/${audit.audit_id}/full?t=${sign(audit.audit_id, email)}`;
-    // Where the mail send goes. Until it does, the link is printed rather than
-    // faked — a page that says "check your email" while nothing was sent is a
-    // lie we would then have to remember was a lie.
-    console.log(`\n  magic link for ${email}\n  ${link}\n`);
+
+    /**
+     * The send this comment used to describe as missing. It is not awaited:
+     * the visitor has already been told a link is coming, and holding the
+     * response open for a third party's API would make our page as slow as
+     * their worst day. A failure is logged by `deliver` and the link is not
+     * reissued — the cooldown above already refuses that.
+     */
+    void deliver(
+      {
+        to: email,
+        subject: "Your full audit",
+        text: `Your full audit is here:\n\n${link}\n\nThe link opens it and expires.`,
+      },
+      mail,
+    );
 
     return send(res, 200, render(audit, { reveal: false, asked: true }));
   }
