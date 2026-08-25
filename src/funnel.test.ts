@@ -291,3 +291,54 @@ describe("a homepage view and a form open are counted apart", () => {
     assert.equal(countsByType([]).get("home.viewed"), undefined);
   });
 });
+
+/**
+ * The dashboard was telling its only reader something false about the live
+ * deployment, and the cause was in `package.json` rather than in any code here.
+ *
+ * `funnel.ts` calls `stripeConfig()`, which reads `process.env`. Every other
+ * script that touches live configuration passes `--env-file-if-exists=.env`;
+ * `funnel` was the one that did not. So with all three Stripe keys correctly
+ * set in `.env`, `npm run funnel` printed
+ *
+ *     subscribed   0   active — but STRIPE KEYS ARE UNSET,
+ *                      so these were granted by `npm run subscribe`
+ *
+ * — an explanation of a state the system was not in, offered to whoever was
+ * trying to find out what state it was in. No test could have caught it,
+ * because no test runs the npm script. This one reads the script.
+ */
+describe("the scripts that read live config load it", () => {
+  test("every script whose module reads process.env passes --env-file", async () => {
+    const { readFileSync } = await import("node:fs");
+    const here = new URL(".", import.meta.url);
+    const pkg = JSON.parse(readFileSync(new URL("../package.json", here), "utf8")) as {
+      scripts: Record<string, string>;
+    };
+
+    // The variables that only exist in .env. USABILITY_LAB_* are exported by
+    // the operator's shell in some deployments, so they are deliberately not
+    // the trigger — a key or a token is.
+    const SECRETS = /\bSTRIPE_[A-Z_]+\b|\bRESEND_API_KEY\b|stripeConfig\(/;
+
+    for (const [name, cmd] of Object.entries(pkg.scripts)) {
+      const module = cmd.match(/src\/([\w.-]+)\.ts/)?.[1];
+      if (!module) continue;
+
+      let source: string;
+      try {
+        source = readFileSync(new URL(`./${module}.ts`, here), "utf8");
+      } catch {
+        continue;
+      }
+      if (!SECRETS.test(source)) continue;
+
+      assert.match(
+        cmd,
+        /--env-file-if-exists=\.env/,
+        `npm run ${name} reads live config but never loads .env, so it will ` +
+          `report the deployment as unconfigured while it is configured`,
+      );
+    }
+  });
+});

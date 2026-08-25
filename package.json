@@ -23,7 +23,7 @@
     "label": "node --import tsx src/label.ts",
     "review": "node --import tsx src/review.ts",
     "reaudit": "node --env-file-if-exists=.env --import tsx src/reaudit.ts",
-    "funnel": "node --import tsx src/funnel.ts",
+    "funnel": "node --env-file-if-exists=.env --import tsx src/funnel.ts",
     "redteam": "node --env-file-if-exists=.env --import tsx src/redteam.ts",
     "sources:check": "node --import tsx src/sources-check.ts",
     "correct": "node --import tsx src/correct.ts",
