@@ -1680,18 +1680,106 @@ describe("where is my audit", () => {
 
   test("the queue does not promise a turnaround nobody is on the hook for", async () => {
     /**
-     * The drain is manual — `npm run audit -- --queue` is a person deciding to
-     * spend. A page that said "about eight minutes" would be describing the
-     * audit's runtime as though it were the wait, which is the same class of
-     * untruth as the refresh promise this page already carried once.
+     * This test used to assert the opposite, and its own comment explained why:
+     * "the drain is manual — `npm run audit -- --queue` is a person deciding to
+     * spend", so `assert.match(html, /by hand|a person/i)` with the message
+     * "say who starts it, since it is not a machine". Both were true when
+     * written. `worker.ts` shipped on 2026-08-24 and drains the queue every 20
+     * seconds, and from that moment the test was pinning a false sentence in
+     * place — the audit before last started 13 seconds after it was asked for.
+     *
+     * A test that asserts copy is a test that can go stale with the copy, and
+     * this one went stale pointing the wrong way: it would have failed anyone
+     * who tried to tell the truth here. Kept, inverted, rather than deleted.
+     *
+     * The half that survives is the half about durations. Nothing promises one
+     * — the worker drains the queue when it is running and nothing starts when
+     * it is not — so the page still must not quote a number.
      */
     const html = await (await fetch(`${BASE}/r/${ask()}`)).text();
-    assert.match(html, /by hand|a person/i, "say who starts it, since it is not a machine");
+    assert.doesNotMatch(
+      html,
+      /by hand|a person starts/i,
+      "no person starts these any more; the worker does",
+    );
     assert.doesNotMatch(
       html,
       /\b\d+\s*(second|minute|hour)/i,
       "no duration while nothing guarantees one",
     );
+  });
+
+  test("the page names its reviewers as AI before it calls them reviewers", async () => {
+    /**
+     * The waiting page is where someone sits for eight minutes wondering who is
+     * looking at their site, and until 2026-08-25 every answer it gave was a
+     * person: reviewers, a team, someone starting the audit by hand. The word
+     * "reviewer" is accurate for a sub-agent and misleading to a customer, so
+     * the first use of it here is qualified and the rest are not.
+     */
+    const html = await (await statusAt("AUDITING", ["capture"])).text();
+    const first = html.toLowerCase().indexOf("reviewer");
+    assert.notEqual(first, -1, "this page talks about reviewers, or the test is aimed wrong");
+    assert.match(
+      html.slice(Math.max(0, first - 20), first).toLowerCase(),
+      /\bai\b/,
+      'the page says "reviewers" before it says AI',
+    );
+  });
+
+  test("the road and the sentence beside it agree about whether a person is coming", async () => {
+    /**
+     * The bug this is named after, and the reason it is worth a test rather
+     * than a careful edit.
+     *
+     * `stagesFor` was written to hide "A person checks it" from the ~96% of
+     * audits that skip the founder gate — deliberate, commented, correct. Two
+     * hundred lines below it in the same file, `NOW_DOING.research` said "Last
+     * checks before a person reads it" for every audit unconditionally. So the
+     * page hid the stage in its list and promised it in its prose, and the
+     * careful half was written first.
+     *
+     * One truth in two places drifts in one of them. This is the assertion that
+     * makes them one truth: if the road does not list a person, no sentence on
+     * the page may produce one.
+     */
+    const STEPS = ["capture", "profile", "orchestrate", "review", "synthesize", "research", "lint"];
+
+    for (const upto of STEPS.map((_, i) => STEPS.slice(0, i + 1))) {
+      const html = await (await statusAt("AUDITING", upto)).text();
+      const roadHasPerson = /<li[^>]*>A person checks it<\/li>/.test(html);
+      const prosePromisesPerson = /a person (reads|checks|looks)/i.test(html);
+      assert.equal(
+        prosePromisesPerson && !roadHasPerson,
+        false,
+        `after ${upto.join("+")} the page promises a person its own stage list does not`,
+      );
+    }
+  });
+
+  test("the waiting page claims no people it does not have", async () => {
+    // Same list as the marketing guard, for the same reason. "A person checks
+    // it" is not on it: that stage is real and conditional, and an audit that
+    // has one is entitled to say so — which is what the test above enforces.
+    const IMPLIES_A_HUMAN = [/your team/i, /\bby hand\b/i, /a person starts/i];
+
+    const pages = [
+      await (await fetch(`${BASE}/r/${ask()}`)).text(),
+      ...(await Promise.all([...LIVE, ...DONE].map(async (s) => (await statusAt(s)).text()))),
+      // The fallback, and without it this test proved nothing. Restoring "Your
+      // team is on it." to STILL_WORKING left it green, because that string
+      // renders only when `whatIsHappening` meets a step name it does not know
+      // — and every page above walks recognised steps or none at all. The one
+      // sentence on this page that was pure invention was the one sentence the
+      // guard could not see. An unknown step is how you make it show.
+      await (await statusAt("AUDITING", ["a-step-index-ts-has-never-emitted"])).text(),
+    ];
+
+    for (const html of pages) {
+      for (const phrase of IMPLIES_A_HUMAN) {
+        assert.doesNotMatch(html, phrase, `still suggests a person: ${phrase}`);
+      }
+    }
   });
 
   test("the live dot shows only while something is actually running", async () => {

@@ -613,4 +613,27 @@ describe("the footer claims only what actually happened", () => {
     const html = publicHtml(base() as Parameters<typeof publicHtml>[0]);
     assert.doesNotMatch(html, /read by a person/);
   });
+
+  test("every audit says who wrote it, however it was decided", () => {
+    /**
+     * Added 2026-08-25, and the branch that needed it was the flattering one.
+     *
+     * "Read by a person before publishing" is true on a founder-decided audit.
+     * It was also the only mention of a human anywhere on the page, sitting
+     * alone under eight hundred words nobody had written by hand — and a true
+     * sentence standing by itself invites the inference the false ones would
+     * have made explicitly. The customer who has paid is reading this page, not
+     * the homepage, so the disclosure has to survive the trip.
+     *
+     * Both branches, because "who wrote it" does not depend on who checked it.
+     */
+    for (const decidedBy of ["founder", "auto", undefined]) {
+      const html = publicHtml({ ...base(), decidedBy } as Parameters<typeof publicHtml>[0]);
+      assert.match(
+        html,
+        /Written by AI reviewers/,
+        `decidedBy=${decidedBy} does not say who wrote it`,
+      );
+    }
+  });
 });

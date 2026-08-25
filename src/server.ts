@@ -612,33 +612,71 @@ function roadAhead(current: number, stopped = false, reviewed = false): string {
  * An unfamiliar name falls through to `STILL_WORKING`, so a step renamed in
  * index.ts costs this page its detail and never its honesty.
  */
+/**
+ * ## Why the first one says "AI reviewers" and the rest say "reviewers"
+ *
+ * This is the visitor's first sight of the word on this surface, and until
+ * 2026-08-25 nothing anywhere on the site said what a reviewer is. Six
+ * sub-agents reading a page is an accurate use of the word and a misleading one
+ * to a customer, who has every reason to picture people — the page also said
+ * "your team" and "a person reads it", so the picture was being actively drawn.
+ * Qualifying the first use and leaving the rest is how the rest stay readable.
+ *
+ * ## "Last checks before a person reads it" was false for most of them
+ *
+ * It said so unconditionally while `stagesFor` two hundred lines above it went
+ * to the trouble of hiding that same stage from the ~96% of audits that skip
+ * it. One file, two sentences, opposite claims — and the careful one was
+ * written first. A truth kept in two places drifts in one of them.
+ */
 const NOW_DOING: Record<string, string> = {
-  capture: `Deciding which reviewers your page needs.`,
-  profile: `Deciding which reviewers your page needs.`,
-  orchestrate: `Reviewers are reading your page now. This is the long part.`,
+  capture: `Deciding which AI reviewers your page needs.`,
+  profile: `Deciding which AI reviewers your page needs.`,
+  orchestrate: `AI reviewers are reading your page now. This is the long part.`,
   review: `Bringing what the reviewers found into one account.`,
   synthesize: `Checking each finding against the research.`,
-  research: `Last checks before a person reads it.`,
-  lint: `Last checks before a person reads it.`,
+  research: `Last checks before it publishes.`,
+  lint: `Last checks before it publishes.`,
   annotate: `Marking the screenshot up.`,
   render: `Putting your results page together.`,
 };
 
 /** Before any step has finished, the browser is still opening the page. */
 const OPENING = `Opening your page in a real browser.`;
-const STILL_WORKING = `Your team is on it.`;
+
+/**
+ * Was "Your team is on it." — §6's words, and the design doc can keep them.
+ * A visitor cannot: there is no team, and this is the string that shows when we
+ * cannot say anything more specific, so it was the one doing the most work to
+ * suggest one.
+ */
+const STILL_WORKING = `Still working on it.`;
 
 /**
  * Where this request sits in the line, and who is going to start it.
  *
  * ## Why the wait is not a duration
  *
- * `npm run audit -- --queue` is a person deciding to spend money — "no HTTP
- * request may spend money" is why the form writes a row and stops. So there is
- * nothing on the hook for a turnaround, and a page saying "about eight minutes"
- * would be quoting the audit's *runtime* as though it were the wait. That is
- * the same class of untruth as the refresh this page promised for its whole
- * life and never performed.
+ * This block used to open: "`npm run audit -- --queue` is a person deciding to
+ * spend money". It was true when written and stopped being true on 2026-08-24,
+ * when `worker.ts` started draining the queue every 20 seconds — its own
+ * docstring says "a stranger's submission now becomes a paid audit with no
+ * human in between". The page went on telling visitors a person started their
+ * audit by hand for a day. What it looks like in the table:
+ *
+ *   ocelotchocolate.com  2026-08-25   started 13s after it was asked for
+ *   farmtopeople.com     2026-08-24   2674s
+ *   basecamp.com         2026-08-21   17436s
+ *
+ * Thirteen seconds is a timer. Everything above it is a person, and that is the
+ * shape of the sentence going stale.
+ *
+ * The conclusion survives its premise: still no turnaround promised, because a
+ * page saying "about eight minutes" would be quoting the audit's *runtime* as
+ * though it were the wait — the same class of untruth as the refresh this page
+ * promised for its whole life and never performed. The worker only makes the
+ * duration less knowable, not more: it drains the queue when it is running, and
+ * nothing starts when it is not.
  *
  * The position is real, read from the same ordering the runner takes them in.
  */
@@ -653,10 +691,7 @@ function queued(requestId: string): string {
       ? `In the queue, and yours is next.`
       : `In the queue, with ${ahead} ahead of it. We take them in the order they arrive.`;
 
-  return (
-    `${place} A person starts each audit by hand, so it does not begin the moment ` +
-    `you ask &mdash; but this page moves on its own when it does.`
-  );
+  return `${place} The queue drains on its own &mdash; this page moves when yours starts.`;
 }
 
 function whatIsHappening(auditId: string): string {

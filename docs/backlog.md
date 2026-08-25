@@ -2060,6 +2060,116 @@ measurement. `1ccc0425` is sitting at REVIEW_PENDING and would show one.
 
 ---
 
+## B33. ~~The product never said it was AI~~ — DONE 2026-08-25
+
+Opened and closed the same day, out of a copy review rather than a bug report.
+
+**The word "AI" appeared on no page this product serves.** Not the homepage,
+not the question flow, not the waiting page, not a published audit, not a
+single email. What appeared instead, to anyone who had not read the source,
+was a small agency: *reviewers*, *your team*, *we*, *a person starts each
+audit by hand*. Nobody wrote a false sentence on purpose — "reviewer" is an
+accurate word for a sub-agent, and every one of these was written when it was
+true or nearly true. The impression assembled itself out of accurate parts.
+
+By 2026-08-25 the product had taken a card payment from someone who had no way
+to know.
+
+### Two of the sentences were also false outright
+
+Not misleading — false, and both had been false for a day.
+
+**"A person starts each audit by hand."** True until `worker.ts` shipped on
+2026-08-24 and began draining the queue every 20 seconds. The worker's own
+docstring says it plainly — "a stranger's submission now becomes a paid audit
+with no human in between" — and the waiting page went on saying the opposite.
+The table is the whole argument:
+
+```
+ocelotchocolate.com   2026-08-25    started 13s after it was asked for
+farmtopeople.com      2026-08-24    2674s
+basecamp.com          2026-08-21    17436s
+```
+
+Thirteen seconds is a timer. Everything above it is a person deciding to spend
+money, which is what the sentence was written to describe.
+
+**"Last checks before a person reads it."** False for the ~96% of audits that
+skip the founder gate after 2026-08-24 — and this one is worse than stale,
+because the correct answer was already in the same file. `stagesFor` hides the
+"A person checks it" stage from exactly those audits, deliberately, with a
+comment explaining why. Two hundred lines below it, `NOW_DOING.research` and
+`NOW_DOING.lint` promised that stage to everyone unconditionally. **The page
+hid the person in its list and promised one in its prose, and the careful half
+was written first.** One truth kept in two places drifts in one of them.
+
+### What shipped
+
+Disclosure in the product's own voice — plain, once per surface, no apology and
+no pitch. The word "reviewers" stays, because it is accurate for six
+sub-agents; what it cannot do is arrive unqualified, so the first use on each
+surface reads "AI reviewers" and the rest do not.
+
+- **Homepage.** A new paragraph under "What we do", directly below the claim it
+  qualifies: *"The critique is written by AI reviewers reading your page.
+  Everything they claim points at the element it came from, because you should
+  not have to take it on trust."* Deliberately not in the footer and
+  deliberately not in `.aside`, this page's 13px footnote voice — a disclosure
+  set in the footnote voice is one the layout is apologising for, and a
+  disclosure the reader has to go looking for has been designed not to be read.
+  This product publishes findings about other people's sites that say exactly
+  that.
+- **Question flow.** The help text under question 2 names them, because someone
+  can land on `/start` from a link without ever seeing the homepage.
+- **Waiting page.** The two false sentences replaced; "Your team is on it."
+  became "Still working on it."
+- **Published audit.** Both footer branches now open "Written by AI reviewers".
+  The branch that needed it most looked like it needed it least: *"read by a
+  person before publishing"* is true on a founder-decided audit, and it was the
+  only mention of a human on the page, sitting alone under eight hundred words
+  nobody had written by hand. **A true sentence can mislead by being the only
+  one there.**
+
+Every published audit is re-rendered from stored JSON on each request, so the
+new footer reached audits published before it existed. Nothing had to be
+regenerated.
+
+### Nine tests, and the two that were nearly worthless
+
+Eight reverts, eight red. Two needed rewriting first.
+
+**A test was pinning the false sentence in place.** `the queue does not promise
+a turnaround nobody is on the hook for` asserted `/by hand|a person/i` with the
+message *"say who starts it, since it is not a machine"*. True when written,
+and from 2026-08-24 it would have failed anyone who tried to tell the truth
+here. Kept and inverted rather than deleted; the half about durations survives
+unchanged, because nothing promises one.
+
+**And the guard could not see the one sentence that was pure invention.**
+Restoring `"Your team is on it."` left the whole suite green. That string is
+`STILL_WORKING`, the fallback `whatIsHappening` renders only when it meets a
+step name it does not recognise — and every page the test built walked
+recognised steps or none at all. Fixed by rendering a status with a step
+`index.ts` has never emitted. **The one line on the page invented from nothing
+was the one line the test could not reach.**
+
+The load-bearing test is neither of those. `the road and the sentence beside it
+agree about whether a person is coming` walks every prefix of the pipeline and
+fails if the prose produces a human the stage list does not — the two halves of
+this file can no longer disagree, which is the defect rather than either
+sentence.
+
+### Not done
+
+- **The queued sentence is unverified live.** Every other surface was read off
+  `theusabilitylab.com` after the change. That one needs a fresh unstarted
+  request, and making one spends money on a real audit. Covered by test only.
+- **The waiting page is the only place a customer meets the word before
+  paying**, and the free audit precedes the card. Whether the disclosure needs
+  to be nearer the payment step is a question this entry does not answer.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages

@@ -321,6 +321,16 @@ const HOME_CSS = `
   .eyebrow { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 26px; }
   .big { font-size:27px; line-height:1.42; font-weight:300; letter-spacing:-.012em; margin:0; }
   .big b { font-weight:500; }
+  /*
+   * Deliberately not .aside. That treatment (13px, ink-soft, 40px down) is the
+   * footnote voice this page uses for the source count, and a disclosure set in
+   * the footnote voice is one the layout is apologising for. This is a step
+   * below .big and a step above body text, and the two words that matter are
+   * the darkest thing in the sentence.
+   */
+  .disclose { font-size:16px; line-height:1.62; color:var(--ink-soft);
+              max-width:560px; margin:30px auto 0; }
+  .disclose b { font-weight:500; color:var(--ink); }
   .rule { height:1px; background:var(--plaster); max-width:720px; margin:0 auto; }
 
   .counts { display:flex; justify-content:center; margin:46px 0 0; }
@@ -397,6 +407,35 @@ const HOME_CSS = `
  * a cross-customer surface, and the homepage is the obvious place someone would
  * later think to add "recent audits".
  */
+/**
+ * Who writes the audits. Added 2026-08-25.
+ *
+ * Before this the word "AI" appeared on no page this product serves. What
+ * appeared instead read, to anyone who had not seen the source, as a small
+ * agency: reviewers, a team, a person starting each audit by hand. Two of those
+ * sentences were by then false outright — `worker.ts` had been draining the
+ * queue on a timer since 2026-08-24 — and the product had already taken money
+ * from someone who had no way to know any of it.
+ *
+ * ## Why it is a constant and not markup in the section
+ *
+ * The first draft put the reasoning you are reading in an HTML comment beside
+ * the paragraph, which ships it to every visitor, and the drift guard in
+ * `marketing.test.ts` failed on the comment's own quotation of "your team".
+ * A rationale that has to be sent to the browser to be preserved is in the
+ * wrong file. This way the page carries the sentence and the repository carries
+ * the reason.
+ *
+ * ## Why it is not in the footer
+ *
+ * It sits directly under the claim it qualifies. A disclosure the reader has to
+ * go looking for is one that has been designed not to be read, and this product
+ * publishes findings about other people's sites that say exactly that.
+ */
+const DISCLOSURE = `<p class="disclose">The critique is written by <b>AI reviewers</b> reading your
+       page. Everything they claim points at the element it came from, because you
+       should not have to take it on trust.</p>`;
+
 export function homePage(): string {
   const counts = publisherCounts()
     .map(
@@ -427,6 +466,7 @@ export function homePage(): string {
     <p class="big">Your URL and five answers become a <b>research-backed critique</b>
        of your site — with cited findings and annotated screenshots, so you can
        check every one of them.</p>
+    ${DISCLOSURE}
   </section>
 
   <div class="rule"></div>
@@ -813,7 +853,10 @@ const HELP: Record<number, string> = {
   // True, and it is why this answer matters more than the others: `concerns[0]`
   // is what breaks the tie when more §3 spawn rules fire than the cap of four
   // allows. People write better answers when they know what the answer does.
-  1: "Lead with the thing that actually bothers you. It decides which reviewers we put on the page.",
+  // "AI reviewers" and not "reviewers" because /start is its own surface: a
+  // visitor can arrive here from a link without ever having read the homepage,
+  // and this is the first and only place the flow names who does the work.
+  1: "Lead with the thing that actually bothers you. It decides which AI reviewers we put on the page.",
   2: "The one action that matters most.",
   3: "If you know. A guess is fine, and so is not knowing.",
   4: "Constraints, history, a redesign you are halfway through.",

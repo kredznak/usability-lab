@@ -920,14 +920,23 @@ ${
 ${offerBlock(input.offer)}
   <footer>
     ${
+      /*
+       * Both branches open with who wrote it, added 2026-08-25. The founder
+       * branch is the one that needed it most and looked like it needed it
+       * least: "read by a person before publishing" is true, it is the only
+       * mention of a human on the whole page, and standing alone at the bottom
+       * of an audit it invites exactly the wrong inference about the eight
+       * hundred words above it. A true sentence can mislead by being the only
+       * one there.
+       */
       input.decidedBy === "founder"
-        ? `Every finding above was checked against the page as captured, read by a person
+        ? `Written by AI reviewers, checked against the page as captured, read by a person
            before publishing, and carries the element it refers to so you can verify it
            yourself.`
-        : `Every finding above was checked against the page as captured &mdash; the element
-           it names, the text it quotes and the measurements it states &mdash; and carries
-           that element so you can verify it yourself. Those checks are automatic; an audit
-           is held for a person only when one of them disagrees.`
+        : `Written by AI reviewers and checked against the page as captured &mdash; the
+           element it names, the text it quotes and the measurements it states &mdash; and
+           carries that element so you can verify it yourself. Those checks are automatic;
+           an audit is held for a person only when one of them disagrees.`
     }
     Findings show &ldquo;based on our evaluation&rdquo; where we have no external source to cite.
   </footer>

@@ -491,3 +491,82 @@ describe("the hero leans toward the cursor, unless asked not to", () => {
     assert.match(body, /resize\(\);\s*\n\s*\n?\s*if \(still\) return;/, "paint, then stop");
   });
 });
+
+/**
+ * Who writes the audits, said out loud.
+ *
+ * Until 2026-08-25 the word "AI" appeared on no page this product serves. What
+ * appeared instead was "reviewers", "your team", "we", and — on the waiting
+ * page — "a person starts each audit by hand" and "last checks before a person
+ * reads it". Every one of those is a sentence a customer reads as people, two
+ * of them were by then false outright, and the product had already taken money
+ * from someone on the strength of the impression.
+ *
+ * The word is accurate for six sub-agents, so it stays. What it cannot do is
+ * arrive unqualified: the first use on each surface says "AI reviewers", and
+ * these tests are what stops that slipping back to the shorter, friendlier,
+ * more misleading version.
+ */
+describe("the site says who writes the audits", () => {
+  /**
+   * Phrases that put a human where there is not one. `your team` was the
+   * waiting page's fallback string for its whole life; `by hand` and
+   * `a person starts` were true until `worker.ts` shipped.
+   *
+   * Not on this list: "a person checks it" and "read by a person", which are
+   * real and conditional — the founder gate still exists for the ~4% of audits
+   * where `claims.ts` disagrees with a finding, and those pages are entitled to
+   * say so. The rule is not "never mention a human". It is "never mention one
+   * who was not there".
+   */
+  const IMPLIES_A_HUMAN = [/your team/i, /\bby hand\b/i, /a person starts/i];
+
+  const SURFACES: [string, () => string][] = [
+    ["the homepage", homePage],
+    ["the question flow", () => questionsPage()],
+  ];
+
+  for (const [name, render] of SURFACES) {
+    test(`${name} names the reviewers as AI before it calls them reviewers`, () => {
+      const html = render();
+      const first = html.toLowerCase().indexOf("reviewer");
+      assert.notEqual(first, -1, `${name} talks about reviewers, or this test is aimed wrong`);
+      // Look at the twenty characters in front of the first mention rather than
+      // asserting the whole sentence: the copy is allowed to be rewritten, the
+      // qualifier is not allowed to be dropped.
+      const before = html.slice(Math.max(0, first - 20), first).toLowerCase();
+      assert.match(before, /\bai\b/, `${name} says "reviewers" before it says AI`);
+    });
+
+    test(`${name} claims no people it does not have`, () => {
+      const html = render();
+      for (const phrase of IMPLIES_A_HUMAN) {
+        assert.doesNotMatch(html, phrase, `${name} still suggests a person: ${phrase}`);
+      }
+    });
+  }
+
+  test("the disclosure is not in the small print", () => {
+    /**
+     * The one thing a disclosure can do wrong while being technically present.
+     * `.aside` is this page's footnote voice — 13px, ink-soft, forty pixels
+     * below whatever it qualifies — and it is where a sentence goes when the
+     * layout would rather you did not read it. The disclosure sits in the
+     * "What we do" section, directly under the claim it qualifies, above the
+     * fold's first rule.
+     */
+    const html = homePage();
+    const disclosure = html.indexOf("AI reviewers");
+    const firstRule = html.indexOf(`<div class="rule">`);
+    assert.notEqual(disclosure, -1);
+    assert.ok(
+      disclosure < firstRule,
+      "the disclosure is below the first section break, where nobody reads",
+    );
+    assert.doesNotMatch(
+      html.slice(disclosure - 200, disclosure),
+      /class="aside"/,
+      "the disclosure is set in the footnote voice",
+    );
+  });
+});
