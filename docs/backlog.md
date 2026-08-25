@@ -1414,6 +1414,21 @@ lived for the length of a `console.log`. Fixed the same day — `audit.held` is
 recorded with the disputed findings before the status is set. That fix is the
 one thing here that would not have been found by reading.
 
+
+### Kelly's call, 2026-08-25: stop buying runs against this clause
+
+Three different sites auto-published on the day — allbirds 244s, gov.uk 199s,
+posthog 297s, each with citations and an annotated screenshot, each well inside
+the 480s budget. Not three *consecutive* runs: the held audit sits between the
+first and the second, and the fourth run is a re-audit of the held site.
+
+**Decided: no further audits are to be bought to close the gap.** The same
+decision as 2026-08-24, for the same reason, now made twice — and the second
+time only because this file was read from the top and the first decision was
+missed. If a later session is about to spend money to complete this streak: it
+has been declined twice, the clause counts a correct quality hold as a failed
+run, and re-cutting §0 is the open question rather than buying runs.
+
 ---
 
 ## B27. A status can change without leaving an event
