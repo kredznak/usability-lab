@@ -43,9 +43,53 @@ export interface Mail {
  */
 export const DEFAULT_FROM = "onboarding@resend.dev";
 
+/**
+ * What a Resend key looks like, and why this is checked at all.
+ *
+ * On 2026-08-25 `RESEND_API_KEY` was filled in three times running with an
+ * Anthropic key — once plain, once with `re_` typed in front of it. The second
+ * one passed a naive prefix check, went out in an `Authorization: Bearer`
+ * header to a third party, and came back 401. The credential was rejected
+ * rather than used, which is luck rather than design: nothing here stopped a
+ * model key being handed to a mail provider.
+ *
+ * So the shape is checked before the key can leave the process. `preflight.ts`
+ * already refuses to boot on a base URL that does not parse; a secret in the
+ * right slot with the wrong contents deserves the same treatment, and it is
+ * worse than a missing one — missing prints to the console and works.
+ *
+ * Length is part of it deliberately. `re_` alone was the check that failed.
+ */
+const RESEND_KEY = /^re_[A-Za-z0-9_-]{20,60}$/;
+
+export class BadMailKey extends Error {
+  constructor(detail: string) {
+    super(
+      `RESEND_API_KEY does not look like a Resend key (${detail}). ` +
+        `Resend keys start "re_" and are about 36 characters — get one at ` +
+        `https://resend.com/api-keys. Nothing was sent. Remove the line entirely ` +
+        `to go back to printing links to the console.`,
+    );
+    this.name = "BadMailKey";
+  }
+}
+
 export function mailConfig(env: NodeJS.ProcessEnv = process.env): MailConfig | null {
   const apiKey = (env.RESEND_API_KEY ?? "").trim();
   if (!apiKey) return null;
+
+  /**
+   * Never the value, and never a fragment of it. The whole point is that this
+   * might be somebody's model credential, and a "helpful" excerpt in a log is
+   * how a secret ends up somewhere permanent.
+   */
+  if (!RESEND_KEY.test(apiKey)) {
+    throw new BadMailKey(
+      apiKey.startsWith("re_")
+        ? `right prefix, ${apiKey.length} characters`
+        : `starts ${JSON.stringify(apiKey.slice(0, 3))}, ${apiKey.length} characters`,
+    );
+  }
   return {
     apiKey,
     from: (env.USABILITY_LAB_MAIL_FROM ?? "").trim() || DEFAULT_FROM,

@@ -1757,6 +1757,8 @@ server.listen(...((BIND ? [PORT, BIND] : [PORT]) as [number, string?]), () => {
       report(checks) + `\n` +
       `  bound to       ${BIND ?? "every interface"}\n` +
       `  ${ready} audit${ready === 1 ? "" : "s"} reachable. Links are printed by \`npm run review\`.\n` +
-      `  Magic links print here; no email is sent.\n`,
+      mail
+        ? `  Mail is on: links are sent, not printed.\n`
+        : `  Magic links print here; no email is sent.\n`,
   );
 });

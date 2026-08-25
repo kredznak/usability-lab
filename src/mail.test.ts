@@ -145,10 +145,57 @@ describe("what happens with no account at all", () => {
   test("an unverified account can still send from Resend's own address", () => {
     // Before any DNS exists, this is the only `from` that works — which is why
     // it is the default rather than a configuration error.
-    assert.equal(mailConfig({ RESEND_API_KEY: "k" })?.from, DEFAULT_FROM);
+    // A real-shaped key, because the config now refuses one that is not — a
+    // placeholder here would have been testing the wrong thing anyway.
+    const key = "re_AbCd1234_EfGh5678IjKlMnOpQrStUv";
+    assert.equal(mailConfig({ RESEND_API_KEY: key })?.from, DEFAULT_FROM);
     assert.equal(
-      mailConfig({ RESEND_API_KEY: "k", USABILITY_LAB_MAIL_FROM: "hi@lab.test" })?.from,
+      mailConfig({ RESEND_API_KEY: key, USABILITY_LAB_MAIL_FROM: "hi@lab.test" })?.from,
       "hi@lab.test",
     );
+  });
+});
+
+/**
+ * The key that is not a key.
+ *
+ * `RESEND_API_KEY` was filled in three times running with an Anthropic key on
+ * 2026-08-25 — once plain, once with `re_` typed in front, which passed a naive
+ * prefix check and went out in an Authorization header to a third party. It
+ * came back 401, so a model credential was rejected rather than used. That was
+ * luck. These make it design.
+ */
+describe("a mail key that is not a mail key", () => {
+  const anthropic = "sk-ant-api03-" + "x".repeat(95);
+
+  test("an Anthropic key is refused, and nothing is sent", () => {
+    assert.throws(() => mailConfig({ RESEND_API_KEY: anthropic }), /does not look like a Resend key/);
+  });
+
+  test("the right prefix on the wrong key is still refused", () => {
+    // The exact paste that got through: `re_` typed in front of a model key.
+    assert.throws(() => mailConfig({ RESEND_API_KEY: `re_${anthropic}` }), /right prefix/);
+  });
+
+  test("the refusal never carries the value", () => {
+    // It might be somebody's model credential. An excerpt in a log is how a
+    // secret ends up somewhere permanent.
+    try {
+      mailConfig({ RESEND_API_KEY: `re_${anthropic}` });
+      assert.fail("should have thrown");
+    } catch (err) {
+      const message = (err as Error).message;
+      assert.ok(!message.includes(anthropic), "the key must not be in the message");
+      assert.ok(!message.includes("sk-ant"), "nor any recognisable fragment of it");
+    }
+  });
+
+  test("a real-shaped key is accepted", () => {
+    const key = "re_AbCd1234_EfGh5678IjKlMnOpQrStUv";
+    assert.equal(mailConfig({ RESEND_API_KEY: key })?.apiKey, key);
+  });
+
+  test("no key at all is still fine — it prints, and that is not an error", () => {
+    assert.equal(mailConfig({}), null);
   });
 });
