@@ -890,9 +890,30 @@ choice is what would have made it *loud* rather than silent, and the comment
 above that redirect called it "a branch written for a case that cannot currently
 occur". It occurred within ten minutes.
 
-**What is still not proven.** A renewal — the second month's invoice — and the
+~~**What is still not proven.** A renewal — the second month's invoice — and the
 `customer.subscription.deleted` path from a dashboard cancel. Step 7 covers the
-cancel; nobody has run it yet.
+cancel; nobody has run it yet.~~
+
+**Step 7 run, same day.** The cancel path is measured:
+
+```
+09:42:52  --> customer.subscription.deleted  [200]
+kredznak@gmail.com  canceled   current_period_end (null)
+```
+
+and the results page went back to the subscribe pitch with the re-audit button
+and the dashboard link both gone — the last of those because the account link is
+minted only for a subscriber, which is the guard working rather than a
+coincidence. The replay that followed is written up under B22, which this run
+also closed.
+
+**What is left, and it is now one thing: a renewal.** No second month's invoice
+has ever been charged, so `invoice.payment_succeeded` and the period-end
+extension that follows it are still untested. `stripe listen` is not even
+subscribed to that event. Nothing in the product reads it today — access hangs
+on `customer.subscription.updated` carrying a new `current_period_end` — so the
+open question is whether that update actually arrives on renewal, which only a
+renewal answers. Stripe test clocks can force one without waiting a month.
 
 ---
 
@@ -964,8 +985,39 @@ nothing about an event Stripe never delivers at all — still reconciliation's
 job, still F21's ≤24h. And it is not replay protection: deduplicating by event
 id is a different problem, deliberately not conflated with this one.
 
-**Unproven by measurement**, like B30 and B32 before it: no real webhook has
-ever reached this code. Step 6 of the runbook is where it first will.
+~~**Unproven by measurement**, like B30 and B32 before it: no real webhook has
+ever reached this code. Step 6 of the runbook is where it first will.~~
+
+### Measured 2026-08-25, with a real Stripe event, and it held.
+
+The subscription bought that morning was cancelled, then the **earlier**
+`customer.subscription.created` event was replayed with `stripe events resend` —
+a redelivery arriving after a `deleted`, which is precisely the sequence this
+entry was written for.
+
+```
+09:42:52  --> customer.subscription.deleted  [200]     status -> canceled
+09:46:14  --> customer.subscription.created  [200]     (the older event, replayed)
+```
+
+The row did not move:
+
+```
+kredznak@gmail.com  canceled  last_event_at 1787665371   (the cancel, not the replay)
+webhook.stale  {"type":"customer.subscription.created","created":1787660039}
+```
+
+Without the guard that replay sets `status = active` and a customer who
+cancelled is subscribed again — billed by nobody, granted access by us, and no
+event anywhere saying it happened. The 200 matters as much as the refusal:
+Stripe must not retry an event we have deliberately declined.
+
+Two things this run also settled that the entry did not claim:
+
+- **`current_period_end` is cleared on a cancel**, so access does not hang on a
+  stale date after the status flips. Both halves of `isActive` agree.
+- **The refusal is visible.** `webhook.stale` carries the event type and
+  Stripe's `created`, so a redelivery storm is diagnosable rather than a silence.
 
 ---
 
