@@ -2267,6 +2267,98 @@ subscription on two tabs at once.**
 
 ---
 
+## B35. A magic link only reaches the one address that owns the Resend account
+
+Opened 2026-08-25. Not closed — half of it is two dashboards this repository
+cannot reach.
+
+Mail sends as `onboarding@resend.dev`, which Resend delivers **only to the
+account owner**. A stranger who signs up gets no link, no bounce, and no error
+row. Since a magic link is the only way into a paid account, **the product
+cannot sign up a customer who is not Kelly**, and has not been able to since
+mail started working on 2026-08-25.
+
+### What is already in the zone
+
+```
+_dmarc.theusabilitylab.com  v=DMARC1; p=quarantine; adkim=r; aspf=r;
+                            rua=mailto:dmarc_rua@onsecureserver.net;
+```
+
+Inherited from GoDaddy, older than this project. `p=quarantine` instructs
+receivers to junk unauthenticated mail from this domain, and there is no SPF and
+no DKIM to satisfy it. Harmless so far only because the `From:` is a domain we
+do not own. The `rua` is worth changing on its own account: DMARC failure
+reports about our mail go to the registrar, where nobody reads them.
+
+### A plausible finding, measured and refuted
+
+The first version of this entry led with an ordering trap — move
+`USABILITY_LAB_MAIL_FROM` before the records exist and the domain's own policy
+quarantines every magic link, silently. It cost one API call to find out that is
+not what happens:
+
+```
+403  The theusabilitylab.com domain is not verified.
+     Please, add and verify your domain on https://resend.com/domains
+```
+
+**Resend refuses to send as an unverified domain**, so that mistake is loud and
+never reaches a customer. Kept here because the refutation is the useful part: a
+hazard that turns out to be handled is worth knowing about precisely so nobody
+designs around it twice.
+
+**The silent failure runs the other way.** Verification is something Resend
+checks once; afterwards sends are accepted. Records pruned out of Cloudflare
+later, or a zone rebuilt without them, leave mail going out unsigned against
+that `p=quarantine` — accepted by Resend, logged as a success here, quarantined
+at the far end. Every component reports that it worked.
+
+### Shipped: `npm run mail:check`
+
+The same shape as `stripe:check`, for the same reason — the failures are
+invisible from inside. `preflight(records)` is pure, so every interesting state
+is tested without touching DNS: a From that outruns the records, a DKIM key that
+was never added, SPF put on the apex where Resend does not use it, a DMARC
+policy reporting to a stranger. Today, live:
+
+```
+warn  from address       onboarding@resend.dev — not theusabilitylab.com
+warn  SPF on send.…      missing
+warn  DKIM at resend._domainkey   missing
+warn  bounce MX on send.…         missing
+ok    DMARC              p=quarantine, with neither SPF nor DKIM in place
+warn  DMARC reports      mailto:dmarc_rua@onsecureserver.net — nobody here reads it
+```
+
+**One bug in it was caught by writing the test rather than the code.** `aligned`
+was `SPF && DKIM`; DMARC passes on *either* one, aligned. As written it would
+have called a domain delivering perfectly well on DKIM alone a failure — wrong
+in the direction that teaches an operator to ignore the tool.
+
+### Not done, and it needs a person at two dashboards
+
+The Resend API key here is **send-only** (`restricted_api_key` on every other
+call), which is correct and should stay that way — so the domain cannot be added
+from code. `~/.cloudflared/cert.pem` is 282 bytes, the tunnel token only, with
+no zone API token in it, so the records cannot be written from here either.
+
+`docs/deploy-runbook.md` §6a is the procedure: add the domain in Resend, put its
+three records in Cloudflare as **DNS only**, verify, and change
+`USABILITY_LAB_MAIL_FROM` last. Then the part `mail:check` cannot do — send to
+an address outside the account and read `Authentication-Results` on what
+arrives. `dkim=pass`, `spf=pass`, `dmarc=pass`, or it was delivered on
+reputation and will be junked later.
+
+### Also outstanding, from B34
+
+Stripe's dunning mail (Settings → Billing → Manage failed payments) is off, so
+nothing tells a customer their card failed except the account page they would
+have to think to visit. It is a dashboard setting, which is the class of thing
+this runbook has already been burned by, and it belongs in §6a with the rest.
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages

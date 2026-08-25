@@ -302,6 +302,79 @@ doing much Stripe work.
 
 ---
 
+## 6a. Mail that reaches somebody other than you
+
+Until the domain is verified in Resend, `USABILITY_LAB_MAIL_FROM` is unset and
+mail goes out as `onboarding@resend.dev`. Resend delivers that **only to the
+address that owns the account**. Everyone else gets nothing — no bounce, no
+error, no row anywhere. Since a magic link is the only way into a paid account,
+the product cannot sign up a stranger until this is done.
+
+Run `npm run mail:check` first. It reads the live DNS and says which of the
+records exist.
+
+### What is already in the zone, and what it means
+
+`theusabilitylab.com` carries a DMARC record inherited from GoDaddy:
+
+```
+v=DMARC1; p=quarantine; adkim=r; aspf=r; rua=mailto:dmarc_rua@onsecureserver.net;
+```
+
+`p=quarantine` is an instruction to receivers to junk mail from this domain that
+does not authenticate, and nothing here authenticates yet — there is no SPF and
+no DKIM. It has been harmless only because the `From:` is somebody else's
+domain. The `rua` is worth changing too: DMARC failure reports about this
+domain's mail currently go to an address at the registrar that nobody here
+reads.
+
+### The order, and the thing that makes it safe
+
+1. **Resend** → Domains → Add `theusabilitylab.com`. It prints three records.
+2. **Cloudflare** → DNS → add all three. They will be roughly:
+   - `TXT  send   v=spf1 include:amazonses.com ~all`
+   - `TXT  resend._domainkey   p=MIGfMA0GCSq...` — **unique per domain, copy it,
+     it cannot be derived or guessed**
+   - `MX   send   feedback-smtp.<region>.amazonses.com   priority 10`
+   Set all three to **DNS only** (grey cloud). Proxying a TXT record is not a
+   thing, but the MX will break if it is orange.
+3. **Resend** → Verify. `npm run mail:check` should then show SPF and DKIM ok.
+4. **Only now** set `USABILITY_LAB_MAIL_FROM` in `.env` and restart the server.
+
+Getting step 4 wrong is safe, and this was measured rather than assumed — one
+request with an unverified From returns:
+
+```
+403  The theusabilitylab.com domain is not verified.
+     Please, add and verify your domain on https://resend.com/domains
+```
+
+So Resend refuses; the mistake is loud and stops at the API. **The dangerous
+state is the opposite one**, and it is why `mail:check` exists: verification is
+something Resend performs once, and afterwards the sends are accepted. Records
+pruned out of Cloudflare later, or a zone rebuilt without them, leave mail going
+out unsigned against that `p=quarantine` — accepted by Resend, logged as a
+success by the server, and quarantined by every receiver. Nothing in this system
+can see that happen.
+
+### Proving it, which `mail:check` cannot do
+
+DNS says the records exist. Only a real message says one arrives:
+
+```sh
+# From an address outside this Resend account
+curl -s -X POST https://api.resend.com/emails \
+  -H "Authorization: Bearer $RESEND_API_KEY" -H "Content-Type: application/json" \
+  -d '{"from":"hello@theusabilitylab.com","to":["<somewhere-else>"],
+       "subject":"auth probe","text":"probe"}'
+```
+
+Then open the message's headers and read `Authentication-Results`. It must say
+**`dkim=pass`** and **`spf=pass`**, and `dmarc=pass`. Anything less is a message
+that was delivered today on reputation and will be junked later.
+
+---
+
 ## 7. Auditing our own homepage
 
 **B24.** The capture path refuses private addresses — not just `/request`, so a

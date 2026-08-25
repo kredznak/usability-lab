@@ -32,6 +32,7 @@
     "worker": "node --env-file-if-exists=.env --import tsx src/worker.ts",
     "reconcile": "node --env-file-if-exists=.env --import tsx src/reconcile.ts",
     "stripe:check": "node --env-file-if-exists=.env --import tsx src/stripe-check.ts",
+    "mail:check": "node --env-file-if-exists=.env --import tsx src/mail-check.ts",
     "research:replay": "node --env-file-if-exists=.env --import tsx src/replay.ts"
   },
   "dependencies": {
