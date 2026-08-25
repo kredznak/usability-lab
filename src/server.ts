@@ -763,11 +763,35 @@ function targetUrl(audit: AuditRow): string {
  * refusal. `justRequested` is the one exception, and it is the one fact a reload
  * genuinely cannot reproduce: "you just did that."
  */
+/**
+ * A signed door into `/account`, for an address this request has already
+ * proved.
+ *
+ * `/account` takes a token in the query and nothing else — no cookie — so the
+ * only way to send somebody there is to hand them one. The email comes from
+ * `verify`/`verifyAccount` on the way in and never from anything the request
+ * said about itself, which is the same rule `/account` states in one line over
+ * its own lookup.
+ *
+ * **Minted only where the reader is already inside the gate.** The audit
+ * session was earned by opening a link mailed to that address, so this grants
+ * exactly what `/signin` would have mailed the same person — no more, and
+ * without asking them to prove it a third time. It is wider than the audit
+ * token beside it (every audit, not one), which is the cost of not asking.
+ */
+function dashboardLink(email: string): string {
+  return `/account?t=${signAccount(email)}`;
+}
+
 function notSubscribed(
   audit: AuditRow,
   sessionToken: string,
   justPaid = false,
+  email?: string,
 ): PublishInput["offer"] {
+  // Only when they have just paid. On the pitch panel there is no dashboard
+  // worth offering yet, and minting a credential nobody asked for is not free.
+  const dashboardHref = justPaid && email ? dashboardLink(email) : undefined;
   return stripe
     ? {
         subscribed: false,
@@ -776,8 +800,9 @@ function notSubscribed(
         action: `/a/${audit.audit_id}/subscribe`,
         csrf: csrfFor(sessionToken),
         justPaid,
+        dashboardHref,
       }
-    : { subscribed: false, talkTo: TALK_TO, checkoutLive: false, justPaid };
+    : { subscribed: false, talkTo: TALK_TO, checkoutLive: false, justPaid, dashboardHref };
 }
 
 function offerFor(
@@ -787,7 +812,7 @@ function offerFor(
   justRequested = false,
   justPaid = false,
 ): PublishInput["offer"] {
-  if (!subs.isActive(email)) return notSubscribed(audit, sessionToken, justPaid);
+  if (!subs.isActive(email)) return notSubscribed(audit, sessionToken, justPaid, email);
   const fair = checkFairUse(requests.forEmail(email), targetUrl(audit));
   return {
     subscribed: true,
@@ -797,6 +822,7 @@ function offerFor(
     queued: requests.pending(audit.audit_id, email),
     justRequested,
     refusal: fair.reason,
+    dashboardHref: dashboardLink(email),
   };
 }
 
@@ -892,6 +918,18 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
      * This started as a conditional — 301 for GET, 308 otherwise — which was a
      * branch written for a case that cannot currently occur, since Stripe is
      * configured on the canonical host. One status is correct for both.
+     *
+     * **It occurred, on 2026-08-25, within ten minutes of Stripe being
+     * configured for real.** `docs/stripe-runbook.md` said
+     * `stripe listen --forward-to localhost:4000/stripe/webhook`, and the CLI
+     * sends `Host: localhost:4000` — so every webhook hit this branch instead
+     * of the endpoint. Had the status been 301 the retry would have arrived as
+     * a GET with no body and no signature: a customer paying, seeing "Payment
+     * received", and never being granted access. F21 by configuration.
+     *
+     * So this is no longer defence against a case that cannot occur. It is the
+     * reason a misconfigured listener is a visible 308 rather than a silent
+     * drop, and the runbook now points at the canonical host.
      */
     res.writeHead(308, { location: `${BASE_URL}${req.url ?? "/"}` });
     return void res.end();

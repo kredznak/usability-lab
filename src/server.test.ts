@@ -2260,6 +2260,78 @@ describe("Stripe, when it is configured", () => {
     assert.equal(res.status, 200);
     assert.equal(seen.length, before, "Stripe was not asked to sell a second subscription");
   });
+
+  /**
+   * The way out of this page and into the rest of what was bought.
+   *
+   * The subscription is for monitoring across every audit an address has asked
+   * for, and this page is about one of them. Before this the only route to the
+   * index was `/signin`, which mails a link — a third proof of an address the
+   * reader proved by opening this page.
+   *
+   * The link is a wider credential than the one already in this URL, so the
+   * tests that matter are about who does *not* get one.
+   */
+  describe("the way to the dashboard", () => {
+    const dashboardHrefIn = (html: string): string | null =>
+      /href="(\/account\?t=[^"]+)"/.exec(html)?.[1] ?? null;
+
+    test("the payment panel offers the dashboard, and the link opens that person's", async () => {
+      const { jar, clean, email } = await paidSession(PAID);
+      const html = await (await fetch(`${clean}?paid=1`, { headers: { cookie: jar } })).text();
+      assert.match(html, /Payment received/);
+
+      const href = dashboardHrefIn(html);
+      assert.ok(href, "the Payment received panel carries a dashboard link");
+      const page = await fetch(`${APP}${href}`);
+      assert.equal(page.status, 200);
+      assert.ok((await page.text()).includes(email), "it opens the dashboard for this address");
+    });
+
+    test("a subscriber still finds it after the panel is gone", async () => {
+      // The payment panel shows once. Somebody who reloads past it, or comes
+      // back a week later, must not lose the only door they were shown.
+      const email = freshEmail();
+      const body = subscriptionEvent(email);
+      await webhook(body, signWebhook(body, WHSEC));
+
+      const { html } = await paidSession(PAID, email);
+      assert.match(html, /Ask for a re-audit<\/button>/);
+      assert.ok(dashboardHrefIn(html), "the subscribed panel carries it too");
+    });
+
+    test("a reader who has not paid is minted nothing", async () => {
+      /**
+       * The one that keeps this honest. A credential nobody asked for is not
+       * free to hand out, and on the pitch panel there is no dashboard worth
+       * offering — so the page must carry no account token at all.
+       */
+      const { html } = await paidSession(PAID);
+      assert.match(html, /Subscribe &mdash;/);
+      assert.equal(dashboardHrefIn(html), null, "no account token on the pitch panel");
+    });
+
+    test("one customer's page never carries a door into another's", async () => {
+      /**
+       * The cross-customer rule, at the one place a token is minted from a
+       * session rather than from a mailed link. The address must come from the
+       * verified session and from nothing the request said about itself.
+       */
+      const mine = freshEmail();
+      const theirs = freshEmail();
+      for (const who of [mine, theirs]) {
+        const body = subscriptionEvent(who);
+        await webhook(body, signWebhook(body, WHSEC));
+      }
+
+      const { html } = await paidSession(PAID, mine);
+      const href = dashboardHrefIn(html);
+      assert.ok(href);
+      const page = await (await fetch(`${APP}${href}`)).text();
+      assert.ok(page.includes(mine), "my dashboard");
+      assert.ok(!page.includes(theirs), "and nobody else's");
+    });
+  });
 });
 
 describe("the webhook when Stripe is not configured", () => {

@@ -842,6 +842,58 @@ through a `customer.subscription.*` event, and **`subscription_data[metadata]`
 is still covered by documentation alone** — stripe-mock validates top-level
 names only, which is measured above. B21 stays open on an account and a card.
 
+### CLOSED 2026-08-25. A card was charged and the metadata came back.
+
+The account exists, the card was `4242 4242 4242 4242`, and every claim this
+entry has been carrying on documentation alone is now a measurement.
+
+```
+2026-08-25 08:14:00  --> checkout.session.completed      <-- [200]
+2026-08-25 08:14:01  --> customer.subscription.created   <-- [200]
+```
+
+```
+email               status  current_period_end        stripe_subscription_id
+kredznak@gmail.com  active  2026-09-25T12:13:56.000Z  sub_1U8JEo2NPS7tsyT01vXfvBSr
+```
+
+Three things settled, in order of how expensive they would have been:
+
+1. **`subscription_data[metadata]` is spelled right.** Retrieved from Stripe,
+   the subscription carries `"metadata": {"ul_email": "kredznak@gmail.com"}`.
+   This is the field the whole authorization model hangs on and the one
+   stripe-mock cannot check — a typo meant every customer pays and stays locked
+   out, silently and in one direction only. It round-tripped.
+2. **`current_period_end` is not null**, so B21's finding #1 — that it lives
+   inside `items.data[]` and not at the top level — was read correctly against a
+   real object rather than a fixture.
+3. **The pinned version is the account's version.** `stripe listen` announced
+   `2026-07-29.dahlia`, which is exactly `STRIPE_API_VERSION`. The docs the field
+   names were verified against are the docs that apply.
+
+`npm run stripe:check` passes 6/6 against the live account. The price was
+created from the CLI (`price_1U8J242NPS7tsyT0NohGv2cl`, recurring monthly, 2900,
+`livemode: false`), which sidesteps the one-off-price trap by construction.
+
+**And the runbook nearly cost us the thing it was written to protect.**
+
+Step 3 said `--forward-to localhost:4000/stripe/webhook`. The CLI sends
+`Host: localhost:4000`; the server 308-redirects every host that is not the
+canonical one. **Every webhook would have bounced.** The customer pays, reads
+"Payment received", and is never granted access — F21, arriving by a line in a
+document rather than by a dropped event.
+
+It was caught by probing the route with `curl` before spending the card, which
+is worth more than the fix: nothing in the test suite could have found it,
+because the test suite does not know what the runbook says. The 308-vs-301
+choice is what would have made it *loud* rather than silent, and the comment
+above that redirect called it "a branch written for a case that cannot currently
+occur". It occurred within ten minutes.
+
+**What is still not proven.** A renewal — the second month's invoice — and the
+`customer.subscription.deleted` path from a dashboard cancel. Step 7 covers the
+cancel; nobody has run it yet.
+
 ---
 
 ## B22. A late webhook can revive a cancelled subscription

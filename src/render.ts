@@ -466,6 +466,15 @@ export interface PublishInput {
         checkoutLive: false;
         /** They came back from Stripe and the webhook has not landed yet. */
         justPaid?: boolean;
+        /**
+         * Present on this arm too, because the "Payment received" panel is
+         * chosen before `checkoutLive` is looked at — a customer who paid while
+         * the keys were configured and reloaded after they were removed lands
+         * here. Contrived, but the alternative is a narrowing that only holds
+         * while nobody edits the order of two `if`s.
+         * @see dashboardHref on the subscribed arm for what it is.
+         */
+        dashboardHref?: string;
       }
     | {
         subscribed: false;
@@ -477,6 +486,8 @@ export interface PublishInput {
         /** Session-bound CSRF token — this route reads `ul_full`, so it needs one. */
         csrf: string;
         justPaid?: boolean;
+        /** @see dashboardHref on the subscribed arm. Set only when `justPaid`. */
+        dashboardHref?: string;
       }
     | {
         subscribed: true;
@@ -491,6 +502,27 @@ export interface PublishInput {
         justRequested?: boolean;
         /** The fair-use refusal, shown to the customer in its own words. */
         refusal?: string;
+        /**
+         * A signed link into `/account`, or absent.
+         *
+         * The subscription buys monitoring across every audit this address has
+         * asked for, and until now this page was the only door to any of them —
+         * a customer who paid here had no route to the index of their own work
+         * except asking for a *third* email from `/signin`, to prove an address
+         * they had already proved by opening this page.
+         *
+         * **Minted by the caller, never by this file**, and only from an email
+         * that arrived on a verified session. That is the whole rule: `render.ts`
+         * cannot sign anything, so a wrong call site cannot invent one.
+         *
+         * It is a wider credential than the audit token already in this URL —
+         * one audit versus every audit — and it lands in browser history the
+         * same way. It grants nothing `/signin` would not have mailed to the
+         * same person, which is what makes the trade acceptable rather than
+         * free. Dropping it out of the URL wants a cookie session on `/account`,
+         * which is its own slice.
+         */
+        dashboardHref?: string;
       };
 }
 
@@ -572,7 +604,9 @@ const OFFER_CSS = `  .offer { background:#fff; border:1px solid var(--line); bor
                   border:0; border-radius:3px; background:var(--accent); color:#fff; }
   .offer-fine { font-size:13px; color:var(--muted); }
   .offer-note { font-size:14px; color:#444; }
-  .offer-refusal { font-size:14px; color:#a3301a; }`;
+  .offer-refusal { font-size:14px; color:#a3301a; }
+  .offer-next { font-size:14px; margin-top:14px; padding-top:12px;
+    border-top:1px solid var(--line); }`;
 
 /**
  * The subscribe step, and the re-audit button behind it.
@@ -613,11 +647,23 @@ function offerBlock(offer: PublishInput["offer"]): string {
      * follows.
      */
     if (offer.justPaid) {
+      /**
+       * The dashboard link is offered here and not only after the webhook,
+       * because this panel is the one moment we are certain the customer is
+       * looking. The next page they see is whatever they do next, and for a
+       * subscription whose whole value is *the other audits*, ending on a page
+       * about this one audit is a dead end.
+       */
+      const dashboard = offer.dashboardHref
+        ? `<p class="offer-next"><a href="${escapeHtml(offer.dashboardHref)}">Go to your dashboard</a>
+             &mdash; every audit you have asked for, in one place.</p>`
+        : "";
       return `<div class="offer">
       <h2>Payment received</h2>
       <p class="offer-note">Thank you. Access is switched on by a message from Stripe that
          usually arrives within a few seconds &mdash; reload this page and the re-audit
          button will be here. If it is not, email us and we will sort it out the same day.</p>
+      ${dashboard}
       ${talk}
     </div>`;
     }
@@ -655,6 +701,19 @@ function offerBlock(offer: PublishInput["offer"]): string {
              <button type="submit">Ask for a re-audit</button>
            </form>`;
 
+  /**
+   * Repeated on the subscribed panel deliberately.
+   *
+   * A customer who reloads past the "Payment received" panel — or arrives here
+   * a week later from a link in their mail — would otherwise never see the door
+   * again. A one-time pointer to a permanent place is a pointer most people
+   * miss.
+   */
+  const dashboard = offer.dashboardHref
+    ? `<p class="offer-next"><a href="${escapeHtml(offer.dashboardHref)}">Go to your dashboard</a>
+         &mdash; every audit you have asked for, in one place.</p>`
+    : "";
+
   return `<div class="offer">
       <h2>Ask for a re-audit</h2>
       <p>We capture this page again and compare it to the version above. If nothing has
@@ -662,6 +721,7 @@ function offerBlock(offer: PublishInput["offer"]): string {
       <p class="offer-fine">Each ask counts toward your ${AUDITS_PER_MONTH} for the month,
          whether or not the page turned out to have changed.</p>
       ${inner}
+      ${dashboard}
       ${talk}
     </div>`;
 }

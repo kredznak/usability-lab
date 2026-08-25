@@ -101,9 +101,24 @@ silently does not exist is what a Cloudflare 1033 looked like on 2026-08-24.
 
 ```sh
 ~/.local/bin/stripe login
-~/.local/bin/stripe listen --forward-to localhost:4000/stripe/webhook \
+~/.local/bin/stripe listen --forward-to https://theusabilitylab.com/stripe/webhook \
   --events=customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,checkout.session.completed
 ```
+
+> **The canonical host, not `localhost:4000` — measured on 2026-08-25.**
+>
+> This line said `--forward-to localhost:4000/stripe/webhook` for six days. The
+> CLI sends `Host: localhost:4000`, and the server 308-redirects **any** host
+> that is not `theusabilitylab.com` — so every webhook would have been bounced
+> and none delivered. The customer pays, sees "Payment received", and is never
+> granted access: F21 arriving by a line in a runbook.
+>
+> Caught by probing the route before spending a card, not by a test. Forwarding
+> to the public URL also exercises the path production uses — through the
+> tunnel, TLS terminated by Cloudflare — rather than a shortcut around it.
+>
+> **This needs `npm run serve` and the tunnel both up**, since the address is
+> resolved over the internet rather than on the loopback.
 
 `stripe listen` prints a signing secret (`whsec_…`) on startup. **It is not the
 dashboard's** — a webhook endpoint created in the dashboard has its own, and the
