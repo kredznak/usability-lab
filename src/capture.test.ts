@@ -477,3 +477,88 @@ describe("text the browser renders and the DOM cannot carry", () => {
     }
   });
 });
+
+/**
+ * A page that scrolls inside a panel, which is a page shape and not an oddity.
+ *
+ * B36. Everything after the page loads measures against
+ * `document.body.scrollHeight` — the lazy-load loop, `fullPage` screenshots,
+ * and `full_height` itself. On an app-shell layout the body never scrolls, so
+ * that number is the viewport, and the capture describes one screen of a page
+ * that may be ten.
+ *
+ * Found on posthog.com/pricing: body reported 900px while the real scroller
+ * held 9109. The lazy-load loop ran `0 < 900` and never scrolled, the
+ * screenshot was one viewport tall, and 87 of 121 elements sat below the
+ * picture their findings were pinned onto.
+ *
+ * A real browser and a real fixture, for the reason this file already gives
+ * about Cotopaxi: the bug is in the arithmetic between the document and what a
+ * visitor sees, and only a browser has both.
+ */
+describe("a page that scrolls inside a container is measured whole", () => {
+  const CONTAINED = pathToFileURL(path.resolve("fixtures/pages/container-scroll.html")).href;
+  let contained: Capture;
+  let containedDir: string;
+
+  before(async () => {
+    containedDir = mkdtempSync(path.join(tmpdir(), "ulab-contained-"));
+    contained = await capture(CONTAINED, "test-contained", containedDir);
+  });
+
+  after(() => rmSync(containedDir, { recursive: true, force: true }));
+
+  test("the full height is the content's, not the viewport's", () => {
+    // The fixture is two 1200px sections plus a top and a bottom, inside a
+    // panel in a 100%-height body. Before the fix this was the viewport.
+    assert.ok(
+      contained.full_height > contained.viewport.height * 2,
+      `full_height ${contained.full_height} should exceed two viewports ` +
+        `(${contained.viewport.height * 2}) — the body alone reports one`,
+    );
+  });
+
+  test("content at the bottom of the panel is captured", () => {
+    const bottom = contained.elements.filter((e) =>
+      `${e.text ?? ""} ${e.accessible_name ?? ""}`.includes("Buy now at the bottom"),
+    );
+    assert.equal(bottom.length, 1, "the last button in the panel is a page element");
+  });
+
+  test("every element sits inside the height the screenshot was taken at", () => {
+    /**
+     * The assertion that ties the two halves together, and the one that would
+     * have caught this on the day. A finding's pin is drawn on an image
+     * `full_height` tall, so an element below that is a claim with no evidence
+     * behind it — which is exactly what 87 clamped pins along a crop line look
+     * like.
+     */
+    const below = contained.elements.filter((e) => e.bbox.y >= contained.full_height);
+    assert.deepEqual(
+      below.map((e) => `${e.ref} at y=${Math.round(e.bbox.y)}`),
+      [],
+      `elements below full_height (${contained.full_height}) cannot be pinned`,
+    );
+  });
+
+  test("an ordinary page is untouched by the unlock", () => {
+    /**
+     * A narrow fix that quietly rewrote every page's layout would be a worse
+     * bug than the one it repairs, so this asserts the offcanvas fixture is
+     * measured exactly as it was before: a short document, not an inflated one.
+     *
+     * The first draft asserted "no element sits below full_height" and failed —
+     * on a page the unlock never touched. `el_4` is absolutely positioned at
+     * y=300 in a body 255px tall, because an out-of-flow element does not
+     * extend the document. **So "below the picture" is not peculiar to
+     * container-scrolled layouts**; it happens on ordinary pages too, in ones
+     * and twos rather than in 87s. That is the case `annotate` now declines to
+     * pin, and it turns out to have been reachable all along.
+     */
+    assert.ok(
+      cap.full_height < cap.viewport.height,
+      `the offcanvas fixture is a short document (${cap.full_height}px); ` +
+        `an unlock firing here would have inflated it`,
+    );
+  });
+});

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Container scroll — app shell</title>
+<!--
+  A page whose content scrolls inside a panel rather than in the document.
+
+  This is the shape that broke capture on posthog.com/pricing (B36): the body
+  never scrolls, so `document.body.scrollHeight` is the viewport height, and
+  every measurement taken from it — the lazy-load loop, the full-page
+  screenshot, `full_height` — describes one screen of a much longer page.
+
+  The fixed rails either side are not decoration. They are why the layout is
+  built this way in the first place, and an unlock that only reached the
+  scroller itself would leave the document short because of them.
+-->
+<style>
+  html, body { height: 100%; margin: 0; overflow: hidden;
+               font: 16px/1.5 -apple-system, system-ui, sans-serif; }
+  .shell { display: flex; height: 100%; }
+  .rail { width: 90px; background: #eee; flex: none; }
+  .frame { flex: 1; height: 100%; overflow: hidden; }
+  .viewport { height: 100%; overflow-y: scroll; }
+  section { padding: 40px; border-bottom: 1px solid #ddd; }
+  h2 { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="rail" aria-label="Left rail"><p>Rail</p></nav>
+
+    <div class="frame">
+      <div class="viewport">
+        <section>
+          <h2>Top of the page</h2>
+          <p>Visible in the viewport without scrolling anything.</p>
+          <button type="button">Get started</button>
+        </section>
+
+        <section style="height: 1200px">
+          <h2>Second screen</h2>
+          <p>Below the fold, inside the scrolling panel.</p>
+        </section>
+
+        <section style="height: 1200px">
+          <h2>Third screen</h2>
+          <p>Further down still.</p>
+        </section>
+
+        <section>
+          <h2>Bottom of the page</h2>
+          <p>The last thing a visitor reaches.</p>
+          <button type="button">Buy now at the bottom</button>
+        </section>
+      </div>
+    </div>
+
+    <nav class="rail" aria-label="Right rail"><p>Rail</p></nav>
+  </div>
+</body>
+</html>

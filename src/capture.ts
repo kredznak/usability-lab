@@ -847,6 +847,65 @@ export async function capture(url: string, auditId: string, outDir: string): Pro
     // capture on a page that keeps a socket open (analytics, chat widgets).
     await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => {});
 
+    /**
+     * Pages that scroll an inner panel instead of the document.
+     *
+     * Everything below this point measures against `document.body.scrollHeight`
+     * — the lazy-load loop, `page.screenshot({ fullPage: true })`, and
+     * `full_height` itself. On an app-shell layout that number is the viewport,
+     * because the body never scrolls; a container does.
+     *
+     * posthog.com/pricing, 2026-08-25. Body reported 900px. The real scroller,
+     * `.app-scroll-viewport`, had `scrollHeight: 9109` behind
+     * `overflow-y: scroll`. So the lazy-load loop below ran `0 < 900` and never
+     * scrolled at all, nothing below the first screen ever loaded, the DOM walk
+     * still found 121 elements down to y=4775 from what was already in the
+     * document, and the screenshot was one screen tall. Three quarters of the
+     * page was audited from text with a photograph of its top attached. B36.
+     *
+     * Unlocking the container rather than scroll-and-stitch, because it makes
+     * the page genuinely tall and every measurement downstream stays consistent
+     * with every other one — stitched tiles would leave the element boxes
+     * describing a page shape the picture does not have, which is the bug this
+     * fixes wearing a different hat. Measured on the page that found it:
+     * body 900 -> 9165, screenshot 1440x9165, layout intact top to bottom.
+     *
+     * Deliberately narrow. It fires only when a genuine scroller is found that
+     * is meaningfully taller than its own visible box, so an ordinary page —
+     * every other audit on disk — takes the same path it always did.
+     */
+    const unlocked = await page.evaluate(() => {
+      const scroller = Array.from(document.querySelectorAll<HTMLElement>("*"))
+        .filter((el) => {
+          const overflow = getComputedStyle(el).overflowY;
+          return (
+            (overflow === "scroll" || overflow === "auto") &&
+            el.scrollHeight > el.clientHeight + 200 &&
+            el.clientHeight > 200
+          );
+        })
+        .sort((a, b) => b.scrollHeight - a.scrollHeight)[0];
+
+      if (!scroller || scroller.scrollHeight <= document.body.scrollHeight) return null;
+
+      const before = document.body.scrollHeight;
+      // Up the ancestor chain: a fixed height anywhere above the scroller keeps
+      // the document short however open the scroller itself is made.
+      for (let el: HTMLElement | null = scroller; el && el !== document.body; el = el.parentElement) {
+        el.style.setProperty("overflow", "visible", "important");
+        el.style.setProperty("height", "auto", "important");
+        el.style.setProperty("max-height", "none", "important");
+      }
+      document.body.style.setProperty("height", "auto", "important");
+      document.documentElement.style.setProperty("height", "auto", "important");
+      return { before, after: document.body.scrollHeight };
+    });
+
+    if (unlocked) {
+      // Reflow and any layout the unlock triggers, before anything measures.
+      await page.waitForTimeout(500);
+    }
+
     // Scroll the full height once so lazy-loaded images and IntersectionObserver
     // content render before we measure boxes, then return to the top.
     await page.evaluate(async () => {

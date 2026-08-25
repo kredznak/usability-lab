@@ -2410,7 +2410,7 @@ this runbook has already been burned by, and it belongs in §6a with the rest.
 
 ---
 
-## B36. ~~A page that scrolls inside a container captures as one screen~~ — HALF DONE 2026-08-25
+## B36. ~~A page that scrolls inside a container captures as one screen~~ — DONE 2026-08-25
 
 Found by Kelly looking at an annotated screenshot and saying "I only see the top
 half of the page". The picture was right; everything around it was wrong.
@@ -2480,19 +2480,63 @@ will recur.
   internal and the public page.
 - **`annotate.ts` had no tests at all** before this. It has six now.
 
-### Not done: the capture itself
+### Then done properly, the same day
 
-The screenshot is still one screen on these pages. Fixing that means detecting
-the scrolling container, scrolling it, and stitching — a real piece of work, and
-the wrong thing to attempt in the same change as making the existing behaviour
-honest. **The audit is degraded rather than wrong**, which is the state this
-project prefers, but it is not the state it should stay in.
+The paragraph above said fixing the capture meant "detecting the scrolling
+container, scrolling it, and stitching — a real piece of work". Half right. The
+detection is real; the stitching was an assumption, and it was wrong.
 
-Also unaddressed: the reviewers read the full DOM text, so their findings about
-the lower page are as good as their evidence ever was — it is only the
-*screenshot* evidence that is missing. Whether an audit where 72% of elements
-have no visual evidence should publish at all is a policy question this entry
-does not answer.
+**Unlocking beats stitching**, and not only on effort. Stitched tiles would give
+the picture one shape while the element boxes kept another — the two describing
+different pages, which is the bug at the top of this entry wearing a different
+hat. Setting `overflow: visible` and `height: auto` up the ancestor chain from
+the scroller makes the document genuinely tall instead, so every measurement
+downstream — the lazy-load loop, `fullPage`, `full_height`, every bbox — agrees
+with every other one because they are all reading the same page.
+
+Measured on the page that found it:
+
+```
+                before      after
+full_height        900       4937
+deepest element   4775       4754
+elements below      87          0
+screenshot   1440x900   1440x4937
+```
+
+Sliced top, middle and bottom and looked at: layout intact, the pricing
+calculator renders, and the bottom of the page is there — including the
+"classic marketing tactics" joke that finding 5 is about, which is now visible
+evidence rather than an assertion about text nobody could see.
+
+The detection is deliberately narrow — a real scroller, taller than its own box
+by 200px, itself taller than the document — so an ordinary page takes the path
+it always did. `fixtures/pages/container-scroll.html` is the shape, with the
+fixed rails that are the reason the unlock has to walk *up* the ancestors: a
+fixed height anywhere above the scroller keeps the document short however open
+the scroller is made.
+
+### What the fixture argument turned up on the way
+
+The new test first asserted "on an ordinary page, no element sits below
+`full_height`". **It failed, on a page the unlock never touched.** `offcanvas.html`
+has an absolutely positioned element at y=300 in a body 255px tall, because an
+out-of-flow element does not extend the document.
+
+So "below the picture" was never peculiar to container-scrolled layouts. It
+happens on ordinary pages, in ones and twos rather than in 87s, and it has been
+happening for as long as this has been running — every one of those a pin
+clamped to the bottom edge of an image. The `annotate` fix above covers it, and
+did so before anyone knew that case existed.
+
+### Still not done
+
+The audit that found this (`5601007d`, posthog.com/pricing) is **still pending
+with its 900px screenshot**. Its findings' boxes were measured under the old
+capture; 121 of 121 still match by tag and text and 111 of them sit within 40px
+of where they now are, but re-pinning the old findings onto the new screenshot
+would mean a page whose picture and boxes came from two different captures.
+That is the defect this entry is about. It wants a re-run, not a splice.
 
 ---
 
