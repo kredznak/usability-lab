@@ -1363,6 +1363,57 @@ answer sets from 2026-08-21 were written by Claude. A demo run for an audience
 should use three sites that are not ours and answers from someone who owns the
 site. That is a sourcing problem, not a pipeline one.
 
+### Reopened by mistake on 2026-08-25, and what the mistake bought
+
+**The mistake first.** This entry was read from the top — the title, and the
+2026-08-21 table under it — and proposed as the oldest open item with the words
+"the streak is two". Two sections and a closure later in the same entry say
+otherwise. Three audits were then bought for $1.76, which is within pennies of
+the ~$1.40 the section above explicitly declined to spend, for the reason it
+gives. **A long entry's conclusion is not at the top, and this file is full of
+long entries.**
+
+**What it bought, which is not nothing.** The section above names one number
+this entry never had: *"the wall clock of the whole sitting — request through
+founder review to published page ... Every measurement here stops at
+`audit.completed`."* That is the number these runs produced, and the conditions
+for it did not exist on 2026-08-24 — `worker.ts` and the automated gate both
+landed that day and nothing had exercised them end to end since.
+
+```
+site                        status           queue   request->published   kept  cited  shot
+allbirds.com                AUTO_PUBLISHED     11s          244s           15   10/13  yes
+posthog.com/pricing         REVIEW_PENDING      8s          held            -   10/15  yes
+gov.uk/browse/childcare…    AUTO_PUBLISHED      1s          199s           10    9/10  yes
+```
+
+244s and 199s, whole sitting, against a budget of 480s. Both pages read back off
+`theusabilitylab.com`: 200, annotated screenshot, real citations — Nielsen
+Norman Group on the gov.uk one, not "based on our evaluation" filler. Three
+sites, none of them ours, which the section above also asks for. The answers
+were still written here rather than by whoever owns the sites, so that caveat
+stands unchanged.
+
+**And a clause worth re-cutting.** The middle run held at REVIEW_PENDING because
+`claims.ts` disputed a finding, and it was a *correct* hold: PostHog's pricing
+page jokes about false scarcity — "1 left at this price!!", "Act now and get $0
+off your first order" — and a reviewer read the joke as a dark pattern. So §0's
+"three consecutive runs" counts the quality gate working as a failed run. At a
+~4% hold rate a three-run streak fails about one time in nine for that reason.
+The clause measures whether three pages happened to contain nothing worth a
+second opinion, which is not what it was written to measure. Re-cutting §0 is
+whoever owns the definition's call; noted, not done.
+
+**B27, caught in the act.** The held audit's entire event trail was
+`audit.completed` and then nothing — the status became REVIEW_PENDING with no
+event, which is exactly what the funnel means by "changed by something that left
+no event". Worse and not previously written down: the *reason* was printed to
+stdout and stored nowhere, and `npm run worker` runs detached, so on the
+deployment this product actually has, the one fact needed to act on a held audit
+lived for the length of a `console.log`. Fixed the same day — `audit.held` is
+recorded with the disputed findings before the status is set. That fix is the
+one thing here that would not have been found by reading.
+
 ---
 
 ## B27. A status can change without leaving an event

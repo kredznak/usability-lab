@@ -629,6 +629,37 @@ async function main(): Promise<void> {
     const disputed = disputedFindings(publishable, captured);
 
     if (disputed.length > 0) {
+      /*
+       * B27, caught happening on 2026-08-25 rather than reasoned about.
+       *
+       * Three audits were run to settle §0's demo clause. The middle one —
+       * posthog.com/pricing — stopped here, and its whole event trail was
+       * `audit.completed` followed by nothing. The status became REVIEW_PENDING
+       * with no event, which is exactly what the funnel means by "the status was
+       * changed by something that left no event", and it is why 15 rows there
+       * have no recorded cause.
+       *
+       * The sharper half: the *reason* was printed to stdout and stored nowhere.
+       * `npm run worker` runs detached, so on the deployment this actually has,
+       * that sentence goes to a terminal nobody is looking at. The one fact
+       * needed to act on a held audit — which finding the capture disputes —
+       * existed for the length of a `console.log`.
+       *
+       * It was a good hold, which is the part worth keeping. PostHog's pricing
+       * page jokes about false scarcity ("1 left at this price!!", "Act now and
+       * get $0 off your first order"); a reviewer read the joke as a dark
+       * pattern, `claims.ts` disagreed with it, and a person is the right
+       * answer. None of that survived the process that decided it.
+       */
+      events.record({
+        audit_id: auditId,
+        type: "audit.held",
+        data: {
+          disputed: disputed.length,
+          of: publishable.length,
+          findings: disputed.map((f) => ({ id: f.id, heuristic: f.heuristic })),
+        },
+      });
       setStatus("REVIEW_PENDING", {
         profile_summary: profile.summary,
         findings_total: findings.length,

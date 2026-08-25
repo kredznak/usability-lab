@@ -135,3 +135,46 @@ describe("what still needs a person", () => {
     assert.equal(held.length, 0);
   });
 });
+
+/**
+ * A hold has to leave a record, and for its whole life it did not.
+ *
+ * Measured on 2026-08-25: three audits run to settle §0's demo clause, and the
+ * middle one stopped at REVIEW_PENDING. Its entire event trail was
+ * `audit.completed` and then nothing — the status changed with no event, which
+ * is B27, and which is why 15 rows in the funnel have no recorded cause.
+ *
+ * The reason itself was worse off than the status. `index.ts` printed which
+ * findings the capture disputed to stdout, and `npm run worker` runs detached,
+ * so on the deployment this product actually has, that sentence goes to a
+ * terminal nobody reads. The single fact needed to act on a held audit lived
+ * for the length of a console.log.
+ *
+ * `index.ts` is the pipeline's entry point and cannot be exercised from a unit
+ * test without running an audit, so this reads the source — the same thing
+ * `server.test.ts` does to stop the waiting page drifting from the step names.
+ */
+describe("a held audit says why, somewhere that outlives a terminal", () => {
+  test("the branch that holds an audit records an event before it sets the status", async () => {
+    const { readFileSync } = await import("node:fs");
+    const src = readFileSync(new URL("./index.ts", import.meta.url), "utf8");
+
+    const at = src.indexOf(`setStatus("REVIEW_PENDING"`);
+    assert.notEqual(at, -1, "index.ts no longer holds audits; this test needs rewriting");
+
+    // Look back over the branch, not the whole file — an `events.record` a
+    // hundred lines up belongs to something else, and matching it would make
+    // this pass for the wrong reason.
+    const branch = src.slice(Math.max(0, at - 2000), at);
+    assert.match(
+      branch,
+      /events\.record\(\{[\s\S]*?type:\s*"audit\.held"/,
+      "REVIEW_PENDING is set without recording audit.held, so the hold is invisible",
+    );
+    assert.match(
+      branch,
+      /disputed\.map\(/,
+      "the event must carry which findings were disputed, not just that some were",
+    );
+  });
+});
