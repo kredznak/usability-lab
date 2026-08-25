@@ -66,13 +66,23 @@ import {
   page,
   homePage,
   questionsPage,
+  signInPage,
+  accountPage,
 } from "./marketing.js";
 import { asset } from "./assets.js";
 import { clientIp } from "./clientip.js";
 import { preflight, envFromProcess, report, baseUrlFrom, canonicalHost } from "./preflight.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
-import { sign, verify, looksLikeEmail, csrfFor, csrfMatches } from "./tokens.js";
+import {
+  sign,
+  verify,
+  signAccount,
+  verifyAccount,
+  looksLikeEmail,
+  csrfFor,
+  csrfMatches,
+} from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { checkFairUse } from "./fairuse.js";
 import {
@@ -445,6 +455,17 @@ const WORKING_CSS = `
  * seconds; the founder gate is a person, and might be tomorrow.
  */
 const REFRESH = { queued: 30, starting: 5, running: 10, review: 60 } as const;
+
+/** Machine states in a customer's words. Anything unlisted reads "In progress". */
+const ACCOUNT_STATE: Record<string, string> = {
+  PUBLISHED: "Ready",
+  AUTO_PUBLISHED: "Ready",
+  REVIEW_PENDING: "Being checked",
+  DECLINED: "Not published",
+  FAILED: "Did not finish",
+  CAPTURE_FAILED: "Could not load the page",
+  PARKED: "Could not load the page",
+};
 
 /**
  * The road ahead, because the page has never shown one.
@@ -901,6 +922,97 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   if (url.pathname === "/start") {
     events.record({ audit_id: null, type: "question.started", data: {} });
     return sendPage(res, 200, questionsPage(), {}, STEPPED_CSP);
+  }
+
+  /**
+   * Sign in, and the dashboard behind it — the way back to an account.
+   *
+   * Every credential this file issued before today opened exactly one audit,
+   * which meant a subscriber who lost the email lost the product. These two
+   * routes are the smallest thing that fixes that without weakening the rest:
+   * the account token opens **an index and nothing else**, and each row still
+   * links through a per-audit token minted here. A leaked account token
+   * discloses which pages someone audited; it cannot read one.
+   */
+  if (url.pathname === "/signin") {
+    if (req.method === "GET") return sendPage(res, 200, signInPage(), {}, MARKETING_CSP);
+    if (req.method !== "POST") return notFound(res);
+
+    const body = await readBody(req);
+    if (body === null) {
+      return sendPage(res, 413, signInPage({ error: "That was too long." }), {}, MARKETING_CSP);
+    }
+    const email = (new URLSearchParams(body).get("email") ?? "").trim().toLowerCase();
+    if (!looksLikeEmail(email)) {
+      return sendPage(
+        res,
+        400,
+        signInPage({ error: "That does not look like an email address." }),
+        {},
+        MARKETING_CSP,
+      );
+    }
+
+    /**
+     * Spent before the lookup, and the answer is the same either way.
+     *
+     * Rate limiting after a "do we know this address" check would make the
+     * limiter itself the oracle — a stranger would learn who our customers are
+     * from which submissions are throttled. And the page below says the same
+     * sentence whether or not anything was sent, so the form cannot be used to
+     * enumerate customers at any speed.
+     */
+    const now = Date.now();
+    const allowed = byEmail.hit(`signin|${email}`, now).allowed;
+
+    if (allowed && captures.auditsFor(email).length > 0) {
+      const link = `${BASE_URL}/account?t=${signAccount(email)}`;
+      // Same as the magic link: printed rather than faked, until mail exists.
+      console.log(`\n  sign-in link for ${email}\n  ${link}\n`);
+      events.record({ audit_id: null, type: "signin.requested", data: {} });
+    }
+
+    return sendPage(res, 200, signInPage({ sent: email }), {}, MARKETING_CSP);
+  }
+
+  if (url.pathname === "/account") {
+    const token = url.searchParams.get("t") ?? "";
+    const check = verifyAccount(token);
+    if (!check.ok) {
+      // No detail. "Expired" and "forged" look identical to a stranger, and the
+      // person who owns the address gets the same next step either way.
+      return sendPage(
+        res,
+        401,
+        signInPage({ error: "That link is not valid any more. Ask for a new one." }),
+        {},
+        MARKETING_CSP,
+      );
+    }
+
+    // The address comes from the verified token and never from the request.
+    // This is the whole of the cross-customer rule, in one line.
+    const email = check.email;
+    const rows = captures.auditsFor(email).map((r) => {
+      const ready = r.status === "PUBLISHED" || r.status === "AUTO_PUBLISHED";
+      return {
+        url: r.url,
+        when: r.created_at.slice(0, 10),
+        state: ACCOUNT_STATE[r.status] ?? "In progress",
+        // A per-audit token, minted per row. The account token is not accepted
+        // by `verify`, so this is the only thing that opens an audit.
+        href: ready ? `/a/${r.audit_id}/full?t=${sign(r.audit_id, email)}` : null,
+      };
+    });
+
+    events.record({ audit_id: null, type: "account.viewed", data: {} });
+    return sendPage(
+      res,
+      200,
+      accountPage(email, rows, subs.isActive(email)),
+      { "cache-control": "no-store" },
+      MARKETING_CSP,
+    );
   }
 
   if (url.pathname === "/request") {

@@ -477,6 +477,13 @@ export function homePage(): string {
     <p class="fine">No card to start. The subscription buys re-audits &mdash; we capture the
        page again and tell you what moved. Up to ${SITE_LIMIT} sites and
        ${AUDITS_PER_MONTH} re-audits a month. Cancel any time.</p>
+    <!--
+      Been here before? Until 2026-08-25 the answer was "find the email we sent
+      you", because every credential opened one audit and there was no route
+      above it. A dashboard nobody can navigate to is not shipped, so this link
+      is part of the same change rather than a follow-up.
+    -->
+    <p class="fine"><a href="/signin">Already have audits? Sign in</a></p>
   </footer>
 </main>
 <script>${HERO_JS}</script>`,
@@ -926,5 +933,92 @@ export function questionsPage(
       </div>
     </form>
 <script>${STEPPER_JS}</script>`,
+  );
+}
+
+/**
+ * Sign in — the way back to an account, added 2026-08-25.
+ *
+ * Until now every credential this product issued opened one audit, so a
+ * subscriber who closed the tab had no route back in. §1 sells monitoring for
+ * three sites; there was nowhere to see three of anything.
+ *
+ * The response after a submission is deliberately the same whether or not we
+ * hold anything for that address. A form that says "no audits for that email"
+ * is a form that tells a stranger who our customers are.
+ */
+export function signInPage(opts: { error?: string; sent?: string } = {}): string {
+  if (opts.sent) {
+    return page(
+      "Check your email",
+      `<p class="lead">If we have audits for ${escapeHtml(opts.sent)}, a sign-in link is on its way.</p>
+       <p class="hint">The link opens your audits and expires. Nothing else is sent to that address.</p>`,
+    );
+  }
+  return page(
+    "Sign in",
+    `${opts.error ? `<p class="err">${escapeHtml(opts.error)}</p>` : ""}
+     <p class="lead">Enter the address you used, and we'll send a link to your audits.</p>
+     <form method="post" action="/signin">
+       <label for="email">Email</label>
+       <input id="email" name="email" type="email" autocomplete="email" required
+              placeholder="you@company.com">
+       <button type="submit">Send the link</button>
+     </form>`,
+  );
+}
+
+export interface AccountAudit {
+  url: string;
+  when: string;
+  state: string;
+  href: string | null;
+}
+
+/**
+ * The dashboard.
+ *
+ * `server.ts` has refused to index audits since it was written — "an index
+ * would be a cross-customer surface, which §8 says a customer must never
+ * reach". This is that index, so every row here came from a query scoped to a
+ * verified address and there is no code path that renders an unscoped one.
+ *
+ * Running and held audits are listed rather than hidden. A dashboard that
+ * showed only finished work would leave someone wondering where the audit they
+ * just asked for went, which is the question it exists to answer.
+ */
+export function accountPage(email: string, audits: AccountAudit[], subscribed: boolean): string {
+  const rows = audits
+    .map(
+      (a) =>
+        `<li class="rowitem">
+           <div class="site">${a.href ? `<a href="${a.href}">${escapeHtml(a.url)}</a>` : escapeHtml(a.url)}</div>
+           <div class="meta">${escapeHtml(a.state)} &middot; ${escapeHtml(a.when)}</div>
+         </li>`,
+    )
+    .join("");
+
+  const empty = `<p class="lead">No audits on this address yet.</p>
+     <p><a class="btn" href="/">Audit a page</a></p>`;
+
+  return page(
+    "Your audits",
+    // Cloudflare's Scrape Shield rewrites anything that looks like an address
+    // into `[email protected]` plus a /cdn-cgi/ decode script — and this site's
+    // CSP blocks that script, so a customer would see the placeholder for ever
+    // on a page showing their OWN address. `email_off` is Cloudflare's own
+    // per-page opt-out, and it lives here rather than in a dashboard toggle for
+    // the reason deploy-runbook.md already learned the hard way: nothing in git
+    // would know a dashboard setting existed. Inert if Cloudflare is not in
+    // front — it is an HTML comment.
+    `<p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--> &middot; ${
+      subscribed ? "subscribed" : "no subscription"
+    }</p>
+     ${audits.length === 0 ? empty : `<ul class="rows">${rows}</ul>`}
+     ${audits.length === 0 ? "" : `<p><a class="btn" href="/">Audit another page</a></p>`}`,
+    `.rows { list-style:none; margin:26px 0 30px; padding:0; }
+     .rowitem { padding:16px 0; border-bottom:1px solid var(--plaster); }
+     .site { font-size:17px; word-break:break-all; }
+     .meta { color:var(--ink-soft); font-size:14px; margin-top:3px; }`,
   );
 }

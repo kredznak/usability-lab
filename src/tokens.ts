@@ -122,6 +122,79 @@ export function verify(token: string, auditId: string, now = Date.now()): Verify
 }
 
 /**
+ * An account token — the same signature, deliberately a different shape.
+ *
+ * Every credential in this file until now named one audit, and `verify` takes
+ * the audit id as an argument so the only way to use it is the safe way. A
+ * dashboard breaks that: the whole point is a credential that outlives one
+ * audit, because a subscriber who closes the tab has no way back in.
+ *
+ * ## What it does and does not open
+ *
+ * It opens **an index, scoped to one address, and nothing else**. It is not
+ * accepted by `verify`, so it cannot read an audit — the per-audit tokens are
+ * unchanged and the dashboard mints one per row it links to. So the worst a
+ * leaked account token can do is list which pages that person had audited,
+ * which is a real disclosure and a far smaller one than reading them.
+ *
+ * `kind` is inside the signature. Without it a per-audit token whose `auditId`
+ * happened to be missing could be read as an account token, and the two would
+ * be one forgery apart.
+ */
+export interface AccountClaims {
+  kind: "account";
+  email: string;
+  expiresAt: number;
+}
+
+export function signAccount(email: string, now = Date.now()): string {
+  const claims: AccountClaims = {
+    kind: "account",
+    email: email.trim().toLowerCase(),
+    expiresAt: now + TOKEN_TTL_MS,
+  };
+  const payload = b64url(JSON.stringify(claims));
+  return `${payload}.${mac(payload)}`;
+}
+
+export type AccountResult =
+  | { ok: true; email: string }
+  | { ok: false; reason: VerifyFailure };
+
+/**
+ * Returns the address only, never the raw claims.
+ *
+ * Callers need one thing — whose index to build — and handing back a claims
+ * object invites a caller to read some other field and scope a query by it.
+ * The one screen §8 forbids is a list that is not scoped to a verified
+ * customer, so the type makes the wrong query awkward to write.
+ */
+export function verifyAccount(token: string, now = Date.now()): AccountResult {
+  const parts = token.split(".");
+  if (parts.length !== 2 || !parts[0] || !parts[1]) return { ok: false, reason: "malformed" };
+  const [payload, signature] = parts;
+
+  const expected = Buffer.from(mac(payload), "utf8");
+  const given = Buffer.from(signature, "utf8");
+  if (expected.length !== given.length) return { ok: false, reason: "bad-signature" };
+  if (!timingSafeEqual(expected, given)) return { ok: false, reason: "bad-signature" };
+
+  let claims: AccountClaims;
+  try {
+    claims = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as AccountClaims;
+  } catch {
+    return { ok: false, reason: "malformed" };
+  }
+  if (claims?.kind !== "account" || typeof claims.email !== "string" || !claims.email) {
+    return { ok: false, reason: "malformed" };
+  }
+  if (typeof claims.expiresAt !== "number" || now >= claims.expiresAt) {
+    return { ok: false, reason: "expired" };
+  }
+  return { ok: true, email: claims.email };
+}
+
+/**
  * A CSRF token, bound to the session it was rendered into.
  *
  * ## Why now

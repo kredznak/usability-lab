@@ -594,6 +594,42 @@ export class EmailCaptureStore {
       .run(new Date().toISOString(), auditId, email.trim().toLowerCase());
   }
 
+  /**
+   * Every audit this address has asked to read — the dashboard's only query.
+   *
+   * ## Why the email is a parameter and the SQL has no other shape
+   *
+   * `server.ts` has refused to index audits since it was written: "an index
+   * would be a cross-customer surface, which §8 says a customer must never
+   * reach." A dashboard is that index, so the safety has to move into the
+   * query rather than be dropped. There is no `all()` here and no optional
+   * filter — an unscoped list is not a thing a caller can ask for by mistake.
+   *
+   * The address comes from a verified account token and never from the request,
+   * which is the other half of the rule and lives at the call site.
+   *
+   * Joined against `audits` so a row carries its state. Running and held audits
+   * are included deliberately: a dashboard that showed only finished work would
+   * leave a subscriber wondering where their audit went, which is the question
+   * the whole page exists to answer.
+   */
+  auditsFor(email: string): { audit_id: string; url: string; status: string; created_at: string }[] {
+    return this.db
+      .prepare(
+        `SELECT a.audit_id, a.url, a.status, a.created_at
+           FROM email_captures c
+           JOIN audits a ON a.audit_id = c.audit_id
+          WHERE c.email = ?
+          ORDER BY a.created_at DESC`,
+      )
+      .all(email.trim().toLowerCase()) as {
+      audit_id: string;
+      url: string;
+      status: string;
+      created_at: string;
+    }[];
+  }
+
   get(auditId: string, email: string): EmailCaptureRow | null {
     return (
       (this.db

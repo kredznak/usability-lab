@@ -18,6 +18,7 @@ import {
 import { QUESTIONS } from "./profile.js";
 import { sign, verify, looksLikeEmail, csrfFor, csrfMatches, TOKEN_TTL_MS } from "./tokens.js";
 import { signWebhook, STRIPE_API_VERSION } from "./stripe.js";
+import { signAccount } from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { AUDITS_PER_MONTH } from "./fairuse.js";
 
@@ -2466,5 +2467,106 @@ describe("one host, one site", () => {
     const redirected = await ask("www.theusabilitylab.test", "/");
     assert.equal(redirected.status, 308);
     assert.match(redirected.hsts ?? "", /max-age=31536000/, "so is the www redirect");
+  });
+});
+
+
+/**
+ * The dashboard, and the rule it is one mistake away from breaking.
+ *
+ * `server.ts` refused to index audits for its whole life — "an index would be
+ * a cross-customer surface, which §8 says a customer must never reach". This
+ * builds that index, so the tests worth having are the ones where it leaks:
+ * a token for one address must never list another's audits, and a token that
+ * was edited must list nothing at all.
+ */
+describe("your audits, and only yours", () => {
+  const MINE = "mine@example.com";
+  const THEIRS = "theirs@example.com";
+
+  before(() => {
+    const captures = new EmailCaptureStore(dbPath);
+    captures.capture(A, MINE);
+    captures.capture(B, THEIRS);
+    captures.close();
+  });
+
+  const account = (token: string) => fetch(`${BASE}/account?t=${token}`, { redirect: "manual" });
+
+  test("an account token lists that address's audits", async () => {
+    const res = await account(signAccount(MINE));
+    assert.equal(res.status, 200);
+    const html = await res.text();
+    assert.match(html, /Your audits/);
+    assert.ok(html.includes(A), "the audit this address captured");
+  });
+
+  test("and nobody else's", async () => {
+    // The one that matters. B belongs to another address and must not appear,
+    // by id or by link.
+    const html = await (await account(signAccount(MINE))).text();
+    assert.ok(!html.includes(B), "another customer's audit must not be on this page");
+  });
+
+  test("an edited token lists nothing", async () => {
+    // Swap the address in the payload and re-encode. The signature no longer
+    // matches, and the failure has to be total rather than partial.
+    const token = signAccount(MINE);
+    const [payload, sig] = token.split(".");
+    const claims = JSON.parse(Buffer.from(payload!, "base64url").toString("utf8"));
+    claims.email = THEIRS;
+    const forged = `${Buffer.from(JSON.stringify(claims)).toString("base64url")}.${sig}`;
+
+    const res = await account(forged);
+    assert.equal(res.status, 401);
+    const html = await res.text();
+    assert.ok(!html.includes(B), "a forged token must reveal nothing");
+    assert.ok(!html.includes(A));
+  });
+
+  test("an account token cannot open an audit", async () => {
+    /**
+     * The blast radius, pinned. An account token opens an index; the audits
+     * themselves are still per-audit tokens, which is why a leaked sign-in link
+     * discloses which pages someone audited and not what they say.
+     */
+    const token = signAccount(MINE);
+    assert.equal(verify(token, A).ok, false, "the audit verifier must refuse it");
+
+    const res = await fetch(`${BASE}/a/${A}/full?t=${token}`, { redirect: "manual" });
+    assert.notEqual(res.status, 200);
+  });
+
+  test("no token at all is refused", async () => {
+    assert.equal((await fetch(`${BASE}/account`, { redirect: "manual" })).status, 401);
+  });
+
+  test("signing in says the same thing to a stranger as to a customer", async () => {
+    /**
+     * Otherwise the form is a customer list: submit an address, read the
+     * difference, learn who pays for this. The rate limiter is spent before the
+     * lookup for the same reason — throttling only known addresses would leak
+     * the same fact more slowly.
+     */
+    const post = (email: string) =>
+      fetch(`${BASE}/signin`, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ email }).toString(),
+        redirect: "manual",
+      });
+
+    const known = await post(MINE);
+    const stranger = await post("nobody-at-all@example.com");
+
+    assert.equal(known.status, stranger.status);
+    const [a, b] = [await known.text(), await stranger.text()];
+    assert.match(a, /a sign-in link is on its way/);
+    // Identical but for the address echoed back, which the sender already knew.
+    assert.equal(
+      a.replace(MINE, "X"),
+      b.replace("nobody-at-all@example.com", "X"),
+      "the two responses must not be distinguishable",
+    );
   });
 });
