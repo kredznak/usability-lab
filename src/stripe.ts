@@ -146,6 +146,32 @@ export interface StripeClient {
   listSubscriptions(): Promise<StripeSubscription[]>;
   /** For the preflight — the cheapest call that proves the key works. */
   retrievePrice(priceId: string): Promise<StripePrice>;
+  /**
+   * A session on Stripe's own billing portal, where a customer cancels.
+   *
+   * ## Why there is no cancel method here
+   *
+   * The obvious shape is `cancelSubscription(id)` behind a button of ours, and
+   * it is the wrong one. Cancelling is not one decision: immediately or at the
+   * period end, what happens to the part-month already paid, what the customer
+   * is shown about the date access actually stops. Getting any of those subtly
+   * wrong is a billing dispute, and every one of them is a screen Stripe has
+   * already built and keeps correct.
+   *
+   * The portal also carries invoice history and card updates, which is the
+   * honest answer to "show payment info" from a product that deliberately holds
+   * none of it — `results.html` promises "card details go to Stripe and never
+   * touch us", and building our own billing screens is how that stops being
+   * true by degrees.
+   *
+   * What it costs: the portal must be enabled once in the Stripe dashboard, and
+   * a deployment where it is not gets a 400 from this call rather than a broken
+   * page. The caller is expected to say so plainly.
+   *
+   * **The customer id comes from our own row**, which was written by a webhook
+   * whose `ul_email` we set server-side — never from anything the request said.
+   */
+  createPortalSession(input: { customerId: string; returnUrl: string }): Promise<{ url: string }>;
 }
 
 /**
@@ -381,6 +407,14 @@ export function liveStripe(config: StripeConfig): StripeClient {
       });
       const session = await call("/checkout/sessions", form);
       return { id: String(session.id ?? ""), url: String(session.url ?? "") };
+    },
+
+    async createPortalSession({ customerId, returnUrl }) {
+      const session = await call(
+        "/billing_portal/sessions",
+        new URLSearchParams({ customer: customerId, return_url: returnUrl }),
+      );
+      return { url: String(session.url ?? "") };
     },
 
     async retrievePrice(priceId) {

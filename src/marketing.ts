@@ -997,6 +997,122 @@ export interface AccountAudit {
 }
 
 /**
+ * Two tabs, and deliberately not three.
+ *
+ * "Schedule audits" was proposed as a third. It is the dotted box below the
+ * audit list instead, because a tab is a promise that something is behind it —
+ * and a tab whose content is "not built yet" makes the dashboard read one-third
+ * unfinished on every visit, permanently, to a customer who is paying. Inline,
+ * the same box is an aside next to real work, which is what it actually is.
+ *
+ * Marked up as a nav of links rather than as buttons: these are two pages, the
+ * back button works, and a tab strip that needs JavaScript to change pages is a
+ * tab strip that does not work when it fails to load.
+ */
+const ACCOUNT_TABS: { href: string; label: string }[] = [
+  { href: "/account", label: "Your audits" },
+  { href: "/account/billing", label: "Your account" },
+];
+
+function tabs(current: string): string {
+  const items = ACCOUNT_TABS.map((t) =>
+    t.href === current
+      ? `<span class="tab on" aria-current="page">${t.label}</span>`
+      : `<a class="tab" href="${t.href}">${t.label}</a>`,
+  ).join("");
+  return `<nav class="tabs" aria-label="Account">${items}</nav>`;
+}
+
+const TABS_CSS = `.tabs { display:flex; gap:22px; margin:0 0 8px;
+     border-bottom:1px solid var(--plaster); }
+   .tabs .tab { display:inline-block; padding:0 0 10px; font-size:15px;
+     text-decoration:none; color:var(--ink-soft); border-bottom:2px solid transparent;
+     margin-bottom:-1px; }
+   .tabs .tab.on { color:var(--ink); border-bottom-color:var(--ink); }
+   .tabs a.tab:hover { color:var(--ink); }`;
+
+export interface BillingView {
+  /** Null when no subscription row exists at all. */
+  status: string | null;
+  /** ISO, from the row. Null on a status that has no next date. */
+  renewsAt: string | null;
+  /** A Stripe customer exists to send them to. */
+  manageable: boolean;
+  csrf: string;
+}
+
+/**
+ * What this product knows about a customer's money, which is deliberately not
+ * much.
+ *
+ * `results.html` tells every reader "card details go to Stripe and never touch
+ * us". That stays true only if this page never renders anything card-shaped —
+ * so there is no last-four, no brand, no expiry, because we hold none of them
+ * and a placeholder would imply we do. What is here is what our own row knows:
+ * the plan, whether it is running, and the date access currently runs to.
+ *
+ * Everything else — cancelling, changing a card, past invoices — is one button
+ * into Stripe's portal. See `createPortalSession` for why that is a redirect
+ * rather than a cancel button of our own.
+ */
+export function billingPage(email: string, view: BillingView): string {
+  const price = `$${PRICE_USD} a month`;
+  const date = view.renewsAt ? view.renewsAt.slice(0, 10) : null;
+
+  const body =
+    view.status === "active"
+      ? `<dl class="facts">
+           <dt>Plan</dt><dd>Continuous monitoring &middot; ${price}</dd>
+           <dt>Status</dt><dd>Active</dd>
+           ${date ? `<dt>Runs to</dt><dd>${escapeHtml(date)}</dd>` : ""}
+         </dl>`
+      : view.status
+        ? `<dl class="facts">
+             <dt>Plan</dt><dd>Continuous monitoring &middot; ${price}</dd>
+             <dt>Status</dt><dd>${escapeHtml(view.status)}</dd>
+             ${date ? `<dt>Access ran to</dt><dd>${escapeHtml(date)}</dd>` : ""}
+           </dl>
+           <p class="hint">There is no active subscription on this address.</p>`
+        : `<p class="lead">No subscription on this address.</p>
+           <p class="hint">Audits you run stay free to start; the subscription is for
+              re-audits and monitoring.</p>
+           <p><a class="btn" href="/">Audit a page</a></p>`;
+
+  /**
+   * A POST, not a link. The URL Stripe hands back lets its holder cancel a
+   * subscription, and "a state change reachable by URL is one a link preview
+   * can make" is the rule this codebase already applies one step down in
+   * consequence, on the re-audit button.
+   */
+  const manage = view.manageable
+    ? `<form method="post" action="/account/billing">
+         <input type="hidden" name="csrf" value="${escapeHtml(view.csrf)}">
+         <button type="submit">Manage billing</button>
+       </form>
+       <p class="hint">Cancel, change your card, or read past invoices. This opens
+          Stripe, who hold the card &mdash; we never have.</p>`
+    : view.status
+      ? `<p class="hint">This subscription was granted directly rather than bought,
+            so there is no billing record to open. Email us and we will sort out
+            anything you need.</p>`
+      : "";
+
+  return page(
+    "Your account",
+    `${tabs("/account/billing")}
+     <p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--></p>
+     ${body}
+     ${manage}`,
+    `${TABS_CSS}
+     .facts { margin:26px 0 24px; }
+     .facts dt { font-size:13px; letter-spacing:.05em; text-transform:uppercase;
+       color:var(--shade); margin-top:16px; }
+     .facts dd { margin:3px 0 0; font-size:17px; }
+     .facts dt:first-child { margin-top:0; }`,
+  );
+}
+
+/**
  * The dashboard.
  *
  * `server.ts` has refused to index audits since it was written — "an index
@@ -1032,13 +1148,15 @@ export function accountPage(email: string, audits: AccountAudit[], subscribed: b
     // the reason deploy-runbook.md already learned the hard way: nothing in git
     // would know a dashboard setting existed. Inert if Cloudflare is not in
     // front — it is an HTML comment.
-    `<p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--> &middot; ${
-      subscribed ? "subscribed" : "no subscription"
-    }</p>
+    `${tabs("/account")}
+     <p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--> &middot; ${
+       subscribed ? "subscribed" : "no subscription"
+     }</p>
      ${audits.length === 0 ? empty : `<ul class="rows">${rows}</ul>`}
      ${audits.length === 0 ? "" : `<p><a class="btn" href="/">Audit another page</a></p>`}
      ${SCHEDULE_TEASER}`,
-    `.rows { list-style:none; margin:26px 0 30px; padding:0; }
+    `${TABS_CSS}
+     .rows { list-style:none; margin:26px 0 30px; padding:0; }
      .rowitem { padding:16px 0; border-bottom:1px solid var(--plaster); }
      .site { font-size:17px; word-break:break-all; }
      .meta { color:var(--ink-soft); font-size:14px; margin-top:3px; }

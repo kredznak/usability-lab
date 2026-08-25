@@ -294,6 +294,7 @@ describe("the preflight — B21's early warning", () => {
       createCheckoutSession: async () => ({ id: "cs_1", url: "https://x" }),
       listSubscriptions: async () => [],
       retrievePrice: async () => price(),
+      createPortalSession: async () => ({ url: "https://billing.stripe.test/session" }),
       ...over,
     };
   }

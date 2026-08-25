@@ -1909,6 +1909,8 @@ describe("Stripe, when it is configured", () => {
         res.writeHead(200, { "content-type": "application/json" });
         if ((req.url ?? "").startsWith("/checkout/sessions")) {
           res.end(JSON.stringify({ id: "cs_test_1", url: "https://checkout.stripe.test/pay/cs_test_1" }));
+        } else if ((req.url ?? "").startsWith("/billing_portal/sessions")) {
+          res.end(JSON.stringify({ id: "bps_1", url: "https://billing.stripe.test/session/bps_1" }));
         } else {
           res.end(JSON.stringify({ data: [], has_more: false }));
         }
@@ -2276,6 +2278,21 @@ describe("Stripe, when it is configured", () => {
     const dashboardHrefIn = (html: string): string | null =>
       /href="(\/account\?t=[^"]+)"/.exec(html)?.[1] ?? null;
 
+    /**
+     * `/account` exchanges its token for a cookie and 303s to a clean path, so
+     * following the link is two requests. `fetch` follows redirects but keeps
+     * no cookie jar, which is why this is spelled out rather than left to it.
+     */
+    async function follow(href: string): Promise<{ status: number; html: string }> {
+      const first = await fetch(`${APP}${href}`, { redirect: "manual" });
+      if (first.status !== 303) return { status: first.status, html: await first.text() };
+      const jar = (first.headers.get("set-cookie") ?? "").split(";")[0]!;
+      const res = await fetch(`${APP}${first.headers.get("location")}`, {
+        headers: { cookie: jar },
+      });
+      return { status: res.status, html: await res.text() };
+    }
+
     test("the payment panel offers the dashboard, and the link opens that person's", async () => {
       const { jar, clean, email } = await paidSession(PAID);
       const html = await (await fetch(`${clean}?paid=1`, { headers: { cookie: jar } })).text();
@@ -2283,9 +2300,9 @@ describe("Stripe, when it is configured", () => {
 
       const href = dashboardHrefIn(html);
       assert.ok(href, "the Payment received panel carries a dashboard link");
-      const page = await fetch(`${APP}${href}`);
+      const page = await follow(href);
       assert.equal(page.status, 200);
-      assert.ok((await page.text()).includes(email), "it opens the dashboard for this address");
+      assert.ok(page.html.includes(email), "it opens the dashboard for this address");
     });
 
     test("a subscriber still finds it after the panel is gone", async () => {
@@ -2327,9 +2344,222 @@ describe("Stripe, when it is configured", () => {
       const { html } = await paidSession(PAID, mine);
       const href = dashboardHrefIn(html);
       assert.ok(href);
-      const page = await (await fetch(`${APP}${href}`)).text();
+      const page = (await follow(href)).html;
       assert.ok(page.includes(mine), "my dashboard");
       assert.ok(!page.includes(theirs), "and nobody else's");
+    });
+  });
+
+  /**
+   * The account session, and the one button behind it that touches money.
+   *
+   * `/account` authenticated by a token in the query for its whole first life,
+   * which meant the widest credential this product issues sat in the URL bar
+   * and in history on every view. It also meant no POST could live there: a
+   * state change reachable by URL is one a link preview can make, and Slack and
+   * iMessage fetch what you paste at them. The cookie is what makes a cancel
+   * button possible at all.
+   */
+  describe("the account session and the billing tab", () => {
+    async function signedIn(email: string): Promise<string> {
+      const first = await fetch(`${APP}/account?t=${signAccount(email)}`, { redirect: "manual" });
+      assert.equal(first.status, 303, "the link is exchanged, not rendered");
+      return (first.headers.get("set-cookie") ?? "").split(";")[0]!;
+    }
+    const get = (path: string, jar: string) => fetch(`${APP}${path}`, { headers: { cookie: jar } });
+
+    /**
+     * A distinct Stripe customer per address. The shared `subscriptionEvent`
+     * hardcodes `cus_x`, which would make "my customer id, not theirs" pass
+     * whichever row the code read — the revert that does not break the thing.
+     */
+    async function subscribed(): Promise<string> {
+      const email = freshEmail();
+      const body = subscriptionEvent(email, { customer: `cus_${email}` });
+      await webhook(body, signWebhook(body, WHSEC));
+      return email;
+    }
+
+    test("the emailed link is spent, and the token leaves the URL", async () => {
+      /**
+       * The link is six days old on purpose. `signAccount` derives its expiry
+       * from the moment it is called, so a token minted twice in the same
+       * millisecond is byte-identical — asserting "the cookie differs" against
+       * a fresh link passes or fails on the clock rather than on the code. An
+       * aged link is the case that actually distinguishes minting a new token
+       * from storing the one that arrived.
+       */
+      const email = freshEmail();
+      const aged = signAccount(email, Date.now() - 6 * 864e5);
+      const res = await fetch(`${APP}/account?t=${aged}`, { redirect: "manual" });
+      assert.equal(res.status, 303);
+      assert.equal(res.headers.get("location"), "/account", "no token in the place they land");
+
+      const setCookie = res.headers.get("set-cookie") ?? "";
+      assert.match(setCookie, /^ul_acct=/);
+      assert.match(setCookie, /HttpOnly/, "not readable by script");
+      assert.match(setCookie, /Path=\/account/, "not sent with an audit page or an asset");
+      assert.ok(!setCookie.includes(aged), "a fresh token, not the one that arrived in the mail");
+    });
+
+    test("the cookie alone opens the page afterwards", async () => {
+      const email = freshEmail();
+      const jar = await signedIn(email);
+      const res = await get("/account", jar);
+      assert.equal(res.status, 200);
+      assert.ok((await res.text()).includes(email));
+    });
+
+    test("no cookie and no token is refused, and discloses nothing", async () => {
+      const res = await fetch(`${APP}/account`);
+      assert.equal(res.status, 401);
+      const html = await res.text();
+      assert.ok(!html.includes("@example.com"), "a refusal names no address");
+    });
+
+    test("a forged cookie is refused exactly like an absent one", async () => {
+      const res = await get("/account", "ul_acct=not-a-token");
+      assert.equal(res.status, 401);
+    });
+
+    test("the billing tab states the plan without inventing a card", async () => {
+      /**
+       * The results page promises "card details go to Stripe and never touch
+       * us". This page holds none, so it must render none — no last four, no
+       * brand, no expiry. A placeholder would make that promise false by
+       * implication, which is the shape of every lie this repo has had to
+       * correct.
+       */
+      const jar = await signedIn(await subscribed());
+      const html = await (await get("/account/billing", jar)).text();
+
+      assert.match(html, /Active/);
+      assert.match(html, /\$29 a month/);
+      assert.match(html, /Manage billing/);
+      assert.doesNotMatch(html, /•{4}|\*{4}|ending in|last four|Visa|Mastercard|exp(iry|ires)/i);
+    });
+
+    test("both tabs are reachable from each other, and neither is 'not built'", async () => {
+      const jar = await signedIn(await subscribed());
+      const audits = await (await get("/account", jar)).text();
+      assert.match(audits, /href="\/account\/billing"/, "audits links to account");
+      const billing = await (await get("/account/billing", jar)).text();
+      assert.match(billing, /href="\/account"/, "account links back to audits");
+      // The schedule teaser stays inline on the audits tab rather than becoming
+      // a third tab that is permanently empty.
+      assert.match(audits, /Not built yet/);
+      assert.doesNotMatch(billing, /Not built yet/);
+    });
+
+    test("a forged post opens no portal", async () => {
+      /**
+       * The one that matters. The URL this route returns lets its holder cancel
+       * a subscription, so a request that did not come from our own page must
+       * not reach Stripe at all — not fail politely afterwards.
+       */
+      const jar = await signedIn(await subscribed());
+      const before = seen.length;
+      const res = await fetch(`${APP}/account/billing`, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", cookie: jar },
+        body: new URLSearchParams({ csrf: "wrong" }).toString(),
+        redirect: "manual",
+      });
+      assert.equal(res.status, 403);
+      assert.equal(seen.length, before, "Stripe was never asked");
+    });
+
+    test("a post with no session at all opens no portal", async () => {
+      const before = seen.length;
+      const res = await fetch(`${APP}/account/billing`, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ csrf: "anything" }).toString(),
+        redirect: "manual",
+      });
+      assert.equal(res.status, 401);
+      assert.equal(seen.length, before, "Stripe was never asked");
+    });
+
+    test("the button sends them to Stripe, for their own customer id", async () => {
+      const email = await subscribed();
+      const jar = await signedIn(email);
+      const html = await (await get("/account/billing", jar)).text();
+      const csrf = /name="csrf" value="([^"]+)"/.exec(html)?.[1] ?? "";
+      assert.ok(csrf, "the billing tab carries a CSRF token");
+
+      const before = seen.length;
+      const res = await fetch(`${APP}/account/billing`, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", cookie: jar },
+        body: new URLSearchParams({ csrf }).toString(),
+        redirect: "manual",
+      });
+      assert.equal(res.status, 303);
+      assert.equal(res.headers.get("location"), "https://billing.stripe.test/session/bps_1");
+
+      assert.equal(seen.length, before + 1);
+      const call = seen[seen.length - 1]!;
+      assert.match(call.path, /^\/billing_portal\/sessions/);
+      const form = new URLSearchParams(call.body);
+      /**
+       * From our own row, written by a webhook whose `ul_email` we set
+       * server-side. Never from the request — a customer id taken from a form
+       * would open somebody else's billing.
+       */
+      assert.equal(form.get("customer"), `cus_${email}`);
+      assert.equal(form.get("return_url"), `${APP}/account/billing`);
+    });
+
+    test("one customer's session never opens another's billing", async () => {
+      const mine = await subscribed();
+      const theirs = await subscribed();
+      const jar = await signedIn(mine);
+      const html = await (await get("/account/billing", jar)).text();
+      assert.ok(html.includes(mine));
+      assert.ok(!html.includes(theirs), "and nobody else's");
+
+      /**
+       * The post *asks* for their customer id, with a valid session and a valid
+       * CSRF token of my own. Without this field the route could read the id
+       * straight off the form and every test here would still pass — measured,
+       * on 2026-08-25: trusting `body.customer` broke nothing until the request
+       * actually carried one.
+       */
+      const csrf = /name="csrf" value="([^"]+)"/.exec(html)?.[1] ?? "";
+      await fetch(`${APP}/account/billing`, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", cookie: jar },
+        body: new URLSearchParams({ csrf, customer: `cus_${theirs}` }).toString(),
+        redirect: "manual",
+      });
+      const form = new URLSearchParams(seen[seen.length - 1]!.body);
+      assert.equal(form.get("customer"), `cus_${mine}`, "my customer id, not the one I asked for");
+    });
+
+    test("a hand-granted subscription says so rather than offering a dead button", async () => {
+      /**
+       * `subscribe.ts` leaves both Stripe id columns null on purpose, so a
+       * granted row is distinguishable from a paid one at a glance. There is no
+       * billing record for a portal to open, and a button that 404s would be
+       * worse than a sentence — the same call the results page makes about
+       * checkout not being wired.
+       */
+      const email = freshEmail();
+      const store = new SubscriptionStore(dbPath);
+      store.upsert(email, {
+        status: "active",
+        currentPeriodEnd: new Date(Date.now() + 30 * 864e5).toISOString(),
+        stripeCustomerId: null,
+        stripeSubscriptionId: null,
+      });
+      store.close();
+
+      const jar = await signedIn(email);
+      const html = await (await get("/account/billing", jar)).text();
+      assert.match(html, /Active/, "it is a real subscription");
+      assert.doesNotMatch(html, /Manage billing/, "with nothing to manage");
+      assert.match(html, /granted directly rather than bought/);
     });
   });
 });
@@ -2563,12 +2793,26 @@ describe("your audits, and only yours", () => {
     captures.close();
   });
 
-  const account = (token: string) => fetch(`${BASE}/account?t=${token}`, { redirect: "manual" });
+  /**
+   * The link in the mail is now exchanged for a cookie and the token leaves the
+   * URL, so reading the page is two requests — exactly the shape `paidSession`
+   * uses for an audit. A refusal still answers on the first one, which is why
+   * this returns the exchange response and the body separately.
+   */
+  const exchange = (token: string, path = "/account") =>
+    fetch(`${BASE}${path}?t=${token}`, { redirect: "manual" });
+
+  async function account(token: string, path = "/account") {
+    const first = await exchange(token, path);
+    if (first.status !== 303) return { status: first.status, html: await first.text(), jar: "" };
+    const jar = (first.headers.get("set-cookie") ?? "").split(";")[0]!;
+    const res = await fetch(`${BASE}${first.headers.get("location")}`, { headers: { cookie: jar } });
+    return { status: res.status, html: await res.text(), jar };
+  }
 
   test("an account token lists that address's audits", async () => {
-    const res = await account(signAccount(MINE));
-    assert.equal(res.status, 200);
-    const html = await res.text();
+    const { status, html } = await account(signAccount(MINE));
+    assert.equal(status, 200);
     assert.match(html, /Your audits/);
     assert.ok(html.includes(A), "the audit this address captured");
   });
@@ -2576,7 +2820,7 @@ describe("your audits, and only yours", () => {
   test("and nobody else's", async () => {
     // The one that matters. B belongs to another address and must not appear,
     // by id or by link.
-    const html = await (await account(signAccount(MINE))).text();
+    const { html } = await account(signAccount(MINE));
     assert.ok(!html.includes(B), "another customer's audit must not be on this page");
   });
 
@@ -2589,9 +2833,8 @@ describe("your audits, and only yours", () => {
     claims.email = THEIRS;
     const forged = `${Buffer.from(JSON.stringify(claims)).toString("base64url")}.${sig}`;
 
-    const res = await account(forged);
-    assert.equal(res.status, 401);
-    const html = await res.text();
+    const { status, html } = await account(forged);
+    assert.equal(status, 401);
     assert.ok(!html.includes(B), "a forged token must reveal nothing");
     assert.ok(!html.includes(A));
   });
@@ -2617,7 +2860,7 @@ describe("your audits, and only yours", () => {
      * looks live and does nothing is the failure this repo keeps correcting —
      * most recently a footer claiming a person had read an audit nobody read.
      */
-    const html = await (await account(signAccount(MINE))).text();
+    const { html } = await account(signAccount(MINE));
     assert.match(html, /Schedule audits/);
     assert.match(html, /Not built yet/, "and says so where a reader will see it");
 

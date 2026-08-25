@@ -68,6 +68,7 @@ import {
   questionsPage,
   signInPage,
   accountPage,
+  billingPage,
 } from "./marketing.js";
 import { asset } from "./assets.js";
 import { mailConfig, deliver } from "./mail.js";
@@ -83,6 +84,7 @@ import {
   looksLikeEmail,
   csrfFor,
   csrfMatches,
+  TOKEN_TTL_MS,
 } from "./tokens.js";
 import { SlidingWindow, inMinutes } from "./ratelimit.js";
 import { checkFairUse } from "./fairuse.js";
@@ -175,6 +177,42 @@ function setCookie(auditId: string, token: string, expiresAt: number): string {
 
 function clearCookie(auditId: string): string {
   return `${COOKIE}=; Path=/a/${auditId}/; Max-Age=0; HttpOnly; SameSite=Lax`;
+}
+
+/**
+ * The account session, scoped to `/account` and nothing else.
+ *
+ * `Path=/account` covers `/account` and `/account/billing` and stops there, so
+ * this credential is not sent with a request for an audit page, a marketing
+ * page, or an asset. It is the widest thing this product issues — every audit
+ * on an address, plus the door to billing — which is exactly why its path is
+ * the narrowest that still works.
+ *
+ * `Max-Age` is `TOKEN_TTL_MS` because the token inside is minted at the same
+ * moment. They expire together; the cookie never outlives what it carries.
+ */
+const ACCOUNT_COOKIE = "ul_acct";
+
+/**
+ * One answer for "expired", "forged" and "never had one".
+ *
+ * A stranger learns nothing from the difference, and the person who owns the
+ * address has the same next step in all three cases: ask for a new link.
+ */
+function accountRefused(res: ServerResponse): void {
+  return sendPage(
+    res,
+    401,
+    signInPage({ error: "That link is not valid any more. Ask for a new one." }),
+    {},
+    MARKETING_CSP,
+  );
+}
+
+function setAccountCookie(token: string): string {
+  const secure = process.env.USABILITY_LAB_SECURE_COOKIES === "1" ? "; Secure" : "";
+  const maxAge = Math.floor(TOKEN_TTL_MS / 1000);
+  return `${ACCOUNT_COOKIE}=${token}; Path=/account; Max-Age=${maxAge}; HttpOnly; SameSite=Lax${secure}`;
 }
 
 /**
@@ -1050,24 +1088,125 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return sendPage(res, 200, signInPage({ sent: email }), {}, MARKETING_CSP);
   }
 
-  if (url.pathname === "/account") {
-    const token = url.searchParams.get("t") ?? "";
-    const check = verifyAccount(token);
-    if (!check.ok) {
-      // No detail. "Expired" and "forged" look identical to a stranger, and the
-      // person who owns the address gets the same next step either way.
-      return sendPage(
-        res,
-        401,
-        signInPage({ error: "That link is not valid any more. Ask for a new one." }),
-        {},
-        MARKETING_CSP,
-      );
+  if (url.pathname === "/account" || url.pathname === "/account/billing") {
+    /**
+     * The link in the mail is exchanged for a cookie, and then it is gone.
+     *
+     * `/account` used to read its token from the query on every view, which
+     * meant a credential for *every* audit on an address sat in the URL bar,
+     * in browser history, and in whatever the customer pasted it into. The
+     * audit pages have never worked that way — `/a/<id>/full?t=` sets `ul_full`
+     * and 303s to a clean path — and this is that pattern, arriving late.
+     *
+     * A **fresh** token is minted for the cookie rather than storing the one
+     * from the mail. The two then expire together instead of the cookie
+     * outliving the credential inside it, and the emailed link stops being the
+     * long-lived thing in the browser.
+     *
+     * It is also what makes the billing tab possible at all: a POST needs a
+     * session to bind CSRF to, and "a state change reachable by URL is one a
+     * link preview can make" is the rule the re-audit route already states.
+     */
+    const fromQuery = url.searchParams.get("t");
+    if (fromQuery) {
+      const check = verifyAccount(fromQuery);
+      if (!check.ok) return accountRefused(res);
+      const fresh = signAccount(check.email);
+      res.writeHead(303, {
+        location: url.pathname,
+        "set-cookie": setAccountCookie(fresh),
+      });
+      return void res.end();
     }
+
+    const token = cookie(req, ACCOUNT_COOKIE) ?? "";
+    const check = verifyAccount(token);
+    if (!check.ok) return accountRefused(res);
 
     // The address comes from the verified token and never from the request.
     // This is the whole of the cross-customer rule, in one line.
     const email = check.email;
+    const onBilling = url.pathname === "/account/billing";
+
+    if (onBilling && req.method === "POST") {
+      /**
+       * Into Stripe's portal, which is where cancelling actually happens.
+       *
+       * POST and not a link, because the URL this produces lets its holder
+       * cancel a subscription — the same reasoning as `/reaudit`, one step
+       * further up in consequence.
+       */
+      const body = await readBody(req);
+      if (body === null) return sendPage(res, 413, page("Too long", `<p>That request was too large.</p>`));
+      if (!csrfMatches(token, new URLSearchParams(body).get("csrf") ?? "")) {
+        events.record({ audit_id: null, type: "csrf.rejected", data: { route: "billing" } });
+        return sendPage(res, 403, page("That request did not come from this page",
+          `<p>Open your account again and use the button there.</p>
+           <p><a href="/account/billing">Back to billing</a>.</p>`), {}, MARKETING_CSP);
+      }
+
+      const row = subs.get(email);
+      if (!billing || !row?.stripe_customer_id) {
+        /**
+         * No Stripe customer to send them to. A hand-granted subscription has
+         * no `stripe_customer_id` by design — `subscribe.ts` leaves both id
+         * columns null so a granted row is distinguishable from a paid one —
+         * and there is nothing for a billing portal to show.
+         */
+        return sendPage(res, 404, page("Nothing to manage",
+          `<p>There is no Stripe billing record on this address.</p>
+           <p><a href="/account/billing">Back to billing</a>, or
+              <a href="mailto:${escapeHtml(TALK_TO)}">email us</a>.</p>`), {}, MARKETING_CSP);
+      }
+
+      try {
+        const session = await billing.createPortalSession({
+          customerId: row.stripe_customer_id,
+          returnUrl: `${BASE_URL}/account/billing`,
+        });
+        if (!session.url) throw new Error("no portal url");
+        events.record({ audit_id: null, type: "billing.portal", data: {} });
+        res.writeHead(303, { location: session.url });
+        return void res.end();
+      } catch (err) {
+        /**
+         * The likeliest cause is a Stripe account where the portal has never
+         * been configured, which is a one-time dashboard setting and a 400
+         * here. Saying "we could not open it" and leaving the subscription
+         * untouched is the whole of the correct behaviour.
+         */
+        console.error(`  billing portal failed: ${String(err)}`);
+        events.record({ audit_id: null, type: "billing.failed", data: {} });
+        return sendPage(res, 502, page("That did not open",
+          `<p>We could not open the billing page just now. Nothing has changed
+              about your subscription.</p>
+           <p><a href="/account/billing">Try again</a>, or
+              <a href="mailto:${escapeHtml(TALK_TO)}">email us</a>.</p>`), {}, MARKETING_CSP);
+      }
+    }
+
+    if (req.method !== "GET") return notFound(res);
+
+    if (onBilling) {
+      const row = subs.get(email);
+      events.record({ audit_id: null, type: "billing.viewed", data: {} });
+      return sendPage(
+        res,
+        200,
+        billingPage(email, {
+          status: row?.status ?? null,
+          renewsAt: row?.current_period_end ?? null,
+          // Only a Stripe-backed row has somewhere to send them. A hand-granted
+          // one is a real subscription with no billing record behind it, and
+          // offering a button that 404s would be worse than saying so.
+          manageable: Boolean(billing && row?.stripe_customer_id),
+          csrf: csrfFor(token),
+        }),
+        { "cache-control": "no-store" },
+        MARKETING_CSP,
+      );
+    }
+
     const rows = captures.auditsFor(email).map((r) => {
       const ready = r.status === "PUBLISHED" || r.status === "AUTO_PUBLISHED";
       return {
