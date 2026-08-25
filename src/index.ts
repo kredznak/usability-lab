@@ -704,8 +704,12 @@ async function main(): Promise<void> {
         (degraded.length > 0 ? `\n  DEGRADED: ${degraded.join("; ")}` : "") +
         `\n  total ${(total / 1000).toFixed(1)}s   $${costUsd.toFixed(4)}` +
         `\n\n  ${resultsPath}` +
-        `\n\n  REVIEW_PENDING — nothing is published yet.` +
-        `\n  npm run review -- ${auditId.slice(0, 8)}\n`,
+        (disputed.length > 0
+          ? `\n\n  REVIEW_PENDING — ${disputed.length} finding(s) the capture disputes:` +
+            disputed.map((f) => `\n    ${f.id}: ${f.heuristic}`).join("") +
+            `\n  npm run review -- ${auditId.slice(0, 8)}\n`
+          : `\n\n  AUTO_PUBLISHED — nothing disputed it.` +
+            `\n  /a/${auditId}/\n`),
     );
 
     if (findings.length === 0) {
