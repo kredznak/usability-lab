@@ -698,7 +698,12 @@ leaving the spend untestable — which is the honest split. Small.
 
 ---
 
-## B21. No real Stripe account has ever been sent a request
+## B21. ~~No real Stripe account has ever been sent a request~~ — DONE 2026-08-25
+
+The title is kept because it was true for seven days and is the whole point of
+the entry. Closed by a card, a webhook, a cancel, a stale replay and a renewal —
+the measurements are at the bottom, under the two status lines that kept
+promising them.
 
 **Status 2026-08-18: the guessing is gone; the sending has not happened.**
 **Status 2026-08-19: they have been sent to a fake Stripe that knows the schema.
@@ -907,13 +912,50 @@ minted only for a subscriber, which is the guard working rather than a
 coincidence. The replay that followed is written up under B22, which this run
 also closed.
 
-**What is left, and it is now one thing: a renewal.** No second month's invoice
+~~**What is left, and it is now one thing: a renewal.** No second month's invoice
 has ever been charged, so `invoice.payment_succeeded` and the period-end
 extension that follows it are still untested. `stripe listen` is not even
 subscribed to that event. Nothing in the product reads it today — access hangs
 on `customer.subscription.updated` carrying a new `current_period_end` — so the
 open question is whether that update actually arrives on renewal, which only a
-renewal answers. Stripe test clocks can force one without waiting a month.
+renewal answers. Stripe test clocks can force one without waiting a month.~~
+
+### The renewal, forced with a test clock. B21 CLOSED, 2026-08-25.
+
+A clock, a customer on it, `tok_visa` as the default payment method, and a
+subscription on the real price — then the clock advanced one hour past the
+period end. Its own address, so the row under test was never the founder's.
+
+```
+09:56:28  customer.subscription.created  [200]   period end 2026-09-25
+09:59:30  customer.subscription.updated  [200]   period end 2026-10-25
+```
+
+```
+invoice in_1U8Kpx…  billing_reason subscription_create  amount_paid 2900  paid
+invoice in_1U8Ksv…  billing_reason subscription_cycle   amount_paid 2900  paid
+```
+
+**The open question is answered: yes.** `customer.subscription.updated` carries
+the new `current_period_end` on renewal, one month forward, so access extends
+without this product reading `invoice.payment_succeeded` at all. The event we do
+not subscribe to is the event we do not need — which was a guess when the
+endpoint was written and is now a measurement.
+
+Worth keeping, because it was the risk: had the renewal *not* carried the date,
+every subscriber would have lost access one month after paying, and the failure
+would have been invisible until the first customer hit their second month —
+long after anyone was watching. That is F21 with a thirty-day fuse.
+
+Cleaned up afterwards: subscription cancelled, clock deleted, no test objects
+left on the account. The local row stays as `canceled`, which is what happened.
+
+**B21 has nothing left in it.** Checkout, the metadata round-trip, the period
+end, the cancel, the stale replay (B22) and the renewal are all measured against
+a real account. What is *not* covered anywhere: a failed renewal —
+`past_due`, a declined card, `invoice.payment_failed` — which `mapStatus`
+handles by construction and nothing has exercised. That is a new entry's worth
+of work, not a loose end on this one.
 
 ---
 
