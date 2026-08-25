@@ -2529,14 +2529,41 @@ happening for as long as this has been running — every one of those a pin
 clamped to the bottom edge of an image. The `annotate` fix above covers it, and
 did so before anyone knew that case existed.
 
-### Still not done
+### Re-run, and the fix removed the finding that caused the hold
 
-The audit that found this (`5601007d`, posthog.com/pricing) is **still pending
-with its 900px screenshot**. Its findings' boxes were measured under the old
-capture; 121 of 121 still match by tag and text and 111 of them sit within 40px
-of where they now are, but re-pinning the old findings onto the new screenshot
-would mean a page whose picture and boxes came from two different captures.
-That is the defect this entry is about. It wants a re-run, not a splice.
+`ed968511`, 2026-08-25, through the real form. The first full-pipeline run on
+the repaired capture:
+
+```
+                    before (5601007d)     after (ed968511)
+screenshot          1440x900              1440x4937
+elements below pic  87 of 121             0 of 121
+text                5033 chars            5100 chars
+findings            15                    18
+pinned              5 (of 13 attempted)   16
+cited               10/15                 14/18
+request->published  held at the gate      297s
+```
+
+**And the false positive did not recur.** The first run stopped at
+REVIEW_PENDING because a reviewer read PostHog's false-scarcity joke as a dark
+pattern — "1 left at this price!!" — from extracted text, with no picture of the
+part of the page it sits on. Given the whole page, no reviewer produced an
+urgency or scarcity finding at all: the bottom of the page says "This is the
+call to action. If nothing else has sold you on PostHog, hopefully these classic
+marketing tactics will", and that framing is only visible if the capture went
+that far.
+
+So the missing screenshot was not merely missing evidence. **It was producing
+findings.** A reviewer reasoning about text it cannot see is the same failure
+mode as B10 and B30, and the gate caught this instance because `claims.ts`
+disputed it — which is the strongest thing anyone can say about that gate so
+far.
+
+The audit published itself, 297s end to end, no DEGRADED note. The old
+`5601007d` is left at REVIEW_PENDING rather than declined: DECLINED is terminal
+in `db.ts`'s state machine, so retiring it is a decision with no undo and
+belongs to whoever owns the gate.
 
 ---
 
