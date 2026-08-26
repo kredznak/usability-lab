@@ -68,6 +68,7 @@ import {
   questionsPage,
   signInPage,
   accountPage,
+  schedulePage,
   billingPage,
 } from "./marketing.js";
 import { asset } from "./assets.js";
@@ -1130,7 +1131,15 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return sendPage(res, 200, signInPage({ sent: email }), {}, MARKETING_CSP);
   }
 
-  if (url.pathname === "/account" || url.pathname === "/account/billing") {
+  if (
+    url.pathname === "/account" ||
+    url.pathname === "/account/billing" ||
+    // Added 2026-08-25 with the third tab. It joins this block rather than
+    // getting a route of its own so it inherits the token-for-cookie exchange
+    // below — a tab that bounced to the sign-in page while the other two did
+    // not would be a worse advertisement for the roadmap than no tab at all.
+    url.pathname === "/account/schedule"
+  ) {
     /**
      * The link in the mail is exchanged for a cookie, and then it is gone.
      *
@@ -1169,6 +1178,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     // This is the whole of the cross-customer rule, in one line.
     const email = check.email;
     const onBilling = url.pathname === "/account/billing";
+    const onSchedule = url.pathname === "/account/schedule";
 
     if (onBilling && req.method === "POST") {
       /**
@@ -1228,6 +1238,15 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
 
     if (req.method !== "GET") return notFound(res);
+
+    if (onSchedule) {
+      // No event recorded. `billing.viewed` exists because a customer looking
+      // at cancellation is a signal worth having; a customer reading a roadmap
+      // is not one this product has decided to collect, and B25's finding —
+      // every homepage view writing a permanent row — is the reason a new
+      // event type has to be argued for rather than added by symmetry.
+      return sendPage(res, 200, schedulePage(email), { "cache-control": "no-store" }, MARKETING_CSP);
+    }
 
     if (onBilling) {
       const row = subs.get(email);

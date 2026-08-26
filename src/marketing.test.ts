@@ -11,6 +11,8 @@ import {
   HOME_CSP,
   billingPage,
   accountPage,
+  signInPage,
+  schedulePage,
 } from "./marketing.js";
 import { SOURCES } from "./sources.js";
 import { QUESTIONS } from "./profile.js";
@@ -693,5 +695,50 @@ describe("the dashboard agrees with the billing tab about who is paying", () => 
     // a row that says active with an expired period end, and this page has to
     // ask the same one it does.
     assert.doesNotMatch(dash({ active: false, status: "active" }), /&middot; subscribed/);
+  });
+});
+
+/**
+ * Branding on the pages a customer actually lives on.
+ *
+ * The homepage has carried a wordmark since it was built. Nothing else did — so
+ * someone who followed a magic link into their dashboard was on an unbranded
+ * page with no way back to the site, which is the one journey this product's
+ * paying customers take most often.
+ */
+describe("the wordmark is on every page that is not the homepage", () => {
+  const shells = {
+    "sign-in": () => signInPage(),
+    dashboard: () => accountPage("a@b.com", [], { active: true, status: "active" }),
+    billing: () =>
+      billingPage("a@b.com", { status: "active", renewsAt: null, manageable: false, csrf: "c" }),
+    schedule: () => schedulePage("a@b.com"),
+  };
+
+  for (const [name, render] of Object.entries(shells)) {
+    test(`${name} carries it, and it goes home`, () => {
+      const html = render();
+      assert.match(html, /<a class="brandmark" href="\/">The Usability Lab<\/a>/, name);
+    });
+  }
+
+  test("it does not compete with the page's own title", () => {
+    /**
+     * The mark is 15px and the `<h1>` beside it is 38px, on purpose. Two things
+     * trying to be the first thing read is worse than no mark at all — and the
+     * homepage's own brandmark is 33px, which would be exactly that mistake if
+     * it were reused here unchanged.
+     */
+    const html = accountPage("a@b.com", [], { active: true, status: "active" });
+    const size = html.match(/\.brandmark \{[^}]*font-size:(\d+)px/)?.[1];
+    assert.ok(size && Number(size) <= 16, `the mark is ${size}px; it must stay under the h1`);
+    assert.ok(html.indexOf("brandmark") < html.indexOf("<h1>"), "and it comes first in the source");
+  });
+
+  test("the homepage keeps its own, larger one", () => {
+    // Not this mark. `.brandmark` on the homepage is a 33px hero element and
+    // predates all of this; asserting they are the same class here would invite
+    // someone to unify them and shrink the hero.
+    assert.match(homePage(), /class="brandmark">The Usability Lab</);
   });
 });

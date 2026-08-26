@@ -2527,16 +2527,50 @@ describe("Stripe, when it is configured", () => {
       assert.doesNotMatch(html, /•{4}|\*{4}|ending in|last four|Visa|Mastercard|exp(iry|ires)/i);
     });
 
-    test("both tabs are reachable from each other, and neither is 'not built'", async () => {
+    test("all three tabs are reachable from each other", async () => {
+      /**
+       * Was "both tabs ... and neither is 'not built'", asserting that the
+       * schedule teaser stayed inline rather than becoming a third tab that is
+       * permanently empty. Kelly overruled that on 2026-08-25: the tab exists
+       * to show the product is heading for full automation, which is a reason
+       * the old argument never addressed.
+       *
+       * What survives is the part that was actually about tabs — every tab
+       * reaches every other one. A tab that is a dead end is the failure the
+       * original test was aimed at, and it is still the failure worth guarding.
+       */
       const jar = await signedIn(await subscribed());
-      const audits = await (await get("/account", jar)).text();
-      assert.match(audits, /href="\/account\/billing"/, "audits links to account");
-      const billing = await (await get("/account/billing", jar)).text();
-      assert.match(billing, /href="\/account"/, "account links back to audits");
-      // The schedule teaser stays inline on the audits tab rather than becoming
-      // a third tab that is permanently empty.
-      assert.match(audits, /Not built yet/);
-      assert.doesNotMatch(billing, /Not built yet/);
+      const pages = {
+        "/account": await (await get("/account", jar)).text(),
+        "/account/schedule": await (await get("/account/schedule", jar)).text(),
+        "/account/billing": await (await get("/account/billing", jar)).text(),
+      };
+
+      for (const [here, html] of Object.entries(pages)) {
+        for (const there of Object.keys(pages)) {
+          if (here === there) {
+            assert.match(html, /aria-current="page"/, `${here} marks itself current`);
+            continue;
+          }
+          assert.match(html, new RegExp(`href="${there}"`), `${here} links to ${there}`);
+        }
+      }
+    });
+
+    test("the schedule tab says it is coming before it is opened", async () => {
+      /**
+       * The answer to the objection the old test encoded. An unlabelled tab
+       * leading to "not built yet" is a dead end; a tab that says so up front
+       * is a roadmap, and the difference is whether the page keeps a promise it
+       * made a moment earlier. So the badge is asserted on the tabs a reader
+       * sees *before* clicking, not only on the page behind it.
+       */
+      const jar = await signedIn(await subscribed());
+      for (const path of ["/account", "/account/billing"]) {
+        const html = await (await get(path, jar)).text();
+        const nav = html.slice(html.indexOf("<nav"), html.indexOf("</nav>"));
+        assert.match(nav, /Schedule audits<span class="soon-badge">Soon<\/span>/, path);
+      }
     });
 
     test("a forged post opens no portal", async () => {
@@ -2940,21 +2974,34 @@ describe("your audits, and only yours", () => {
     assert.notEqual(res.status, 200);
   });
 
-  test("the schedule teaser shows the idea without pretending it works", async () => {
+  test("the schedule page shows the idea without pretending it works", async () => {
     /**
      * §0 lists scheduled monitoring as designed-and-not-built, and this is that
-     * said on the page where it would live. The assertion that matters is the
-     * negative one: it must not be a link or a button, because a control that
-     * looks live and does nothing is the failure this repo keeps correcting —
-     * most recently a footer claiming a person had read an audit nobody read.
+     * said on the page where it will live. The assertion that matters is still
+     * the negative one: nothing here may be a link or a button, because a
+     * control that looks live and does nothing is the failure this repo keeps
+     * correcting — most recently a footer claiming a person had read an audit
+     * nobody read.
+     *
+     * Moved from the audits tab to `/account/schedule` on 2026-08-25. The
+     * teaser was a dotted box below the audit list; it is a tab now, and the
+     * words went with it rather than being duplicated.
      */
-    const { html } = await account(signAccount(MINE));
-    assert.match(html, /Schedule audits/);
-    assert.match(html, /Not built yet/, "and says so where a reader will see it");
+    const { html } = await account(signAccount(MINE), "/account/schedule");
 
-    const block = html.slice(html.indexOf('class="soon"'));
-    const teaser = block.slice(0, block.indexOf("</div>", block.indexOf("<p")));
-    assert.doesNotMatch(teaser, /<a\s|<button|href=/, "nothing here may be clickable");
+    assert.match(html, /Schedule audits/);
+    assert.match(html, /None of this is built yet/, "and says so where a reader will see it");
+    // Whitespace-tolerant: the template wraps mid-sentence, so the rendered
+    // markup carries a newline and indentation between "you" and "press".
+    const text = html.replace(/\s+/g, " ");
+    assert.match(text, /Today a re-audit happens when you press the button/,
+      "a coming-soon page has to say what happens now, or the reader cannot tell what they are missing");
+
+    // Everything between the tabs and the end of the page: the roadmap itself
+    // carries no controls. The nav above it is links by definition.
+    const body = html.slice(html.indexOf("</nav>"));
+    assert.doesNotMatch(body, /<button|<form/, "nothing here may be clickable");
+    assert.doesNotMatch(body, /<a\s/, "and nothing here may be a link");
   });
 
   test("no token at all is refused", async () => {

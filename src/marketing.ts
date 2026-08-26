@@ -160,11 +160,34 @@ export const SHELL_CSS = `
  * a visitor's text — `body` is, and everything that reaches it goes through
  * `escapeHtml` at the call site.
  */
+/**
+ * The wordmark, top-left, on every page that is not the homepage.
+ *
+ * The homepage has carried `.brandmark` since it was built; nothing else did,
+ * so a customer who followed a magic link into their dashboard was on an
+ * unbranded page with no way back to the site. Same words and the same
+ * uppercase treatment as the hero, at a size that reads as a mark rather than a
+ * heading — the `<h1>` below it is the page's title, and two things competing
+ * to be the first thing read is worse than no mark at all.
+ *
+ * It is a link because a logo in the corner is one everywhere else on the web,
+ * and a mark that looks clickable and is not is a small lie about the page.
+ */
+const BRANDMARK = `<a class="brandmark" href="/">The Usability Lab</a>`;
+
+const BRANDMARK_CSS = `
+  .brandmark { position:absolute; top:30px; left:32px; font-size:15px; font-weight:400;
+    letter-spacing:.07em; text-transform:uppercase; color:var(--ink-soft);
+    text-decoration:none; }
+  .brandmark:hover { color:var(--ink); }
+  @media (max-width:600px) { .brandmark { top:22px; left:22px; font-size:13px; } }
+`;
+
 export function page(title: string, body: string, extraCss = ""): string {
   return documentHtml(
     `${title} — The Usability Lab`,
-    extraCss,
-    `<div class="wrap"><h1>${title}</h1>${body}</div>`,
+    `${BRANDMARK_CSS}${extraCss}`,
+    `${BRANDMARK}<div class="wrap"><h1>${title}</h1>${body}</div>`,
   );
 }
 
@@ -1025,13 +1048,6 @@ export function signInPage(opts: { error?: string; sent?: string } = {}): string
  * a person had read an audit when nobody had was the same mistake with higher
  * stakes. Nothing here is clickable, so nothing can be clicked in hope.
  */
-const SCHEDULE_TEASER = `<div class="soon">
-    <div class="tag">Not built yet</div>
-    <div class="head">Schedule audits</div>
-    <p>Re-check your pages on a schedule &mdash; weekly, or after you ship &mdash; and
-       get told what moved without asking. Today a re-audit happens when you press
-       the button.</p>
-  </div>`;
 
 export interface AccountAudit {
   url: string;
@@ -1041,29 +1057,52 @@ export interface AccountAudit {
 }
 
 /**
- * Two tabs, and deliberately not three.
+ * Three tabs, and the middle one is not built.
  *
- * "Schedule audits" was proposed as a third. It is the dotted box below the
- * audit list instead, because a tab is a promise that something is behind it —
- * and a tab whose content is "not built yet" makes the dashboard read one-third
- * unfinished on every visit, permanently, to a customer who is paying. Inline,
- * the same box is an aside next to real work, which is what it actually is.
+ * ~~Two tabs, and deliberately not three. "Schedule audits" was proposed as a
+ * third. It is the dotted box below the audit list instead, because a tab is a
+ * promise that something is behind it — and a tab whose content is "not built
+ * yet" makes the dashboard read one-third unfinished on every visit,
+ * permanently, to a customer who is paying. Inline, the same box is an aside
+ * next to real work, which is what it actually is.~~
  *
- * Marked up as a nav of links rather than as buttons: these are two pages, the
- * back button works, and a tab strip that needs JavaScript to change pages is a
- * tab strip that does not work when it fails to load.
+ * **Overruled by Kelly, 2026-08-25**, with a reason the argument above does not
+ * answer: the tab is not there to deliver the feature, it is there to show that
+ * the product is heading for full automation. A roadmap a customer can see is
+ * worth a tab even before it does anything.
+ *
+ * The objection is met rather than dismissed — the tab carries a **Soon** badge,
+ * so it announces itself as forthcoming before anyone clicks it, and the page
+ * behind it says what it will do rather than apologising for what it does not.
+ * A dead end is a tab that promises and then does not deliver; this one does not
+ * promise.
+ *
+ * The dotted box has gone from the audits tab. It was the same words in the
+ * same product two clicks apart, and the tab is the better home for them.
  */
-const ACCOUNT_TABS: { href: string; label: string }[] = [
+const ACCOUNT_TABS: { href: string; label: string; soon?: boolean }[] = [
   { href: "/account", label: "Your audits" },
+  { href: "/account/schedule", label: "Schedule audits", soon: true },
   { href: "/account/billing", label: "Your account" },
 ];
 
+/**
+ * `soon` is what makes a third tab honest rather than broken.
+ *
+ * The objection to it (recorded below, and it was mine) was that a tab whose
+ * content is "not built yet" makes the dashboard read one-third unfinished on
+ * every visit, permanently, to somebody who is paying. The badge answers it:
+ * an unlabelled tab leading to "not built yet" is a dead end, and a tab that
+ * says **Soon** before you click it is a roadmap. The difference is whether the
+ * page keeps a promise it made a moment earlier.
+ */
 function tabs(current: string): string {
-  const items = ACCOUNT_TABS.map((t) =>
-    t.href === current
-      ? `<span class="tab on" aria-current="page">${t.label}</span>`
-      : `<a class="tab" href="${t.href}">${t.label}</a>`,
-  ).join("");
+  const items = ACCOUNT_TABS.map((t) => {
+    const label = t.soon ? `${t.label}<span class="soon-badge">Soon</span>` : t.label;
+    return t.href === current
+      ? `<span class="tab on" aria-current="page">${label}</span>`
+      : `<a class="tab" href="${t.href}">${label}</a>`;
+  }).join("");
   return `<nav class="tabs" aria-label="Account">${items}</nav>`;
 }
 
@@ -1073,7 +1112,18 @@ const TABS_CSS = `.tabs { display:flex; gap:22px; margin:0 0 8px;
      text-decoration:none; color:var(--ink-soft); border-bottom:2px solid transparent;
      margin-bottom:-1px; }
    .tabs .tab.on { color:var(--ink); border-bottom-color:var(--ink); }
-   .tabs a.tab:hover { color:var(--ink); }`;
+   .tabs a.tab:hover { color:var(--ink); }
+   .soon-badge { display:inline-block; margin-left:7px; font-size:10px; letter-spacing:.08em;
+     text-transform:uppercase; color:var(--shade); border:1px solid var(--sand);
+     border-radius:100px; padding:2px 7px; vertical-align:1px; }
+   /* Three tabs fit a 640px column and do not fit a narrow phone. Wrapping is
+      the only option that keeps every label readable; shrinking the type makes
+      the third tab look like an afterthought, which is the impression this
+      badge exists to avoid. */
+   @media (max-width:520px) {
+     .tabs { flex-wrap:wrap; gap:16px; }
+     .soon-badge { margin-left:5px; }
+   }`;
 
 export interface BillingView {
   /**
@@ -1284,17 +1334,53 @@ export function accountPage(
      <p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--> &middot; ${standing}</p>
      ${audits.length === 0 ? empty : `<ul class="rows">${rows}</ul>`}
      ${audits.length === 0 ? "" : `<p><a class="btn" href="/">Audit another page</a></p>`}
-     ${SCHEDULE_TEASER}`,
+`,
     `${TABS_CSS}
      .rows { list-style:none; margin:26px 0 30px; padding:0; }
      .rowitem { padding:16px 0; border-bottom:1px solid var(--plaster); }
      .site { font-size:17px; word-break:break-all; }
      .meta { color:var(--ink-soft); font-size:14px; margin-top:3px; }
-     .soon { margin-top:34px; padding:18px 20px; border:1px dashed var(--sand);
-             border-radius:10px; color:var(--ink-soft); }
-     .soon .tag { display:inline-block; font-size:12px; letter-spacing:.06em;
-                  text-transform:uppercase; color:var(--shade); margin-bottom:6px; }
-     .soon .head { color:var(--ink); font-size:16px; margin-bottom:4px; }
-     .soon p { margin:0; font-size:14px; }`,
+`,
+  );
+}
+
+
+/**
+ * `/account/schedule` — the tab that says what is coming.
+ *
+ * Written as a placeholder for the feature rather than a holding page: the
+ * three lines below are the shape the scheduling actually needs, so when this
+ * is built the page is the spec it was already showing. That is also why it
+ * states what a re-audit does *today* — a coming-soon page that does not say
+ * what currently happens leaves the reader unsure whether they are missing
+ * something that already exists.
+ */
+export function schedulePage(email: string): string {
+  return page(
+    "Schedule audits",
+    `${tabs("/account/schedule")}
+     <p class="hint"><!--email_off-->${escapeHtml(email)}<!--email_on--></p>
+
+     <p class="lead">Re-check your pages on a schedule and get told what moved,
+        without asking.</p>
+
+     <ul class="plan">
+       <li><strong>Weekly, or monthly.</strong> A re-audit on a fixed day, so a
+           page you stopped looking at cannot quietly get worse.</li>
+       <li><strong>After you ship.</strong> A re-audit triggered when the page
+           changes, which is the moment the findings are worth most.</li>
+       <li><strong>Only what moved.</strong> The diff, not the whole audit again
+           &mdash; what got fixed, what appeared, what is unchanged.</li>
+     </ul>
+
+     <p class="hint">None of this is built yet. Today a re-audit happens when you
+        press the button on an audit, and the diff against the previous run is
+        already what you get when you do.</p>`,
+    `${TABS_CSS}
+     .plan { list-style:none; margin:26px 0 26px; padding:0; }
+     .plan li { padding:16px 0; border-bottom:1px solid var(--plaster);
+       font-size:15px; color:var(--ink-soft); line-height:1.6; }
+     .plan li strong { display:block; color:var(--ink); font-weight:500;
+       font-size:16px; margin-bottom:3px; }`,
   );
 }
