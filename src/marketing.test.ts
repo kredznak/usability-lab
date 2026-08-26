@@ -718,27 +718,104 @@ describe("the wordmark is on every page that is not the homepage", () => {
   for (const [name, render] of Object.entries(shells)) {
     test(`${name} carries it, and it goes home`, () => {
       const html = render();
-      assert.match(html, /<a class="brandmark" href="\/">The Usability Lab<\/a>/, name);
+      assert.match(html, /<a class="brandmark" href="\/"><svg class="mark"/, name);
     });
   }
 
-  test("it does not compete with the page's own title", () => {
+  /**
+   * The regression that replacing words with a picture invites.
+   *
+   * Until 2026-08-26 the mark was the literal text "The Usability Lab" inside an
+   * `<a>`, so its accessible name was free and could not be lost. It is now an
+   * `<svg>`, which has no accessible name by default — an unlabelled one is
+   * announced as nothing at all, and the link home on every logged-in page
+   * becomes an anonymous link. Nothing on screen changes when this breaks.
+   */
+  test("the mark is announced, not just drawn", () => {
+    for (const [name, render] of Object.entries(shells)) {
+      const html = render();
+      assert.match(html, /role="img"/, `${name}: the svg is not exposed as an image`);
+      assert.match(
+        html,
+        /aria-label="The Usability Lab"/,
+        `${name}: the mark has no accessible name, so the link home is announced as nothing`,
+      );
+    }
+    assert.match(homePage(), /aria-label="The Usability Lab"/, "homepage");
+  });
+
+  test("it takes its colours from the palette, not from black and white", () => {
     /**
-     * The mark is 15px and the `<h1>` beside it is 38px, on purpose. Two things
-     * trying to be the first thing read is worse than no mark at all — and the
-     * homepage's own brandmark is 33px, which would be exactly that mistake if
-     * it were reused here unchanged.
+     * The supplied artwork is `#000` on `#FFF`. The palette note in
+     * `marketing.ts` argues that pure white reads wrong beside these warm
+     * neutrals, and pure black reads as a second, colder ink beside `--ink`.
+     * Hardcoding the file's own values would put two inks on one page and it
+     * would look like a rendering bug rather than a decision.
+     */
+    const css = accountPage("a@b.com", [], { active: true, status: "active" });
+    assert.match(css, /\.mark \.slab \{ fill:var\(--ink\); \}/);
+    assert.match(css, /\.mark \.word \{ fill:var\(--paper\); \}/);
+    assert.doesNotMatch(
+      css.slice(css.indexOf(".mark"), css.indexOf("</style>")),
+      /fill:\s*(#000|#fff|black|white)\b/i,
+      "the mark is painted with literal black or white instead of the palette",
+    );
+  });
+
+  test("the page's own title still clears the mark", () => {
+    /**
+     * Measured, not eyeballed, because eyeballing it is what missed it.
+     *
+     * The mark is `position:absolute`, so nothing in the flow knows how tall it
+     * is. At the first size that made the letters legible — 240px, up from the
+     * 156px that rendered as a smudge — the slab reached y=96 and `.wrap` began
+     * its content at exactly y=96. On a 390px screen the corner of the slab sat
+     * on the word "Your" in "Your audits".
+     *
+     * The artwork is 438x121, so its height is fixed by its width. That makes
+     * this a relationship between two numbers in the stylesheet rather than
+     * something only a screenshot can see — which is the difference between a
+     * test that holds and one that has to be re-checked by hand every time
+     * somebody nudges the mark.
      */
     const html = accountPage("a@b.com", [], { active: true, status: "active" });
-    const size = html.match(/\.brandmark \{[^}]*font-size:(\d+)px/)?.[1];
-    assert.ok(size && Number(size) <= 16, `the mark is ${size}px; it must stay under the h1`);
-    assert.ok(html.indexOf("brandmark") < html.indexOf("<h1>"), "and it comes first in the source");
+    const ASPECT = 121 / 438;
+
+    const clears = (label: string, block: string) => {
+      const top = Number(block.match(/\.brandmark \{[^}]*top:(\d+)px/)?.[1]);
+      const width = Number(block.match(/\.brandmark \{[^}]*width:(\d+)px/)?.[1]);
+      const pad = Number(block.match(/\.wrap \{ padding-top:(\d+)px; \}/)?.[1]);
+      assert.ok(top && width && pad, `${label}: could not read top/width/padding back out`);
+      const bottom = top + width * ASPECT;
+      assert.ok(
+        pad > bottom,
+        `${label}: the mark ends at ${bottom.toFixed(0)}px and the content starts at ${pad}px`,
+      );
+    };
+
+    // Anchored on the mark's own block. The base stylesheet has a
+    // `@media (max-width:600px)` of its own, earlier in the document, and
+    // splitting the whole page on the first one lands in the wrong rules.
+    const css = html.slice(html.indexOf(".brandmark {"));
+    const narrowAt = css.indexOf("@media (max-width:600px)");
+    assert.notEqual(narrowAt, -1, "the mark has no narrow-screen rules");
+    clears("wide", css.slice(0, narrowAt));
+    clears("narrow", css.slice(narrowAt));
   });
 
   test("the homepage keeps its own, larger one", () => {
-    // Not this mark. `.brandmark` on the homepage is a 33px hero element and
-    // predates all of this; asserting they are the same class here would invite
-    // someone to unify them and shrink the hero.
-    assert.match(homePage(), /class="brandmark">The Usability Lab</);
+    // Same artwork, deliberately not the same placement: the hero runs it off
+    // the left edge, which only reads as intentional with room around it. See
+    // the note on BRANDMARK for why the dashboard's is whole and inset.
+    const home = homePage();
+    assert.match(home, /<div class="brandmark"><svg class="mark"/);
+    const heroWidth = Number(home.match(/\.brandmark \{[^}]*width:min\((\d+)px/)?.[1]);
+    const pageWidth = Number(
+      accountPage("a@b.com", [], { active: true, status: "active" }).match(
+        /\.brandmark \{[^}]*width:(\d+)px/,
+      )?.[1],
+    );
+    assert.ok(heroWidth > pageWidth, `hero ${heroWidth}px must stay larger than page ${pageWidth}px`);
+    assert.match(home, /left:-\d+px/, "and it bleeds off the left edge");
   });
 });
