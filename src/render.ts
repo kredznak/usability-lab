@@ -9,6 +9,7 @@ import { rubricFor } from "./agents/rubrics.js";
 import { pinNumbers } from "./annotate.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 import { SOURCES } from "./sources.js";
+import { MARK, markCss, siteUrl } from "./brand.js";
 
 /**
  * Two pages, written at two different moments.
@@ -48,6 +49,34 @@ export function escapeHtml(s: string): string {
  * distinct, so that is enough.
  */
 const SOURCE_BY_URL = new Map(SOURCES.map((s) => [s.url, s]));
+
+/**
+ * The mark on an audit, added 2026-08-26.
+ *
+ * A results page carried no branding of any kind: the audited site's title, its
+ * url, the findings, and a footer about how they were checked. Nothing said who
+ * wrote it or where it came from. That is the wrong page to leave anonymous —
+ * it is the one artefact a customer forwards to somebody else, and
+ * `results-full.html` is a standalone file that can outlive any link to us.
+ *
+ * ## A masthead, not a corner
+ *
+ * The marketing shells float the mark in the top-left corner over open space.
+ * This page is a document, and its `<header>` already carries a title and a url
+ * in normal flow. Putting the mark in that flow, above the title, means no
+ * absolute positioning, no clearance to keep in sync with the artwork's height,
+ * and no chance of the collision that a 240px slab caused on the dashboard at
+ * 390px wide. It also reads the way a report's masthead reads.
+ *
+ * The colours are this page's own palette, which is a neutral `--ink` (#1a1a1a)
+ * on `--bg`, not the marketing pages' warm one. Same artwork, same reasoning as
+ * `brand.ts` gives for not using the file's literal black.
+ */
+const RESULTS_MARK_CSS = `${markCss("var(--ink)", "var(--bg)")}  header .brandmark { display:block; width:190px; margin:0 0 22px; }
+`;
+
+/** In flow, above the title, linking back to the site that produced the audit. */
+const RESULTS_MARK = `<a class="brandmark" href="${siteUrl()}/">${MARK}</a>`;
 
 function citationLabel(finding: Finding): string {
   if (finding.citation.source_type === "none") {
@@ -208,6 +237,7 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
          font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
   .wrap { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
   header { border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:32px; }
+${RESULTS_MARK_CSS}
   h1 { font-size:26px; margin:0 0 6px; }
   .url { color:var(--muted); font-size:14px; word-break:break-all; }
   h2 { font-size:18px; margin:40px 0 16px; }
@@ -249,6 +279,7 @@ export async function renderResults(input: RenderInput, outDir: string): Promise
 <body>
 <div class="wrap">
   <header>
+    ${RESULTS_MARK}
     <h1>${escapeHtml(capture.title || "Untitled page")}</h1>
     <div class="url">${escapeHtml(capture.final_url)}</div>
   </header>
@@ -819,6 +850,7 @@ export function publicHtml(input: PublishInput): string {
          font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
   .wrap { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
   header { border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:28px; }
+${RESULTS_MARK_CSS}
   h1 { font-size:26px; margin:0 0 6px; }
   .url { color:var(--muted); font-size:14px; word-break:break-all; }
   .lead { font-size:15px; color:#444; margin:0 0 24px; }
@@ -853,6 +885,7 @@ export function publicHtml(input: PublishInput): string {
 <body>
 <div class="wrap">
   <header>
+    ${RESULTS_MARK}
     <h1>${escapeHtml(capture.title || "Untitled page")}</h1>
     <div class="url">${escapeHtml(capture.final_url)}</div>
   </header>
