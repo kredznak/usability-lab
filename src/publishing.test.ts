@@ -176,5 +176,25 @@ describe("a held audit says why, somewhere that outlives a terminal", () => {
       /disputed\.map\(/,
       "the event must carry which findings were disputed, not just that some were",
     );
+    /*
+     * Added 2026-08-26, after the first hold this event was built for turned
+     * out to be false.
+     *
+     * posthog.com/pricing was held because `claims.ts` said one of the
+     * finding's quotes was not on the page. It was on the page. That run's
+     * capture was 1440x900 of a page 4937px tall, so the quote was below the
+     * crop, and a quote check run against a quarter of a page reports the other
+     * three quarters missing. The contradiction was manufactured by B36.
+     *
+     * So "which findings" is not sufficient to act on a hold — a reader also
+     * needs to know whether the page the gate judged against was whole. Those
+     * numbers existed at the moment of the hold and were thrown away, and
+     * recovering them four days later meant re-parsing the run off disk.
+     */
+    assert.match(
+      branch,
+      /capture:\s*\{[\s\S]*?full_height/,
+      "the event must carry the capture it judged, or a false hold reads like a real one",
+    );
   });
 });

@@ -671,11 +671,33 @@ async function main(): Promise<void> {
        * needed to act on a held audit — which finding the capture disputes —
        * existed for the length of a `console.log`.
        *
-       * It was a good hold, which is the part worth keeping. PostHog's pricing
+       * ~~It was a good hold, which is the part worth keeping. PostHog's pricing
        * page jokes about false scarcity ("1 left at this price!!", "Act now and
        * get $0 off your first order"); a reviewer read the joke as a dark
        * pattern, `claims.ts` disagreed with it, and a person is the right
-       * answer. None of that survived the process that decided it.
+       * answer.~~ None of that survived the process that decided it.
+       *
+       * **Wrong about the mechanism — corrected 2026-08-26.** The hold was
+       * recomputed from the run's own `findings.json` + `capture.json`, and
+       * `claims.ts` did not disagree with the reviewer. It ran four checks and
+       * three passed; the one that failed said the quote "Hurry: 2126 companies
+       * signed up today. Act now and get $0 off your first order" was *not on
+       * the page*. It is on the page. All five of that finding's phrases appear
+       * in `ed968511`'s capture. The held run's capture was 1440x900 of a
+       * 4937px page, so the quote sat below the crop, and the check read a
+       * quarter of a page and reported the rest missing.
+       *
+       * The correction that matters is not about one audit. A short capture
+       * does not merely lose evidence — it *manufactures contradictions*, and
+       * it aims them at exactly the findings that quote furthest down the page.
+       * Every quote check below the fold inverts. B36 fixed the capture, which
+       * fixes this too, but the failure mode is worth naming: this gate cannot
+       * be trusted over a degraded capture, because its inputs are the thing
+       * that degraded.
+       *
+       * It stopped a finding the full-page run never made, so the outcome was
+       * right. That is luck, not evidence for the gate, and it was cited as
+       * evidence for the gate in this comment for a day.
        */
       events.record({
         audit_id: auditId,
@@ -684,6 +706,18 @@ async function main(): Promise<void> {
           disputed: disputed.length,
           of: publishable.length,
           findings: disputed.map((f) => ({ id: f.id, heuristic: f.heuristic })),
+          /*
+           * The capture the gate judged on, because a contradiction is only as
+           * trustworthy as the page it was checked against. Answering "was the
+           * hold on 5601007d real?" on 2026-08-26 meant re-parsing two JSON
+           * files off disk and re-running `disputedFindings` by hand; these
+           * three numbers are the ones that made the answer obvious once found.
+           */
+          capture: {
+            width: captured.viewport.width,
+            height: captured.full_height,
+            degraded: degraded.length,
+          },
         },
       });
       setStatus("REVIEW_PENDING", {

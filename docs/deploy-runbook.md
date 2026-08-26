@@ -527,6 +527,7 @@ cloudflared tunnel token --cred-file ~/.cloudflared/87b0e6e3-8e46-4bec-a985-bbae
 
 npm run serve                     # terminal 1 — start the origin first, or the tunnel 502s
 cloudflared tunnel --config deploy/cloudflared-config.yml run usability-lab   # terminal 2
+nohup npm run worker >> .logs/worker.log 2>&1 &                              # terminal 3
 ```
 
 **`tunnel login` needs the Authorize click, not just a login.** The first attempt
@@ -557,3 +558,44 @@ existing `out/.secret`, so no link issued before the move was invalidated.
 **Not re-verified**, for the same reason as §9: the `cf-connecting-ip` rate-limit
 buckets, which cost six `POST /request` rows and move every funnel number. The
 app's side is covered hermetically by `clientip.test.ts`.
+
+## 11. The worker, which this runbook never started — 2026-08-26
+
+The third line in §10's block is new. For the four days before it existed, the
+queue worker was not part of the deploy at all: it was a background command of a
+Claude session, launched once on **Aug 24 at 20:08** and never restarted.
+
+Nothing looked wrong. The site answered 200, the tests were green, and the
+worker's own log for two days was the single line `Nothing queued.` repeated —
+it had no work, so it never had a chance to be wrong out loud.
+
+But `tsx` resolves modules at process start. That worker was running the tree as
+it stood on Aug 24, which meant that on Aug 26 the deployed queue runner still
+had:
+
+- the pre-B36 capture, so any container-scrolled page would be screenshotted at
+  viewport height and audited on a quarter of itself;
+- pins clamped to the crop line, with no `offImage` count and no degraded note
+  to say so;
+- no `audit.held` event, so a hold would again leave the reason in a stdout
+  nobody reads.
+
+Every one of those was fixed, committed, and pushed on Aug 25. None of them were
+*running*. The repo being green said nothing about the processes.
+
+**Why it stayed invisible:** the only PostHog run that exercised the fixed code
+was started in the foreground, by hand, to check the fix. It produced a correct
+full-page capture and was taken as proof the fix was live. It proved the fix was
+in the *repo*. The worker was never in the sample.
+
+**What to check, and it takes one line.** `ps` prints the start time; compare it
+to the last commit that touches the pipeline:
+
+```sh
+ps -p "$(pgrep -f 'tsx src/worker.ts')" -o lstart=
+git log -1 --format=%ad --date=iso -- src/ 
+```
+
+If the process is older than the code, it is not running the code. The same
+question applies to `npm run serve`, and applies every time either is left up
+across a session.
