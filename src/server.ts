@@ -73,7 +73,14 @@ import {
 import { asset } from "./assets.js";
 import { mailConfig, deliver } from "./mail.js";
 import { clientIp } from "./clientip.js";
-import { preflight, envFromProcess, report, baseUrlFrom, canonicalHost } from "./preflight.js";
+import {
+  preflight,
+  envFromProcess,
+  report,
+  bootBanner,
+  baseUrlFrom,
+  canonicalHost,
+} from "./preflight.js";
 import { QUESTIONS, type Answers } from "./profile.js";
 import { checkUrl } from "./urlcheck.js";
 import {
@@ -1965,12 +1972,12 @@ const BIND = process.env.USABILITY_LAB_BIND;
 server.listen(...((BIND ? [PORT, BIND] : [PORT]) as [number, string?]), () => {
   const ready = store.list("PUBLISHED").length + store.list("AUTO_PUBLISHED").length;
   console.log(
-    `\n  The Usability Lab — http://${BIND ?? "localhost"}:${PORT}\n` +
-      report(checks) + `\n` +
-      `  bound to       ${BIND ?? "every interface"}\n` +
-      `  ${ready} audit${ready === 1 ? "" : "s"} reachable. Links are printed by \`npm run review\`.\n` +
-      mail
-        ? `  Mail is on: links are sent, not printed.\n`
-        : `  Magic links print here; no email is sent.\n`,
+    bootBanner({
+      url: `http://${BIND ?? "localhost"}:${PORT}`,
+      preflightReport: report(checks),
+      bind: BIND ?? null,
+      ready,
+      mail: Boolean(mail),
+    }),
   );
 });

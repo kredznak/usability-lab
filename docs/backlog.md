@@ -2582,6 +2582,74 @@ belongs to whoever owns the gate.
 
 ---
 
+## B37. ~~The boot banner discarded itself~~ — DONE 2026-08-25
+
+Reported by Kelly, from reading the code rather than the output — which is the
+only way it could have been found, and the reason it survived this long.
+
+`server.ts` built its startup banner as one expression:
+
+```js
+console.log(
+  `\n  The Usability Lab — http://${host}:${PORT}\n` +
+    report(checks) + `\n` +
+    `  bound to       ${BIND ?? "every interface"}\n` +
+    `  ${ready} audit(s) reachable…\n` +
+    mail
+      ? `  Mail is on: links are sent, not printed.\n`
+      : `  Magic links print here; no email is sent.\n`,
+);
+```
+
+**`+` binds tighter than `?:`.** The condition is not `mail` — it is the entire
+concatenation *ending* in `mail`, which is a non-empty string and therefore
+always truthy. So the address, the preflight report, the bind line and the audit
+count were each computed, joined, tested for truthiness and thrown away, and the
+first branch printed unconditionally. The whole of `npm run serve`:
+
+```
+  Mail is on: links are sent, not printed.
+```
+
+### Why nothing caught it
+
+**It was accidentally right.** Once `RESEND_API_KEY` was in `.env` the surviving
+sentence was true, so the banner read as terse rather than broken. Before that
+it stated the exact opposite of the truth — on the one line whose entire job is
+telling the operator whether the next magic link prints to this terminal or is
+posted to a stranger.
+
+Four things also went missing without anyone noticing they were gone, and one of
+them is `report(checks)` — the preflight block that says whether the secure
+cookie flag is set, which header carries the client address, and whether the
+signing key is the persisted one. **A refusal still printed**, because that path
+exits before this line; only the success report vanished. So the boot output was
+loudest when things were broken and silent when they were fine, which is the
+wrong way round for the thing an operator reads to confirm a deploy.
+
+It is also two entries' worth of the same lesson. B33 records the boot banner
+saying "no email is sent" above a send; this is the same line, wrong for a
+different reason, in the same expression.
+
+### Fixed
+
+`bootBanner()` in `preflight.ts`, beside `report()` — a function, so the branch
+can be asserted instead of eyeballed, and the call site now contains no
+operators at all. Five tests: both halves of the mail branch, every line before
+it, the bind line, and singular-vs-plural on the audit count.
+
+**The revert is the whole point of them.** Restoring the original expression
+verbatim fails four of the five. A snapshot test would have been useless here —
+a snapshot of the broken banner is a perfectly good-looking snapshot.
+
+Verified live: `npm run serve` now prints its address, five preflight lines, the
+bind, `19 audits reachable`, and the mail line.
+
+Swept the rest of `src/` for `… + x` immediately followed by a ternary. **No
+other site.**
+
+---
+
 ## Previously deferred
 
 Recorded here so the deferrals live in one place rather than in commit messages

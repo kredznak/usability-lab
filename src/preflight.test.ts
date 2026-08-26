@@ -1,6 +1,6 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { preflight, baseUrlFrom, canonicalHost, type Env } from "./preflight.js";
+import { preflight, baseUrlFrom, canonicalHost, type Env, bootBanner } from "./preflight.js";
 
 /**
  * What `npm run serve` checks before it agrees to be public.
@@ -195,5 +195,72 @@ describe("one reading of the base URL, shared by everything that builds an addre
     // request to a redirect that cannot resolve.
     assert.equal(canonicalHost("theusabilitylab.com"), null);
     assert.equal(canonicalHost("https://"), null);
+  });
+});
+
+/**
+ * The banner that discarded itself.
+ *
+ * It was a template literal at the call site, and `+` binds tighter than `?:` —
+ * so the condition was not `mail`, it was the whole concatenation ending in
+ * `mail`, which is a non-empty string and always truthy. Every line before the
+ * mail branch was built, concatenated, tested for truthiness and thrown away.
+ * `npm run serve` printed exactly one line for its whole life:
+ *
+ *     Mail is on: links are sent, not printed.
+ *
+ * Nothing caught it because it was accidentally correct. Once `RESEND_API_KEY`
+ * was set the sentence was true, and a terse banner reads as a design choice.
+ * With mail off it said the opposite of the truth, on the one line whose entire
+ * job is telling the operator whether the next magic link prints to this
+ * terminal or goes to a stranger's inbox.
+ *
+ * Which is why these are branch assertions and not a snapshot: a snapshot of
+ * the broken version would have looked like a perfectly good snapshot.
+ */
+describe("the boot banner says all of it, and the right half of the branch", () => {
+  const banner = (over: Partial<Parameters<typeof bootBanner>[0]> = {}) =>
+    bootBanner({
+      url: "http://localhost:4000",
+      preflightReport: "  PREFLIGHT-LINES",
+      bind: null,
+      ready: 3,
+      mail: false,
+      ...over,
+    });
+
+  test("mail off says links print here", () => {
+    const b = banner({ mail: false });
+    assert.match(b, /Magic links print here; no email is sent/);
+    assert.doesNotMatch(b, /Mail is on/, "the exact sentence the bug always printed");
+  });
+
+  test("mail on says links are sent", () => {
+    const b = banner({ mail: true });
+    assert.match(b, /Mail is on: links are sent, not printed/);
+    assert.doesNotMatch(b, /no email is sent/);
+  });
+
+  test("nothing before the branch is discarded", () => {
+    /**
+     * The other half, and the half that is easy to forget once the ternary is
+     * parenthesised. Each of these was evaluated and thrown away: the address
+     * an operator needs to open the site, the preflight report, the bind line
+     * that says whether the LAN can reach it, and the audit count.
+     */
+    const b = banner({ mail: true });
+    assert.match(b, /http:\/\/localhost:4000/, "the address");
+    assert.match(b, /PREFLIGHT-LINES/, "the preflight report");
+    assert.match(b, /bound to\s+every interface/, "the bind line");
+    assert.match(b, /3 audits reachable/, "the audit count");
+  });
+
+  test("a named bind is reported instead of every interface", () => {
+    assert.match(banner({ bind: "127.0.0.1" }), /bound to\s+127\.0\.0\.1/);
+  });
+
+  test("one audit is not one audits", () => {
+    assert.match(banner({ ready: 1 }), /1 audit reachable/);
+    assert.match(banner({ ready: 0 }), /0 audits reachable/);
   });
 });

@@ -191,3 +191,63 @@ export function report(p: Preflight): string {
     `\n\n  See docs/deploy-runbook.md.\n`
   );
 }
+
+/**
+ * The block `npm run serve` prints once it is listening.
+ *
+ * ## Why this is a function and not a template literal at the call site
+ *
+ * Because it was one, and for its whole life it printed a single line.
+ *
+ * ```js
+ * console.log(
+ *   `\n  The Usability Lab — http://${host}:${PORT}\n` +
+ *     report(checks) + `\n` +
+ *     `  bound to       ${BIND ?? "every interface"}\n` +
+ *     `  ${ready} audit(s) reachable…\n` +
+ *     mail
+ *       ? `  Mail is on: links are sent, not printed.\n`
+ *       : `  Magic links print here; no email is sent.\n`,
+ * );
+ * ```
+ *
+ * `+` binds tighter than `?:`, so the condition is not `mail` — it is the whole
+ * concatenation *ending* in `mail`, which is a non-empty string and therefore
+ * always truthy. The address, the preflight report, the bind line and the audit
+ * count were all evaluated, concatenated, tested for truthiness and thrown
+ * away. What printed was always the first branch:
+ *
+ *     Mail is on: links are sent, not printed.
+ *
+ * **It hid for as long as it did because it was accidentally right.** Once
+ * `RESEND_API_KEY` was set the sentence matched reality, so the banner looked
+ * terse rather than broken. With mail off it stated the exact opposite of the
+ * truth — on the one line whose whole job is telling the operator whether a
+ * magic link is about to be printed here or posted to a stranger.
+ *
+ * A function, so the branch can be asserted rather than eyeballed. The call
+ * site now has no operators in it at all.
+ */
+export function bootBanner(input: {
+  /** Where it is actually reachable, already formatted. */
+  url: string;
+  /** `report(preflight(...))` — the lines it would have printed. */
+  preflightReport: string;
+  /** `USABILITY_LAB_BIND`, or null for every interface. */
+  bind: string | null;
+  /** Published audits this server can serve. */
+  ready: number;
+  /** Whether `mailConfig()` returned anything. */
+  mail: boolean;
+}): string {
+  const { url, preflightReport, bind, ready, mail } = input;
+  return (
+    `\n  The Usability Lab — ${url}\n` +
+    `${preflightReport}\n` +
+    `  bound to       ${bind ?? "every interface"}\n` +
+    `  ${ready} audit${ready === 1 ? "" : "s"} reachable. Links are printed by \`npm run review\`.\n` +
+    (mail
+      ? `  Mail is on: links are sent, not printed.\n`
+      : `  Magic links print here; no email is sent.\n`)
+  );
+}
