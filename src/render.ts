@@ -72,7 +72,7 @@ const SOURCE_BY_URL = new Map(SOURCES.map((s) => [s.url, s]));
  * on `--bg`, not the marketing pages' warm one. Same artwork, same reasoning as
  * `brand.ts` gives for not using the file's literal black.
  */
-const RESULTS_MARK_CSS = `${markCss("var(--ink)", "var(--bg)")}  header .brandmark { display:block; width:190px; margin:0 0 22px; }
+const RESULTS_MARK_CSS = `${markCss("var(--ink)", "var(--bg)", 190)}  header .brandmark { display:block; width:190px; margin:0 0 22px; }
 `;
 
 /** In flow, above the title, linking back to the site that produced the audit. */

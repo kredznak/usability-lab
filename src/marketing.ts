@@ -162,8 +162,17 @@ export const SHELL_CSS = `
  * `escapeHtml` at the call site.
  */
 
-/** The marketing palette's colourway. See `brand.ts` for why it is not #000/#FFF. */
-const MARK_CSS = markCss("var(--ink)", "var(--paper)");
+/**
+ * The marketing palette's colourway, twice, because the two placements are two
+ * different sizes and the hairline correction depends on size.
+ *
+ * See `brand.ts`: the correction puts back ink that antialiasing takes off
+ * sub-pixel strokes, and applying it to a mark already drawn large enough just
+ * makes the logo bolder than it was drawn. The hero is 438px and needs none; the
+ * account shells are 240px falling to 186px on a phone, and do.
+ */
+const MARK_CSS = markCss("var(--ink)", "var(--paper)", 240);
+const HERO_MARK_CSS = markCss("var(--ink)", "var(--paper)", 438);
 
 /**
  * The mark, top-left, on every page that is not the homepage.
@@ -198,9 +207,17 @@ const MARK_CSS = markCss("var(--ink)", "var(--paper)");
 const BRANDMARK = `<a class="brandmark" href="/">${MARK}</a>`;
 
 const BRANDMARK_CSS = `${MARK_CSS}
+  /*
+   * Full opacity at rest, dimming on hover rather than the other way round.
+   * It was .92 resting, which cost 8% of the contrast between --paper letters
+   * and the --ink slab — on strokes that at this size are already losing ink to
+   * antialiasing. Measured, the opacity was a contributor and not the cause, but
+   * it was contributing in exactly the wrong place, and a hover state can afford
+   * a contrast cost that a resting state cannot.
+   */
   .brandmark { position:absolute; top:30px; left:32px; width:240px; display:block;
-    text-decoration:none; opacity:.92; transition:opacity .15s ease; }
-  .brandmark:hover { opacity:1; }
+    text-decoration:none; transition:opacity .15s ease; }
+  .brandmark:hover { opacity:.78; }
   /*
    * The mark is absolutely positioned, so nothing in the flow knows how tall it
    * is, and .wrap's own padding was set when the mark was 13px of text. At 240px
@@ -368,7 +385,7 @@ const HOME_CSS = `
    */
   .brandmark { position:absolute; top:42px; left:-18px; z-index:2;
                width:min(438px,58vw); line-height:0; }
-${MARK_CSS}
+${HERO_MARK_CSS}
   .hero-in { position:relative; z-index:1; text-align:center; padding:0 32px; max-width:800px; }
   .hero-in h1 { font-size:56px; font-weight:300; line-height:1.14; letter-spacing:-.018em; margin:0 0 26px; }
   .hero-in .sub { font-size:15px; color:var(--ink-soft); margin:0 0 38px; letter-spacing:.005em; }

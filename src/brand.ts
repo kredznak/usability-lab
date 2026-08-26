@@ -41,15 +41,89 @@ export const MARK = `<svg class="mark" viewBox="0 0 438 121" role="img" aria-lab
 export const MARK_ASPECT = 121 / 438;
 
 /**
- * @param slab  what the black rectangle is painted with, as a CSS value
- * @param word  what the letters knocked out of it are painted with
+ * The size below which the mark stops drawing itself properly.
+ *
+ * Reported 2026-08-26: the dashboard mark "looks pixelated". It is an SVG, so
+ * the first suspects were rasterisation — the `opacity:.92` on the link (an
+ * element under 1 opacity gets its own compositing layer) and the transition
+ * beside it. Both were measured and both were wrong: the transition changed not
+ * one byte of output, and the opacity difference was a flat 8% lightening, not a
+ * loss of resolution.
+ *
+ * The real cause is the artwork. These are hairline knockout letterforms drawn
+ * at 438px wide, and their strokes fall under one device pixel long before the
+ * mark does. Rendered at 1x, measuring how close the brightest letter pixels get
+ * to `--paper` (250):
+ *
+ *     438px  250      the size the logo was drawn at
+ *     300px  250      still resolving
+ *     240px  239      the dashboard — visibly grey
+ *     190px  215      the results masthead — washed out
+ *     186px  212      the dashboard on a phone
+ *
+ * 300px is where it stops mattering, which is what this constant is.
  */
-export function markCss(slab: string, word: string): string {
+const RESOLVES_ABOVE = 300;
+
+/**
+ * A hairline reinforcement, in CSS pixels, for marks drawn below that size.
+ *
+ * `vector-effect:non-scaling-stroke` keeps it constant in device pixels however
+ * large the mark is drawn, which is the right model for "put back the ink
+ * antialiasing took away" — but it is emphatically *not* self-limiting, and
+ * assuming it was is the second thing measured wrong here. Total letter ink,
+ * against the same mark with no stroke:
+ *
+ *              0.4      0.6      0.8
+ *     438px  +15.2%   +36.7%   +54.0%
+ *     240px  +39.3%   +88.3%  +127.2%
+ *     190px  +72.3%  +144.6%  +199.2%
+ *
+ * At 438px the letters already reach paper, so that +37% is pure weight gain on
+ * artwork that was rendering correctly — Kelly's logo, quietly made bolder. Hence
+ * the threshold above: the correction is applied where the ink was lost and
+ * nowhere else. 0.6 lifts 190px from 215 to 234 and 240px from 239 to 243,
+ * without turning a light face into a medium one.
+ *
+ * ## And only on the displays that need it
+ *
+ * The same measurement at `deviceScaleFactor: 2` is the one that decides the
+ * shape of this fix:
+ *
+ *     width    1x plain  1x fixed   2x plain  2x fixed
+ *     438px         250       250        250       250
+ *     240px         239       243        250       250
+ *     190px         215       234        250       250
+ *
+ * On a retina display there is no problem to solve — twice the device pixels is
+ * enough for these strokes at every size we draw them. An unconditional stroke
+ * would therefore make the mark bolder for the majority of viewers in order to
+ * fix a minority's, so it sits behind a low-density media query. Both spellings
+ * are needed: `resolution` is the standard one, and `-webkit-max-device-pixel-
+ * ratio` covers Safari before 16.
+ */
+const HAIRLINE_PX = 0.6;
+const LOW_DENSITY = `@media (max-resolution:1.4dppx),(-webkit-max-device-pixel-ratio:1.4)`;
+
+/**
+ * @param slab  what the rectangle is painted with, as a CSS value
+ * @param word  what the letters knocked out of it are painted with
+ * @param drawnAt  the widest this mark is ever rendered, in CSS px. Below
+ *   `RESOLVES_ABOVE` the hairline correction is emitted; at or above it, none
+ *   is, because none is needed and adding it would change the artwork's weight.
+ */
+export function markCss(slab: string, word: string, drawnAt = RESOLVES_ABOVE): string {
+  const hairline =
+    drawnAt < RESOLVES_ABOVE
+      ? `  ${LOW_DENSITY} {\n` +
+        `    .mark .word { stroke:${word}; stroke-width:${HAIRLINE_PX}px;` +
+        ` vector-effect:non-scaling-stroke; }\n  }\n`
+      : "";
   return `
   .mark { display:block; width:100%; height:auto; }
   .mark .slab { fill:${slab}; }
   .mark .word { fill:${word}; }
-`;
+${hairline}`;
 }
 
 /**

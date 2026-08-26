@@ -803,6 +803,39 @@ describe("the wordmark is on every page that is not the homepage", () => {
     clears("narrow", css.slice(narrowAt));
   });
 
+  test("each shell asks for the correction its own size needs", () => {
+    /**
+     * `markCss` decides whether to emit the hairline correction from the width
+     * it is told the mark is drawn at. That makes every call site's argument a
+     * claim about its own CSS, and nothing inside `brand.ts` can check it —
+     * pass 438 for a mark rendered at 190 and it silently goes uncorrected.
+     *
+     * So the check belongs here, where both numbers are visible: the account
+     * shells draw at 240 and must carry it; the hero draws at 438 and must not,
+     * because at that size the letters already reach paper and the stroke would
+     * only make the logo bolder than Kelly drew it.
+     */
+    const dash = accountPage("a@b.com", [], { active: true, status: "active" });
+    assert.match(dash, /max-resolution:1\.4dppx/, "the 240px mark is drawn without the correction");
+    assert.match(dash, /stroke-width:0\.6px/);
+
+    assert.doesNotMatch(
+      homePage(),
+      /stroke-width/,
+      "the hero is 438px and would be permanently heavier than the artwork",
+    );
+  });
+
+  test("the mark is at full contrast when nobody is pointing at it", () => {
+    // It was `opacity:.92` at rest, which spent 8% of the contrast between the
+    // paper letters and the ink slab on strokes already losing ink to
+    // antialiasing. A hover state can afford that; a resting state cannot.
+    const css = accountPage("a@b.com", [], { active: true, status: "active" });
+    const rest = css.slice(css.indexOf(".brandmark {"), css.indexOf(".brandmark:hover"));
+    assert.doesNotMatch(rest, /opacity:0?\.\d/, "the resting mark is dimmed");
+    assert.match(css, /\.brandmark:hover \{ opacity:\.78; \}/, "and hover still gives feedback");
+  });
+
   test("the homepage keeps its own, larger one", () => {
     // Same artwork, deliberately not the same placement: the hero runs it off
     // the left edge, which only reads as intentional with room around it. See

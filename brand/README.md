@@ -22,6 +22,30 @@ So the sequence for changing the mark is:
 2. Run `npm test`. `brand.test.ts` fails, and prints what no longer matches.
 3. Copy the new `<rect>` attributes and the new `d` into `MARK` in `src/brand.ts`.
 
+## The mark has an optical size
+
+The letterforms are hairlines. Measured at 1x, how close the brightest letter
+pixels get to the paper they are meant to be (250):
+
+| drawn at | 1x | 2x |
+|---|---|---|
+| 438px | 250 | 250 |
+| 300px | 250 | 250 |
+| 240px | 239 | 250 |
+| 190px | 215 | 250 |
+
+Below about 300px on a non-retina display the strokes fall under one device
+pixel and antialias to grey — which is what "the logo looks pixelated" turned
+out to mean. `markCss` takes the width the mark is drawn at and, below that
+threshold and only on low-density displays, thickens the letters by 0.6 device
+pixels to put the ink back.
+
+**If you replace the artwork with a heavier face, that correction may no longer
+be wanted.** It is one constant, `HAIRLINE_PX` in `src/brand.ts`, and the
+threshold beside it is `RESOLVES_ABOVE`. Re-measure before trusting either.
+
+## Colour
+
 The colours are deliberately **not** copied across. This file is `#000` on
 `#FFF`; the product paints the mark from whichever palette it lands in, because
 the marketing pages use a warm ink (`#26221E`) and the results page a neutral

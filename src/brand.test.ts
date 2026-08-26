@@ -90,6 +90,71 @@ describe("the mark carries its own name and takes its colours from outside", () 
   });
 });
 
+/**
+ * The hairline correction, and the two things it must not do.
+ *
+ * Reported as "the smaller logo looks pixelated" on 2026-08-26. It is an SVG, so
+ * the first two suspects were rasterisation — the `opacity:.92` on the link and
+ * its transition. Both measured, both wrong: the transition changed zero bytes
+ * of rendered output and the opacity was a flat 8% lightening. The cause is that
+ * these are hairline knockout letterforms, and below about 300px their strokes
+ * fall under one device pixel and antialias to grey.
+ *
+ * Putting the ink back is easy. Doing it without spoiling the mark everywhere
+ * else is the part worth guarding, because both failure modes are silent:
+ *
+ *   - applied above the threshold, it makes a logo that was rendering correctly
+ *     permanently bolder than it was drawn (+37% letter ink at 438px);
+ *   - applied on a retina display, it does the same to the majority of viewers
+ *     to fix a minority's — at 2x every size already reaches paper white, so
+ *     there is nothing there to correct.
+ */
+describe("the hairline correction is applied only where the ink was lost", () => {
+  const small = markCss("var(--ink)", "var(--paper)", 190);
+  const large = markCss("var(--ink)", "var(--paper)", 438);
+
+  test("a mark drawn small gets it", () => {
+    assert.match(small, /stroke-width:0\.6px/);
+    assert.match(small, /vector-effect:non-scaling-stroke/);
+  });
+
+  test("a mark drawn at the size it was designed for does not", () => {
+    assert.doesNotMatch(
+      large,
+      /stroke-width/,
+      "the hero would be quietly bolder than the artwork it was drawn from",
+    );
+  });
+
+  test("the threshold is a size, not a guess about which shell is which", () => {
+    // 300px is where the measurement stops showing loss: 300 reaches paper (250)
+    // and 240 does not (239). Anything at or above it is left alone.
+    assert.doesNotMatch(markCss("a", "b", 300), /stroke-width/);
+    assert.match(markCss("a", "b", 299), /stroke-width/);
+  });
+
+  test("it is behind a low-density query, so retina keeps the drawn weight", () => {
+    assert.match(small, /@media \(max-resolution:1\.4dppx\)/);
+    assert.match(
+      small,
+      /-webkit-max-device-pixel-ratio:1\.4/,
+      "Safari before 16 does not support the resolution query and would take the stroke",
+    );
+    // The rule has to be *inside* the query, not merely near it.
+    const query = small.slice(small.indexOf("@media"));
+    assert.match(query, /\{[\s\S]*stroke-width[\s\S]*\}/);
+  });
+
+  test("the stroke is the same colour as the fill", () => {
+    // A stroke in any other colour outlines the letters rather than thickening
+    // them, which at this size would read as a coloured fringe.
+    const css = markCss("var(--ink)", "var(--bg)", 190);
+    const stroke = css.match(/stroke:([^;]+);/)?.[1];
+    const fill = css.match(/\.mark \.word \{ fill:([^;]+);/)?.[1];
+    assert.equal(stroke, fill);
+  });
+});
+
 describe("where the mark points from a file on somebody else's disk", () => {
   /**
    * `results-full.html` is written to disk and opened as a file. A root-relative
