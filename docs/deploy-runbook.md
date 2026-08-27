@@ -601,8 +601,16 @@ to the last commit that touches the pipeline:
 
 ```sh
 ps -p "$(pgrep -f 'tsx src/worker.ts')" -o lstart=
-git log -1 --format=%ad --date=iso -- src/ 
+git log -1 --format=%ad --date=iso -- src/ ':!src/*.test.ts'
 ```
+
+**The `:!src/*.test.ts` was added 2026-08-27, and it is not tidying.** As first
+written this compared against `src/` entire, so a commit touching only test files
+marked every running process stale. It did exactly that the same day it was
+written: the 10:04 commit was a test file and a YAML config, nothing either
+process loads, and the check called a server started at 10:00 out of date. A
+staleness check that cries wolf is one that stops being run, which returns the
+deploy to the state §11 exists to describe.
 
 If the process is older than the code, it is not running the code. The same
 question applies to `npm run serve`, and applies every time either is left up
