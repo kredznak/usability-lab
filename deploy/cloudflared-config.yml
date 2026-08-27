@@ -28,6 +28,40 @@
 
 tunnel: 87b0e6e3-8e46-4bec-a985-bbaec39fecc9
 
+# The only process between a customer and the site, and until 2026-08-27 the
+# only one that kept no record of itself.
+#
+# On that morning the site answered a Cloudflare 1033 — "tunnel error, origin
+# unreachable" — recovered on its own, and left nothing behind to say why. The
+# origin was healthy throughout and the edge was healthy either side of it. The
+# running cloudflared had been started from a shell in an editor session two
+# days earlier and was writing to that shell's stdout, which no longer existed;
+# `.logs/tunnel.log` was five days stale from an older run. So the one visible
+# customer-facing failure of the week is the one that cannot be explained, and
+# it is the same shape as the worker that sat two days stale in §11 of the
+# runbook: not a component that breaks loudly, a component that cannot speak.
+#
+# `log-directory` rather than `logfile`, because this process runs for days and
+# cloudflared's rolling logger bounds the directory (1MB per file, five kept)
+# while `logfile` grows without limit. `.logs/worker.log` is the local proof of
+# what that turns into — 94KB of the word "Nothing queued".
+#
+# The path is relative on purpose, for the same reason `credentials-file` is
+# absent: an absolute one carries a username and this file is meant to survive
+# moving machines. That means cloudflared must be run from the repo root, which
+# is what the runbook already tells you to do. cloudflared creates the directory
+# if it is missing, so a fresh clone needs no setup step.
+#
+# `loglevel: info` is the default, and it is written out here so that nobody
+# raises it casually. At `debug` cloudflared logs every request URL and every
+# request and response header. On this site that is magic-link tokens, which
+# arrive in the URL and are bearer credentials for somebody's account, and the
+# `ul_full` cookie — written in the clear, to a file inside the working tree.
+# Raise it to debug only for as long as it takes to catch something, and delete
+# the directory afterwards.
+log-directory: .logs
+loglevel: info
+
 ingress:
   # Both hostnames reach the same process. `server.ts` redirects the
   # non-canonical one to USABILITY_LAB_BASE_URL — 301 for GET/HEAD, 308 for

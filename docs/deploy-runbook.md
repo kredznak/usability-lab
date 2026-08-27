@@ -525,10 +525,18 @@ cloudflared tunnel login          # browser; authorise the theusabilitylab.com z
 # DNS, and the apex already points at 87b0e6e3-8e46-4bec-a985-bbaec39fecc9.
 cloudflared tunnel token --cred-file ~/.cloudflared/87b0e6e3-8e46-4bec-a985-bbaec39fecc9.json usability-lab
 
+cloudflared tunnel --config deploy/cloudflared-config.yml ingress validate     # check before starting
+
 npm run serve                     # terminal 1 — start the origin first, or the tunnel 502s
-cloudflared tunnel --config deploy/cloudflared-config.yml run usability-lab   # terminal 2
+nohup cloudflared tunnel --config deploy/cloudflared-config.yml run usability-lab >/dev/null 2>&1 &
 nohup npm run worker >> .logs/worker.log 2>&1 &                              # terminal 3
 ```
+
+**The tunnel's output goes to `/dev/null` on purpose, and that is not the same
+as throwing it away** — see §12. It writes its own rotating log to `.logs/`, and
+a shell redirect here would be a second, unbounded copy of the same 43 lines.
+The `ingress validate` line above replaces what that copy was worth: it is the
+only failure that happens before the log opens.
 
 **`tunnel login` needs the Authorize click, not just a login.** The first attempt
 sat at `Waiting for login...` for eight minutes and exited 1 with "Failed to
@@ -599,3 +607,77 @@ git log -1 --format=%ad --date=iso -- src/
 If the process is older than the code, it is not running the code. The same
 question applies to `npm run serve`, and applies every time either is left up
 across a session.
+
+## 12. The tunnel could not say why it failed — 2026-08-27
+
+At **09:54** the site answered a Cloudflare **1033** — *tunnel error, origin
+unreachable*. It recovered on its own within a minute. The origin was healthy
+before and after, and six probes either side came back 200.
+
+**Why it could not be explained.** The running `cloudflared` had been started on
+Aug 24 as a background command of an editor session, writing to that session's
+stdout, which no longer existed. `.logs/tunnel.log` was on disk and looked like
+the answer — it was five days stale, from an unrelated run on Aug 22, and reading
+it wasted several minutes before its dates were checked. So the one visible
+customer-facing failure of the week is the only one with no record of itself.
+
+This is the third component in three days found to be failing quietly rather
+than loudly: the worker two days stale in §11, a quality gate firing on a
+contradiction its own truncated capture had manufactured, and now the tunnel.
+None of them were broken in a way anything reported.
+
+**The fix** is two lines in `deploy/cloudflared-config.yml`:
+
+```yaml
+log-directory: .logs
+loglevel: info
+```
+
+`log-directory` rather than `logfile` because this process runs for days and
+cloudflared's rolling logger bounds the directory at five files of 1MB, where
+`logfile` grows without limit. `.logs/worker.log` is the local demonstration of
+that: 95KB of the words *"Nothing queued."*
+
+The path is relative so that the config carries no username and survives moving
+machines, which is the same reason `credentials-file` is absent. cloudflared
+creates the directory, so a fresh clone needs no setup step, but it does mean
+**cloudflared must be run from the repo root** or the log lands wherever you were
+standing.
+
+**`loglevel` is written out at its own default so nobody raises it casually.**
+At `debug`, cloudflared logs every request URL and every request and response
+header. On this site that means magic-link tokens — which arrive in the URL and
+are bearer credentials for somebody's account — and the `ul_full` cookie, in the
+clear, in a file inside the working tree. If it is ever raised to catch
+something, delete the directory afterwards.
+
+### Proved by breaking it, not by reading the config
+
+A log that is configured and a log that captures a failure are two different
+claims, and only the first is visible in a diff. The origin was killed and the
+edge polled:
+
+```
+edge with origin down    502
+edge recovered           200
+```
+
+and the log had, for the first time, the thing that was missing at 09:54:
+
+```json
+{"level":"error","connIndex":2,"originService":"http://127.0.0.1:4000",
+ "ingressRule":0,"error":"Unable to reach the origin service ... dial tcp
+ 127.0.0.1:4000: connect: connection refused",
+ "dest":"https://theusabilitylab.com/start","time":"2026-08-27T14:00:37Z"}
+```
+
+Which origin, which ingress rule, which connection, the exact dial error, and
+the URL the visitor asked for. Structured as JSON, so `grep '"level":"error"'`
+is the whole triage step.
+
+**What is still not covered.** This records what the *connector* saw. A 1033
+raised by the Cloudflare edge when no connector is registered at all happens
+above this process, and if cloudflared is dead the log stops rather than
+explaining itself — `ps` remains the check for that, exactly as in §11. The Aug
+22 `tunnel.log` was deleted rather than kept, because a stale log that looks
+current is worse than no log.
