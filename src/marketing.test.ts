@@ -1047,6 +1047,76 @@ describe("the homepage mark, 15% smaller", () => {
   });
 });
 
+/**
+ * A phone turned sideways — added 2026-08-27.
+ *
+ * **What these can and cannot prove.** The real invariant is geometric: at
+ * 844x390 the mark's bottom edge was 145 and the h1's top was 63, so the words
+ * "A design" were painted over. Proving that needs layout, and this suite has no
+ * browser in it — 881 tests in eight seconds is worth more than one test that
+ * could measure it. So the geometry was verified out of band, by rendering
+ * eleven viewport sizes and asserting no intersection between the mark, the menu
+ * and the h1, and that the button stays above the fold. All eleven clear.
+ *
+ * What is left here is the shape of the rule that made it true. Weak, and said
+ * so — but it catches the edits that would undo it without anyone looking at a
+ * phone: the block being deleted, reordered, or quietly reduced to half the fix.
+ */
+describe("the homepage on a short screen", () => {
+  const shortAt = (css: string) => css.indexOf("@media (max-height:520px)");
+
+  test("there is a rule keyed to height, not only to width", () => {
+    const css = homePage();
+    assert.ok(shortAt(css) > 0, "nothing responds to a short viewport; the mark will cover the h1");
+  });
+
+  test("both the mark and the type come down, not one of them", () => {
+    /**
+     * Shrinking only the type leaves the mark dominating a 390px-tall screen;
+     * shrinking only the mark leaves the h1 filling it and the two still meet.
+     * Either half alone looks like a fix and measures like a failure.
+     */
+    const css = homePage();
+    const block = css.slice(shortAt(css));
+    assert.match(block, /\.brandmark \{[^}]*width:min\(\d+px/, "the mark keeps its full size");
+    assert.match(block, /\.hero-in h1 \{[^}]*font-size:\d+px/, "the headline keeps its full size");
+  });
+
+  test("the short rule is smaller than the rules it overrides", () => {
+    // Read back and compared rather than pinned to literals: what matters is
+    // the direction, and a pinned 27 would have to be edited to retune it.
+    const css = homePage();
+    const size = (from: number) =>
+      Number(css.slice(from).match(/\.hero-in h1 \{[^}]*font-size:(\d+)px/)?.[1]);
+    const base = size(css.indexOf(".hero-in h1 {"));
+    const short = size(shortAt(css));
+    assert.ok(base && short, `could not read both headline sizes (${base}, ${short})`);
+    assert.ok(short < base, `the short-screen headline is ${short}px against a base of ${base}px`);
+  });
+
+  test("it comes after the width rule, or it loses to it", () => {
+    /**
+     * Load-bearing ordering. A small phone in landscape matches both queries and
+     * they set the same properties at the same specificity, so the later one
+     * wins. Move this above `max-width:640px` and it silently stops applying on
+     * exactly the devices it was written for — while still applying on a short
+     * *wide* window, which is where anyone would test it.
+     */
+    const css = homePage();
+    assert.ok(
+      shortAt(css) > css.indexOf("@media (max-width:640px)"),
+      "the short-screen rule is being overridden by the narrow rule on phones",
+    );
+  });
+
+  test("the smaller mark still gets its ink back", () => {
+    // 172px, further under the threshold than either other size. The correction
+    // has to be inside this query too — it is not inherited from the one above.
+    const css = homePage();
+    assert.match(css.slice(shortAt(css)), /stroke-width:0\.6px/);
+  });
+});
+
 describe("the about page", () => {
   test("it says what Kelly wrote, in Kelly's words", () => {
     /**

@@ -622,6 +622,41 @@ ${hairlineCss("var(--paper)")}    .menu-wrap { top:26px; right:20px; }
     .foot { padding:88px 24px 96px; }
     .foot h2 { font-size:26px; }
   }
+
+  /*
+   * A short screen, which is almost always a phone turned sideways.
+   *
+   * Everything else on this page is keyed to width. This one has to be keyed to
+   * height, because the failure is a height failure: .hero centres its content
+   * in the viewport, the mark is absolutely positioned and so is not part of
+   * that centring, and on a short screen "centred" puts the h1 where the mark
+   * already is. At 844x390 the mark's bottom edge was 145 and the h1's top was
+   * 63 — the words "A design" were painted over. Nothing reflowed out of the
+   * way, because nothing in the flow knows the mark exists.
+   *
+   * Both sides come down rather than one: shrinking only the type leaves the
+   * mark dominating a 390px-tall screen, and shrinking only the mark leaves the
+   * h1 filling it. The button has to stay above the fold — it is the only thing
+   * on this screen anybody is meant to press — which rules out the other fix,
+   * pushing the content below the mark and letting the hero scroll.
+   *
+   * Placed after the width query on purpose. Both apply on a small phone in
+   * landscape and they set the same properties, so at equal specificity the
+   * later one has to be this one.
+   *
+   * The numbers came from measuring nine landscape sizes, not from arithmetic.
+   * (No backticks in here — this is inside a template literal.)
+   */
+  @media (max-height:520px) {
+    .brandmark { top:14px; left:-8px; width:min(172px,26vw); }
+${hairlineCss("var(--paper)")}    .menu-wrap { top:14px; right:20px; }
+    .menu > summary { padding:8px 14px; font-size:11px; }
+    .hero-in { padding:0 24px; }
+    .hero-in h1 { font-size:27px; margin:0 0 14px; }
+    .hero-in .sub { font-size:13px; margin:0 0 20px; }
+    .hero-in .btn { padding:11px 24px; font-size:14px; }
+    .scrollcue { display:none; }
+  }
 `;
 
 /**
