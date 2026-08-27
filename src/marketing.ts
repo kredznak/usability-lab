@@ -29,7 +29,7 @@ import { QUESTIONS, type Answers } from "./profile.js";
 import { PRICE_USD, escapeHtml } from "./render.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 import type { SubscriptionStatus } from "./db.js";
-import { MARK, markCss } from "./brand.js";
+import { MARK, markCss, bleedCss } from "./brand.js";
 
 /**
  * What every response gets unless it asks for otherwise — unchanged from the
@@ -218,7 +218,7 @@ const BRANDMARK_CSS = `${MARK_CSS}
   .brandmark { position:absolute; top:30px; left:32px; width:240px; display:block;
     text-decoration:none; transition:opacity .15s ease; }
   .brandmark:hover { opacity:.78; }
-  /*
+${bleedCss(".brandmark", "var(--ink)")}  /*
    * The mark is absolutely positioned, so nothing in the flow knows how tall it
    * is, and .wrap's own padding was set when the mark was 13px of text. At 240px
    * the slab reaches y=96 and the h1 began at y=96; on a phone it landed on top

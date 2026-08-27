@@ -1,7 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { MARK, MARK_ASPECT, markCss, siteUrl } from "./brand.js";
+import { MARK, MARK_ASPECT, markCss, bleedCss, siteUrl } from "./brand.js";
 
 /**
  * The copy nobody would notice going stale.
@@ -143,6 +143,60 @@ describe("the hairline correction is applied only where the ink was lost", () =>
     // The rule has to be *inside* the query, not merely near it.
     const query = small.slice(small.indexOf("@media"));
     assert.match(query, /\{[\s\S]*stroke-width[\s\S]*\}/);
+  });
+
+  test("the bleed strip is cut from the same slab as the artwork", () => {
+    /**
+     * `bleedCss` continues the slab past the element's left edge with a rotated
+     * pseudo-element, which means it hardcodes three numbers that belong to the
+     * drawing: where the slab's band starts, how deep it is, and its angle. Get
+     * any of them wrong and the strip meets the rect at a visible step — and it
+     * would only be visible on the pages that bleed, at the sizes they bleed at.
+     *
+     * So they are checked against the source file, the same way the letterforms
+     * are. This is the assertion that survives somebody redrawing the logo at a
+     * different angle.
+     */
+    const svg = readFileSync(SOURCE, "utf8");
+    const rect = svg.match(/<rect[^>]*>/)![0];
+    const y = Number(rect.match(/ y="([\d.]+)"/)![1]);
+    const height = Number(rect.match(/ height="([\d.]+)"/)![1]);
+    const angle = Number(rect.match(/rotate\((-?[\d.]+)/)![1]);
+    const [, , , artHeight] = (svg.match(/viewBox="([^"]+)"/)![1] ?? "").split(" ").map(Number);
+    assert.ok(artHeight, "no viewBox height to take percentages against");
+
+    const css = bleedCss(".x", "var(--ink)");
+    const pct = (n: number) => `${((n / artHeight) * 100).toFixed(3)}%`;
+    assert.match(css, new RegExp(`top:${pct(y).replace(".", "\\.")}`), "the band starts elsewhere");
+    assert.match(
+      css,
+      new RegExp(`height:${pct(height).replace(".", "\\.")}`),
+      "the band is a different depth",
+    );
+    assert.match(css, new RegExp(`rotate\\(${String(angle).replace(".", "\\.")}deg\\)`));
+  });
+
+  test("the strip is measured in the element's own box, not in pixels", () => {
+    // One rule has to be right at 240px and at 186px, and at whatever a later
+    // layout picks. Percentages of a box whose height is the artwork's height
+    // are correct at every size; pixels would be correct at exactly one.
+    const css = bleedCss(".x", "var(--ink)");
+    assert.match(css, /top:[\d.]+%/);
+    assert.match(css, /height:[\d.]+%/);
+    assert.doesNotMatch(css, /top:[\d.]+px|height:[\d.]+px/);
+  });
+
+  test("it pins itself to the element's left edge and rotates about that corner", () => {
+    const css = bleedCss(".x", "var(--ink)");
+    assert.match(css, /right:calc\(100% - 1px\)/, "no overlap leaves a hairline seam on the join");
+    assert.match(css, /transform-origin:100% 0/, "any other origin and the bands diverge");
+  });
+
+  test("it does not declare position, which would move the mark it decorates", () => {
+    // Every caller is `position:absolute`. Emitting `position:relative` here
+    // would put the mark back in the flow it was deliberately taken out of.
+    const css = bleedCss(".x", "var(--ink)");
+    assert.doesNotMatch(css, /\.x \{[^}]*position:/);
   });
 
   test("the stroke is the same colour as the fill", () => {

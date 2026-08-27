@@ -826,6 +826,45 @@ describe("the wordmark is on every page that is not the homepage", () => {
     );
   });
 
+  test("the slab runs off the left edge, and the letters stay where they are", () => {
+    /**
+     * Asked for on 2026-08-26: the account mark should bleed like the hero's
+     * instead of floating in the corner.
+     *
+     * The hero does it by pulling the element left. That does not transfer — at
+     * 240px the letters begin 14px into the box, so any offset large enough to
+     * read as a bleed clips the T, which was tried and reads as broken. So the
+     * element does not move at all and a pseudo-element carries the slab off the
+     * edge instead. `left` staying positive is therefore part of the fix, not an
+     * accident: it is what keeps the letters clear of the screen edge.
+     */
+    for (const [name, render] of Object.entries(shells)) {
+      const html = render();
+      assert.match(html, /\.brandmark::before \{ content:""/, `${name}: no bleed strip`);
+    }
+
+    const css = accountPage("a@b.com", [], { active: true, status: "active" });
+    const rule = css.slice(css.indexOf(".brandmark {"), css.indexOf(".brandmark:hover"));
+    const left = Number(rule.match(/left:(-?\d+)px/)?.[1]);
+    assert.ok(left > 0, `the mark itself is offset to ${left}px; the strip should do the bleeding`);
+  });
+
+  test("the bleed strip has something positioned to hang off", () => {
+    /**
+     * `bleedCss` deliberately emits no `position`, because declaring
+     * `position:relative` would drop this mark back into the flow it is
+     * positioned out of. That makes the pairing a thing two files have to agree
+     * on and neither can check alone — so it is checked here, where both halves
+     * are in the same string.
+     *
+     * Unpaired, the strip positions against the viewport instead of the mark and
+     * lands somewhere unrelated to the slab.
+     */
+    const css = accountPage("a@b.com", [], { active: true, status: "active" });
+    const rule = css.slice(css.indexOf(".brandmark {"), css.indexOf("}", css.indexOf(".brandmark {")));
+    assert.match(rule, /position:(absolute|relative|fixed|sticky)/, "the strip has no anchor");
+  });
+
   test("the mark is at full contrast when nobody is pointing at it", () => {
     // It was `opacity:.92` at rest, which spent 8% of the contrast between the
     // paper letters and the ink slab on strokes already losing ink to

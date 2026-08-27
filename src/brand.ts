@@ -41,6 +41,68 @@ export const MARK = `<svg class="mark" viewBox="0 0 438 121" role="img" aria-lab
 export const MARK_ASPECT = 121 / 438;
 
 /**
+ * The slab, in the artwork's own units. `bleedCss` derives from these, and
+ * `brand.test.ts` reads them back out of the source file.
+ */
+const SLAB = { y: 46.6932, height: 74.4613, angle: -6.20348 } as const;
+const ART_HEIGHT = 121;
+
+/**
+ * Continue the slab off the left edge of the screen, without moving the letters.
+ *
+ * Asked for 2026-08-26: the dashboard mark should bleed like the hero's rather
+ * than float in the corner. The obvious way is what the hero does — pull the
+ * element left with a negative offset — and at 240px it does not work. The
+ * letters begin 26 artwork units in, which is 14px at that size, so any offset
+ * big enough to read as a bleed eats the T. Tried it, and it reads as broken
+ * rather than deliberate.
+ *
+ * So nothing moves. A pseudo-element picks the slab up at the element's left
+ * edge and carries it further left, off the screen. The letters stay exactly
+ * where they were, and the slab runs out of the viewport, which is the whole
+ * gesture.
+ *
+ * ## Why it lines up, and why it keeps lining up
+ *
+ * Every number here is a percentage of the element's own box, so one rule is
+ * correct at 240px, at 186px, and at any size a later layout picks:
+ *
+ *   - the box's height is the artwork's height, since the svg fills its width
+ *     and keeps its ratio, so `top` and `height` as percentages of it land on
+ *     the slab's own band;
+ *   - `right:100%` puts the strip's right edge on the element's left edge, which
+ *     is where the svg's `x=0` is;
+ *   - `transform-origin:100% 0` is then exactly the slab's top-left corner, and
+ *     rotating about it by the slab's own angle continues the same band — the
+ *     strip's right edge maps onto the rect's slanted left edge rather than
+ *     merely near it.
+ *
+ * The 1px overlap is for the seam: two shapes meeting on a slanted edge each
+ * antialias against the background, and a hairline of paper shows through where
+ * they meet.
+ *
+ * **The selector must already be positioned.** No `position` is emitted here on
+ * purpose: every current caller is `position:absolute`, and declaring
+ * `position:relative` would silently move the mark back into the flow it was
+ * taken out of. `marketing.test.ts` checks the pairing rather than this
+ * function trying to guess it.
+ *
+ * The strip must also be clipped by something. An ancestor with
+ * `overflow:hidden` is ideal; absent one, overflow to the left of the viewport
+ * does not extend the scrollable area in LTR, so it is still safe — but that is
+ * a fact about direction, not about the strip, and a mirrored layout would need
+ * looking at again.
+ */
+export function bleedCss(selector: string, slab: string): string {
+  const pct = (n: number) => `${((n / ART_HEIGHT) * 100).toFixed(3)}%`;
+  return (
+    `  ${selector}::before { content:""; position:absolute; right:calc(100% - 1px);` +
+    ` top:${pct(SLAB.y)}; height:${pct(SLAB.height)}; width:70%;` +
+    ` background:${slab}; transform:rotate(${SLAB.angle}deg); transform-origin:100% 0; }\n`
+  );
+}
+
+/**
  * The size below which the mark stops drawing itself properly.
  *
  * Reported 2026-08-26: the dashboard mark "looks pixelated". It is an SVG, so
