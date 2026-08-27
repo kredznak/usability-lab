@@ -390,6 +390,41 @@ describe("tokens", () => {
   });
 });
 
+describe("/about", () => {
+  test("it is served, and the homepage menu points at somewhere real", async () => {
+    /**
+     * The menu was added in the same commit as this route. A link in a nav to a
+     * path with no handler is a 404 reached from the front page, and the only
+     * thing that catches it is asking the running server.
+     */
+    const res = await fetch(`${BASE}/about`);
+    assert.equal(res.status, 200);
+    const html = await res.text();
+    assert.match(html, /The Usability Lab started with a simple frustration/);
+
+    const home = await (await fetch(`${BASE}/`)).text();
+    for (const href of [...home.matchAll(/<div class="menu-items">([\s\S]*?)<\/div>/g)]
+      .flatMap((m) => [...m[1]!.matchAll(/href="([^"]+)"/g)].map((h) => h[1]!))) {
+      const hit = await fetch(`${BASE}${href}`);
+      assert.equal(hit.status, 200, `the menu links to ${href}, which answers ${hit.status}`);
+    }
+  });
+
+  test("it is served the policy for a page with no script", async () => {
+    // HOME_CSP names two script hashes. Handing them to a page that runs
+    // nothing is a permission granted for no reason.
+    const res = await fetch(`${BASE}/about`);
+    const csp = res.headers.get("content-security-policy") ?? "";
+    assert.doesNotMatch(csp, /script-src/, "about is being served the homepage's policy");
+    assert.match(csp, /default-src 'none'/);
+  });
+
+  test("it does not answer to POST", async () => {
+    const res = await fetch(`${BASE}/about`, { method: "POST", body: "x" });
+    assert.equal(res.status, 404);
+  });
+});
+
 describe("the preview", () => {
   test("shows three findings and withholds the rest", async () => {
     const res = await fetch(`${BASE}/a/${A}/`);
@@ -1175,17 +1210,36 @@ describe("the question flow", () => {
      * there is one policy to think about. That would authorise the stepper on
      * the homepage and the parallax on the flow, and neither page would notice,
      * because a CSP is only ever felt when it refuses something.
+     *
+     * **Counts made derived, 2026-08-27.** This asserted each page authorises
+     * exactly *one* hash. The homepage gained a second script that day — the
+     * menu's Escape and click-away — and the test failed for a policy that was
+     * correct. A literal count only ever stays true until the next script, and
+     * the thing actually worth holding is not "one" but "as many as this page
+     * runs, and none belonging to another page". So it is counted off the served
+     * HTML instead.
      */
-    const home = (await fetch(`${BASE}/`)).headers.get("content-security-policy")!;
-    const start = (await fetch(`${BASE}/start`)).headers.get("content-security-policy")!;
+    const homeRes = await fetch(`${BASE}/`);
+    const startRes = await fetch(`${BASE}/start`);
+    const home = homeRes.headers.get("content-security-policy")!;
+    const start = startRes.headers.get("content-security-policy")!;
+    const homeHtml = await homeRes.text();
+    const startHtml = await startRes.text();
 
-    const hashOf = (csp: string) => csp.match(/'sha256-([A-Za-z0-9+/=]+)'/)?.[1];
-    assert.ok(hashOf(home), "the homepage names a script");
-    assert.ok(hashOf(start), "the flow names a script");
-    assert.notEqual(hashOf(home), hashOf(start), "two scripts, two hashes");
+    const hashes = (csp: string) => [...csp.matchAll(/'sha256-([A-Za-z0-9+/=]+)'/g)].map((m) => m[1]!);
+    const scripts = (html: string) => html.match(/<script>/g)?.length ?? 0;
 
-    assert.equal(home.match(/sha256-/g)?.length, 1, "the homepage authorises exactly one");
-    assert.equal(start.match(/sha256-/g)?.length, 1, "so does the flow");
+    assert.ok(hashes(home).length > 0, "the homepage names a script");
+    assert.ok(hashes(start).length > 0, "the flow names a script");
+    assert.equal(hashes(home).length, scripts(homeHtml), "one hash per script the homepage runs");
+    assert.equal(hashes(start).length, scripts(startHtml), "one hash per script the flow runs");
+
+    for (const h of hashes(start)) {
+      assert.ok(!hashes(home).includes(h), "the homepage authorises the flow's script");
+    }
+    for (const h of hashes(home)) {
+      assert.ok(!hashes(start).includes(h), "the flow authorises a homepage script");
+    }
 
     // And the untouched surfaces still authorise nothing.
     const shell = (await fetch(`${BASE}/r/${randomUUID()}`)).headers.get("content-security-policy")!;

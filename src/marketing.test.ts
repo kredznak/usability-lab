@@ -4,6 +4,8 @@ import { createHash } from "node:crypto";
 import {
   publisherCounts,
   homePage,
+  aboutPage,
+  MENU_JS,
   questionsPage,
   STEPPER_JS,
   STEPPED_CSP,
@@ -14,6 +16,7 @@ import {
   signInPage,
   schedulePage,
 } from "./marketing.js";
+import { MARK_RESOLVES_ABOVE } from "./brand.js";
 import { SOURCES } from "./sources.js";
 import { QUESTIONS } from "./profile.js";
 import { PRICE_USD } from "./render.js";
@@ -811,18 +814,39 @@ describe("the wordmark is on every page that is not the homepage", () => {
      * pass 438 for a mark rendered at 190 and it silently goes uncorrected.
      *
      * So the check belongs here, where both numbers are visible: the account
-     * shells draw at 240 and must carry it; the hero draws at 438 and must not,
+     * shells draw at 240 and must carry it; the hero draws large and must not,
      * because at that size the letters already reach paper and the stroke would
      * only make the logo bolder than Kelly drew it.
+     *
+     * **Inverted 2026-08-27, and the old assertion is the point.** This read
+     * `assert.doesNotMatch(homePage(), /stroke-width/)` — "the hero is 438px and
+     * would be permanently heavier than the artwork" — which was true of the
+     * whole document only because the homepage's *narrow* mark was going
+     * uncorrected too, at 296px on a phone. Fixing that put a `stroke-width`
+     * into the homepage for the first time, and this test failed for telling
+     * the truth. Kept and narrowed rather than deleted: the claim it was making
+     * about the hero is still one worth holding, so it is now made against the
+     * hero's own rules instead of against the file.
      */
     const dash = accountPage("a@b.com", [], { active: true, status: "active" });
     assert.match(dash, /max-resolution:1\.4dppx/, "the 240px mark is drawn without the correction");
     assert.match(dash, /stroke-width:0\.6px/);
 
+    // Everything before the narrow query, not just the .brandmark rule: a
+    // stroke declared anywhere above it applies to the hero just as well, and
+    // slicing from `.brandmark {` looked at a window that a revert stepped
+    // straight over — the guard passed while the hero was being bolded.
+    const home = homePage();
+    const beforeNarrow = home.slice(0, home.indexOf("@media (max-width:640px)"));
     assert.doesNotMatch(
-      homePage(),
+      beforeNarrow,
       /stroke-width/,
-      "the hero is 438px and would be permanently heavier than the artwork",
+      "the hero is drawn above the threshold and would be permanently heavier than the artwork",
+    );
+    assert.match(
+      home.slice(home.indexOf("@media (max-width:640px)")),
+      /stroke-width:0\.6px/,
+      "the phone draws the same mark small and needs the correction the hero does not",
     );
   });
 
@@ -903,6 +927,159 @@ describe("the wordmark is on every page that is not the homepage", () => {
  * mark has to stay a flex item beside the step counter, so it is the one caller
  * that must ask for a containing block itself.
  */
+/**
+ * The homepage nav, added 2026-08-27 at Kelly's request.
+ *
+ * A `<details>` and not a scripted button, so the whole of open/close, keyboard
+ * and the screen-reader announcement come from the browser and survive the
+ * script being blocked. `MENU_JS` adds only outside-click and Escape.
+ */
+describe("the homepage's menu", () => {
+  test("it opens without a script, because it is a disclosure and not a widget", () => {
+    /**
+     * The guard that matters most and is the easiest to lose: someone rebuilds
+     * this as `<button>` plus a click handler and it behaves identically in
+     * every manual test, because the tester has JavaScript. Then CSP blocks the
+     * script, or it throws before this line, and the only navigation on the
+     * homepage is a button that does nothing.
+     */
+    const html = homePage();
+    assert.match(html, /<details class="menu" id="menu">/);
+    assert.match(html, /<summary>Menu/, "the summary is what makes it operable with no script");
+  });
+
+  test("it holds the two destinations, at the addresses the server serves", () => {
+    const html = homePage();
+    const panel = html.slice(html.indexOf('<div class="menu-items">'), html.indexOf("</details>"));
+    assert.match(panel, /<a href="\/about">About<\/a>/);
+    // `/sign-in` reads more naturally and 404s. server.ts serves `/signin`.
+    assert.match(panel, /<a href="\/signin">Sign in<\/a>/);
+    assert.doesNotMatch(panel, /href="\/sign-in"/, "that route does not exist");
+  });
+
+  test("the panel is inside the details, or it never hides", () => {
+    // Outside it, `.menu-items` is simply a visible box: `<details>` only hides
+    // what it contains. It would look like an always-open menu, which is the
+    // kind of break that reads as a design choice.
+    const html = homePage();
+    const details = html.slice(html.indexOf('<details class="menu"'), html.indexOf("</details>"));
+    assert.match(details, /menu-items/);
+  });
+
+  test("the two links are in a labelled landmark", () => {
+    assert.match(homePage(), /<nav class="menu-wrap" aria-label="Main">/);
+  });
+
+  test("the wrapper is what is positioned, not the details", () => {
+    /**
+     * `.hero` is `display:flex`. A statically positioned `<nav>` inside it is a
+     * flex item and shifts the centred hero content left by its own width —
+     * while the menu itself still looks right, because the panel is absolute
+     * either way. The symptom is a hero that is subtly off-centre and a menu
+     * that looks fine, which is not a symptom anyone traces to the menu.
+     */
+    const css = homePage();
+    const wrap = css.slice(css.indexOf(".menu-wrap {"), css.indexOf("}", css.indexOf(".menu-wrap {")));
+    assert.match(wrap, /position:absolute/, "the nav is in the hero's flex flow and moving it");
+  });
+
+  test("its script is named in the policy, alongside the hero's", () => {
+    // Two `<script>` elements, so two hashes: CSP hashes each element's own
+    // text and a single hash of the pair would match neither.
+    for (const [name, js] of [["hero", HERO_JS], ["menu", MENU_JS]] as const) {
+      const digest = createHash("sha256").update(js, "utf8").digest("base64");
+      assert.ok(HOME_CSP.includes(`'sha256-${digest}'`), `${name}: not covered by HOME_CSP`);
+    }
+    assert.doesNotMatch(HOME_CSP, /script-src[^;]*unsafe-inline/);
+  });
+
+  test("closing is an enhancement, so nothing in it may be load-bearing", () => {
+    // If this script ever became the thing that opens the menu, the test above
+    // about `<details>` would still pass while the menu stopped working without
+    // it. Assert it only ever *closes*.
+    assert.doesNotMatch(MENU_JS, /\.open\s*=\s*true/, "MENU_JS has taken over opening the menu");
+    assert.match(MENU_JS, /if \(!menu\) return/, "it must survive the element being absent");
+  });
+});
+
+describe("the homepage mark, 15% smaller", () => {
+  test("the hero is still drawn above the width where letters lose ink", () => {
+    // 372px, down from 438. Still clear of the threshold, so the hero must not
+    // have picked up the hairline stroke and been quietly bolded.
+    const css = homePage();
+    const wide = Number(css.match(/\.brandmark \{[^}]*width:min\((\d+)px/)?.[1]);
+    assert.ok(wide, "could not read the hero width back out");
+    assert.ok(wide >= MARK_RESOLVES_ABOVE, `${wide}px would need a correction the hero does not get`);
+  });
+
+  test("the phone's mark is below that width, and does get the correction", () => {
+    /**
+     * The gap the resize uncovered, and it predates the resize: `HERO_MARK_CSS`
+     * is compiled at the hero's widest — which is what `drawnAt` means — so it
+     * emits nothing, and the narrow rule then draws the same mark at 255px. The
+     * old narrow rule was `min(300px,76vw)`, which looks like it sits exactly on
+     * the threshold and does not: the vw term wins under 395px.
+     */
+    const css = homePage();
+    const narrowBlock = css.slice(css.indexOf("@media (max-width:640px)"));
+    const narrow = Number(narrowBlock.match(/\.brandmark \{[^}]*width:min\((\d+)px/)?.[1]);
+    assert.ok(narrow, "could not read the narrow width back out");
+    assert.ok(narrow < MARK_RESOLVES_ABOVE, `${narrow}px is above the threshold; drop the correction`);
+    assert.match(
+      narrowBlock,
+      /stroke-width:0\.6px/,
+      "the phone draws the mark small with no correction, as it did before this was noticed",
+    );
+  });
+
+  test("the correction is scoped to the query that made the mark small", () => {
+    // At the top level it would apply to the hero too, which is the +37% ink
+    // mistake `brand.ts` records. It has to sit inside `max-width:640px`.
+    /**
+     * Sliced from the top of the document, not from `.brandmark {`. A revert
+     * that inserted the stroke one line *above* that rule left this green while
+     * the hero was being bolded — the injected rule was outside the window, and
+     * the window was the only reason the test passed.
+     */
+    const css = homePage();
+    const wideOnly = css.slice(0, css.indexOf("@media (max-width:640px)"));
+    assert.doesNotMatch(wideOnly, /stroke-width/, "the hero would be bolder than the artwork");
+  });
+});
+
+describe("the about page", () => {
+  test("it says what Kelly wrote, in Kelly's words", () => {
+    /**
+     * Copy supplied by the owner, set verbatim. Paraphrasing it in a later edit
+     * is the failure this guards — particularly the last sentence of the second
+     * paragraph, which is a promise about honesty and is the one claim on the
+     * page the product has to keep.
+     */
+    const html = aboutPage();
+    for (const phrase of [
+      "you can see your\n        conversions leaking",
+      "Automated checkers flag broken links",
+      "Six specialist\n        agents review your page",
+      "honestly marked\n        &ldquo;no source found.&rdquo;",
+      "Every time you ship, we critique",
+    ]) {
+      assert.ok(html.includes(phrase), `the about copy no longer contains: ${phrase.slice(0, 40)}`);
+    }
+  });
+
+  test("it is the shared shell, so it carries the mark and the way home", () => {
+    const html = aboutPage();
+    assert.match(html, /<a class="brandmark" href="\/"><svg class="mark"/);
+    assert.match(html, /<title>About — The Usability Lab<\/title>/);
+  });
+
+  test("it runs no script, and so must not be served a policy that allows one", () => {
+    // The route hands it MARKETING_CSP rather than HOME_CSP. This half of that
+    // decision — that there is nothing here needing a script — lives here.
+    assert.doesNotMatch(aboutPage(), /<script/);
+  });
+});
+
 describe("the stepped flow carries the artwork, not the name in letter-spacing", () => {
   test("the mark is drawn and it goes home", () => {
     const html = questionsPage();

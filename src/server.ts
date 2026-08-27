@@ -65,6 +65,7 @@ import {
   HOME_CSP,
   page,
   homePage,
+  aboutPage,
   questionsPage,
   signInPage,
   accountPage,
@@ -1056,6 +1057,23 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   if (url.pathname === "/") {
     events.record({ audit_id: null, type: "home.viewed", data: {} });
     return sendPage(res, 200, homePage(), {}, HOME_CSP);
+  }
+
+  /**
+   * `/about` — static prose, reachable from the homepage menu.
+   *
+   * `MARKETING_CSP` and not `HOME_CSP`: this page runs no script at all, and
+   * `HOME_CSP` names two script hashes. Handing it a policy that permits scripts
+   * it does not have is a permission granted for nothing.
+   *
+   * No `events.record` here. `funnel.ts` prints a fixed set of rows, so an
+   * `about.viewed` would be written to the table and read by nothing — and a
+   * number that is collected but never looked at is worse than no number,
+   * because it reads like coverage.
+   */
+  if (url.pathname === "/about") {
+    if (req.method !== "GET" && req.method !== "HEAD") return notFound(res);
+    return sendPage(res, 200, aboutPage(), {}, MARKETING_CSP);
   }
 
   // --- the question flow ---------------------------------------------------

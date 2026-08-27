@@ -167,20 +167,50 @@ const RESOLVES_ABOVE = 300;
 const HAIRLINE_PX = 0.6;
 const LOW_DENSITY = `@media (max-resolution:1.4dppx),(-webkit-max-device-pixel-ratio:1.4)`;
 
+/** The width below which the letters lose ink and the correction is wanted. */
+export { RESOLVES_ABOVE as MARK_RESOLVES_ABOVE };
+
+/**
+ * The correction on its own, for a caller whose mark changes width.
+ *
+ * `markCss` takes a single `drawnAt` and decides once, which is right for a mark
+ * that is one size. The homepage's is not: it is `min(372px,49vw)` on a desktop
+ * and `min(255px,65vw)` on a phone, and those fall on opposite sides of the
+ * threshold. Compiled at its widest — which is what `drawnAt` means — the phone
+ * silently gets no correction at the size that needs it most.
+ *
+ * That gap predates the 2026-08-27 resize that exposed it. The narrow rule was
+ * `min(300px,76vw)`, which reads as "exactly at the threshold" and is not: on a
+ * 390px phone the `vw` term wins at 296px, four pixels under, and it has been
+ * uncorrected since the artwork shipped. Nobody would see it as a bug — the mark
+ * just looked slightly softer there than everywhere else.
+ *
+ * Emitted separately so it can be placed inside the same media query that made
+ * the mark small, rather than nested at the top level where it would apply to
+ * both sizes.
+ *
+ * @param word  the letter colour, which the stroke must match exactly — any
+ *   other colour outlines the letters instead of thickening them.
+ */
+export function hairlineCss(word: string): string {
+  return (
+    `  ${LOW_DENSITY} {\n` +
+    `    .mark .word { stroke:${word}; stroke-width:${HAIRLINE_PX}px;` +
+    ` vector-effect:non-scaling-stroke; }\n  }\n`
+  );
+}
+
 /**
  * @param slab  what the rectangle is painted with, as a CSS value
  * @param word  what the letters knocked out of it are painted with
  * @param drawnAt  the widest this mark is ever rendered, in CSS px. Below
  *   `RESOLVES_ABOVE` the hairline correction is emitted; at or above it, none
  *   is, because none is needed and adding it would change the artwork's weight.
+ *   A mark that is *also* drawn smaller behind a media query needs
+ *   `hairlineCss` in that query as well — see the note there.
  */
 export function markCss(slab: string, word: string, drawnAt = RESOLVES_ABOVE): string {
-  const hairline =
-    drawnAt < RESOLVES_ABOVE
-      ? `  ${LOW_DENSITY} {\n` +
-        `    .mark .word { stroke:${word}; stroke-width:${HAIRLINE_PX}px;` +
-        ` vector-effect:non-scaling-stroke; }\n  }\n`
-      : "";
+  const hairline = drawnAt < RESOLVES_ABOVE ? hairlineCss(word) : "";
   return `
   .mark { display:block; width:100%; height:auto; }
   .mark .slab { fill:${slab}; }

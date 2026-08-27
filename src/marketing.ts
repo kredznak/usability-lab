@@ -29,7 +29,7 @@ import { QUESTIONS, type Answers } from "./profile.js";
 import { PRICE_USD, escapeHtml } from "./render.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 import type { SubscriptionStatus } from "./db.js";
-import { MARK, markCss, bleedCss } from "./brand.js";
+import { MARK, markCss, bleedCss, hairlineCss } from "./brand.js";
 
 /**
  * What every response gets unless it asks for otherwise — unchanged from the
@@ -215,6 +215,31 @@ const HERO_MARK_CSS = markCss("var(--ink)", "var(--paper)", 438);
  */
 const BRANDMARK = `<a class="brandmark" href="/">${MARK}</a>`;
 
+/**
+ * The homepage's nav menu.
+ *
+ * `<details>` carries its own semantics — the summary is a button, `open`
+ * reflects state, Escape and click-away are the only things missing and MENU_JS
+ * adds them. Wrapping it in `<nav>` gives the two links a landmark, and the
+ * label distinguishes it from the footer's links for anyone listing landmarks.
+ *
+ * The chevron is a rotated bordered box rather than a glyph or an SVG: at 9px a
+ * text arrow inherits font metrics and sits off-centre, and this page's CSP
+ * would need another exception for an image.
+ *
+ * Sign in points at `/signin`, which is the route server.ts serves — not
+ * `/sign-in`, which 404s.
+ */
+const MENU = `<nav class="menu-wrap" aria-label="Main">
+      <details class="menu" id="menu">
+        <summary>Menu<span class="chev" aria-hidden="true"></span></summary>
+        <div class="menu-items">
+          <a href="/about">About</a>
+          <a href="/signin">Sign in</a>
+        </div>
+      </details>
+    </nav>`;
+
 const BRANDMARK_CSS = `${MARK_CSS}
   /*
    * Full opacity at rest, dimming on hover rather than the other way round.
@@ -247,6 +272,41 @@ export function page(title: string, body: string, extraCss = ""): string {
     `${title} — The Usability Lab`,
     `${BRANDMARK_CSS}${extraCss}`,
     `${BRANDMARK}<div class="wrap"><h1>${title}</h1>${body}</div>`,
+  );
+}
+
+/**
+ * `/about` — added 2026-08-27, and the copy is Kelly's, verbatim.
+ *
+ * Written as one block and set here as three paragraphs. No word is changed and
+ * no sentence is reordered; the breaks fall at the two places the argument turns
+ * — from the problem to what was built, and from the audit to the subscription —
+ * because 150 words in a single paragraph is the wall of text this product
+ * reports about other people's pages. Straight quotes and apostrophes are
+ * curled, which is the same typographic treatment the homepage copy gets.
+ *
+ * Runs through `page()` rather than getting its own shell, so it inherits the
+ * mark, the palette and the 640px measure without a second copy of any of them.
+ * It does **not** carry the homepage's menu: that lives in the hero, which this
+ * page has no equivalent of, and the mark in the corner is already the way back.
+ */
+export function aboutPage(): string {
+  return page(
+    "About",
+    `<p class="lead">The Usability Lab started with a simple frustration: you can see your
+        conversions leaking, but you can&rsquo;t afford a $10K UX consultant to tell you why.
+        Automated checkers flag broken links; they don&rsquo;t tell you your checkout is asking
+        too much, too soon.</p>
+     <p class="lead">We built the Lab to sit in the middle, a design critique of your actual
+        site, in under ten minutes, with real research behind every finding. Six specialist
+        agents review your page; only the ones your site needs get spawned. Every finding is
+        pinned to a screenshot of your site and cited to a real study, or honestly marked
+        &ldquo;no source found.&rdquo;</p>
+     <p class="lead">Subscribe once, and we keep watching. Every time you ship, we critique
+        the new version and show you what changed.</p>
+     <p class="hint next"><a href="/start">Start an audit</a> &nbsp;&middot;&nbsp;
+        <a href="/">Back to the homepage</a></p>`,
+    `  .wrap .next { margin-top:34px; }\n`,
   );
 }
 
@@ -392,9 +452,68 @@ const HOME_CSS = `
    * nothing else depends on them. (No backticks in here — this comment lives
    * inside a template literal, and one would end the string.)
    */
+  /*
+   * 372px, down from 438px on 2026-08-27, at Kelly's request: 15% off both
+   * terms, so it is 15% smaller at every viewport rather than only above the
+   * width where the vw term stops winning. 438*0.85 = 372.3, 58*0.85 = 49.3.
+   *
+   * 372 is still above the width at which the letters start losing ink, so the
+   * hero still takes no hairline correction. The narrow rule below is a
+   * different matter, and there is a note there.
+   */
   .brandmark { position:absolute; top:42px; left:-18px; z-index:2;
-               width:min(438px,58vw); line-height:0; }
+               width:min(372px,49vw); line-height:0; }
 ${HERO_MARK_CSS}
+  /*
+   * The nav menu, top right, added 2026-08-27.
+   *
+   * A details/summary and not a button with a script. Open and close, the
+   * keyboard, and the screen-reader announcement are all the browser's, so the
+   * menu works with JavaScript blocked — the same argument the stepped flow
+   * makes for degrading to a plain form. MENU_JS only adds close-on-outside-
+   * click and Escape, and nothing depends on it.
+   *
+   * z-index 3 puts it over the brandmark's 2, which matters at the width where
+   * the slab's right end reaches under it. It sits inside .hero, which is
+   * overflow:hidden — fine for a panel that opens downward into 100vh of hero,
+   * and the reason the panel must never be made to open upward.
+   *
+   * The summary is styled as a small pill rather than in the 11px uppercase
+   * chrome voice the scrollcue uses: that voice is for labels you read once,
+   * and this is the only control in the top of the page.
+   */
+  /*
+   * The wrapper carries the position, not the details. .hero is a flex
+   * container, so a static <nav> would be a flex item and would push the
+   * centred hero content off-centre by its own width — while the menu inside it
+   * still looked correctly placed, because that part is absolute either way.
+   */
+  .menu-wrap { position:absolute; top:46px; right:32px; z-index:3; }
+  .menu { position:relative; }
+  .menu > summary { list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:9px;
+                    font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
+                    background:rgba(251,250,248,.72); border:1px solid var(--sand); border-radius:100px;
+                    padding:10px 18px; transition:background .15s ease, border-color .15s ease; }
+  .menu > summary::-webkit-details-marker { display:none; }
+  .menu > summary:hover { background:var(--paper); border-color:var(--shade); }
+  .menu > summary:focus-visible { outline:2px solid var(--ink); outline-offset:3px; }
+  /* Rotates to point up when open, so the control says which way it will go. */
+  .menu .chev { width:9px; height:9px; border-right:1.5px solid var(--ink-soft);
+                border-bottom:1.5px solid var(--ink-soft); transform:translateY(-2px) rotate(45deg);
+                transition:transform .18s ease; }
+  .menu[open] .chev { transform:translateY(1px) rotate(-135deg); }
+  .menu-items { position:absolute; top:calc(100% + 8px); right:0; min-width:170px;
+                display:flex; flex-direction:column; padding:7px;
+                background:var(--paper); border:1px solid var(--plaster); border-radius:14px;
+                box-shadow:0 1px 2px rgba(38,34,30,.05), 0 18px 44px -18px rgba(38,34,30,.22); }
+  .menu-items a { font-size:15px; text-decoration:none; color:var(--ink);
+                  padding:11px 14px; border-radius:9px; white-space:nowrap; }
+  .menu-items a:hover { background:var(--bone); }
+  .menu-items a:focus-visible { outline:2px solid var(--ink); outline-offset:-2px; }
+  @media (prefers-reduced-motion:reduce) {
+    .menu > summary, .menu .chev { transition:none; }
+  }
+
   .hero-in { position:relative; z-index:1; text-align:center; padding:0 32px; max-width:800px; }
   .hero-in h1 { font-size:56px; font-weight:300; line-height:1.14; letter-spacing:-.018em; margin:0 0 26px; }
   .hero-in .sub { font-size:15px; color:var(--ink-soft); margin:0 0 38px; letter-spacing:.005em; }
@@ -477,7 +596,24 @@ ${HERO_MARK_CSS}
 
   @media (max-width:640px) {
     .hero-in h1 { font-size:36px; }
-    .brandmark { top:26px; left:-10px; width:min(300px,76vw); }
+    /*
+     * 255px and 65vw, the same 15% off both terms.
+     *
+     * The hairline correction below is not part of that resize — it is a gap the
+     * resize uncovered. HERO_MARK_CSS is compiled at the hero's widest, which is
+     * what markCss's drawnAt means, so it emits no correction. This rule then
+     * draws the same mark small: at 65vw on a 390px phone that is 254px, well
+     * under the 300px where these strokes stop resolving at 1x.
+     *
+     * It was already under it. The old rule read min(300px,76vw), which looks
+     * like it sits exactly at the threshold, but the vw term wins on any phone
+     * narrower than 395px — 296px on a 390px screen. So the homepage mark has
+     * been uncorrected on phones since the artwork shipped, and looked merely a
+     * little softer there than on the pages that do correct it.
+     */
+    .brandmark { top:26px; left:-10px; width:min(255px,65vw); }
+${hairlineCss("var(--paper)")}    .menu-wrap { top:26px; right:20px; }
+    .menu > summary { padding:9px 15px; font-size:11px; }
     .sec { padding:88px 24px; }
     .big { font-size:22px; }
     .counts { flex-wrap:wrap; gap:26px 0; }
@@ -547,6 +683,7 @@ export function homePage(): string {
     <canvas class="dots" id="dots" aria-hidden="true"></canvas>
     <div class="veil" aria-hidden="true"></div>
     <div class="brandmark">${MARK}</div>
+    ${MENU}
     <div class="hero-in">
       <h1>A design critique of your site,<br>backed by research</h1>
       <p class="sub">Five questions to shape your critique. Under ten minutes.
@@ -621,7 +758,8 @@ export function homePage(): string {
     <p class="fine"><a href="/signin">Already have audits? Sign in</a></p>
   </footer>
 </main>
-<script>${HERO_JS}</script>`,
+<script>${HERO_JS}</script>
+<script>${MENU_JS}</script>`,
   );
 }
 
@@ -933,11 +1071,50 @@ export const HERO_JS = `
 })();
 `;
 
-/** The homepage runs one script, and names it. Same rule as the stepped flow. */
+/**
+ * Closing the menu, which is the only part of it that needs a script.
+ *
+ * The menu is a `<details>`, so opening, closing, keyboard focus and the
+ * screen-reader announcement are all the browser's, and all of it works with
+ * this file blocked or absent. What `<details>` does not give you is the thing
+ * every menu on the web does: close when you click away from it, and close on
+ * Escape. Without those the menu stays open over the hero until you click the
+ * button again, which on the homepage of a company that critiques interfaces is
+ * not a detail to wave through.
+ *
+ * So this is an enhancement and nothing depends on it. `pointerdown` rather than
+ * `click`, so the menu is already shut by the time a click on the CTA behind it
+ * lands. `focusout` is deliberately not used: it fires while moving between the
+ * two links inside the menu.
+ */
+export const MENU_JS = `
+(function () {
+  var menu = document.getElementById('menu');
+  if (!menu) return;
+  document.addEventListener('pointerdown', function (e) {
+    if (menu.open && !menu.contains(e.target)) menu.open = false;
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !menu.open) return;
+    menu.open = false;
+    var summary = menu.querySelector('summary');
+    if (summary) summary.focus();   // or focus is left on nothing, in the page body
+  });
+})();
+`;
+
+/**
+ * The homepage runs two scripts, and names both. Same rule as the stepped flow.
+ *
+ * A hash per script rather than one covering the pair: they are separate
+ * `<script>` elements and CSP hashes each element's own text, so a single hash
+ * of the concatenation would match neither.
+ */
 export const HOME_CSP =
-  `${MARKETING_CSP}; script-src 'sha256-` +
-  createHash("sha256").update(HERO_JS, "utf8").digest("base64") +
-  `'`;
+  `${MARKETING_CSP}; script-src ` +
+  [HERO_JS, MENU_JS]
+    .map((js) => `'sha256-${createHash("sha256").update(js, "utf8").digest("base64")}'`)
+    .join(" ");
 
 /** Matches `MAX_ANSWER` in server.ts, which enforces it. */
 const MAX_ANSWER = 1000;

@@ -1,7 +1,15 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { MARK, MARK_ASPECT, markCss, bleedCss, siteUrl } from "./brand.js";
+import {
+  MARK,
+  MARK_ASPECT,
+  MARK_RESOLVES_ABOVE,
+  markCss,
+  hairlineCss,
+  bleedCss,
+  siteUrl,
+} from "./brand.js";
 
 /**
  * The copy nobody would notice going stale.
@@ -197,6 +205,32 @@ describe("the hairline correction is applied only where the ink was lost", () =>
     // would put the mark back in the flow it was deliberately taken out of.
     const css = bleedCss(".x", "var(--ink)");
     assert.doesNotMatch(css, /\.x \{[^}]*position:/);
+  });
+
+  test("the correction can be taken on its own, for a mark that changes width", () => {
+    /**
+     * `markCss` decides once, from `drawnAt`, which is right for a mark drawn at
+     * one size and wrong for the homepage's: `min(372px,49vw)` on a desktop and
+     * `min(255px,65vw)` on a phone, either side of the threshold. Compiled at
+     * its widest it emits nothing, and the phone gets no correction at exactly
+     * the size that needs it. `hairlineCss` is what the narrow media query uses.
+     *
+     * It must be byte-identical to what `markCss` emits, or the two placements
+     * would drift and the phone would get a different weight from every other
+     * small mark on the site.
+     */
+    assert.equal(hairlineCss("var(--paper)"), markCss("a", "var(--paper)", 190).split("\n")
+      .slice(4).join("\n"), "the standalone correction has drifted from markCss's");
+    assert.match(hairlineCss("#fff"), /@media \(max-resolution:1\.4dppx\)/);
+    assert.match(hairlineCss("#fff"), /stroke:#fff; stroke-width:0\.6px/);
+  });
+
+  test("the threshold is exported, so callers can check their own widths", () => {
+    // marketing.test.ts asserts the hero sits above it and the phone below it.
+    // A literal 300 copied into that file would silently stop tracking this one.
+    assert.equal(typeof MARK_RESOLVES_ABOVE, "number");
+    assert.doesNotMatch(markCss("a", "b", MARK_RESOLVES_ABOVE), /stroke-width/);
+    assert.match(markCss("a", "b", MARK_RESOLVES_ABOVE - 1), /stroke-width/);
   });
 
   test("the stroke is the same colour as the fill", () => {
