@@ -181,7 +181,7 @@ const HERO_MARK_CSS = markCss("var(--ink)", "var(--paper)", 438);
  * so a customer who followed a magic link into their dashboard was on an
  * unbranded page with no way back to the site.
  *
- * ## Why this one is inset and the homepage's bleeds off the edge
+ * ## Why this one is inset where the homepage's is clipped
  *
  * The hero runs the mark off the left edge of the screen, which is the gesture
  * that makes it an identity rather than a picture of some words. It only reads
@@ -198,8 +198,17 @@ const HERO_MARK_CSS = markCss("var(--ink)", "var(--paper)", 438);
  * condensed type whose strokes are under a pixel below about 200px wide, so the
  * mark read as a dark smudge in the corner. 240px is the smallest size where
  * the words are legible, and it still sits entirely in the left margin, clear of
- * the content column. The bleeding treatment was tried here too and rejected by
- * the same method — clipped at this size it cuts into the T and reads as broken.
+ * the content column. ~~The bleeding treatment was tried here too and rejected by
+ * the same method — clipped at this size it cuts into the T and reads as broken.~~
+ *
+ * **Half of that is now false — corrected 2026-08-27.** What was rejected was
+ * the hero's *method*: negative `left`, letting the viewport do the clipping,
+ * which at 240px does cut into the T. What replaced it three commits later is
+ * `bleedCss` below — the artwork stays whole and inset exactly as this note
+ * argues, and a rotated strip continues the slab behind it to the edge. So this
+ * mark is inset *and* it bleeds, and the sentence above sat directly on top of
+ * the line that bleeds it. Left in because "we tried bleeding and it broke the
+ * T" is the thing a reader needs, and deleting it invites trying it again.
  *
  * It is a link because a logo in the corner is one everywhere else on the web,
  * and a mark that looks clickable and is not is a small lie about the page.
@@ -948,10 +957,70 @@ const HELP: Record<number, string> = {
   4: "Constraints, history, a redesign you are halfway through.",
 };
 
+/**
+ * The last surface still drawing the name in CSS.
+ *
+ * Every other shell took the artwork on 2026-08-26; this one kept 11px of
+ * letter-spaced uppercase because it is chrome on a form and looked deliberate
+ * beside the step counter. It was not deliberate — it was the placeholder the
+ * artwork replaced everywhere else, and leaving it made `/start` the one page
+ * where the logo is a different logo.
+ *
+ * ## Why it bleeds here
+ *
+ * The flowbar is the top of the page with nothing in the left margin to crowd,
+ * which is the condition the dashboard mark fails and the hero passes. So it
+ * gets the strip treatment — the artwork whole, inset by the bar's own padding,
+ * with the slab continued behind it to the edge of the screen.
+ *
+ * ## 190px, and two measurements that could not choose it
+ *
+ * The size is the only real decision here, because 156px is where this went
+ * wrong the first time it was picked (see `BRANDMARK` above) and nothing about
+ * a too-small mark looks like a bug — it just looks cheap. So it was measured
+ * before it was chosen, twice, and neither measurement worked:
+ *
+ *   - **Share of letter pixels reaching paper.** Moves 36.3% at 140px to 42.7%
+ *     at 240px — a flat line with no threshold in it. For a hairline stroke the
+ *     ratio of core to antialiased edge barely depends on scale, so this metric
+ *     cannot see the failure it was chosen to find.
+ *   - **Open paper regions inside the slab**, counting counters and stroke gaps
+ *     as connected components, on the theory that mush is counters closing. It
+ *     rises 33 → 52 from 140px to 190px and then falls back to 35 at 240px:
+ *     well-formed letters merge their gaps into fewer, larger regions, so the
+ *     count is confounded by the very thing it was meant to rank.
+ *
+ * Both are recorded because a plausible metric that does not discriminate is
+ * worth more written down than quietly dropped — the next person to size a mark
+ * here will think of the first one within a minute.
+ *
+ * The size came from rendering 150/168/190/210 at 1x and looking, which is how
+ * 240px was arrived at too. 190px is the smallest that still reads crisply
+ * rather than merely legibly, and it is not a new number: it is what the results
+ * page already draws. 150px on a phone, where 190 leaves the slab's rotated
+ * corner almost touching the step counter.
+ */
+const FLOW_MARK_WIDTH = 190;
+const FLOW_MARK_NARROW = 150;
+const FLOW_MARK_CSS = markCss("var(--ink)", "var(--paper)", FLOW_MARK_WIDTH);
+
 const START_CSS = `
-  .flowbar { display:flex; align-items:center; gap:16px; padding:26px 34px; }
-  .flowmark { font-size:11px; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; }
-  #count { margin-left:auto; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+${FLOW_MARK_CSS}
+  /*
+   * 18px, down from 26px. The bar was sized around 11px of text; at the mark's
+   * height the old padding made 99px of chrome above a page whose entire idea is
+   * one question at a time.
+   */
+  .flowbar { display:flex; align-items:center; gap:16px; padding:18px 34px; }
+  /*
+   * position:relative, which none of the other callers of bleedCss need — they
+   * are absolute already and it emits no position of its own on purpose. Here
+   * the mark is a flex item and has to stay one, so the containing block for the
+   * strip has to be asked for explicitly.
+   */
+  .flowmark { position:relative; display:block; flex:none; line-height:0;
+              width:${FLOW_MARK_WIDTH}px; text-decoration:none; }
+${bleedCss(".flowmark", "var(--ink)")}  #count { margin-left:auto; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
   .track { display:flex; gap:6px; padding:0 34px; }
   .seg { flex:1; height:2px; border-radius:2px; background:var(--plaster); transition:background .45s ease; }
   .seg.done { background:var(--ink); }
@@ -982,6 +1051,7 @@ const START_CSS = `
   form:not(.stepped) #note { display:none; }
   @media (max-width:600px) {
     .flowbar, .track { padding-left:22px; padding-right:22px; }
+    .flowmark { width:${FLOW_MARK_NARROW}px; }
     .flowbody { padding:48px 22px 44px; }
     .step h2 { font-size:26px; }
   }
@@ -1044,7 +1114,7 @@ export function questionsPage(
     START_CSS,
     `<form id="flow" method="post" action="/request"${errorStep}>
       <div class="flowbar">
-        <a class="flowmark" href="/">The Usability Lab</a>
+        <a class="flowmark" href="/">${MARK}</a>
         <span id="count">Step 1 of ${QUESTIONS.length + 1}</span>
       </div>
       <div class="track">${segs}</div>

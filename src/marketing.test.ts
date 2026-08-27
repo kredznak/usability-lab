@@ -891,3 +891,81 @@ describe("the wordmark is on every page that is not the homepage", () => {
     assert.match(home, /left:-\d+px/, "and it bleeds off the left edge");
   });
 });
+
+/**
+ * `/start`, which kept the old wordmark for a day after everything else took the
+ * artwork — added 2026-08-27.
+ *
+ * It is the only shell whose mark sits in the flow rather than on top of it, and
+ * that is the whole of what these guard. Everywhere else `.brandmark` is
+ * `position:absolute`, which is both what takes it out of the flow and what
+ * gives `bleedCss`'s strip something to be absolute against. In the flowbar the
+ * mark has to stay a flex item beside the step counter, so it is the one caller
+ * that must ask for a containing block itself.
+ */
+describe("the stepped flow carries the artwork, not the name in letter-spacing", () => {
+  test("the mark is drawn and it goes home", () => {
+    const html = questionsPage();
+    assert.match(html, /<a class="flowmark" href="\/"><svg class="mark"/);
+    assert.doesNotMatch(
+      html,
+      />The Usability Lab</,
+      "the flow is back to drawing the name as text, so /start has a different logo from every other page",
+    );
+  });
+
+  test("the mark is announced, not just drawn", () => {
+    const html = questionsPage();
+    assert.match(html, /role="img"/);
+    assert.match(html, /aria-label="The Usability Lab"/);
+  });
+
+  test("it asks for its own containing block, which no other caller has to", () => {
+    /**
+     * The silent one. `bleedCss` emits no `position` on purpose — its other
+     * callers are absolute already and `position:relative` would drop them back
+     * into the flow they were taken out of. Drop `position:relative` here and
+     * nothing errors: the strip goes absolute against whatever ancestor happens
+     * to be positioned, or the viewport, and paints a black bar somewhere else
+     * on the page entirely. The mark itself still looks perfect.
+     */
+    const css = questionsPage();
+    const rule = css.slice(css.indexOf(".flowmark {"), css.indexOf("}", css.indexOf(".flowmark {")));
+    assert.match(rule, /position:relative/, "the bleed strip has nothing to be positioned against");
+    assert.match(css, /\.flowmark::before \{ content:""/, "no bleed strip");
+  });
+
+  test("the bar keeps padding for the strip to run across", () => {
+    // A strip that starts at x=0 is a strip nobody sees: it extends leftward off
+    // the screen and paints nothing. The bleed reads only because the mark is
+    // inset by the bar's own padding and the slab fills that gap.
+    const css = questionsPage();
+    const pad = Number(css.match(/\.flowbar \{[^}]*padding:\d+px (\d+)px/)?.[1]);
+    assert.ok(pad > 0, `the mark sits flush at ${pad}px, so the bleed paints off-screen only`);
+  });
+
+  test("both widths are in the range the hairline correction is compiled for", () => {
+    /**
+     * One `markCss` call serves the wide and narrow rules, and it bakes in a
+     * decision made from a single number: below 300px the stroke is emitted,
+     * above it is not. Two widths straddling that line would give the phone a
+     * correction the desktop silently lacks, or the reverse.
+     */
+    const css = questionsPage();
+    const wide = Number(css.match(/\.flowmark \{[\s\S]*?width:(\d+)px/)?.[1]);
+    const narrow = Number(css.match(/@media \(max-width:600px\)[\s\S]*?\.flowmark \{ width:(\d+)px/)?.[1]);
+    assert.ok(wide && narrow, `could not read both widths back out (${wide}, ${narrow})`);
+    assert.ok(narrow < wide, "the phone should get the smaller mark, not the larger");
+    assert.match(css, /stroke-width:0\.6px/, "neither width gets the ink put back");
+    assert.ok(wide < 300 && narrow < 300, "one of these widths is above the threshold the other is below");
+  });
+
+  test("it is not smaller than the size that was rejected as mush", () => {
+    // 156px was tried on the dashboard and read as a smudge. This bar is the
+    // most tempting place to go smaller — it is chrome, and the mark is by far
+    // the tallest thing in it.
+    const css = questionsPage();
+    const wide = Number(css.match(/\.flowmark \{[\s\S]*?width:(\d+)px/)?.[1]);
+    assert.ok(wide > 156, `${wide}px is at or below the width already found illegible`);
+  });
+});
