@@ -68,11 +68,24 @@ const SOURCE_BY_URL = new Map(SOURCES.map((s) => [s.url, s]));
  * and no chance of the collision that a 240px slab caused on the dashboard at
  * 390px wide. It also reads the way a report's masthead reads.
  *
- * The colours are this page's own palette, which is a neutral `--ink` (#1a1a1a)
- * on `--bg`, not the marketing pages' warm one. Same artwork, same reasoning as
- * `brand.ts` gives for not using the file's literal black.
+ * The colour is this page's own palette, which is a neutral `--ink` (#1a1a1a),
+ * not the marketing pages' warm one. Same artwork, same reasoning as `brand.ts`
+ * gives for not using the file's literal black.
+ *
+ * ## The one surface that keeps the whole lockup, at 260px — 2026-08-28
+ *
+ * Every other corner took the glyph when the artwork changed. This one did not,
+ * and the reason is what this page is for: it is written to disk as
+ * `results-full.html` and forwarded to people who have never heard of us. A
+ * glyph alone on a document arriving from a stranger says nothing. The masthead
+ * has to spell the name.
+ *
+ * 260px rather than the old 190px because the new wordmark sits in a 1241-wide
+ * artboard against the old 438 — at 190px its caps would be 20px, under the
+ * floor in `brand.ts`. At 260px they are 27px, and the lockup is 35px tall,
+ * still shorter than the 52px slab it replaces.
  */
-const RESULTS_MARK_CSS = `${markCss("var(--ink)", "var(--bg)", 190)}  header .brandmark { display:block; width:190px; margin:0 0 22px; }
+const RESULTS_MARK_CSS = `${markCss("var(--ink)")}  header .brandmark { display:block; width:260px; margin:0 0 22px; }
 `;
 
 /** In flow, above the title, linking back to the site that produced the audit. */

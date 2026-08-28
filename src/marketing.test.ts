@@ -16,7 +16,7 @@ import {
   signInPage,
   schedulePage,
 } from "./marketing.js";
-import { MARK_RESOLVES_ABOVE } from "./brand.js";
+import { MARK_MIN_WIDTH, ICON, MARK } from "./brand.js";
 import { SOURCES } from "./sources.js";
 import { QUESTIONS } from "./profile.js";
 import { PRICE_USD } from "./render.js";
@@ -709,7 +709,7 @@ describe("the dashboard agrees with the billing tab about who is paying", () => 
  * page with no way back to the site, which is the one journey this product's
  * paying customers take most often.
  */
-describe("the wordmark is on every page that is not the homepage", () => {
+describe("the mark is on every page that is not the homepage", () => {
   const shells = {
     "sign-in": () => signInPage(),
     dashboard: () => accountPage("a@b.com", [], { active: true, status: "active" }),
@@ -718,12 +718,38 @@ describe("the wordmark is on every page that is not the homepage", () => {
     schedule: () => schedulePage("a@b.com"),
   };
 
+  /**
+   * The corner takes the glyph, not the lockup — changed 2026-08-28 with the
+   * artwork.
+   *
+   * These pages carried the whole wordmark at 240px. The new one lives in a
+   * 1241-wide artboard where the old one was 438, so 240px of it puts the caps
+   * at 25px against the old 55px — and the honest options were a corner twice
+   * the size or a wordmark under the floor where words stop being words. The
+   * glyph is square, has no letters to lose, and says the same thing at 48px.
+   */
   for (const [name, render] of Object.entries(shells)) {
     test(`${name} carries it, and it goes home`, () => {
       const html = render();
-      assert.match(html, /<a class="brandmark" href="\/"><svg class="mark"/, name);
+      assert.match(html, /<a class="brandmark" href="\/"><svg class="icon"/, name);
     });
   }
+
+  test("the corner is the glyph, and never the lockup", () => {
+    /**
+     * The regression worth naming: someone puts `MARK` back here because the
+     * page "should say the name". It would look almost right — a wordmark, in
+     * the corner, in the brand's own type — and be illegible at the size the
+     * corner allows. That is not a bug anybody reports; it just looks cheap.
+     */
+    for (const [name, render] of Object.entries(shells)) {
+      const html = render();
+      assert.doesNotMatch(html, /<svg class="mark"/, `${name}: the lockup is back in the corner`);
+      const rule = html.slice(html.indexOf(".brandmark {"), html.indexOf("}", html.indexOf(".brandmark {")));
+      const width = Number(rule.match(/width:(\d+)px/)?.[1]);
+      assert.ok(width && width <= 64, `${name}: a ${width}px corner is a lockup pretending to be a glyph`);
+    }
+  });
 
   /**
    * The regression that replacing words with a picture invites.
@@ -747,172 +773,89 @@ describe("the wordmark is on every page that is not the homepage", () => {
     assert.match(homePage(), /aria-label="The Usability Lab"/, "homepage");
   });
 
-  test("it takes its colours from the palette, not from black and white", () => {
+  test("it takes its colour from the palette, not from black", () => {
     /**
-     * The supplied artwork is `#000` on `#FFF`. The palette note in
-     * `marketing.ts` argues that pure white reads wrong beside these warm
-     * neutrals, and pure black reads as a second, colder ink beside `--ink`.
-     * Hardcoding the file's own values would put two inks on one page and it
+     * The supplied artwork is `#000`. The palette note in `marketing.ts` argues
+     * that pure black reads as a second, colder ink beside `--ink` (#26221E).
+     * Hardcoding the file's own value would put two inks on one page and it
      * would look like a rendering bug rather than a decision.
      */
-    const css = accountPage("a@b.com", [], { active: true, status: "active" });
-    assert.match(css, /\.mark \.slab \{ fill:var\(--ink\); \}/);
-    assert.match(css, /\.mark \.word \{ fill:var\(--paper\); \}/);
+    const html = accountPage("a@b.com", [], { active: true, status: "active" });
+    assert.match(html, /\.icon \.glyph \{ fill:var\(--ink\); \}/);
     assert.doesNotMatch(
-      css.slice(css.indexOf(".mark"), css.indexOf("</style>")),
+      html.slice(html.indexOf(".icon"), html.indexOf("</style>")),
       /fill:\s*(#000|#fff|black|white)\b/i,
-      "the mark is painted with literal black or white instead of the palette",
+      "the mark is painted with literal black instead of the palette",
     );
+  });
+
+  test("nothing draws a slab, a bleed, or a stroke any more", () => {
+    /**
+     * Three treatments died with the previous artwork, and each would be
+     * reintroduced for a plausible reason:
+     *
+     *   - the **bleed** continued the old slab off the left edge, and it is the
+     *     thing Kelly asked for on 2026-08-26, so it is the most likely to be
+     *     asked for again. There is no slab to continue; done to this artwork it
+     *     would paint a black bar beside the glyph.
+     *   - the **hairline stroke** put ink back on knockout letters below 300px.
+     *     These letterforms are positive and reach full ink at every size.
+     *   - the **two-colour model** described letters as a hole in a rectangle.
+     *
+     * All four shells, plus the homepage, in one assertion — because the failure
+     * is that one surface keeps a treatment the others dropped, and a mark that
+     * differs on one page is exactly what nobody notices.
+     */
+    for (const [name, render] of [...Object.entries(shells), ["homepage", homePage], ["about", aboutPage]] as const) {
+      const html = render();
+      assert.doesNotMatch(html, /::before \{ content:""; position:absolute; right:calc\(100%/, `${name}: bleed strip`);
+      assert.doesNotMatch(html, /stroke-width:0\.6px/, `${name}: hairline correction`);
+      assert.doesNotMatch(html, /\.slab/, `${name}: still styling a slab`);
+    }
   });
 
   test("the page's own title still clears the mark", () => {
     /**
-     * Measured, not eyeballed, because eyeballing it is what missed it.
-     *
-     * The mark is `position:absolute`, so nothing in the flow knows how tall it
-     * is. At the first size that made the letters legible — 240px, up from the
-     * 156px that rendered as a smudge — the slab reached y=96 and `.wrap` began
-     * its content at exactly y=96. On a 390px screen the corner of the slab sat
-     * on the word "Your" in "Your audits".
-     *
-     * The artwork is 438x121, so its height is fixed by its width. That makes
-     * this a relationship between two numbers in the stylesheet rather than
-     * something only a screenshot can see — which is the difference between a
-     * test that holds and one that has to be re-checked by hand every time
-     * somebody nudges the mark.
-     */
-    const html = accountPage("a@b.com", [], { active: true, status: "active" });
-    const ASPECT = 121 / 438;
-
-    const clears = (label: string, block: string) => {
-      const top = Number(block.match(/\.brandmark \{[^}]*top:(\d+)px/)?.[1]);
-      const width = Number(block.match(/\.brandmark \{[^}]*width:(\d+)px/)?.[1]);
-      const pad = Number(block.match(/\.wrap \{ padding-top:(\d+)px; \}/)?.[1]);
-      assert.ok(top && width && pad, `${label}: could not read top/width/padding back out`);
-      const bottom = top + width * ASPECT;
-      assert.ok(
-        pad > bottom,
-        `${label}: the mark ends at ${bottom.toFixed(0)}px and the content starts at ${pad}px`,
-      );
-    };
-
-    // Anchored on the mark's own block. The base stylesheet has a
-    // `@media (max-width:600px)` of its own, earlier in the document, and
-    // splitting the whole page on the first one lands in the wrong rules.
-    const css = html.slice(html.indexOf(".brandmark {"));
-    const narrowAt = css.indexOf("@media (max-width:600px)");
-    assert.notEqual(narrowAt, -1, "the mark has no narrow-screen rules");
-    clears("wide", css.slice(0, narrowAt));
-    clears("narrow", css.slice(narrowAt));
-  });
-
-  test("each shell asks for the correction its own size needs", () => {
-    /**
-     * `markCss` decides whether to emit the hairline correction from the width
-     * it is told the mark is drawn at. That makes every call site's argument a
-     * claim about its own CSS, and nothing inside `brand.ts` can check it —
-     * pass 438 for a mark rendered at 190 and it silently goes uncorrected.
-     *
-     * So the check belongs here, where both numbers are visible: the account
-     * shells draw at 240 and must carry it; the hero draws large and must not,
-     * because at that size the letters already reach paper and the stroke would
-     * only make the logo bolder than Kelly drew it.
-     *
-     * **Inverted 2026-08-27, and the old assertion is the point.** This read
-     * `assert.doesNotMatch(homePage(), /stroke-width/)` — "the hero is 438px and
-     * would be permanently heavier than the artwork" — which was true of the
-     * whole document only because the homepage's *narrow* mark was going
-     * uncorrected too, at 296px on a phone. Fixing that put a `stroke-width`
-     * into the homepage for the first time, and this test failed for telling
-     * the truth. Kept and narrowed rather than deleted: the claim it was making
-     * about the hero is still one worth holding, so it is now made against the
-     * hero's own rules instead of against the file.
-     */
-    const dash = accountPage("a@b.com", [], { active: true, status: "active" });
-    assert.match(dash, /max-resolution:1\.4dppx/, "the 240px mark is drawn without the correction");
-    assert.match(dash, /stroke-width:0\.6px/);
-
-    // Everything before the narrow query, not just the .brandmark rule: a
-    // stroke declared anywhere above it applies to the hero just as well, and
-    // slicing from `.brandmark {` looked at a window that a revert stepped
-    // straight over — the guard passed while the hero was being bolded.
-    const home = homePage();
-    const beforeNarrow = home.slice(0, home.indexOf("@media (max-width:640px)"));
-    assert.doesNotMatch(
-      beforeNarrow,
-      /stroke-width/,
-      "the hero is drawn above the threshold and would be permanently heavier than the artwork",
-    );
-    assert.match(
-      home.slice(home.indexOf("@media (max-width:640px)")),
-      /stroke-width:0\.6px/,
-      "the phone draws the same mark small and needs the correction the hero does not",
-    );
-  });
-
-  test("the slab runs off the left edge, and the letters stay where they are", () => {
-    /**
-     * Asked for on 2026-08-26: the account mark should bleed like the hero's
-     * instead of floating in the corner.
-     *
-     * The hero does it by pulling the element left. That does not transfer — at
-     * 240px the letters begin 14px into the box, so any offset large enough to
-     * read as a bleed clips the T, which was tried and reads as broken. So the
-     * element does not move at all and a pseudo-element carries the slab off the
-     * edge instead. `left` staying positive is therefore part of the fix, not an
-     * accident: it is what keeps the letters clear of the screen edge.
+     * Measured, not eyeballed, because eyeballing it is what missed it the first
+     * time — at 240px the old slab landed on the word "Your" on a 390px screen.
+     * The glyph is 48px square and the clearance is far easier now, but the
+     * check stays: it is the same class of failure, and the mark is still
+     * absolutely positioned, so nothing in the flow knows how tall it is.
      */
     for (const [name, render] of Object.entries(shells)) {
       const html = render();
-      assert.match(html, /\.brandmark::before \{ content:""/, `${name}: no bleed strip`);
+      const css = html.slice(html.indexOf(".brandmark {"));
+      const read = (block: string, prop: string) =>
+        Number(block.match(new RegExp(`${prop}:(\\d+)px`))?.[1]);
+      const wideRule = css.slice(0, css.indexOf("@media"));
+      const top = read(wideRule, "top");
+      const width = read(wideRule, "width");
+      const pad = Number(css.match(/\.wrap \{ padding-top:(\d+)px/)?.[1]);
+      assert.ok(top && width && pad, `${name}: could not read top/width/padding back out`);
+      // ICON_ASPECT is 1: the glyph is square, so its height is its width.
+      assert.ok(top + width < pad, `${name}: mark ends at ${top + width}px, content starts at ${pad}px`);
     }
-
-    const css = accountPage("a@b.com", [], { active: true, status: "active" });
-    const rule = css.slice(css.indexOf(".brandmark {"), css.indexOf(".brandmark:hover"));
-    const left = Number(rule.match(/left:(-?\d+)px/)?.[1]);
-    assert.ok(left > 0, `the mark itself is offset to ${left}px; the strip should do the bleeding`);
-  });
-
-  test("the bleed strip has something positioned to hang off", () => {
-    /**
-     * `bleedCss` deliberately emits no `position`, because declaring
-     * `position:relative` would drop this mark back into the flow it is
-     * positioned out of. That makes the pairing a thing two files have to agree
-     * on and neither can check alone — so it is checked here, where both halves
-     * are in the same string.
-     *
-     * Unpaired, the strip positions against the viewport instead of the mark and
-     * lands somewhere unrelated to the slab.
-     */
-    const css = accountPage("a@b.com", [], { active: true, status: "active" });
-    const rule = css.slice(css.indexOf(".brandmark {"), css.indexOf("}", css.indexOf(".brandmark {")));
-    assert.match(rule, /position:(absolute|relative|fixed|sticky)/, "the strip has no anchor");
   });
 
   test("the mark is at full contrast when nobody is pointing at it", () => {
-    // It was `opacity:.92` at rest, which spent 8% of the contrast between the
-    // paper letters and the ink slab on strokes already losing ink to
-    // antialiasing. A hover state can afford that; a resting state cannot.
     const css = accountPage("a@b.com", [], { active: true, status: "active" });
     const rest = css.slice(css.indexOf(".brandmark {"), css.indexOf(".brandmark:hover"));
-    assert.doesNotMatch(rest, /opacity:0?\.\d/, "the resting mark is dimmed");
+    assert.doesNotMatch(rest, /opacity:\.\d/, "the resting state must not be dimmed");
     assert.match(css, /\.brandmark:hover \{ opacity:\.78; \}/, "and hover still gives feedback");
   });
 
-  test("the homepage keeps its own, larger one", () => {
-    // Same artwork, deliberately not the same placement: the hero runs it off
-    // the left edge, which only reads as intentional with room around it. See
-    // the note on BRANDMARK for why the dashboard's is whole and inset.
+  test("the homepage spells the name out, where these do not", () => {
+    /**
+     * The one asymmetry in the identity, and it is deliberate: the homepage is
+     * where a stranger learns what this is called, and every one of these pages
+     * is reached by somebody who already knows — through a magic link into their
+     * own account. So the front door carries the lockup and the corners carry
+     * the glyph.
+     */
     const home = homePage();
     assert.match(home, /<div class="brandmark"><svg class="mark"/);
     const heroWidth = Number(home.match(/\.brandmark \{[^}]*width:min\((\d+)px/)?.[1]);
-    const pageWidth = Number(
-      accountPage("a@b.com", [], { active: true, status: "active" }).match(
-        /\.brandmark \{[^}]*width:(\d+)px/,
-      )?.[1],
-    );
-    assert.ok(heroWidth > pageWidth, `hero ${heroWidth}px must stay larger than page ${pageWidth}px`);
-    assert.match(home, /left:-\d+px/, "and it bleeds off the left edge");
+    assert.ok(heroWidth >= MARK_MIN_WIDTH, `the hero draws the words at ${heroWidth}px`);
   });
 });
 
@@ -1002,48 +945,78 @@ describe("the homepage's menu", () => {
   });
 });
 
-describe("the homepage mark, 15% smaller", () => {
-  test("the hero is still drawn above the width where letters lose ink", () => {
-    // 372px, down from 438. Still clear of the threshold, so the hero must not
-    // have picked up the hairline stroke and been quietly bolded.
+describe("the homepage mark, and the point where its words stop fitting", () => {
+  test("the hero draws the lockup wide enough for the words to be words", () => {
     const css = homePage();
     const wide = Number(css.match(/\.brandmark \{[^}]*width:min\((\d+)px/)?.[1]);
     assert.ok(wide, "could not read the hero width back out");
-    assert.ok(wide >= MARK_RESOLVES_ABOVE, `${wide}px would need a correction the hero does not get`);
+    assert.ok(wide >= MARK_MIN_WIDTH, `${wide}px puts the caps under the floor in brand.ts`);
   });
 
-  test("the phone's mark is below that width, and does get the correction", () => {
+  test("both pieces are in the markup, because CSS cannot swap one SVG for another", () => {
     /**
-     * The gap the resize uncovered, and it predates the resize: `HERO_MARK_CSS`
-     * is compiled at the hero's widest — which is what `drawnAt` means — so it
-     * emits nothing, and the narrow rule then draws the same mark at 255px. The
-     * old narrow rule was `min(300px,76vw)`, which looks like it sits exactly on
-     * the threshold and does not: the vw term wins under 395px.
+     * The homepage is the only surface carrying both. Below 380px of viewport
+     * there is no width that is both legible and clear of the menu — measured:
+     * the menu pill is 87px at 20px from the right, the mark starts 22px in, and
+     * 16px between them is the least that does not read as a collision, so the
+     * room is the viewport less 145px, and MARK_MIN_WIDTH needs 345px of it.
+     */
+    const html = homePage();
+    assert.match(html, /<div class="brandmark"><svg class="mark"/);
+    assert.ok(html.includes('<svg class="icon"'), "the glyph is not in the markup to swap to");
+  });
+
+  test("the hidden one leaves the accessibility tree, not just the screen", () => {
+    /**
+     * `display:none` and not `visibility` or `opacity` or an off-screen shift.
+     * Both pieces carry `aria-label="The Usability Lab"`, so anything that only
+     * hides them visually leaves every narrow visitor meeting two images that
+     * both announce the same name — and it looks perfect on screen.
      */
     const css = homePage();
-    const narrowBlock = css.slice(css.indexOf("@media (max-width:640px)"));
-    const narrow = Number(narrowBlock.match(/\.brandmark \{[^}]*width:min\((\d+)px/)?.[1]);
-    assert.ok(narrow, "could not read the narrow width back out");
-    assert.ok(narrow < MARK_RESOLVES_ABOVE, `${narrow}px is above the threshold; drop the correction`);
-    assert.match(
-      narrowBlock,
-      /stroke-width:0\.6px/,
-      "the phone draws the mark small with no correction, as it did before this was noticed",
+    assert.match(css, /\.brandmark \.icon \{ display:none; \}/, "the glyph is visible beside the lockup");
+    const swap = css.slice(css.indexOf("@media (max-width:379px)"));
+    assert.match(swap, /\.brandmark \.mark \{ display:none; \}/, "the lockup stays in the tree when narrow");
+    assert.match(swap, /\.brandmark \.icon \{ display:block; \}/);
+  });
+
+  test("the swap comes last, or a phone in landscape shows an empty box", () => {
+    /**
+     * Load-bearing ordering, and the failure is invisible. A 360x740 phone
+     * turned sideways matches both the height query and the swap; they set the
+     * same property; if the height query wins, the element is 280px wide with
+     * its lockup already display:none — 280px of nothing, and the glyph sized
+     * for a corner stretched to fill it.
+     */
+    const css = homePage();
+    assert.ok(
+      css.indexOf("@media (max-width:379px)") > css.indexOf("@media (max-height:520px)"),
+      "the height rule is overriding the swap",
     );
   });
 
-  test("the correction is scoped to the query that made the mark small", () => {
-    // At the top level it would apply to the hero too, which is the +37% ink
-    // mistake `brand.ts` records. It has to sit inside `max-width:640px`.
+  test("the narrow width is expressed against the room, not against the viewport", () => {
     /**
-     * Sliced from the top of the document, not from `.brandmark {`. A revert
-     * that inserted the stroke one line *above* that rule left this green while
-     * the hero was being bolded — the injected rule was outside the window, and
-     * the window was the only reason the test passed.
+     * `74vw` was correct at 390px and wrong at 430px, where the lockup grew
+     * faster than the gap to the menu. The room is viewport-minus-145, so that
+     * is what the rule says.
+     *
+     * The slice is bounded to this one media block, and that is the whole point
+     * of the second indexOf. Sliced to the end of the document, this assertion
+     * passed with the narrow rule reverted to a bare vw — because the *short*
+     * rule further down also uses a calc, and the regex found that one. The
+     * guard was reading a window that contained the answer it wanted no matter
+     * what the rule under test said.
      */
     const css = homePage();
-    const wideOnly = css.slice(0, css.indexOf("@media (max-width:640px)"));
-    assert.doesNotMatch(wideOnly, /stroke-width/, "the hero would be bolder than the artwork");
+    const from = css.indexOf("@media (max-width:640px)");
+    const narrow = css.slice(from, css.indexOf("@media (max-height:520px)"));
+    assert.ok(narrow.includes(".brandmark {"), "the narrow block no longer sets the mark's width");
+    assert.match(
+      narrow,
+      /\.brandmark \{[^}]*width:min\(\d+px,calc\(100vw - \d+px\)\)/,
+      "the narrow width is not keyed to the space actually available",
+    );
   });
 });
 
@@ -1109,11 +1082,28 @@ describe("the homepage on a short screen", () => {
     );
   });
 
-  test("the smaller mark still gets its ink back", () => {
-    // 172px, further under the threshold than either other size. The correction
-    // has to be inside this query too — it is not inherited from the one above.
+  test("the lockup stays above its floor even on the shortest screen", () => {
+    /**
+     * This used to assert the hairline correction was present here, because the
+     * short rule drew the old mark at 172px and knockout letters lose ink below
+     * 300px. The artwork changed on 2026-08-28 and that failure does not exist
+     * for it. What replaces the check is the constraint that does apply: the
+     * short rule is the only one that sets a width without the narrow rule's
+     * calc, so it is the easiest place to put the words under their floor.
+     *
+     * 40vw rather than a bare px, because a short screen can also be narrow —
+     * 568x320 is a real phone in landscape, and a fixed 280px there would be
+     * fine while 40vw is 227px, still clear.
+     */
     const css = homePage();
-    assert.match(css.slice(shortAt(css)), /stroke-width:0\.6px/);
+    const block = css.slice(shortAt(css));
+    const px = Number(block.match(/\.brandmark \{[^}]*width:min\((\d+)px/)?.[1]);
+    const gap = Number(block.match(/\.brandmark \{[^}]*calc\(100vw - (\d+)px\)/)?.[1]);
+    assert.ok(px && gap, `could not read the short-screen width back out (${px}, ${gap})`);
+    assert.ok(px >= MARK_MIN_WIDTH, `${px}px is under the floor`);
+    // 380 is the narrowest screen that still matches this rule rather than the
+    // swap. This assertion failed when the rule said 40vw: 152px at 380 wide.
+    assert.ok(380 - gap >= MARK_MIN_WIDTH, `${380 - gap}px at the narrowest screen this rule serves`);
   });
 });
 
@@ -1139,7 +1129,7 @@ describe("the about page", () => {
 
   test("it is the shared shell, so it carries the mark and the way home", () => {
     const html = aboutPage();
-    assert.match(html, /<a class="brandmark" href="\/"><svg class="mark"/);
+    assert.match(html, /<a class="brandmark" href="\/"><svg class="icon"/);
     assert.match(html, /<title>About — The Usability Lab<\/title>/);
   });
 
@@ -1150,15 +1140,25 @@ describe("the about page", () => {
   });
 });
 
-describe("the stepped flow carries the artwork, not the name in letter-spacing", () => {
-  test("the mark is drawn and it goes home", () => {
+describe("the stepped flow carries the glyph", () => {
+  test("the glyph is drawn and it goes home", () => {
     const html = questionsPage();
-    assert.match(html, /<a class="flowmark" href="\/"><svg class="mark"/);
+    assert.match(html, /<a class="flowmark" href="\/"><svg class="icon"/);
     assert.doesNotMatch(
       html,
       />The Usability Lab</,
       "the flow is back to drawing the name as text, so /start has a different logo from every other page",
     );
+  });
+
+  test("it is the glyph and not the lockup", () => {
+    // The flowbar is a compact row beside "STEP 1 OF 6". The lockup would need
+    // ~200px to stay readable, which is a band of type a third of the way
+    // across the page; the glyph says the same in 34 square pixels.
+    const html = questionsPage();
+    assert.doesNotMatch(html, /<svg class="mark"/, "the lockup is back in the flowbar");
+    const width = Number(html.match(/\.flowmark \{[\s\S]*?width:(\d+)px/)?.[1]);
+    assert.ok(width && width <= 48, `${width}px in a progress bar is a lockup, not a glyph`);
   });
 
   test("the mark is announced, not just drawn", () => {
@@ -1167,52 +1167,26 @@ describe("the stepped flow carries the artwork, not the name in letter-spacing",
     assert.match(html, /aria-label="The Usability Lab"/);
   });
 
-  test("it asks for its own containing block, which no other caller has to", () => {
+  test("nothing here asks to be a containing block any more", () => {
     /**
-     * The silent one. `bleedCss` emits no `position` on purpose — its other
-     * callers are absolute already and `position:relative` would drop them back
-     * into the flow they were taken out of. Drop `position:relative` here and
-     * nothing errors: the strip goes absolute against whatever ancestor happens
-     * to be positioned, or the viewport, and paints a black bar somewhere else
-     * on the page entirely. The mark itself still looks perfect.
+     * `position:relative` was on `.flowmark` for exactly one reason: `bleedCss`
+     * emitted no position of its own, so the strip that continued the old slab
+     * needed something to be absolute against. The slab is gone, the strip is
+     * gone, and a stray `position:relative` left behind would be a containing
+     * block for whatever gets added here next — which is the kind of thing that
+     * makes a later bug incomprehensible.
      */
     const css = questionsPage();
+    assert.doesNotMatch(css, /\.flowmark::before/, "the bleed strip is back");
     const rule = css.slice(css.indexOf(".flowmark {"), css.indexOf("}", css.indexOf(".flowmark {")));
-    assert.match(rule, /position:relative/, "the bleed strip has nothing to be positioned against");
-    assert.match(css, /\.flowmark::before \{ content:""/, "no bleed strip");
+    assert.doesNotMatch(rule, /position:/, "left over from the bleed, and now load-bearing for nothing");
   });
 
-  test("the bar keeps padding for the strip to run across", () => {
-    // A strip that starts at x=0 is a strip nobody sees: it extends leftward off
-    // the screen and paints nothing. The bleed reads only because the mark is
-    // inset by the bar's own padding and the slab fills that gap.
-    const css = questionsPage();
-    const pad = Number(css.match(/\.flowbar \{[^}]*padding:\d+px (\d+)px/)?.[1]);
-    assert.ok(pad > 0, `the mark sits flush at ${pad}px, so the bleed paints off-screen only`);
-  });
-
-  test("both widths are in the range the hairline correction is compiled for", () => {
-    /**
-     * One `markCss` call serves the wide and narrow rules, and it bakes in a
-     * decision made from a single number: below 300px the stroke is emitted,
-     * above it is not. Two widths straddling that line would give the phone a
-     * correction the desktop silently lacks, or the reverse.
-     */
+  test("the phone gets the smaller of the two", () => {
     const css = questionsPage();
     const wide = Number(css.match(/\.flowmark \{[\s\S]*?width:(\d+)px/)?.[1]);
     const narrow = Number(css.match(/@media \(max-width:600px\)[\s\S]*?\.flowmark \{ width:(\d+)px/)?.[1]);
     assert.ok(wide && narrow, `could not read both widths back out (${wide}, ${narrow})`);
     assert.ok(narrow < wide, "the phone should get the smaller mark, not the larger");
-    assert.match(css, /stroke-width:0\.6px/, "neither width gets the ink put back");
-    assert.ok(wide < 300 && narrow < 300, "one of these widths is above the threshold the other is below");
-  });
-
-  test("it is not smaller than the size that was rejected as mush", () => {
-    // 156px was tried on the dashboard and read as a smudge. This bar is the
-    // most tempting place to go smaller — it is chrome, and the mark is by far
-    // the tallest thing in it.
-    const css = questionsPage();
-    const wide = Number(css.match(/\.flowmark \{[\s\S]*?width:(\d+)px/)?.[1]);
-    assert.ok(wide > 156, `${wide}px is at or below the width already found illegible`);
   });
 });

@@ -29,7 +29,7 @@ import { QUESTIONS, type Answers } from "./profile.js";
 import { PRICE_USD, escapeHtml } from "./render.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 import type { SubscriptionStatus } from "./db.js";
-import { MARK, markCss, bleedCss, hairlineCss } from "./brand.js";
+import { MARK, ICON, markCss, iconCss } from "./brand.js";
 
 /**
  * What every response gets unless it asks for otherwise — unchanged from the
@@ -163,16 +163,15 @@ export const SHELL_CSS = `
  */
 
 /**
- * The marketing palette's colourway, twice, because the two placements are two
- * different sizes and the hairline correction depends on size.
+ * The marketing palette's colourway, once for each piece of the artwork.
  *
- * See `brand.ts`: the correction puts back ink that antialiasing takes off
- * sub-pixel strokes, and applying it to a mark already drawn large enough just
- * makes the logo bolder than it was drawn. The hero is 438px and needs none; the
- * account shells are 240px falling to 186px on a phone, and do.
+ * Both took a size argument until 2026-08-28, because the previous mark's
+ * knockout letters needed a stroke putting back below 300px. This artwork does
+ * not — see `brand.ts` — so size is no longer part of how it is painted, and
+ * the only thing left to say is which ink.
  */
-const MARK_CSS = markCss("var(--ink)", "var(--paper)", 240);
-const HERO_MARK_CSS = markCss("var(--ink)", "var(--paper)", 438);
+const ICON_CSS = iconCss("var(--ink)");
+const HERO_MARK_CSS = markCss("var(--ink)");
 
 /**
  * The mark, top-left, on every page that is not the homepage.
@@ -181,39 +180,23 @@ const HERO_MARK_CSS = markCss("var(--ink)", "var(--paper)", 438);
  * so a customer who followed a magic link into their dashboard was on an
  * unbranded page with no way back to the site.
  *
- * ## Why this one is inset where the homepage's is clipped
+ * ## Why this one is the glyph and the homepage is the whole lockup
  *
- * The hero runs the mark off the left edge of the screen, which is the gesture
- * that makes it an identity rather than a picture of some words. It only reads
- * that way with room around it. On a dashboard the slab would sit a few
- * millimetres from an `<h1>` and a table, where a shape clipped by the viewport
- * reads as a layout bug rather than a decision — so here it is whole, inset, and
- * small enough that the page's own title is still the first thing read. That
- * last constraint is older than the artwork and `marketing.test.ts` enforces it.
+ * The homepage is where a stranger learns the name, so it spells it out. These
+ * pages are reached by somebody who already knows it — through a magic link
+ * into their own dashboard — and what they need in the corner is a way back and
+ * a sign they are still on the right site. The glyph does both in 48px.
  *
- * ## 240px, arrived at by looking
- *
- * The first attempt was 156px, chosen to sit near the old 15px wordmark's
- * footprint. Rendered, the letterforms turned to mush: this is light-weight
- * condensed type whose strokes are under a pixel below about 200px wide, so the
- * mark read as a dark smudge in the corner. 240px is the smallest size where
- * the words are legible, and it still sits entirely in the left margin, clear of
- * the content column. ~~The bleeding treatment was tried here too and rejected by
- * the same method — clipped at this size it cuts into the T and reads as broken.~~
- *
- * **Half of that is now false — corrected 2026-08-27.** What was rejected was
- * the hero's *method*: negative `left`, letting the viewport do the clipping,
- * which at 240px does cut into the T. What replaced it three commits later is
- * `bleedCss` below — the artwork stays whole and inset exactly as this note
- * argues, and a rotated strip continues the slab behind it to the edge. So this
- * mark is inset *and* it bleeds, and the sentence above sat directly on top of
- * the line that bleeds it. Left in because "we tried bleeding and it broke the
- * T" is the thing a reader needs, and deleting it invites trying it again.
+ * The long argument that used to sit here was about 240px being the smallest
+ * legible size for the old lockup, and about the bleed treatment. Both are in
+ * `brand/previous/` territory now; the sizing note that still applies is that a
+ * wordmark squeezed under its floor reads as cheap rather than small, which is
+ * exactly why this corner does not try to carry one.
  *
  * It is a link because a logo in the corner is one everywhere else on the web,
  * and a mark that looks clickable and is not is a small lie about the page.
  */
-const BRANDMARK = `<a class="brandmark" href="/">${MARK}</a>`;
+const BRANDMARK = `<a class="brandmark" href="/">${ICON}</a>`;
 
 /**
  * The homepage's nav menu.
@@ -240,30 +223,38 @@ const MENU = `<nav class="menu-wrap" aria-label="Main">
       </details>
     </nav>`;
 
-const BRANDMARK_CSS = `${MARK_CSS}
+const BRANDMARK_CSS = `${ICON_CSS}
   /*
-   * Full opacity at rest, dimming on hover rather than the other way round.
-   * It was .92 resting, which cost 8% of the contrast between --paper letters
-   * and the --ink slab — on strokes that at this size are already losing ink to
-   * antialiasing. Measured, the opacity was a contributor and not the cause, but
-   * it was contributing in exactly the wrong place, and a hover state can afford
-   * a contrast cost that a resting state cannot.
+   * The glyph alone, and small.
+   *
+   * These shells carried the whole lockup at 240px until 2026-08-28. The new
+   * wordmark lives in a 1241-wide artboard where the old one was 438, so at any
+   * width its letters are less than half the size — 240px of new lockup puts the
+   * caps at 25px, in a corner where the old one put them at 55px. Shrinking the
+   * words to fit chrome is how a wordmark becomes a smudge, which this file
+   * already learned once at 156px. So the corner takes the glyph, which is
+   * square, has no letters to lose, and reads at 36px.
+   *
+   * No bleed. The treatment that ran the old mark off the left edge worked by
+   * continuing its slab with a rotated pseudo-element; there is no slab in this
+   * artwork and nothing to continue. bleedCss went with it. (No backticks in
+   * here — this comment is inside a template literal.)
    */
-  .brandmark { position:absolute; top:30px; left:32px; width:240px; display:block;
+  .brandmark { position:absolute; top:30px; left:32px; width:48px; display:block;
     text-decoration:none; transition:opacity .15s ease; }
   .brandmark:hover { opacity:.78; }
-${bleedCss(".brandmark", "var(--ink)")}  /*
+  /*
    * The mark is absolutely positioned, so nothing in the flow knows how tall it
-   * is, and .wrap's own padding was set when the mark was 13px of text. At 240px
-   * the slab reaches y=96 and the h1 began at y=96; on a phone it landed on top
-   * of the word "Your". Caught by rendering the shells at 390px, not by reading
-   * the CSS. The clearance lives here rather than in the base stylesheet because
-   * it is the mark that needs it — .wrap is only ever used by page().
+   * is. This was 120px when the corner held a 240px lockup whose slab reached
+   * y=96 — measured then by rendering at 390px, not by reading the CSS. A 48px
+   * glyph at top:30px ends at y=78, so the clearance comes down with it, but it
+   * is still stated here rather than assumed: .wrap is only ever used by page(),
+   * and the mark is the only reason it needs any.
    */
-  .wrap { padding-top:120px; }
+  .wrap { padding-top:104px; }
   @media (max-width:600px) {
-    .brandmark { top:22px; left:22px; width:186px; }
-    .wrap { padding-top:96px; }
+    .brandmark { top:22px; left:22px; width:40px; }
+    .wrap { padding-top:88px; }
   }
 `;
 
@@ -441,28 +432,44 @@ const HOME_CSS = `
           filter:blur(26px); }
 
   /*
-   * Run off the left edge on purpose. .hero is overflow:hidden, so the negative
-   * offset is clipped to a clean vertical cut rather than the angled corner the
-   * artwork ends in — which is what makes it read as a stamp laid on the page
-   * instead of an image placed on it. Overflow to the left never extends the
-   * scrollable area in LTR, so this cannot produce a sideways scrollbar the way
-   * a negative right offset would.
+   * Inset, where this used to run off the left edge.
    *
-   * top and left are the two numbers to touch if the placement wants nudging;
-   * nothing else depends on them. (No backticks in here — this comment lives
-   * inside a template literal, and one would end the string.)
+   * The old mark was a slab, and clipping it against .hero's overflow:hidden
+   * gave a clean vertical cut that read as a stamp laid on the page. This
+   * artwork is line work with no ground behind it, so the same negative offset
+   * would not read as a bleed — it would cut the glyph in half. There is
+   * nothing here to run off the edge, so it stops at the margin like the rest.
+   *
+   * The proportions inverted with the artwork and it is worth saying why the
+   * numbers moved so far. The old lockup was 438x121; this one is 1241x169, so
+   * at any given width it is less than half as tall. 420px of it is 57px tall
+   * where 372px of the old one was 103px. Vertical clearance, which is what the
+   * landscape rule below exists to manage, got much easier; horizontal room is
+   * now the binding constraint, because the words have a floor below which they
+   * stop being words (MARK_MIN_WIDTH).
+   *
+   * top and left are the two numbers to touch if the placement wants nudging.
+   * (No backticks in here — this comment lives inside a template literal.)
    */
+  .brandmark { position:absolute; top:42px; left:32px; z-index:2;
+               width:min(420px,52vw); line-height:0; }
   /*
-   * 372px, down from 438px on 2026-08-27, at Kelly's request: 15% off both
-   * terms, so it is 15% smaller at every viewport rather than only above the
-   * width where the vw term stops winning. 438*0.85 = 372.3, 58*0.85 = 49.3.
+   * Both pieces are in the markup and one is hidden, because CSS cannot swap
+   * one SVG for another and this page genuinely needs both.
    *
-   * 372 is still above the width at which the letters start losing ink, so the
-   * hero still takes no hairline correction. The narrow rule below is a
-   * different matter, and there is a note there.
+   * Measured: the menu pill is 87px and sits 20px off the right edge, the mark
+   * starts 22px in, and 16px between them is the least that does not read as a
+   * collision — so the room for the lockup is the viewport less 145px. The
+   * words stop being words below MARK_MIN_WIDTH, so the lockup needs a viewport
+   * of at least 345px. Under that there is no size that is both legible and
+   * clear of the menu, which is not a tuning problem: it is the wordmark and
+   * the only control on the page asking for the same 300px.
+   *
+   * display:none rather than visibility or opacity, so the hidden one leaves
+   * the accessibility tree too — otherwise every narrow visitor meets two
+   * images both announcing themselves as The Usability Lab.
    */
-  .brandmark { position:absolute; top:42px; left:-18px; z-index:2;
-               width:min(372px,49vw); line-height:0; }
+  .brandmark .icon { display:none; }
 ${HERO_MARK_CSS}
   /*
    * The nav menu, top right, added 2026-08-27.
@@ -597,22 +604,20 @@ ${HERO_MARK_CSS}
   @media (max-width:640px) {
     .hero-in h1 { font-size:36px; }
     /*
-     * 255px and 65vw, the same 15% off both terms.
+     * The vw term is what matters here, not the px one: at 74vw the lockup is
+     * 289px on a 390px phone and 237px on a 320px one, both clear of
+     * MARK_MIN_WIDTH. Set it by the px term alone and a narrow phone would
+     * squeeze the words under their floor while the number in the CSS still
+     * looked generous.
      *
-     * The hairline correction below is not part of that resize — it is a gap the
-     * resize uncovered. HERO_MARK_CSS is compiled at the hero's widest, which is
-     * what markCss's drawnAt means, so it emits no correction. This rule then
-     * draws the same mark small: at 65vw on a 390px phone that is 254px, well
-     * under the 300px where these strokes stop resolving at 1x.
-     *
-     * It was already under it. The old rule read min(300px,76vw), which looks
-     * like it sits exactly at the threshold, but the vw term wins on any phone
-     * narrower than 395px — 296px on a 390px screen. So the homepage mark has
-     * been uncorrected on phones since the artwork shipped, and looked merely a
-     * little softer there than on the pages that do correct it.
+     * No hairline correction any more. It was here because the previous mark's
+     * knockout letters lost ink below 300px and this rule drew them at 296px on
+     * a 390px phone — a gap that had been open since that artwork shipped. This
+     * artwork reaches full ink at every width, so the correction is gone rather
+     * than retuned.
      */
-    .brandmark { top:26px; left:-10px; width:min(255px,65vw); }
-${hairlineCss("var(--paper)")}    .menu-wrap { top:26px; right:20px; }
+    .brandmark { top:26px; left:22px; width:min(300px,calc(100vw - 145px)); }
+    .menu-wrap { top:26px; right:20px; }
     .menu > summary { padding:9px 15px; font-size:11px; }
     .sec { padding:88px 24px; }
     .big { font-size:22px; }
@@ -648,14 +653,38 @@ ${hairlineCss("var(--paper)")}    .menu-wrap { top:26px; right:20px; }
    * (No backticks in here — this is inside a template literal.)
    */
   @media (max-height:520px) {
-    .brandmark { top:14px; left:-8px; width:min(172px,26vw); }
-${hairlineCss("var(--paper)")}    .menu-wrap { top:14px; right:20px; }
+    /*
+     * The same room-based calc as the narrow rule, and for a reason a test
+     * found rather than a person: a 380x340 screen matches this rule and not
+     * the swap below it, and 40vw there is 152px — the words squeezed well
+     * under their floor, on a viewport wide enough that nothing looked wrong.
+     * Room is the viewport less 145px whatever the height is.
+     */
+    .brandmark { top:16px; left:24px; width:min(280px,calc(100vw - 145px)); }
+    .menu-wrap { top:14px; right:20px; }
     .menu > summary { padding:8px 14px; font-size:11px; }
     .hero-in { padding:0 24px; }
     .hero-in h1 { font-size:27px; margin:0 0 14px; }
     .hero-in .sub { font-size:13px; margin:0 0 20px; }
     .hero-in .btn { padding:11px 24px; font-size:14px; }
     .scrollcue { display:none; }
+  }
+
+  /*
+   * Below 380px of viewport the words have nowhere to go — see the note beside
+   * .brandmark. The glyph takes over, which is what every other shell already
+   * shows in its corner, so the narrowest phones get the same mark as the
+   * dashboard rather than a squeezed lockup.
+   *
+   * Last on purpose. A phone in landscape matches the height query above and
+   * this one, they set the same property, and this has to be the one that wins
+   * — otherwise a 360x740 phone turned sideways shows a 280px lockup with its
+   * words already hidden, which is 280px of empty box.
+   */
+  @media (max-width:379px) {
+    .brandmark { width:44px; }
+    .brandmark .mark { display:none; }
+    .brandmark .icon { display:block; }
   }
 `;
 
@@ -717,7 +746,7 @@ export function homePage(): string {
   <section class="hero">
     <canvas class="dots" id="dots" aria-hidden="true"></canvas>
     <div class="veil" aria-hidden="true"></div>
-    <div class="brandmark">${MARK}</div>
+    <div class="brandmark">${MARK}${ICON}</div>
     ${MENU}
     <div class="hero-in">
       <h1>A design critique of your site,<br>backed by research</h1>
@@ -1180,59 +1209,46 @@ const HELP: Record<number, string> = {
  *
  * ## Why it bleeds here
  *
- * The flowbar is the top of the page with nothing in the left margin to crowd,
- * which is the condition the dashboard mark fails and the hero passes. So it
- * gets the strip treatment — the artwork whole, inset by the bar's own padding,
- * with the slab continued behind it to the edge of the screen.
+ * The flowbar is a compact row — a step counter and a brand element — and the
+ * brand element is now the glyph. The wordmark would have to be about 200px
+ * wide to stay readable, which in a bar this height is a band of type running a
+ * third of the way across the page beside "STEP 1 OF 6". The glyph says the same
+ * thing in 34 square pixels.
  *
- * ## 190px, and two measurements that could not choose it
+ * ## What was here before, and why none of it survived
  *
- * The size is the only real decision here, because 156px is where this went
- * wrong the first time it was picked (see `BRANDMARK` above) and nothing about
- * a too-small mark looks like a bug — it just looks cheap. So it was measured
- * before it was chosen, twice, and neither measurement worked:
+ * This carried the old lockup at 190px, and the note that used to sit here was
+ * mostly about how that number was chosen: two measurements that could not
+ * choose it (the share of letter pixels reaching paper, flat at 36–43% across
+ * 140–240px; and open paper regions inside the slab, which rose to 190px then
+ * fell again because resolved letters merge their gaps), and then the honest
+ * admission that it came from rendering four sizes and looking.
  *
- *   - **Share of letter pixels reaching paper.** Moves 36.3% at 140px to 42.7%
- *     at 240px — a flat line with no threshold in it. For a hairline stroke the
- *     ratio of core to antialiased edge barely depends on scale, so this metric
- *     cannot see the failure it was chosen to find.
- *   - **Open paper regions inside the slab**, counting counters and stroke gaps
- *     as connected components, on the theory that mush is counters closing. It
- *     rises 33 → 52 from 140px to 190px and then falls back to 35 at 240px:
- *     well-formed letters merge their gaps into fewer, larger regions, so the
- *     count is confounded by the very thing it was meant to rank.
+ * Both metrics are kept in `brand/README.md` rather than here, because they are
+ * about knockout letterforms and this artwork has none — but they are worth
+ * keeping somewhere, since the first of them is what anyone sizing a mark will
+ * reach for within a minute, and it does not work.
  *
- * Both are recorded because a plausible metric that does not discriminate is
- * worth more written down than quietly dropped — the next person to size a mark
- * here will think of the first one within a minute.
- *
- * The size came from rendering 150/168/190/210 at 1x and looking, which is how
- * 240px was arrived at too. 190px is the smallest that still reads crisply
- * rather than merely legibly, and it is not a new number: it is what the results
- * page already draws. 150px on a phone, where 190 leaves the slab's rotated
- * corner almost touching the step counter.
+ * The bleed is gone too. It continued the old slab past the element's left edge
+ * with a rotated pseudo-element, and `position:relative` was here solely to give
+ * that strip something to be absolute against. No slab, no strip, no reason for
+ * the mark to be a containing block.
  */
-const FLOW_MARK_WIDTH = 190;
-const FLOW_MARK_NARROW = 150;
-const FLOW_MARK_CSS = markCss("var(--ink)", "var(--paper)", FLOW_MARK_WIDTH);
+const FLOW_ICON_WIDTH = 34;
+const FLOW_ICON_NARROW = 30;
+const FLOW_ICON_CSS = iconCss("var(--ink)");
 
 const START_CSS = `
-${FLOW_MARK_CSS}
+${FLOW_ICON_CSS}
   /*
    * 18px, down from 26px. The bar was sized around 11px of text; at the mark's
    * height the old padding made 99px of chrome above a page whose entire idea is
    * one question at a time.
    */
   .flowbar { display:flex; align-items:center; gap:16px; padding:18px 34px; }
-  /*
-   * position:relative, which none of the other callers of bleedCss need — they
-   * are absolute already and it emits no position of its own on purpose. Here
-   * the mark is a flex item and has to stay one, so the containing block for the
-   * strip has to be asked for explicitly.
-   */
-  .flowmark { position:relative; display:block; flex:none; line-height:0;
-              width:${FLOW_MARK_WIDTH}px; text-decoration:none; }
-${bleedCss(".flowmark", "var(--ink)")}  #count { margin-left:auto; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  .flowmark { display:block; flex:none; line-height:0;
+              width:${FLOW_ICON_WIDTH}px; text-decoration:none; }
+  #count { margin-left:auto; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
   .track { display:flex; gap:6px; padding:0 34px; }
   .seg { flex:1; height:2px; border-radius:2px; background:var(--plaster); transition:background .45s ease; }
   .seg.done { background:var(--ink); }
@@ -1263,7 +1279,7 @@ ${bleedCss(".flowmark", "var(--ink)")}  #count { margin-left:auto; font-size:11p
   form:not(.stepped) #note { display:none; }
   @media (max-width:600px) {
     .flowbar, .track { padding-left:22px; padding-right:22px; }
-    .flowmark { width:${FLOW_MARK_NARROW}px; }
+    .flowmark { width:${FLOW_ICON_NARROW}px; }
     .flowbody { padding:48px 22px 44px; }
     .step h2 { font-size:26px; }
   }
@@ -1326,7 +1342,7 @@ export function questionsPage(
     START_CSS,
     `<form id="flow" method="post" action="/request"${errorStep}>
       <div class="flowbar">
-        <a class="flowmark" href="/">${MARK}</a>
+        <a class="flowmark" href="/">${ICON}</a>
         <span id="count">Step 1 of ${QUESTIONS.length + 1}</span>
       </div>
       <div class="track">${segs}</div>
