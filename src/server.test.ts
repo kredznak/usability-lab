@@ -390,6 +390,79 @@ describe("tokens", () => {
   });
 });
 
+describe("the hero video", () => {
+  /**
+   * Two silent failures, both of which look perfect on the machine that built
+   * them — added 2026-09-07 with the video.
+   */
+  test("Safari's Range request is answered with a 206, not the whole file", async () => {
+    /**
+     * The one that would have shipped. Safari does not treat `Range` on media as
+     * an optimisation: it sends one, and if the answer is a 200 carrying the
+     * whole body it refuses to play the video at all. No console error, no
+     * failed request in the network panel — a poster that never becomes a video.
+     * Chrome and Firefox play happily off a 200, so this is invisible here and
+     * broken for roughly half of real traffic.
+     */
+    const res = await fetch(`${BASE}/s/demo.mp4`, { headers: { range: "bytes=0-1023" } });
+    assert.equal(res.status, 206, "a 200 here means Safari plays nothing");
+    assert.equal(res.headers.get("content-length"), "1024");
+    assert.match(res.headers.get("content-range") ?? "", /^bytes 0-1023\/\d+$/);
+    assert.equal(res.headers.get("accept-ranges"), "bytes");
+    assert.equal((await res.arrayBuffer()).byteLength, 1024);
+  });
+
+  test("a request with no Range still gets the whole file", async () => {
+    const res = await fetch(`${BASE}/s/demo.mp4`);
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("content-type"), "video/mp4");
+    assert.equal(res.headers.get("accept-ranges"), "bytes", "without this Safari never asks");
+  });
+
+  test("an open-ended and a suffix range both resolve", async () => {
+    // `bytes=1024-` is what a player sends to resume; `bytes=-500` asks for the
+    // tail. Neither is exotic and both are easy to get wrong by one byte.
+    const total = Number((await fetch(`${BASE}/s/demo.mp4`)).headers.get("content-length"));
+    const open = await fetch(`${BASE}/s/demo.mp4`, { headers: { range: "bytes=1024-" } });
+    assert.equal(open.status, 206);
+    assert.equal(open.headers.get("content-range"), `bytes 1024-${total - 1}/${total}`);
+    const tail = await fetch(`${BASE}/s/demo.mp4`, { headers: { range: "bytes=-500" } });
+    assert.equal(tail.status, 206);
+    assert.equal(tail.headers.get("content-range"), `bytes ${total - 500}-${total - 1}/${total}`);
+  });
+
+  test("a nonsense range is served whole rather than failing", async () => {
+    // A byte range is a performance hint. No request should fail over one, and
+    // a 416 here would mean a malformed header from some proxy breaks the hero.
+    for (const range of ["bytes=abc-def", "bytes=", "pages=1-2", "bytes=99999999-"]) {
+      const res = await fetch(`${BASE}/s/demo.mp4`, { headers: { range } });
+      assert.ok(res.status === 200 || res.status === 206, `${range} gave ${res.status}`);
+      await res.arrayBuffer();
+    }
+  });
+
+  test("the homepage is allowed to load media, and the other pages are not", async () => {
+    /**
+     * `default-src 'none'` governs media, so without `media-src` the video is
+     * blocked outright — an element that never paints, with nothing in the page
+     * to say why. Widened on the homepage alone: /about and the account shells
+     * carry no video and should not be permitted one.
+     */
+    const home = (await fetch(`${BASE}/`)).headers.get("content-security-policy")!;
+    assert.match(home, /media-src 'self'/);
+    for (const path of ["/about", "/signin", "/start"]) {
+      const csp = (await fetch(`${BASE}${path}`)).headers.get("content-security-policy")!;
+      assert.doesNotMatch(csp, /media-src/, `${path} is permitted media it does not have`);
+    }
+  });
+
+  test("the poster is served, so the hero is never a blank rectangle", async () => {
+    const res = await fetch(`${BASE}/s/demo-poster.jpg`);
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("content-type"), "image/jpeg");
+  });
+});
+
 describe("/about", () => {
   test("it is served, and the homepage menu points at somewhere real", async () => {
     /**

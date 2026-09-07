@@ -163,18 +163,29 @@ describe("what the homepage must not do", () => {
     assert.deepEqual([...linked], ["e338784b-6ae0-4cf5-926a-eeb8c0c6bfce"]);
   });
 
-  test("the dot field has a reduced-motion branch, in the paint loop", () => {
+  test("the moving thing in the hero can be stopped", () => {
     /**
-     * There is no CSS animation to switch off any more — the drift and the
-     * repulsion both live in the canvas loop, which is deliberate: one place to
-     * honour the setting instead of a keyframe and a script that could disagree
-     * about it. So the guarantee is asserted against the script, below.
+     * **Was "the dot field has a reduced-motion branch, in the paint loop",
+     * inverted 2026-09-07.** It asserted a `<canvas class="dots">` and a
+     * reduced-motion branch inside its paint loop. The field was removed when
+     * the hero took a video, so the old assertion pinned a canvas that no longer
+     * exists — but the guarantee behind it is unchanged and is now about a
+     * different moving thing.
      *
-     * A full-bleed animation with no way to stop it is a vestibular trigger, and
-     * it is the specific reason the Three.js hero was rejected.
+     * A full-bleed animation with no way to stop it is a vestibular trigger,
+     * which is the specific reason the Three.js hero was rejected in the first
+     * place. A looping autoplay video is the same trigger wearing a different
+     * element.
      */
-    assert.match(homePage(), /prefers-reduced-motion: reduce/);
-    assert.match(homePage(), /<canvas class="dots"/, "the field is a canvas now");
+    const html = homePage();
+    assert.match(html, /prefers-reduced-motion: reduce/);
+    assert.doesNotMatch(html, /<canvas/, "the dot field is back; it competes with the video");
+    assert.match(html, /id="demo"/, "there is no video to stop");
+    assert.match(
+      HERO_JS,
+      /demo\.pause\(\)/,
+      "reduced motion no longer stops the one animation left on the page",
+    );
   });
 
   test("it uses no accent colour", () => {
@@ -393,109 +404,78 @@ describe("the stepped flow degrades to the form it replaced", () => {
 });
 
 /**
- * The hero's cursor parallax.
+ * The hero's one script, after the dot field went — rewritten 2026-09-07.
  *
- * Added 2026-08-20 after Kelly looked at the live page and asked where the
- * interaction was. There was none — the reactivity went out with the Three.js
- * particles and only the drifting was ever rebuilt. This is that gap closed, at
- * a cost of one transform on one element per frame instead of fifty thousand
- * particles recomputed on the CPU.
+ * **What this used to be.** Seven tests over a 158-line canvas: that nothing was
+ * allocated in the hot loop, that the draw was batched by tone rather than
+ * setting `fillStyle` per dot, that the greys carried no chroma, that the loop
+ * stopped when the field settled rather than running forever, that the pointer
+ * listener was passive so moving the mouse could not block scrolling, and that
+ * a still frame was painted when motion was refused.
  *
- * The property worth protecting is the refusal: with `prefers-reduced-motion`
- * set, this must not bind a listener, start a loop, or write a transform. Not
- * "move less" — do nothing, and leave the still frame the CSS already renders.
+ * All seven tested a script that no longer exists, and are gone rather than
+ * inverted — there is no version of "batched by tone" that means anything now.
+ * The one property worth carrying over is the refusal, because it was never
+ * about dots: with `prefers-reduced-motion` set, the hero must not animate. It
+ * used to mean "do not start the loop". It now means "stop the video", and the
+ * difference is worth stating — `autoplay` is on the element so the video plays
+ * with this script blocked, so the refusal has to be a pause after the fact and
+ * cannot be a decision not to begin.
  */
-describe("the hero leans toward the cursor, unless asked not to", () => {
-  test("reduced motion means no pointer listener and no animation loop", () => {
+describe("the hero refuses to animate when asked not to", () => {
+  test("it reads the setting before it does anything", () => {
+    assert.match(HERO_JS, /prefers-reduced-motion: reduce/);
+  });
+
+  test("it never starts the video at all", () => {
     /**
-     * The earlier version of this asserted that the string
-     * "prefers-reduced-motion" appeared before the first `addEventListener`.
-     * That passes on the *declaration* of the flag and says nothing about the
-     * early return — it would have gone on passing if the guard moved to the
-     * bottom of the file. Another test passing for a reason unrelated to the
-     * thing it names.
+     * **Simplified 2026-09-07.** This used to assert `pause()`,
+     * `removeAttribute('loop')` and `autoplay = false` — three undos, because
+     * the markup started the video and the script had to stop it again. The
+     * markup no longer starts it, so the reduced-motion branch has nothing to
+     * undo: it returns before the line that plays.
      *
-     * What actually matters is that `if (still) return;` sits above the
-     * pointermove binding and above the loop that schedules frames.
+     * That is a better shape than the one it replaced. The old version had a
+     * window, however brief, in which the video was moving for someone who had
+     * asked that it not.
      */
-    const body = HERO_JS.slice(HERO_JS.indexOf("(function"));
-    const guard = body.indexOf("if (still) return;");
-    const pointer = body.indexOf("'pointermove'");
-    const loop = body.lastIndexOf("requestAnimationFrame(step)");
-    assert.ok(guard > -1, "there is no early return at all");
-    assert.ok(pointer > -1 && loop > -1, "the listener or the loop got renamed");
-    assert.ok(guard < pointer, "the guard must precede the pointermove binding");
-    assert.ok(guard < loop, "the guard must precede the frame loop being started");
+    const body = HERO_JS.slice(HERO_JS.indexOf("var quiet"));
+    const guard = body.indexOf("if (quiet)");
+    const play = body.indexOf("demo.play()");
+    assert.ok(guard >= 0 && play > guard, "the reduced-motion branch does not come before playback");
+    assert.match(HERO_JS, /if \(quiet\) \{ demo\.controls = true; return; \}/);
   });
 
-  test("nothing is allocated in the hot loop", () => {
+  test("it gives them controls, so the video is not simply dead", () => {
+    // The poster is already painted, so what is left is a still frame. Without
+    // controls that is indistinguishable from a broken video.
+    assert.match(HERO_JS, /controls = true/);
+  });
+
+  test("it does nothing at all when the setting is not set", () => {
     /**
-     * This *is* a particle field now — Kelly asked for the dots back. What made
-     * the original unusable was never the dots, it was the loop: five Vector3
-     * objects per particle per frame, ~200,000 allocations at 60fps, all
-     * collected again immediately.
-     *
-     * Here position, velocity and origin live in Float32Arrays and every line of
-     * `step` is scalar arithmetic on numbers already in them. If `new` or an
-     * object literal ever appears inside that function, the property that makes
-     * 5,200 dots cost 8ms a frame is gone.
+     * The direction that is easy to get backwards. An early return on `quiet`
+     * being false is the whole of it: anything after that point runs for
+     * everybody, and a stray `pause()` outside the branch would stop the hero
+     * video for every visitor while every other test here still passed.
      */
-    const step = HERO_JS.slice(HERO_JS.indexOf("function step"), HERO_JS.indexOf("window.addEventListener('resize'"));
-    assert.ok(step.length > 200, "step() was not found — did it get renamed?");
-    assert.doesNotMatch(step, /\bnew [A-Z]/, "no constructor calls per frame");
-    assert.doesNotMatch(step, /[[{]\s*\w+\s*,/, "no array or object literals per frame");
-    assert.match(HERO_JS, /Float32Array/, "flat arrays are the whole trick");
+    const body = HERO_JS.slice(HERO_JS.indexOf("var quiet"));
+    const guard = body.indexOf("return");
+    const pause = body.indexOf("pause()");
+    assert.ok(guard > 0 && pause > guard, "the pause is not behind the reduced-motion guard");
   });
 
-  test("the draw is batched by tone rather than set per dot", () => {
-    // fillStyle is a state change; assigning it 5,200 times a frame costs more
-    // than the arithmetic does. Five assignments, one per grey.
-    const draw = HERO_JS.slice(HERO_JS.indexOf("function draw"), HERO_JS.indexOf("function step"));
-    assert.match(draw, /for \(var t = 0; t < TONES\.length/, "outer loop is the tone");
-    assert.equal(draw.match(/fillStyle/g)?.length, 1, "assigned once per tone, not once per dot");
+  test("it survives the element being absent", () => {
+    // /start and the account shells run no video. The script is only served on
+    // the homepage today, and this is what keeps that from being load-bearing.
+    assert.match(HERO_JS, /if \(!demo\) return/);
   });
 
-  test("the dots are grey, with no chroma anywhere", () => {
-    // The original tinted every particle with setHSL(Math.random(), 0.8, …) —
-    // full-spectrum confetti, against a reference board with no colour on it.
-    const tones = HERO_JS.match(/var TONES = \[([^\]]+)\]/)?.[1] ?? "";
-    const hexes = tones.match(/#[0-9A-Fa-f]{6}/g) ?? [];
-    assert.ok(hexes.length >= 3, "there is a tone ramp");
-    for (const hex of hexes) {
-      const n = parseInt(hex.slice(1), 16);
-      const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-      const spread = Math.max(r, g, b) - Math.min(r, g, b);
-      assert.ok(spread <= 14, `${hex} has a channel spread of ${spread} — that is a colour, not a grey`);
-    }
-    assert.doesNotMatch(HERO_JS, /setHSL|hsl\(/, "no hue generation at all");
-  });
-
-  test("the loop stops when it settles rather than running forever", () => {
-    assert.match(HERO_JS, /raf = null/, "an rAF loop with no exit is a permanent 60fps tax");
-  });
-
-  test("the listener is passive, so moving the pointer cannot block scrolling", () => {
-    assert.match(HERO_JS, /\{ passive: true \}/);
-  });
-
-  test("the homepage authorises its script by hash and nothing else", () => {
-    const digest = createHash("sha256").update(HERO_JS, "utf8").digest("base64");
-    assert.ok(HOME_CSP.includes(`'sha256-${digest}'`), "policy derived from the script itself");
-    assert.doesNotMatch(HOME_CSP, /script-src[^;]*unsafe-inline/);
-    assert.match(HOME_CSP, /font-src 'self'/);
-  });
-
-  test("the script the policy names is the script in the page", () => {
-    assert.ok(homePage().includes(HERO_JS), "byte-identical, or the browser silently runs nothing");
-  });
-
-  test("a still frame is still painted when motion is refused", () => {
-    // Not a blank hero. `resize()` runs — and therefore `draw()` — before the
-    // early return, so someone with the setting on sees the composition, just
-    // not the movement. The resize listener is bound before the guard on
-    // purpose, so the still frame survives a window resize.
-    const body = HERO_JS.slice(HERO_JS.indexOf("window.addEventListener('resize'"));
-    assert.match(body, /resize\(\);\s*\n\s*\n?\s*if \(still\) return;/, "paint, then stop");
+  test("it is still plain var-and-function, because CSP hashes the bytes", () => {
+    // Any transform of this string — a minifier, a formatter with different
+    // quote preferences — changes the hash in HOME_CSP and the browser silently
+    // refuses to run it. There is no error; reduced motion just stops working.
+    assert.doesNotMatch(HERO_JS, /\b(const|let|=>)\b/, "modern syntax means it has been rewritten");
   });
 });
 
@@ -877,6 +857,168 @@ describe("the mark is on every page that is not the homepage", () => {
  * and the screen-reader announcement come from the browser and survive the
  * script being blocked. `MENU_JS` adds only outside-click and Escape.
  */
+/**
+ * The hero video — added 2026-09-07 at Kelly's request.
+ *
+ * The layout came from a reference Kelly picked: left-aligned, asymmetric, big
+ * tight-leading type. What is guarded here is not the taste, it is the handful
+ * of properties that make it work and would break without looking broken.
+ */
+describe("the hero demo", () => {
+  test("it plays silently and in place, and does not start without a way to stop it", () => {
+    /**
+     * **Was "it plays by itself, silently, without leaving the page" — inverted
+     * 2026-09-07 after a design critique.** It asserted `autoplay` and `loop` in
+     * the markup and *no* `controls`. Two of those three are now deliberately
+     * false, and the reason is a Level A failure the old shape guaranteed.
+     *
+     * WCAG 2.2.2 wants a mechanism to pause moving content that starts on its
+     * own and runs past five seconds. The clip is 10.7s. `prefers-reduced-motion`
+     * is not that mechanism — it is an OS setting, not a control on the page —
+     * so the page needs a button, and a button cannot exist without the script.
+     * With `autoplay` in the markup the video moved whether or not the script
+     * ran, which is precisely the failing combination: motion, no control.
+     *
+     * So motion and its control now arrive together, from `HERO_JS`. What
+     * survives from the old test is the pair that is still load-bearing:
+     * `muted`, without which no browser will start playback at all, and
+     * `playsinline`, without which iOS goes fullscreen the moment it starts and
+     * the homepage disappears.
+     */
+    const tag = homePage().match(/<video[^>]*>/)![0];
+    for (const attr of ["muted", "playsinline"]) {
+      assert.match(tag, new RegExp(`\\b${attr}\\b`), `the demo is missing ${attr}`);
+    }
+    assert.doesNotMatch(
+      tag,
+      /\bautoplay\b/,
+      "autoplay in the markup means it moves with the script blocked, and then nothing can stop it",
+    );
+    assert.match(HERO_JS, /demo\.play\(\)/, "nothing starts the video");
+  });
+
+  test("there is a mechanism to stop it, and it is on the page", () => {
+    /**
+     * The Level A guarantee itself. A control that is only reachable by setting
+     * an OS preference is not a control, and this is the homepage of a company
+     * whose own sources table cites WCAG in thirteen rows.
+     */
+    const html = homePage();
+    assert.match(html, /<button id="demotoggle"[^>]*>/, "no pause control on the page");
+    assert.match(HERO_JS, /toggle\.hidden = false/, "the control is never revealed");
+    assert.match(HERO_JS, /demo\.pause\(\)/, "the control cannot pause anything");
+    assert.match(HERO_JS, /aria-label/, "the control does not say what it does when its label changes");
+  });
+
+  test("both controls on this page clear the touch-target floor", () => {
+    /**
+     * The menu was 42px on a desktop and 38px on a phone, which the critique
+     * caught. The pause button added to fix WCAG 2.2.2 then shipped at 31px —
+     * a new violation introduced by the fix for another one, and found only
+     * because the same measurement was run again afterwards.
+     *
+     * Both are asserted here as CSS rather than rendered geometry because this
+     * suite has no browser. The rendered numbers, from Chrome: menu 44px on
+     * desktop and phone, toggle 44px.
+     */
+    const css = homePage();
+    for (const sel of [".menu > summary", ".demo-toggle"]) {
+      const rule = css.slice(css.indexOf(`${sel} {`), css.indexOf("}", css.indexOf(`${sel} {`)));
+      const min = Number(rule.match(/min-height:(\d+)px/)?.[1]);
+      assert.ok(min >= 44, `${sel} is a ${min || "un-floored"} target; WCAG 2.5.5 wants 44`);
+    }
+  });
+
+  test("the button is hidden until the script can make it work", () => {
+    // Rendered hidden and unhidden by HERO_JS. With the script blocked there is
+    // no motion, so a visible button that did nothing would be the only lie.
+    assert.match(homePage(), /<button id="demotoggle"[^>]*\bhidden\b/);
+  });
+
+  test("it holds its last frame rather than looping forever", () => {
+    // Dropped with the critique: a permanent loop puts motion beside the text
+    // people are meant to read, and peripheral motion wins fixation for as long
+    // as the page is open. The clip ends on the findings list, which is the
+    // best frame in it.
+    assert.doesNotMatch(homePage().match(/<video[^>]*>/)![0], /\bloop\b/);
+  });
+
+  test("it has a poster, so the hero is never an empty rectangle", () => {
+    // 2.4MB arrives over a real connection. Without this the middle of the hero
+    // is blank until enough of it lands — the first impression of the page.
+    assert.match(homePage(), /poster="\/s\/demo-poster\.jpg"/);
+  });
+
+  test("its box is the right shape before a byte of video arrives", () => {
+    /**
+     * `aspect-ratio` from the file's own dimensions. Without it the figure has
+     * no height until metadata loads and everything below the hero jumps down
+     * when it does — the layout shift is worst on the slow connections that can
+     * least afford it, and invisible on a fast one.
+     */
+    assert.match(homePage(), /aspect-ratio:1910\/1040/);
+  });
+
+  test("it is announced as something, not as an unlabelled video", () => {
+    const html = homePage();
+    const id = html.match(/aria-labelledby="([^"]+)"/)?.[1];
+    assert.ok(id, "the video has no accessible name");
+    assert.match(html, new RegExp(`id="${id}"`), "the caption it names is not on the page");
+  });
+
+  test("the media column is the wider of the two", () => {
+    /**
+     * The one number that is a judgement rather than a mechanism, so it is
+     * written down. The reference puts a paragraph in the narrow right-hand
+     * column and a third is plenty for a paragraph. What sits here is a
+     * recording of a report, whose own body text is a fraction of the frame —
+     * at a third of the viewport it is texture, and the viewer sees that
+     * something is scrolling without ever seeing what was found.
+     */
+    const css = homePage();
+    const cols = css.match(/grid-template-columns:minmax\(0,([\d.]+)fr\) minmax\(0,([\d.]+)fr\)/);
+    assert.ok(cols, "the hero is not two columns any more");
+    assert.ok(
+      Number(cols[2]) > Number(cols[1]),
+      `copy ${cols[1]}fr vs media ${cols[2]}fr — the demo is the narrower column`,
+    );
+  });
+
+  test("the hero stacks before the copy column gets too narrow", () => {
+    const css = homePage();
+    assert.match(css, /@media \(max-width:980px\)/);
+    const stack = css.slice(css.indexOf("@media (max-width:980px)"));
+    assert.match(stack, /grid-template-columns:minmax\(0,1fr\)/, "it never becomes one column");
+  });
+
+  test("a short screen keeps two columns, and that rule comes last", () => {
+    /**
+     * A landscape phone matches the stacking rule above and the short-screen
+     * rule, and they want opposite things. Stacked at 844x390 the video's top
+     * edge measured 315 of 390 — a 75px sliver of the thing the hero exists to
+     * show. Sideways there is room across but none down, so both go side by
+     * side. Ordering is the whole fix: at equal specificity the later rule wins.
+     */
+    const css = homePage();
+    const short = css.indexOf("@media (max-height:520px)");
+    assert.ok(short > css.indexOf("@media (max-width:980px)"), "the stack rule would win on a phone");
+    assert.match(
+      css.slice(short),
+      /grid-template-columns:minmax\(0,[\d.]+fr\) minmax\(0,[\d.]+fr\)/,
+      "a landscape phone stacks, and the video falls off the bottom",
+    );
+  });
+
+  test("the dot field is gone, and nothing left behind draws it", () => {
+    // Two moving things in one viewport compete. Kelly's call: the one that
+    // shows the product wins.
+    const html = homePage();
+    assert.doesNotMatch(html, /<canvas/);
+    assert.doesNotMatch(html, /class="veil"/);
+    assert.doesNotMatch(html, /\.dots \{/, "the canvas is gone but its stylesheet is still shipped");
+  });
+});
+
 describe("the homepage's menu", () => {
   test("it opens without a script, because it is a disclosure and not a widget", () => {
     /**

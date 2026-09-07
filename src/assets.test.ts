@@ -56,6 +56,24 @@ describe("the asset allowlist", () => {
   });
 
   test("the allowlist is a fixed set, not a directory listing", () => {
-    assert.deepEqual(ASSET_NAMES, ["inter.woff2"]);
+    /**
+     * Pinned to the exact set, so adding a file to `assets/` is never enough to
+     * serve it — someone has to come here and say so. That is the whole defence
+     * on this route: the request path is a Map lookup, so traversal has nowhere
+     * to happen, and the only way a file becomes public is this list.
+     *
+     * It grew on 2026-09-07 for the hero demo. The video and its poster are one
+     * addition, not two: a video with no poster paints a blank rectangle in the
+     * middle of the hero until enough of it arrives to show a frame.
+     */
+    assert.deepEqual(ASSET_NAMES, ["inter.woff2", "demo.mp4", "demo-poster.jpg"]);
+  });
+
+  test("nothing in assets/ is servable by being there", () => {
+    // The license file has sat beside the font since the beginning and must not
+    // be reachable; the source video would now be a second 2.4MB copy.
+    for (const name of ["inter-LICENSE.txt", "README.md"]) {
+      assert.ok(!ASSET_NAMES.includes(name), `${name} is in the allowlist`);
+    }
   });
 });

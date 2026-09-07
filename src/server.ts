@@ -1036,12 +1036,48 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   if (parts[0] === "s" && parts.length === 2) {
     const found = asset(parts[1]!);
     if (!found) return notFound(res);
-    res.writeHead(200, {
+
+    const headers = {
       "content-type": found.type,
       "cache-control": "public, max-age=31536000, immutable",
       "content-security-policy": STRICT_CSP,
       "x-content-type-options": "nosniff",
-    });
+      "accept-ranges": "bytes",
+    };
+
+    /**
+     * Range requests, which exist for exactly one client — added 2026-09-07.
+     *
+     * Safari does not treat `Range` on media as an optimisation. It sends one,
+     * and if the answer is a 200 with the whole body it refuses to play the
+     * video at all: no error in the page, no failed request in the network
+     * panel, just a poster that never becomes a video. Chrome and Firefox play
+     * happily off a 200, so this is invisible on the machine it was built on
+     * and broken on roughly half of real traffic.
+     *
+     * Everything served here is already a Buffer in memory, so a range is a
+     * subarray and costs nothing. A malformed or unsatisfiable header falls
+     * through to the whole body rather than erroring — a byte range is a
+     * performance hint, and no request should fail over one.
+     */
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? "");
+    if (range && (range[1] || range[2])) {
+      const total = found.body.length;
+      const suffix = !range[1] && range[2];
+      const start = suffix ? Math.max(0, total - Number(range[2])) : Number(range[1]);
+      const end = suffix || !range[2] ? total - 1 : Math.min(Number(range[2]), total - 1);
+      if (Number.isFinite(start) && start <= end && start < total) {
+        const slice = found.body.subarray(start, end + 1);
+        res.writeHead(206, {
+          ...headers,
+          "content-range": `bytes ${start}-${end}/${total}`,
+          "content-length": slice.length,
+        });
+        return void res.end(slice);
+      }
+    }
+
+    res.writeHead(200, { ...headers, "content-length": found.body.length });
     return void res.end(found.body);
   }
 

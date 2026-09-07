@@ -37,7 +37,25 @@ interface Asset {
  * and is deliberately absent here — the OFL requires it to ship, not to be
  * served.
  */
-const FILES: [name: string, type: string][] = [["inter.woff2", "font/woff2"]];
+const FILES: [name: string, type: string][] = [
+  ["inter.woff2", "font/woff2"],
+  /**
+   * The hero demo — added 2026-09-07. A 10.7s screen recording of a real TOTEME
+   * audit scrolling past, 2.4MB, and the two entries are one thing: a video
+   * with no poster paints a blank rectangle in the middle of the hero until
+   * enough of it has arrived to show a frame, which on a slow connection is the
+   * first impression of the page.
+   *
+   * 2.4MB is by far the largest thing this table holds, and it is read eagerly
+   * like the rest. That is deliberate and the tradeoff is stated in the note
+   * above: a video that fails to read should stop the server at boot, not serve
+   * a hero with a hole in it. It is also why `server.ts` answers Range requests
+   * for this route — see the note there, Safari will not play a video at all
+   * without them.
+   */
+  ["demo.mp4", "video/mp4"],
+  ["demo-poster.jpg", "image/jpeg"],
+];
 
 const TABLE = new Map<string, Asset>(
   FILES.map(([name, type]) => [name, { body: readFileSync(path.join(ROOT, name)), type }]),

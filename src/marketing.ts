@@ -387,49 +387,42 @@ export function publisherCounts(): { publisher: string; n: number }[] {
  * `reduce` set, the forms hold their first frame — which is a complete version
  * of this design, not a degraded one, because the composition never depended on
  * the movement.
+ *
+ * ## None of the above is in force any more — 2026-09-07
+ *
+ * **Everything up to here argues for a background that has been removed.** The
+ * hero now carries a video of a real audit, Kelly's call, and a decorative
+ * particle field moving beside it competes with the one thing on the page that
+ * shows the product working.
+ *
+ * It is kept rather than deleted because the arguments outlived the artefact.
+ * The case against WebGL, against a `requestAnimationFrame` scene that never
+ * settles and would have made our own capture pipeline see a different homepage
+ * on every run, and for a reduced-motion branch that holds a complete frame
+ * rather than a degraded one — all of that still decides the next thing anybody
+ * puts in this hero. The last of them is exactly the argument the video's
+ * poster frame now satisfies.
  */
 const HOME_CSS = `
   .hero { position:relative; min-height:100vh; min-height:100svh; display:flex;
           align-items:center; justify-content:center; overflow:hidden; }
   /*
-   * The dot field. One canvas, painted by HERO_JS.
+   * The dot field and its veil were removed here on 2026-09-07.
    *
-   * No CSS animation on it at all — the drift and the cursor repulsion both live
-   * in the paint loop, so reduced-motion is handled in one place rather than
-   * split between a keyframe and a script that could disagree.
+   * A canvas of 6400 drifting dots that leaned away from the cursor, and a
+   * blurred radial sitting over it to lift the ground back toward paper behind
+   * the text. Both went when the hero took a video: two moving things in one
+   * viewport compete, and the one that shows the product should win.
    *
-   * pointer-events are off because the canvas covers the whole hero: the cursor
-   * is tracked on window, and the CTA underneath has to stay clickable.
-   *
-   * (No backticks in here. This is inside a template literal and one silently
-   * ends the string — twice today.)
+   * **The veil was not decoration, and this is the number that let it go.** It
+   * existed because the deep background forms took the sub-line to 2.92:1
+   * against WCAG 1.4.3's 4.5, and darkening --ink-soft to clear it needed
+   * #463F37, a hair off the headline colour, which collapses the hierarchy the
+   * sub-line depends on. On a flat --paper ground there is nothing to correct:
+   * --ink-soft measures 6.30:1 and --ink 15.14:1. The constraint is gone rather
+   * than ignored, which is why the test that guarded it is inverted rather than
+   * deleted — see marketing.test.ts.
    */
-  .dots { position:absolute; inset:0; z-index:0; width:100%; height:100%;
-          pointer-events:none; display:block; }
-
-  /*
-   * A soft lift of the page ground, sitting between the forms and the words.
-   *
-   * The forms were deepened for presence and immediately took the sub-line to
-   * 2.92:1 — WCAG 1.4.3 wants 4.5. The obvious fix, darkening the secondary
-   * text, needed #463F37 to clear it, which is within a hair of the headline
-   * colour and collapses the hierarchy the sub-line depends on.
-   *
-   * So the forms keep their depth everywhere except directly behind the text,
-   * where this lifts the ground back toward --paper. It has no edge — a blurred
-   * radial that fades to nothing well before the viewport — so it reads as
-   * atmosphere rather than as a panel, which is the whole language of the
-   * reference board.
-   *
-   * Deliberately outside .forms: the parallax must not drag it off the text it
-   * exists to protect.
-   */
-  .veil { position:absolute; z-index:0; left:50%; top:48%; transform:translate(-50%,-50%);
-          width:min(1180px,96%); height:min(660px,84%); pointer-events:none;
-          background:radial-gradient(ellipse at center,
-                     rgba(251,250,248,.97) 0%, rgba(251,250,248,.86) 36%,
-                     rgba(251,250,248,.52) 58%, rgba(251,250,248,0) 76%);
-          filter:blur(26px); }
 
   /*
    * Inset, where this used to run off the left edge.
@@ -497,7 +490,15 @@ ${HERO_MARK_CSS}
    */
   .menu-wrap { position:absolute; top:46px; right:32px; z-index:3; }
   .menu { position:relative; }
+  /*
+   * min-height 44px, not padding: this is the only navigation on the page and
+   * it measured 42px on a desktop and 38px on a phone, under the floor in WCAG
+   * 2.5.5 and Apple's HIG. Set as a minimum rather than by growing the padding
+   * so the narrow-screen rule below can shrink the type without quietly
+   * shrinking the target back under it.
+   */
   .menu > summary { list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:9px;
+                    min-height:44px; box-sizing:border-box;
                     font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
                     background:rgba(251,250,248,.72); border:1px solid var(--sand); border-radius:100px;
                     padding:10px 18px; transition:background .15s ease, border-color .15s ease; }
@@ -521,18 +522,97 @@ ${HERO_MARK_CSS}
     .menu > summary, .menu .chev { transition:none; }
   }
 
-  .hero-in { position:relative; z-index:1; text-align:center; padding:0 32px; max-width:800px; }
-  .hero-in h1 { font-size:56px; font-weight:300; line-height:1.14; letter-spacing:-.018em; margin:0 0 26px; }
-  .hero-in .sub { font-size:15px; color:var(--ink-soft); margin:0 0 38px; letter-spacing:.005em; }
+  /*
+   * Two columns, left-aligned — 2026-09-07, from a reference Kelly picked.
+   *
+   * The hero was one centred 800px column. Centred type reads as a product
+   * landing page; this page is selling a critique backed by citations, and the
+   * asymmetric left-aligned split is the register that suits it.
+   *
+   * The proportions are not the reference's. That page puts a paragraph in the
+   * right-hand third, and a third is enough for a paragraph. What goes here is a
+   * screen recording of a report, whose own body text is a fraction of the frame
+   * — at a third of the viewport it is texture, and a viewer sees that something
+   * is scrolling without ever seeing what was found. So the media column is the
+   * larger of the two and the copy takes the smaller.
+   *
+   * minmax(0,...) on both tracks because grid items default to min-content and a
+   * long unbroken headline word would otherwise widen the column rather than
+   * wrap inside it. (No backticks in here: template literal.)
+   */
+  .hero-in { position:relative; z-index:1; width:100%; max-width:1240px; padding:0 48px;
+             display:grid; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
+             gap:64px; align-items:center; text-align:left; }
+  .hero-copy { min-width:0; }
+  .hero-in h1 { font-size:60px; font-weight:300; line-height:1.06; letter-spacing:-.026em;
+                margin:0 0 24px; text-wrap:balance; }
+  .hero-in .sub { font-size:16px; color:var(--ink-soft); margin:0 0 34px; letter-spacing:.005em;
+                  max-width:38ch; line-height:1.6; }
+
+  /*
+   * The demo. A hairline and a soft shadow rather than a heavy frame: the
+   * recording is of a near-white page on a near-white ground, so with no edge at
+   * all it bleeds into the hero and stops reading as a screen.
+   *
+   * The aspect ratio is the file's own, 1910x1040, written as a ratio so the box
+   * is the right shape before a single byte of video arrives — without it the
+   * figure has zero height until metadata loads and the whole hero jumps.
+   */
+  /*
+   * The pause control, and why the video no longer autoplays in markup.
+   *
+   * WCAG 2.2.2 (Pause, Stop, Hide, Level A) applies to moving content that
+   * starts on its own, runs over five seconds, and sits beside other content.
+   * A 10.7s clip in the hero is all three, so it needs a mechanism to stop it —
+   * and prefers-reduced-motion is not one. That is an OS setting most people
+   * never touch, not a control on the page.
+   *
+   * The video used to carry the autoplay attribute, so it moved with this page's
+   * script blocked, and the button below cannot exist without that script. That
+   * combination is the failure: motion with no way to stop it. So the two now
+   * arrive together — HERO_JS starts playback and reveals the button in the
+   * same breath, and with the script blocked the hero is the poster frame,
+   * which is a complete picture of a real audit and moves not at all.
+   *
+   * This is a page that cites WCAG in thirteen rows of its own sources table.
+   * The finding would have been ours.
+   *
+   * (No backticks in here. This sits inside a template literal and one ends the
+   * string — which is exactly how this comment failed to compile the first time.)
+   */
+  .demo-wrap { position:relative; }
+  .demo-toggle { position:absolute; right:12px; bottom:12px; margin:0;
+                 font:500 11px/1 Inter,sans-serif; letter-spacing:.09em; text-transform:uppercase;
+                 color:var(--ink); background:rgba(251,250,248,.86); border:1px solid var(--sand);
+                 border-radius:100px; padding:9px 16px; min-height:44px; cursor:pointer;
+                 display:inline-flex; align-items:center; box-sizing:border-box;
+                 -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+                 transition:background .15s ease, border-color .15s ease; }
+  .demo-toggle:hover { background:var(--paper); border-color:var(--shade); }
+  .demo-toggle:focus-visible { outline:2px solid var(--ink); outline-offset:3px; }
+
+  .hero-demo { margin:0; min-width:0; }
+  .hero-demo .demo { display:block; width:100%; aspect-ratio:1910/1040; height:auto;
+                     background:var(--bone); border:1px solid var(--plaster); border-radius:14px;
+                     box-shadow:0 1px 2px rgba(38,34,30,.05), 0 24px 60px -24px rgba(38,34,30,.28); }
+  .hero-demo figcaption { font-size:12.5px; line-height:1.55; color:var(--ink-soft);
+                          margin:14px 2px 0; max-width:52ch; }
   /*
    * Back to --ink-soft, and the round trip is worth recording.
    *
    * It was --ink for one commit, because the blurred forms it replaced ran deep
-   * enough down here to take the soft grey to 3.61:1. The dot field is gentler:
-   * dots are sparse and the cloud does not reach the bottom of the hero, so the
-   * ground under this measures 0.948 and the soft grey clears 6.25:1.
+   * enough down here to take the soft grey to 3.61:1. ~~The dot field is
+   * gentler: dots are sparse and the cloud does not reach the bottom of the
+   * hero, so the ground under this measures 0.948 and the soft grey clears
+   * 6.25:1.~~
    *
-   * Measured, not assumed. The zone changed when the background did.
+   * **Third ground, 2026-09-07.** The dot field is gone and this sits on flat
+   * --paper, where --ink-soft measures 6.30:1. The number barely moved, but the
+   * reason it is safe did: it was "the cloud is sparse down here", which was a
+   * fact about a background that no longer exists, and it is now simply the
+   * page ground. Nothing to re-measure the next time the hero changes.
+   *
+   * Measured, not assumed. The zone changed when the background did — twice.
    */
   .scrollcue { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); z-index:2;
                font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft);
@@ -601,7 +681,28 @@ ${HERO_MARK_CSS}
   .prow .amt small { font-size:12px; color:var(--ink-soft); letter-spacing:0; }
   .fine { font-size:12px; color:var(--ink-soft); line-height:1.75; margin:28px 0 0; }
 
+  /*
+   * Below 980px the two columns stop being two columns.
+   *
+   * Not a breakpoint chosen by device: it is where the copy column falls under
+   * about 380px and the headline starts breaking into four and five lines while
+   * the video is still too small to read. Both problems have the same fix, which
+   * is to give each of them the full width in turn.
+   *
+   * The video goes second in the stack and keeps its own order in the DOM, so
+   * the headline is what a screen reader and a search engine meet first.
+   */
+  @media (max-width:980px) {
+    .hero { min-height:0; padding:132px 0 72px; }
+    .hero-in { grid-template-columns:minmax(0,1fr); gap:40px; padding:0 32px; max-width:720px; }
+    .hero-in h1 { font-size:46px; }
+    .hero-in .sub { max-width:46ch; }
+    .scrollcue { display:none; }
+  }
+
   @media (max-width:640px) {
+    .hero { padding:112px 0 56px; }
+    .hero-in { padding:0 24px; }
     .hero-in h1 { font-size:36px; }
     /*
      * The vw term is what matters here, not the px one: at 74vw the lockup is
@@ -663,8 +764,22 @@ ${HERO_MARK_CSS}
     .brandmark { top:16px; left:24px; width:min(280px,calc(100vw - 145px)); }
     .menu-wrap { top:14px; right:20px; }
     .menu > summary { padding:8px 14px; font-size:11px; }
-    .hero-in { padding:0 24px; }
+    /*
+     * Two columns again, undoing the stack the width rule above imposed.
+     *
+     * A landscape phone matches both rules, and they want opposite things. The
+     * width rule stacks because a narrow copy column shreds the headline; this
+     * one is about height, and stacking is the worst thing you can do to a
+     * 390px-tall screen — measured, the video's top edge landed at 315 of 390,
+     * so the thing the hero exists to show was a 75px sliver. Sideways there is
+     * room for both, so both go side by side and each takes what it needs.
+     *
+     * Later in the sheet than the width rule, so at equal specificity this wins.
+     */
+    .hero { min-height:100vh; min-height:100svh; padding:0; }
+    .hero-in { padding:0 24px; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:26px; }
     .hero-in h1 { font-size:27px; margin:0 0 14px; }
+    .hero-demo figcaption { display:none; }
     .hero-in .sub { font-size:13px; margin:0 0 20px; }
     .hero-in .btn { padding:11px 24px; font-size:14px; }
     .scrollcue { display:none; }
@@ -744,15 +859,25 @@ export function homePage(): string {
     HOME_CSS,
     `<main>
   <section class="hero">
-    <canvas class="dots" id="dots" aria-hidden="true"></canvas>
-    <div class="veil" aria-hidden="true"></div>
     <div class="brandmark">${MARK}${ICON}</div>
     ${MENU}
     <div class="hero-in">
-      <h1>A design critique of your site,<br>backed by research</h1>
-      <p class="sub">Five questions to shape your critique. Under ten minutes.
-         Real screenshots of your site.</p>
-      <a class="btn" href="/start">Get started</a>
+      <div class="hero-copy">
+        <h1>A design critique of your site,<br>backed by research</h1>
+        <p class="sub">Five questions to shape your critique. Under ten minutes.
+           Real screenshots of your site.</p>
+        <a class="btn" href="/start">Get started</a>
+      </div>
+      <figure class="hero-demo">
+        <div class="demo-wrap">
+          <video id="demo" class="demo" poster="/s/demo-poster.jpg"
+                 muted playsinline preload="metadata"
+                 aria-labelledby="demo-cap"><source src="/s/demo.mp4" type="video/mp4"></video>
+          <button id="demotoggle" class="demo-toggle" type="button" hidden>Pause</button>
+        </div>
+        <figcaption id="demo-cap">A real audit of toteme.com, scrolling past: the page
+           we captured, and the findings pinned to the elements they are about.</figcaption>
+      </figure>
     </div>
     <a class="scrollcue" href="#what">Scroll to discover</a>
   </section>
@@ -950,188 +1075,56 @@ export const STEPPED_CSP =
   `'`;
 
 /**
- * The hero's dot field — a cursor-reactive particle cloud, in greys.
+ * The hero's one script, and all that is left of it — 2026-09-07.
  *
- * ## This is the component's idea, without the component's problems
+ * This was 158 lines: a canvas of 6400 grey dots that drifted, sprang back, and
+ * leaned away from the cursor, with a batched-by-tone paint loop and a
+ * reduced-motion branch that rendered a single still frame. It went when the
+ * hero took a video. Two moving things in one viewport compete for the same
+ * attention, and between a decorative particle field and a recording of the
+ * product finding real problems on a real page, the field is the one to lose.
  *
- * The reference was 50,000 Three.js points pushed away from the pointer. The
- * dots were never the problem. The problem was the loop: five `Vector3` objects
- * allocated per particle per frame, roughly 200,000 allocations at 60fps, plus a
- * square root each, all on the main thread. That is a garbage-collection
- * firehose, and it needs React, Next, Tailwind, shadcn and two npm packages to
- * arrive.
+ * What remains is the one thing the video cannot express in markup. `autoplay`
+ * is on the element so it plays when this file is blocked — which is the common
+ * case, and the right default — so honouring `prefers-reduced-motion` has to be
+ * a pause after the fact rather than a decision not to start. The poster is
+ * already painted, so what a reduced-motion viewer sees is a still frame and a
+ * set of controls, which is a complete version of the hero rather than a broken
+ * one. That was true of the dot field's still frame too, and it is the same
+ * argument.
  *
- * This is the same behaviour in a plain 2D canvas with **no dependency and no
- * allocation in the hot loop**. Position, velocity and origin live in flat
- * `Float32Array`s; every calculation is scalar arithmetic on numbers already in
- * those arrays. Nothing is constructed per frame, so nothing has to be collected.
- *
- * Two more things buy back time:
- *
- * - **Squares, not arcs.** `fillRect` at 1–2px is an order of magnitude cheaper
- *   than `arc()` and indistinguishable at this size.
- * - **Batched by tone.** Particles are bucketed into a handful of greys and
- *   drawn bucket by bucket, so `fillStyle` is assigned a few times a frame
- *   rather than once per dot.
- *
- * ## Greys, not the rainbow
- *
- * The original tinted every particle with `setHSL(Math.random(), 0.8, …)` —
- * full-spectrum confetti by construction, and wrong against a reference board
- * with essentially no chroma on it. Kelly's call, 2026-08-20: greys. The ramp is
- * very slightly warm so it does not read blue against `--paper`.
- *
- * ## What it refuses to do
- *
- * Under `prefers-reduced-motion` it paints **one still frame** and stops: no
- * listener, no animation loop, no repulsion. The cloud is a composition, so a
- * single frame of it is a complete version of the design rather than a broken
- * one. Checked before anything is bound.
- *
- * Written in plain `var`-and-`function` style because this string is hashed into
- * the page's Content-Security-Policy — any transform of the bytes and the
- * browser silently refuses to run it.
+ * Still plain `var`-and-`function`: this string is hashed into the page's CSP,
+ * and any transform of the bytes makes the browser refuse to run it.
  */
 export const HERO_JS = `
 (function () {
-  var canvas = document.getElementById('dots');
-  if (!canvas || !canvas.getContext) return;
-  var ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  var demo = document.getElementById('demo');
+  if (!demo) return;
+  var toggle = document.getElementById('demotoggle');
+  var quiet = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (quiet) { demo.controls = true; return; }
 
-  var COUNT = 6400;
-  var TONES = ['#C2BFB9', '#B0ACA5', '#9E9992', '#8C877F', '#7A756D'];
-  var REPEL = 130;
-  var REPEL2 = REPEL * REPEL;
-  var FORCE = 1.5;
-  var SPRING = 0.012;
-  var DAMP = 0.90;
-  var DOT = 1.6;
-
-  var px = new Float32Array(COUNT), py = new Float32Array(COUNT);
-  var ox = new Float32Array(COUNT), oy = new Float32Array(COUNT);
-  var vx = new Float32Array(COUNT), vy = new Float32Array(COUNT);
-  var ph = new Float32Array(COUNT);
-  var tone = new Uint8Array(COUNT);
-  var w = 0, h = 0, dpr = 1;
-  var mx = -9999, my = -9999;
-  var raf = null, t0 = 0;
-
-  /* Overlapping soft clusters, so the cloud has a denser core and a ragged edge
-     rather than reading as a circle. Each is [x, y, spread, share] as fractions
-     of the hero, and the shares are what make "a few more over there" a number
-     rather than a rewrite. The fourth is the top-left one Kelly asked for; it
-     carries the smallest share on purpose, so it reads as the cloud reaching
-     that way rather than as a second cloud. */
-  var SEEDS = [
-    [0.50, 0.46, 0.30, 32],
-    [0.63, 0.36, 0.20, 23],
-    [0.40, 0.58, 0.22, 23],
-    /* Nudged down and tightened from [0.25, 0.27, 0.20]: at that spread the
-       cluster reached y=0.07 and put dots behind the brandmark, which measured
-       3.45:1 against WCAG's 4.5. It now starts below y=0.16 and the logo sits on
-       clean paper. */
-    [0.26, 0.33, 0.17, 22]
-  ];
-  var SHARE = 0;
-  for (var k = 0; k < SEEDS.length; k++) SHARE += SEEDS[k][3];
-
-  function pick(i) {
-    /* Walked deterministically rather than sampled, so every cluster gets its
-       exact share and a reseed on resize looks like the same cloud. */
-    var at = (i / COUNT) * SHARE, acc = 0;
-    for (var k = 0; k < SEEDS.length; k++) {
-      acc += SEEDS[k][3];
-      if (at < acc) return SEEDS[k];
-    }
-    return SEEDS[SEEDS.length - 1];
+  function label() {
+    var paused = demo.paused;
+    toggle.textContent = paused ? 'Play' : 'Pause';
+    toggle.setAttribute('aria-label', paused ? 'Play the demo' : 'Pause the demo');
   }
 
-  function seed() {
-    for (var i = 0; i < COUNT; i++) {
-      var s = pick(i);
-      /* Two uniforms summed approximate a bell, which clumps toward the centre
-         without the cost of a real gaussian. */
-      var rx = (Math.random() + Math.random() - 1) * s[2];
-      var ry = (Math.random() + Math.random() - 1) * s[2];
-      ox[i] = (s[0] + rx) * w;
-      oy[i] = (s[1] + ry) * h;
-      px[i] = ox[i];
-      py[i] = oy[i];
-      vx[i] = 0;
-      vy[i] = 0;
-      ph[i] = Math.random() * 6.283;
-      /* Denser toward the middle of the ramp, so the field has few very dark
-         dots and reads soft rather than speckled. */
-      var t = Math.random() + Math.random();
-      tone[i] = Math.min(TONES.length - 1, Math.floor(t * TONES.length / 2));
-    }
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener('click', function () {
+      if (demo.paused) { demo.play(); } else { demo.pause(); }
+      label();
+    });
+    demo.addEventListener('play', label);
+    demo.addEventListener('pause', label);
+    demo.addEventListener('ended', label);
   }
 
-  function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    w = canvas.clientWidth;
-    h = canvas.clientHeight;
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    seed();
-    draw();
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    for (var t = 0; t < TONES.length; t++) {
-      ctx.fillStyle = TONES[t];
-      for (var i = 0; i < COUNT; i++) {
-        if (tone[i] !== t) continue;
-        ctx.fillRect(px[i], py[i], DOT, DOT);
-      }
-    }
-  }
-
-  function step(now) {
-    var drift = (now - t0) * 0.00022;
-    for (var i = 0; i < COUNT; i++) {
-      /* A slow wander of each origin, so the cloud breathes with no cursor. */
-      var tx = ox[i] + Math.sin(drift + ph[i]) * 9;
-      var ty = oy[i] + Math.cos(drift * 0.83 + ph[i]) * 9;
-
-      var dx = px[i] - mx, dy = py[i] - my;
-      var d2 = dx * dx + dy * dy;
-      if (d2 < REPEL2 && d2 > 1) {
-        var d = Math.sqrt(d2);
-        var f = (1 - d / REPEL) * FORCE / d;
-        vx[i] += dx * f;
-        vy[i] += dy * f;
-      }
-      vx[i] += (tx - px[i]) * SPRING;
-      vy[i] += (ty - py[i]) * SPRING;
-      vx[i] *= DAMP;
-      vy[i] *= DAMP;
-      px[i] += vx[i];
-      py[i] += vy[i];
-    }
-    draw();
-    raf = window.requestAnimationFrame(step);
-  }
-
-  window.addEventListener('resize', resize, { passive: true });
-  resize();
-
-  if (still) return;
-
-  window.addEventListener('pointermove', function (e) {
-    var r = canvas.getBoundingClientRect();
-    mx = e.clientX - r.left;
-    my = e.clientY - r.top;
-  }, { passive: true });
-  window.addEventListener('pointerleave', function () { mx = -9999; my = -9999; }, { passive: true });
-
-  t0 = performance.now();
-  raf = window.requestAnimationFrame(step);
+  var started = demo.play();
+  if (started && started.catch) { started.catch(function () { label(); }); }
+  label();
 })();
 `;
 
@@ -1174,8 +1167,17 @@ export const MENU_JS = `
  * `<script>` elements and CSP hashes each element's own text, so a single hash
  * of the concatenation would match neither.
  */
+/**
+ * The homepage alone carries video, so the homepage alone may load it.
+ *
+ * `media-src` is absent from `STRICT_CSP`, which means `default-src 'none'`
+ * governs it and the hero video is blocked outright — no error on the page, an
+ * element that simply never paints. Widened here rather than in `MARKETING_CSP`
+ * because /about, /signin and the account shells have no media and should not
+ * be permitted any.
+ */
 export const HOME_CSP =
-  `${MARKETING_CSP}; script-src ` +
+  `${MARKETING_CSP}; media-src 'self'; script-src ` +
   [HERO_JS, MENU_JS]
     .map((js) => `'sha256-${createHash("sha256").update(js, "utf8").digest("base64")}'`)
     .join(" ");
