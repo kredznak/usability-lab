@@ -2697,3 +2697,38 @@ and memory. Consolidated 2026-08-10; not new decisions.
   2.5× of firing either.
 - **`docs/quality-bar.md`** still carries one `[UNRESOLVED]` (the post-publish
   correction path) and five `[PROPOSED]` items.
+
+## B38. Cloudflare's analytics beacon has never run, and says so in every console
+
+Found on 2026-09-07 while verifying the hero video live, not by looking for it.
+Every page load on `theusabilitylab.com` throws:
+
+```
+Loading the script 'https://static.cloudflareinsights.com/beacon.min.js/…'
+violates the following Content Security Policy directive:
+"script-src 'sha256-…' 'sha256-…'". The action has been blocked.
+```
+
+The edge injects Cloudflare Web Analytics into the HTML on its way out. Our CSP
+names two script hashes and nothing else, so the browser refuses it. The request
+then 404s as well.
+
+**Two facts, and the second is the one that matters.**
+
+1. The CSP is doing exactly its job. A third-party script appeared in our page
+   and was refused. Nothing here is broken.
+2. **If anyone believed this site had Cloudflare analytics on it, it does not,
+   and never has.** No beacon has ever executed. Any dashboard reading off it is
+   reading zero, and would look the same as a site with no traffic.
+
+There is no impact on customers beyond a console error on every page — which is
+worth something on its own, on the homepage of a company that audits pages.
+
+**The fix is a choice, not a task.** Turn Web Analytics off in the Cloudflare
+dashboard, or add the beacon's host to `script-src`. Turning it off is the
+better answer: `home.viewed` is already recorded server-side in `events`, which
+is where `funnel.ts` reads from, so the beacon would duplicate a number we
+already have — and widening a `default-src 'none'` policy to admit a
+third-party host is a real loss for something nobody is reading.
+
+Deferred at Kelly's request the same day. Nothing depends on it.

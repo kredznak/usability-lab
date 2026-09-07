@@ -30,6 +30,8 @@ import { PRICE_USD, escapeHtml } from "./render.js";
 import { SITE_LIMIT, AUDITS_PER_MONTH } from "./fairuse.js";
 import type { SubscriptionStatus } from "./db.js";
 import { MARK, ICON, markCss, iconCss } from "./brand.js";
+import { ALL_RUBRICS } from "./agents/rubrics.js";
+import { SPAWN_CAP } from "./orchestrator/rules.js";
 
 /**
  * What every response gets unless it asks for otherwise — unchanged from the
@@ -199,28 +201,80 @@ const HERO_MARK_CSS = markCss("var(--ink)");
 const BRANDMARK = `<a class="brandmark" href="/">${ICON}</a>`;
 
 /**
- * The homepage's nav menu.
+ * The six reviewers, on the page for the first time — 2026-09-07.
  *
- * `<details>` carries its own semantics — the summary is a button, `open`
- * reflects state, Escape and click-away are the only things missing and MENU_JS
- * adds them. Wrapping it in `<nav>` gives the two links a landmark, and the
- * label distinguishes it from the footer's links for anyone listing landmarks.
+ * The product's whole differentiator from an automated checker is that six
+ * specialists read the page and only the relevant ones are spawned, and until
+ * today the homepage never said so. It is on /about in one sentence and it was
+ * nowhere here.
  *
- * The chevron is a rotated bordered box rather than a glyph or an SVG: at 9px a
- * text arrow inherits font metrics and sits off-centre, and this page's CSP
- * would need another exception for an image.
+ * **The labels and the count are read, not typed.** `ALL_RUBRICS` is the list
+ * `runner.ts` actually spawns from and `SPAWN_CAP` is the number
+ * `orchestrator/rules.ts` actually enforces, so this section cannot claim a
+ * lane that does not exist or a cap that is not applied. Same argument as the
+ * source counts further down the page: on the page whose whole pitch is that we
+ * check our claims, a hand-typed "six" is a claim about honesty that nothing
+ * checks.
  *
- * Sign in points at `/signin`, which is the route server.ts serves — not
- * `/sign-in`, which 404s.
+ * The one-line descriptions are copy and live here, keyed by rubric id. That is
+ * the seam where this could go wrong — a seventh reviewer would render with a
+ * blank line rather than an error — so `marketing.test.ts` asserts the keys are
+ * exactly `ALL_RUBRICS`, in both directions. Each is a plain-English reduction
+ * of that reviewer's own lane text in `agents/rubrics.ts`; if you rewrite a
+ * lane, rewrite its line here.
  */
-const MENU = `<nav class="menu-wrap" aria-label="Main">
-      <details class="menu" id="menu">
-        <summary>Menu<span class="chev" aria-hidden="true"></span></summary>
-        <div class="menu-items">
-          <a href="/about">About</a>
-          <a href="/signin">Sign in</a>
-        </div>
-      </details>
+const LANE_COPY: Record<string, string> = {
+  heuristics: "Whether the page works the way software should — and the only reviewer on every audit.",
+  forms: "The mechanics of what you ask for: fields, labels, order, and what happens on a mistake.",
+  "conversion-cta": "Whether the page asks for the action clearly, once, and says what happens next.",
+  copy: "The words themselves — whether a stranger can tell what you do from your own sentences.",
+  a11y: "Whether a keyboard, a screen reader, or low vision can get through the page. Cited to WCAG.",
+  "visual-hierarchy": "What the eye lands on first, second, third — and whether that is the right order.",
+};
+
+/**
+ * Spelled out, and still derived.
+ *
+ * "6 specialist reviewers" reads as a spec sheet in a display line, and the
+ * About copy says "Six". Writing the word would un-derive the number, which is
+ * the property the whole section rests on — so the count is still
+ * `ALL_RUBRICS.length` and this only chooses how to set it. Falls back to the
+ * digit above ten, where spelling stops helping.
+ */
+const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+const spell = (n: number) => WORDS[n] ?? String(n);
+const Spell = (n: number) => { const w = spell(n); return w[0]!.toUpperCase() + w.slice(1); };
+
+const LANES = ALL_RUBRICS.map(
+  (r) => `<li class="lane">
+          <span class="lane-n">${escapeHtml(r.label)}</span>
+          <span class="lane-d">${escapeHtml(LANE_COPY[r.id] ?? "")}</span>
+        </li>`,
+).join("");
+
+/**
+ * The homepage's nav — three links, 2026-09-07.
+ *
+ * **This was a details/summary dropdown holding two of them.** Kelly asked for
+ * the links themselves, and at three items that is the right call: a dropdown
+ * costs a click to reveal what would otherwise be readable at a glance, and it
+ * hides the two things a returning visitor comes here to find. It earns its
+ * keep on a phone or at a dozen items; it does not at three on a desktop.
+ *
+ * What went with it is worth noting, because it was the reason to like the
+ * dropdown: `MENU_JS`, the outside-click and Escape handling, and one of the
+ * two script hashes in `HOME_CSP`. Plain links need none of it — they work with
+ * script blocked, they are already in the tab order, and a screen reader gets
+ * three links in a labelled landmark instead of a disclosure to open first.
+ *
+ * Pricing is an in-page anchor rather than a route. The prices live in the
+ * footer of this page and there is no /pricing to send anyone to; inventing one
+ * would mean a second place for `PRICE_USD` to be wrong.
+ */
+const MENU = `<nav class="topnav" aria-label="Main">
+      <a href="/about">About</a>
+      <a href="#pricing">Pricing</a>
+      <a href="/signin">Sign in</a>
     </nav>`;
 
 const BRANDMARK_CSS = `${ICON_CSS}
@@ -465,61 +519,27 @@ const HOME_CSS = `
   .brandmark .icon { display:none; }
 ${HERO_MARK_CSS}
   /*
-   * The nav menu, top right, added 2026-08-27.
+   * The nav, top right — three links since 2026-09-07, a dropdown before that.
    *
-   * A details/summary and not a button with a script. Open and close, the
-   * keyboard, and the screen-reader announcement are all the browser's, so the
-   * menu works with JavaScript blocked — the same argument the stepped flow
-   * makes for degrading to a plain form. MENU_JS only adds close-on-outside-
-   * click and Escape, and nothing depends on it.
+   * The wrapper carries the position, as the dropdown's did and for the same
+   * reason: .hero is display:flex, so a static nav is a flex item and shifts
+   * the centred hero content by its own width while looking correctly placed
+   * itself.
    *
-   * z-index 3 puts it over the brandmark's 2, which matters at the width where
-   * the slab's right end reaches under it. It sits inside .hero, which is
-   * overflow:hidden — fine for a panel that opens downward into 100vh of hero,
-   * and the reason the panel must never be made to open upward.
-   *
-   * The summary is styled as a small pill rather than in the 11px uppercase
-   * chrome voice the scrollcue uses: that voice is for labels you read once,
-   * and this is the only control in the top of the page.
+   * 44px minimum on each link, not padding. These are the only navigation on
+   * the page and the dropdown they replaced had to be corrected to this floor
+   * after a critique measured it at 42px on a desktop and 38px on a phone.
+   * Setting a minimum rather than growing the padding means the narrow rule can
+   * shrink the type without quietly taking the target back under it.
    */
-  /*
-   * The wrapper carries the position, not the details. .hero is a flex
-   * container, so a static <nav> would be a flex item and would push the
-   * centred hero content off-centre by its own width — while the menu inside it
-   * still looked correctly placed, because that part is absolute either way.
-   */
-  .menu-wrap { position:absolute; top:46px; right:32px; z-index:3; }
-  .menu { position:relative; }
-  /*
-   * min-height 44px, not padding: this is the only navigation on the page and
-   * it measured 42px on a desktop and 38px on a phone, under the floor in WCAG
-   * 2.5.5 and Apple's HIG. Set as a minimum rather than by growing the padding
-   * so the narrow-screen rule below can shrink the type without quietly
-   * shrinking the target back under it.
-   */
-  .menu > summary { list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:9px;
-                    min-height:44px; box-sizing:border-box;
-                    font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
-                    background:rgba(251,250,248,.72); border:1px solid var(--sand); border-radius:100px;
-                    padding:10px 18px; transition:background .15s ease, border-color .15s ease; }
-  .menu > summary::-webkit-details-marker { display:none; }
-  .menu > summary:hover { background:var(--paper); border-color:var(--shade); }
-  .menu > summary:focus-visible { outline:2px solid var(--ink); outline-offset:3px; }
-  /* Rotates to point up when open, so the control says which way it will go. */
-  .menu .chev { width:9px; height:9px; border-right:1.5px solid var(--ink-soft);
-                border-bottom:1.5px solid var(--ink-soft); transform:translateY(-2px) rotate(45deg);
-                transition:transform .18s ease; }
-  .menu[open] .chev { transform:translateY(1px) rotate(-135deg); }
-  .menu-items { position:absolute; top:calc(100% + 8px); right:0; min-width:170px;
-                display:flex; flex-direction:column; padding:7px;
-                background:var(--paper); border:1px solid var(--plaster); border-radius:14px;
-                box-shadow:0 1px 2px rgba(38,34,30,.05), 0 18px 44px -18px rgba(38,34,30,.22); }
-  .menu-items a { font-size:15px; text-decoration:none; color:var(--ink);
-                  padding:11px 14px; border-radius:9px; white-space:nowrap; }
-  .menu-items a:hover { background:var(--bone); }
-  .menu-items a:focus-visible { outline:2px solid var(--ink); outline-offset:-2px; }
+  .topnav { position:absolute; top:38px; right:32px; z-index:3; display:flex; align-items:center; gap:4px; }
+  .topnav a { display:inline-flex; align-items:center; min-height:44px; box-sizing:border-box;
+              padding:0 14px; border-radius:100px; text-decoration:none; color:var(--ink);
+              font-size:14px; letter-spacing:-.005em; transition:background .15s ease; }
+  .topnav a:hover { background:var(--bone); text-decoration:none; }
+  .topnav a:focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
   @media (prefers-reduced-motion:reduce) {
-    .menu > summary, .menu .chev { transition:none; }
+    .topnav a { transition:none; }
   }
 
   /*
@@ -544,7 +564,27 @@ ${HERO_MARK_CSS}
              display:grid; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
              gap:64px; align-items:center; text-align:left; }
   .hero-copy { min-width:0; }
-  .hero-in h1 { font-size:60px; font-weight:300; line-height:1.06; letter-spacing:-.026em;
+  /*
+   * Fluid, because a fixed size split the first phrase at ordinary widths.
+   *
+   * At 60px the headline held four lines from 1240px up, and at 1024-1200 the
+   * copy column narrows to 354-385px and it went to five — breaking "A design
+   * critique" across two of them, which is the one phrase in the sentence that
+   * has to stay whole.
+   *
+   * The column is 0.82 of two tracks inside a 1240px measure, so between 980px
+   * and 1240px of viewport it is 0.41*(vw-160). "A design critique" set in this
+   * face needs about 7.13px of width per pixel of font-size, so the largest
+   * size that keeps it on one line is 0.41*(vw-160)/7.13, or 0.0575vw - 9.2px.
+   * The clamp below is that line with a little taken off, floored at 46px and
+   * capped at the 60px the design was drawn at.
+   *
+   * The 7.13 is a property of this string in this face. Change either and it
+   * has to be re-measured — marketing.test.ts asserts the phrase still fits at
+   * the widths where it used to break, so it will say so.
+   */
+  .hero-in h1 { font-size:clamp(46px, calc(5.6vw - 9px), 60px);
+                font-weight:300; line-height:1.06; letter-spacing:-.026em;
                 margin:0 0 24px; text-wrap:balance; }
   .hero-in .sub { font-size:16px; color:var(--ink-soft); margin:0 0 34px; letter-spacing:.005em;
                   max-width:38ch; line-height:1.6; }
@@ -634,6 +674,22 @@ ${HERO_MARK_CSS}
   .disclose b { font-weight:500; color:var(--ink); }
   .rule { height:1px; background:var(--plaster); max-width:720px; margin:0 auto; }
 
+  /*
+   * The six lanes. Two columns on a desktop, one on a phone.
+   *
+   * text-align:left inside a centred section on purpose: these are six items
+   * read one after another, and centred ragged text makes a list of six
+   * different lengths look like six accidents.
+   */
+  .lanes { list-style:none; margin:44px 0 0; padding:0; display:grid;
+           grid-template-columns:repeat(2, minmax(0, 1fr)); gap:26px 40px; text-align:left; }
+  .lane { display:flex; flex-direction:column; gap:5px; }
+  .lane-n { font-size:15px; font-weight:500; letter-spacing:-.005em; }
+  .lane-d { font-size:14px; line-height:1.6; color:var(--ink-soft); }
+  @media (max-width:640px) {
+    .lanes { grid-template-columns:minmax(0, 1fr); gap:22px; margin-top:34px; }
+  }
+
   .counts { display:flex; justify-content:center; margin:46px 0 0; }
   .count { flex:1; padding:0 12px; }
   .count + .count { border-left:1px solid var(--plaster); }
@@ -718,8 +774,8 @@ ${HERO_MARK_CSS}
      * than retuned.
      */
     .brandmark { top:26px; left:22px; width:min(300px,calc(100vw - 145px)); }
-    .menu-wrap { top:26px; right:20px; }
-    .menu > summary { padding:9px 15px; font-size:11px; }
+    .topnav { top:24px; right:16px; gap:0; }
+    .topnav a { padding:0 11px; font-size:13px; }
     .sec { padding:88px 24px; }
     .big { font-size:22px; }
     .counts { flex-wrap:wrap; gap:26px 0; }
@@ -762,8 +818,8 @@ ${HERO_MARK_CSS}
      * Room is the viewport less 145px whatever the height is.
      */
     .brandmark { top:16px; left:24px; width:min(280px,calc(100vw - 145px)); }
-    .menu-wrap { top:14px; right:20px; }
-    .menu > summary { padding:8px 14px; font-size:11px; }
+    .topnav { top:12px; right:16px; gap:0; }
+    .topnav a { padding:0 10px; font-size:12px; }
     /*
      * Two columns again, undoing the stack the width rule above imposed.
      *
@@ -893,6 +949,19 @@ export function homePage(): string {
   <div class="rule"></div>
 
   <section class="sec">
+    <p class="eyebrow">Who reads your page</p>
+    <p class="big">${Spell(ALL_RUBRICS.length)} specialist reviewers, and
+       <b>only the ones your page needs.</b></p>
+    <ul class="lanes">${LANES}</ul>
+    <p class="aside">Every audit runs Heuristics. The rest are chosen from your answers and
+       from what we find on the page, up to ${spell(SPAWN_CAP)} in all &mdash; so a checkout gets the
+       reviewer for checkouts and an article does not. The names and the cap on this page are
+       read from the rules that spawn them.</p>
+  </section>
+
+  <div class="rule"></div>
+
+  <section class="sec">
     <p class="eyebrow">Where the research comes from</p>
     <p class="big">Every finding points at a source,
        <b>or says plainly that it couldn&rsquo;t find one.</b></p>
@@ -927,7 +996,7 @@ export function homePage(): string {
     </div>
   </section>
 
-  <footer class="foot">
+  <footer class="foot" id="pricing">
     <h2>One page. Five questions.</h2>
     <div class="price">
       <div class="prow"><span class="what">Your first audit</span><span class="amt">Free</span></div>
@@ -947,8 +1016,7 @@ export function homePage(): string {
     <p class="fine"><a href="/signin">Already have audits? Sign in</a></p>
   </footer>
 </main>
-<script>${HERO_JS}</script>
-<script>${MENU_JS}</script>`,
+<script>${HERO_JS}</script>`,
   );
 }
 
@@ -1129,43 +1197,13 @@ export const HERO_JS = `
 `;
 
 /**
- * Closing the menu, which is the only part of it that needs a script.
+ * The homepage runs one script, and names it. Same rule as the stepped flow.
  *
- * The menu is a `<details>`, so opening, closing, keyboard focus and the
- * screen-reader announcement are all the browser's, and all of it works with
- * this file blocked or absent. What `<details>` does not give you is the thing
- * every menu on the web does: close when you click away from it, and close on
- * Escape. Without those the menu stays open over the hero until you click the
- * button again, which on the homepage of a company that critiques interfaces is
- * not a detail to wave through.
- *
- * So this is an enhancement and nothing depends on it. `pointerdown` rather than
- * `click`, so the menu is already shut by the time a click on the CTA behind it
- * lands. `focusout` is deliberately not used: it fires while moving between the
- * two links inside the menu.
- */
-export const MENU_JS = `
-(function () {
-  var menu = document.getElementById('menu');
-  if (!menu) return;
-  document.addEventListener('pointerdown', function (e) {
-    if (menu.open && !menu.contains(e.target)) menu.open = false;
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape' || !menu.open) return;
-    menu.open = false;
-    var summary = menu.querySelector('summary');
-    if (summary) summary.focus();   // or focus is left on nothing, in the page body
-  });
-})();
-`;
-
-/**
- * The homepage runs two scripts, and names both. Same rule as the stepped flow.
- *
- * A hash per script rather than one covering the pair: they are separate
- * `<script>` elements and CSP hashes each element's own text, so a single hash
- * of the concatenation would match neither.
+ * It ran two until 2026-09-07, when the nav dropdown became three plain links
+ * and `MENU_JS` went with it. The list is still built by mapping over the
+ * scripts rather than hardcoding one hash: a hash per `<script>` element is the
+ * rule whenever there is more than one, because CSP hashes each element's own
+ * text and a single hash of the concatenation would match neither.
  */
 /**
  * The homepage alone carries video, so the homepage alone may load it.
@@ -1178,7 +1216,7 @@ export const MENU_JS = `
  */
 export const HOME_CSP =
   `${MARKETING_CSP}; media-src 'self'; script-src ` +
-  [HERO_JS, MENU_JS]
+  [HERO_JS]
     .map((js) => `'sha256-${createHash("sha256").update(js, "utf8").digest("base64")}'`)
     .join(" ");
 

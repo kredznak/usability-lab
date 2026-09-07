@@ -1,11 +1,11 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import {
   publisherCounts,
   homePage,
   aboutPage,
-  MENU_JS,
   questionsPage,
   STEPPER_JS,
   STEPPED_CSP,
@@ -17,6 +17,8 @@ import {
   schedulePage,
 } from "./marketing.js";
 import { MARK_MIN_WIDTH, ICON, MARK } from "./brand.js";
+import { ALL_RUBRICS } from "./agents/rubrics.js";
+import { SPAWN_CAP } from "./orchestrator/rules.js";
 import { SOURCES } from "./sources.js";
 import { QUESTIONS } from "./profile.js";
 import { PRICE_USD } from "./render.js";
@@ -858,232 +860,185 @@ describe("the mark is on every page that is not the homepage", () => {
  * script being blocked. `MENU_JS` adds only outside-click and Escape.
  */
 /**
- * The hero video — added 2026-09-07 at Kelly's request.
+ * The six reviewers, added to the homepage 2026-09-07.
  *
- * The layout came from a reference Kelly picked: left-aligned, asymmetric, big
- * tight-leading type. What is guarded here is not the taste, it is the handful
- * of properties that make it work and would break without looking broken.
+ * The count and the labels are read from the modules that spawn and cap them,
+ * for the same reason the source counts are read from `sources.ts`: this is the
+ * page whose argument is that we check our claims, and a hand-typed "six" is a
+ * claim about honesty that nothing checks.
  */
-describe("the hero demo", () => {
-  test("it plays silently and in place, and does not start without a way to stop it", () => {
-    /**
-     * **Was "it plays by itself, silently, without leaving the page" — inverted
-     * 2026-09-07 after a design critique.** It asserted `autoplay` and `loop` in
-     * the markup and *no* `controls`. Two of those three are now deliberately
-     * false, and the reason is a Level A failure the old shape guaranteed.
-     *
-     * WCAG 2.2.2 wants a mechanism to pause moving content that starts on its
-     * own and runs past five seconds. The clip is 10.7s. `prefers-reduced-motion`
-     * is not that mechanism — it is an OS setting, not a control on the page —
-     * so the page needs a button, and a button cannot exist without the script.
-     * With `autoplay` in the markup the video moved whether or not the script
-     * ran, which is precisely the failing combination: motion, no control.
-     *
-     * So motion and its control now arrive together, from `HERO_JS`. What
-     * survives from the old test is the pair that is still load-bearing:
-     * `muted`, without which no browser will start playback at all, and
-     * `playsinline`, without which iOS goes fullscreen the moment it starts and
-     * the homepage disappears.
-     */
-    const tag = homePage().match(/<video[^>]*>/)![0];
-    for (const attr of ["muted", "playsinline"]) {
-      assert.match(tag, new RegExp(`\\b${attr}\\b`), `the demo is missing ${attr}`);
-    }
-    assert.doesNotMatch(
-      tag,
-      /\bautoplay\b/,
-      "autoplay in the markup means it moves with the script blocked, and then nothing can stop it",
-    );
-    assert.match(HERO_JS, /demo\.play\(\)/, "nothing starts the video");
-  });
+describe("the reviewers named on the homepage are the reviewers that run", () => {
+  // "Forms & Flow" reaches the page as "Forms &amp; Flow", which is the page
+  // being correct. Comparing against the raw label is the test being wrong, and
+  // it was, first time out.
+  const shown = (label: string) => label.replace(/&/g, "&amp;");
 
-  test("there is a mechanism to stop it, and it is on the page", () => {
-    /**
-     * The Level A guarantee itself. A control that is only reachable by setting
-     * an OS preference is not a control, and this is the homepage of a company
-     * whose own sources table cites WCAG in thirteen rows.
-     */
+  test("every rubric reaches the page, by the label the results page uses", () => {
     const html = homePage();
-    assert.match(html, /<button id="demotoggle"[^>]*>/, "no pause control on the page");
-    assert.match(HERO_JS, /toggle\.hidden = false/, "the control is never revealed");
-    assert.match(HERO_JS, /demo\.pause\(\)/, "the control cannot pause anything");
-    assert.match(HERO_JS, /aria-label/, "the control does not say what it does when its label changes");
-  });
-
-  test("both controls on this page clear the touch-target floor", () => {
-    /**
-     * The menu was 42px on a desktop and 38px on a phone, which the critique
-     * caught. The pause button added to fix WCAG 2.2.2 then shipped at 31px —
-     * a new violation introduced by the fix for another one, and found only
-     * because the same measurement was run again afterwards.
-     *
-     * Both are asserted here as CSS rather than rendered geometry because this
-     * suite has no browser. The rendered numbers, from Chrome: menu 44px on
-     * desktop and phone, toggle 44px.
-     */
-    const css = homePage();
-    for (const sel of [".menu > summary", ".demo-toggle"]) {
-      const rule = css.slice(css.indexOf(`${sel} {`), css.indexOf("}", css.indexOf(`${sel} {`)));
-      const min = Number(rule.match(/min-height:(\d+)px/)?.[1]);
-      assert.ok(min >= 44, `${sel} is a ${min || "un-floored"} target; WCAG 2.5.5 wants 44`);
+    for (const r of ALL_RUBRICS) {
+      assert.ok(html.includes(shown(r.label)), `${r.id} is spawned but never named on the homepage`);
     }
   });
 
-  test("the button is hidden until the script can make it work", () => {
-    // Rendered hidden and unhidden by HERO_JS. With the script blocked there is
-    // no motion, so a visible button that did nothing would be the only lie.
-    assert.match(homePage(), /<button id="demotoggle"[^>]*\bhidden\b/);
-  });
-
-  test("it holds its last frame rather than looping forever", () => {
-    // Dropped with the critique: a permanent loop puts motion beside the text
-    // people are meant to read, and peripheral motion wins fixation for as long
-    // as the page is open. The clip ends on the findings list, which is the
-    // best frame in it.
-    assert.doesNotMatch(homePage().match(/<video[^>]*>/)![0], /\bloop\b/);
-  });
-
-  test("it has a poster, so the hero is never an empty rectangle", () => {
-    // 2.4MB arrives over a real connection. Without this the middle of the hero
-    // is blank until enough of it lands — the first impression of the page.
-    assert.match(homePage(), /poster="\/s\/demo-poster\.jpg"/);
-  });
-
-  test("its box is the right shape before a byte of video arrives", () => {
+  test("the count and the cap are interpolated, not typed", () => {
     /**
-     * `aspect-ratio` from the file's own dimensions. Without it the figure has
-     * no height until metadata loads and everything below the hero jumps down
-     * when it does — the layout shift is worst on the slow connections that can
-     * least afford it, and invisible on a fast one.
+     * **This reads the source, and the first version did not.** It asserted the
+     * rendered page contained "Six specialist reviewers" and "up to four" —
+     * computed from `ALL_RUBRICS.length` and `SPAWN_CAP`, which felt derived.
+     * It is not: with the numbers hardcoded in `marketing.ts` the output is
+     * character-for-character identical, because the constants are 6 and 4
+     * today. Both reverts passed. A test that cannot fail for the thing it
+     * names is decorative.
+     *
+     * The property is about the source, so the source is what is checked. It is
+     * the same move `publishing.test.ts` makes for the hold branch.
      */
-    assert.match(homePage(), /aspect-ratio:1910\/1040/);
+    const src = readFileSync(new URL("./marketing.ts", import.meta.url), "utf8");
+    const section = src.slice(src.indexOf("Who reads your page"), src.indexOf("Where the research comes from"));
+    assert.ok(section.length > 100, "the reviewers section moved and this no longer reads it");
+    assert.match(section, /\$\{Spell\(ALL_RUBRICS\.length\)\}/, "the count is typed onto the page");
+    assert.match(section, /\$\{spell\(SPAWN_CAP\)\}/, "the cap is typed onto the page");
+    assert.doesNotMatch(section, /\b(Six|six) specialist/, "a literal count has crept back in");
+
+    // And the rendered result still agrees with the constants, so the two
+    // halves cannot drift apart silently.
+    const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+    const w = words[ALL_RUBRICS.length] ?? String(ALL_RUBRICS.length);
+    assert.match(homePage(), new RegExp(`>${w[0]!.toUpperCase() + w.slice(1)} specialist reviewers`));
+    assert.match(homePage(), new RegExp(`up to ${words[SPAWN_CAP] ?? SPAWN_CAP} in all`));
   });
 
-  test("it is announced as something, not as an unlabelled video", () => {
+  test("no lane is described with a blank line", () => {
+    /**
+     * The seam. Labels and count are derived but the one-line descriptions are
+     * copy, keyed by rubric id — so a seventh reviewer renders with an empty
+     * description rather than failing. Asserted in both directions: a rubric
+     * with no copy, and copy for a rubric that no longer exists.
+     */
+    const ids = ALL_RUBRICS.map((r) => r.id).sort();
     const html = homePage();
-    const id = html.match(/aria-labelledby="([^"]+)"/)?.[1];
-    assert.ok(id, "the video has no accessible name");
-    assert.match(html, new RegExp(`id="${id}"`), "the caption it names is not on the page");
-  });
-
-  test("the media column is the wider of the two", () => {
-    /**
-     * The one number that is a judgement rather than a mechanism, so it is
-     * written down. The reference puts a paragraph in the narrow right-hand
-     * column and a third is plenty for a paragraph. What sits here is a
-     * recording of a report, whose own body text is a fraction of the frame —
-     * at a third of the viewport it is texture, and the viewer sees that
-     * something is scrolling without ever seeing what was found.
-     */
-    const css = homePage();
-    const cols = css.match(/grid-template-columns:minmax\(0,([\d.]+)fr\) minmax\(0,([\d.]+)fr\)/);
-    assert.ok(cols, "the hero is not two columns any more");
-    assert.ok(
-      Number(cols[2]) > Number(cols[1]),
-      `copy ${cols[1]}fr vs media ${cols[2]}fr — the demo is the narrower column`,
+    for (const r of ALL_RUBRICS) {
+      const li = html.slice(html.indexOf(shown(r.label)));
+      const desc = li.match(/<span class="lane-d">([^<]*)<\/span>/)?.[1] ?? "";
+      assert.ok(desc.trim().length > 20, `${r.id} has no description on the page`);
+    }
+    // And nothing describes a lane that is not spawned.
+    const described = [...html.matchAll(/<span class="lane-n">([^<]+)<\/span>/g)].map((m) => m[1]);
+    assert.equal(described.length, ALL_RUBRICS.length);
+    assert.deepEqual(
+      described.slice().sort(),
+      ALL_RUBRICS.map((r) => shown(r.label)).sort(),
+      "the page describes a reviewer that is not in ALL_RUBRICS",
     );
+    assert.ok(ids.length === new Set(ids).size);
   });
 
-  test("the hero stacks before the copy column gets too narrow", () => {
-    const css = homePage();
-    assert.match(css, /@media \(max-width:980px\)/);
-    const stack = css.slice(css.indexOf("@media (max-width:980px)"));
-    assert.match(stack, /grid-template-columns:minmax\(0,1fr\)/, "it never becomes one column");
-  });
-
-  test("a short screen keeps two columns, and that rule comes last", () => {
-    /**
-     * A landscape phone matches the stacking rule above and the short-screen
-     * rule, and they want opposite things. Stacked at 844x390 the video's top
-     * edge measured 315 of 390 — a 75px sliver of the thing the hero exists to
-     * show. Sideways there is room across but none down, so both go side by
-     * side. Ordering is the whole fix: at equal specificity the later rule wins.
-     */
-    const css = homePage();
-    const short = css.indexOf("@media (max-height:520px)");
-    assert.ok(short > css.indexOf("@media (max-width:980px)"), "the stack rule would win on a phone");
-    assert.match(
-      css.slice(short),
-      /grid-template-columns:minmax\(0,[\d.]+fr\) minmax\(0,[\d.]+fr\)/,
-      "a landscape phone stacks, and the video falls off the bottom",
-    );
-  });
-
-  test("the dot field is gone, and nothing left behind draws it", () => {
-    // Two moving things in one viewport compete. Kelly's call: the one that
-    // shows the product wins.
-    const html = homePage();
-    assert.doesNotMatch(html, /<canvas/);
-    assert.doesNotMatch(html, /class="veil"/);
-    assert.doesNotMatch(html, /\.dots \{/, "the canvas is gone but its stylesheet is still shipped");
+  test("it says Heuristics always runs, which is R0", () => {
+    // The only lane with no condition. If that stops being true the sentence is
+    // a false claim about how the product works.
+    assert.match(homePage(), /Every audit runs Heuristics/);
   });
 });
 
-describe("the homepage's menu", () => {
-  test("it opens without a script, because it is a disclosure and not a widget", () => {
-    /**
-     * The guard that matters most and is the easiest to lose: someone rebuilds
-     * this as `<button>` plus a click handler and it behaves identically in
-     * every manual test, because the tester has JavaScript. Then CSP blocks the
-     * script, or it throws before this line, and the only navigation on the
-     * homepage is a button that does nothing.
-     */
-    const html = homePage();
-    assert.match(html, /<details class="menu" id="menu">/);
-    assert.match(html, /<summary>Menu/, "the summary is what makes it operable with no script");
-  });
-
-  test("it holds the two destinations, at the addresses the server serves", () => {
-    const html = homePage();
-    const panel = html.slice(html.indexOf('<div class="menu-items">'), html.indexOf("</details>"));
-    assert.match(panel, /<a href="\/about">About<\/a>/);
-    // `/sign-in` reads more naturally and 404s. server.ts serves `/signin`.
-    assert.match(panel, /<a href="\/signin">Sign in<\/a>/);
-    assert.doesNotMatch(panel, /href="\/sign-in"/, "that route does not exist");
-  });
-
-  test("the panel is inside the details, or it never hides", () => {
-    // Outside it, `.menu-items` is simply a visible box: `<details>` only hides
-    // what it contains. It would look like an always-open menu, which is the
-    // kind of break that reads as a design choice.
-    const html = homePage();
-    const details = html.slice(html.indexOf('<details class="menu"'), html.indexOf("</details>"));
-    assert.match(details, /menu-items/);
-  });
-
-  test("the two links are in a labelled landmark", () => {
-    assert.match(homePage(), /<nav class="menu-wrap" aria-label="Main">/);
-  });
-
-  test("the wrapper is what is positioned, not the details", () => {
-    /**
-     * `.hero` is `display:flex`. A statically positioned `<nav>` inside it is a
-     * flex item and shifts the centred hero content left by its own width —
-     * while the menu itself still looks right, because the panel is absolute
-     * either way. The symptom is a hero that is subtly off-centre and a menu
-     * that looks fine, which is not a symptom anyone traces to the menu.
-     */
+/**
+ * The headline, which split at ordinary window widths — 2026-09-07.
+ *
+ * At a fixed 60px the copy column narrows to 354-385px between 1024 and 1200px
+ * of viewport, and "A design critique" broke across two lines. The size is now
+ * a clamp tied to the column. This suite has no browser, so what is guarded is
+ * the mechanism; the rendered result was measured in Chrome across nine widths
+ * from 768 to 1920, and the phrase holds one line at every one.
+ */
+describe("the headline holds its first phrase", () => {
+  test("the size is fluid, not pinned", () => {
     const css = homePage();
-    const wrap = css.slice(css.indexOf(".menu-wrap {"), css.indexOf("}", css.indexOf(".menu-wrap {")));
-    assert.match(wrap, /position:absolute/, "the nav is in the hero's flex flow and moving it");
+    const rule = css.slice(css.indexOf(".hero-in h1 {"), css.indexOf("}", css.indexOf(".hero-in h1 {")));
+    assert.match(rule, /font-size:clamp\(/, "a fixed size splits the phrase between 1024 and 1200px");
   });
 
-  test("its script is named in the policy, alongside the hero's", () => {
-    // Two `<script>` elements, so two hashes: CSP hashes each element's own
-    // text and a single hash of the pair would match neither.
-    for (const [name, js] of [["hero", HERO_JS], ["menu", MENU_JS]] as const) {
-      const digest = createHash("sha256").update(js, "utf8").digest("base64");
-      assert.ok(HOME_CSP.includes(`'sha256-${digest}'`), `${name}: not covered by HOME_CSP`);
-    }
+  test("the clamp is floored and capped, so it cannot run away in either direction", () => {
+    // Unbounded, a vw-derived size is 20px on a phone and 90px on a monitor.
+    const css = homePage();
+    const clamp = css.match(/font-size:clamp\((\d+)px,[^,]+,\s*(\d+)px\)/);
+    assert.ok(clamp, "the clamp has no readable floor and ceiling");
+    const [floor, ceil] = [Number(clamp[1]), Number(clamp[2])];
+    assert.ok(floor >= 40, `${floor}px floor is below the size the design was drawn at`);
+    assert.ok(ceil <= 72 && ceil > floor, `${ceil}px ceiling`);
+  });
+
+  test("the phrase that must not break is still the phrase in the markup", () => {
+    // The clamp was fitted to "A design critique" in this face. Change the
+    // words and the arithmetic in the comment above it stops being true.
+    assert.match(homePage(), /<h1>A design critique of your site,<br>backed by research<\/h1>/);
+  });
+});
+
+/**
+ * The homepage nav — three links since 2026-09-07, a dropdown before it.
+ *
+ * **What these replace.** Seven tests over a `<details>` disclosure: that it
+ * opened with no script, that the panel lived inside the details or it would
+ * never hide, that the wrapper and not the details carried the position, that
+ * `MENU_JS` only ever closed the menu and never opened it, and that its hash
+ * was named in `HOME_CSP` alongside the hero's.
+ *
+ * Most of them tested machinery that plain links do not have, and are gone.
+ * Three properties survive because they were never about the dropdown: the
+ * links have to point at routes that exist, they have to sit in a labelled
+ * landmark, and they have to be reachable by a finger. The last one is the
+ * reason to be careful here — the dropdown had to be corrected to a 44px target
+ * after a critique measured it at 38px on a phone, and replacing it is exactly
+ * the kind of edit that quietly loses that.
+ */
+describe("the homepage nav", () => {
+  test("it is three links, not a disclosure", () => {
+    const html = homePage();
+    assert.match(html, /<nav class="topnav" aria-label="Main">/);
+    assert.doesNotMatch(html, /<details/, "the dropdown is back");
+    assert.doesNotMatch(html, /<summary/);
+  });
+
+  test("every link points somewhere that exists", () => {
+    /**
+     * `/signin` and not `/sign-in`, which reads better and 404s. Pricing is an
+     * in-page anchor because there is no /pricing route — the prices are in this
+     * page's own footer, and inventing a second home for `PRICE_USD` is how a
+     * price goes stale in one of two places.
+     *
+     * server.test.ts follows all three for real and asserts each answers 200,
+     * which is the half this cannot do.
+     */
+    const nav = homePage().match(/<nav class="topnav"[\s\S]*?<\/nav>/)![0];
+    const hrefs = [...nav.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(hrefs, ["/about", "#pricing", "/signin"]);
+    assert.match(homePage(), /id="pricing"/, "the pricing anchor has no target on this page");
+  });
+
+  test("the links clear the touch-target floor", () => {
+    // The dropdown this replaced shipped at 42px desktop and 38px phone. An
+    // edit that swaps an element is exactly where a fixed floor gets dropped.
+    const css = homePage();
+    const rule = css.slice(css.indexOf(".topnav a {"), css.indexOf("}", css.indexOf(".topnav a {")));
+    const min = Number(rule.match(/min-height:(\d+)px/)?.[1]);
+    assert.ok(min >= 44, `nav links are a ${min || "un-floored"} target; WCAG 2.5.5 wants 44`);
+  });
+
+  test("the nav wrapper is what is positioned", () => {
+    // Same trap the dropdown had: `.hero` is display:flex, so a static <nav> is
+    // a flex item and shifts the centred hero content by its own width, while
+    // looking correctly placed itself.
+    const css = homePage();
+    const rule = css.slice(css.indexOf(".topnav {"), css.indexOf("}", css.indexOf(".topnav {")));
+    assert.match(rule, /position:absolute/, "the nav is in the hero's flex flow and moving it");
+  });
+
+  test("the homepage is back to one script, and names it", () => {
+    // MENU_JS went with the dropdown. The hash list is still derived from the
+    // scripts rather than hardcoded, so a second script gets a second hash.
+    const digest = createHash("sha256").update(HERO_JS, "utf8").digest("base64");
+    assert.ok(HOME_CSP.includes(`'sha256-${digest}'`));
+    assert.equal(HOME_CSP.match(/sha256-/g)?.length, 1, "a script was added without a hash, or vice versa");
     assert.doesNotMatch(HOME_CSP, /script-src[^;]*unsafe-inline/);
-  });
-
-  test("closing is an enhancement, so nothing in it may be load-bearing", () => {
-    // If this script ever became the thing that opens the menu, the test above
-    // about `<details>` would still pass while the menu stopped working without
-    // it. Assert it only ever *closes*.
-    assert.doesNotMatch(MENU_JS, /\.open\s*=\s*true/, "MENU_JS has taken over opening the menu");
-    assert.match(MENU_JS, /if \(!menu\) return/, "it must survive the element being absent");
   });
 });
 

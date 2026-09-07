@@ -390,6 +390,33 @@ describe("tokens", () => {
   });
 });
 
+describe("the homepage nav goes somewhere", () => {
+  test("every link in the nav resolves", async () => {
+    /**
+     * The dropdown this replaced had the same guard, and it earned it: the menu
+     * and the /about route were added in one commit, and a nav link to a path
+     * with no handler is a 404 reached from the front page. Only the running
+     * server can say.
+     *
+     * In-page anchors are checked as anchors: the fragment has to name an id
+     * that exists on the page it is on, or the link scrolls nowhere.
+     */
+    const home = await (await fetch(`${BASE}/`)).text();
+    const nav = home.match(/<nav class="topnav"[\s\S]*?<\/nav>/)![0];
+    const hrefs = [...nav.matchAll(/href="([^"]+)"/g)].map((m) => m[1]!);
+    assert.ok(hrefs.length >= 3, `only ${hrefs.length} links in the nav`);
+
+    for (const href of hrefs) {
+      if (href.startsWith("#")) {
+        assert.match(home, new RegExp(`id="${href.slice(1)}"`), `${href} names no element on the page`);
+        continue;
+      }
+      const res = await fetch(`${BASE}${href}`);
+      assert.equal(res.status, 200, `the nav links to ${href}, which answers ${res.status}`);
+    }
+  });
+});
+
 describe("the hero video", () => {
   /**
    * Two silent failures, both of which look perfect on the machine that built
