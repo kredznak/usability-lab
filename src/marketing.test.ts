@@ -860,6 +860,149 @@ describe("the mark is on every page that is not the homepage", () => {
  * script being blocked. `MENU_JS` adds only outside-click and Escape.
  */
 /**
+ * The hero video — added 2026-09-07 at Kelly's request.
+ *
+ * The layout came from a reference Kelly picked: left-aligned, asymmetric, big
+ * tight-leading type. What is guarded here is not the taste, it is the handful
+ * of properties that make it work and would break without looking broken.
+ */
+describe("the hero demo", () => {
+  test("it plays silently and in place, and does not start without a way to stop it", () => {
+    /**
+     * **Was "it plays by itself, silently, without leaving the page" — inverted
+     * 2026-09-07 after a design critique.** It asserted `autoplay` and `loop` in
+     * the markup and *no* `controls`. Two of those three are now deliberately
+     * false, and the reason is a Level A failure the old shape guaranteed.
+     *
+     * WCAG 2.2.2 wants a mechanism to pause moving content that starts on its
+     * own and runs past five seconds. The clip is 10.7s. `prefers-reduced-motion`
+     * is not that mechanism — it is an OS setting, not a control on the page —
+     * so the page needs a button, and a button cannot exist without the script.
+     * With `autoplay` in the markup the video moved whether or not the script
+     * ran, which is precisely the failing combination: motion, no control.
+     *
+     * So motion and its control now arrive together, from `HERO_JS`. What
+     * survives from the old test is the pair that is still load-bearing:
+     * `muted`, without which no browser will start playback at all, and
+     * `playsinline`, without which iOS goes fullscreen the moment it starts and
+     * the homepage disappears.
+     */
+    const tag = homePage().match(/<video[^>]*>/)![0];
+    for (const attr of ["muted", "playsinline"]) {
+      assert.match(tag, new RegExp(`\\b${attr}\\b`), `the demo is missing ${attr}`);
+    }
+    assert.doesNotMatch(
+      tag,
+      /\bautoplay\b/,
+      "autoplay in the markup means it moves with the script blocked, and then nothing can stop it",
+    );
+    assert.match(HERO_JS, /demo\.play\(\)/, "nothing starts the video");
+  });
+
+  test("there is a mechanism to stop it, and it is on the page", () => {
+    /**
+     * The Level A guarantee itself. A control that is only reachable by setting
+     * an OS preference is not a control, and this is the homepage of a company
+     * whose own sources table cites WCAG in thirteen rows.
+     */
+    const html = homePage();
+    assert.match(html, /<button id="demotoggle"[^>]*>/, "no pause control on the page");
+    assert.match(HERO_JS, /toggle\.hidden = false/, "the control is never revealed");
+    assert.match(HERO_JS, /demo\.pause\(\)/, "the control cannot pause anything");
+    assert.match(HERO_JS, /aria-label/, "the control does not say what it does when its label changes");
+  });
+
+  test("the button is hidden until the script can make it work", () => {
+    // Rendered hidden and unhidden by HERO_JS. With the script blocked there is
+    // no motion, so a visible button that did nothing would be the only lie.
+    assert.match(homePage(), /<button id="demotoggle"[^>]*\bhidden\b/);
+  });
+
+  test("it holds its last frame rather than looping forever", () => {
+    // Dropped with the critique: a permanent loop puts motion beside the text
+    // people are meant to read, and peripheral motion wins fixation for as long
+    // as the page is open. The clip ends on the findings list, which is the
+    // best frame in it.
+    assert.doesNotMatch(homePage().match(/<video[^>]*>/)![0], /\bloop\b/);
+  });
+
+  test("it has a poster, so the hero is never an empty rectangle", () => {
+    // 2.4MB arrives over a real connection. Without this the middle of the hero
+    // is blank until enough of it lands — the first impression of the page.
+    assert.match(homePage(), /poster="\/s\/demo-poster\.jpg"/);
+  });
+
+  test("its box is the right shape before a byte of video arrives", () => {
+    /**
+     * `aspect-ratio` from the file's own dimensions. Without it the figure has
+     * no height until metadata loads and everything below the hero jumps down
+     * when it does — the layout shift is worst on the slow connections that can
+     * least afford it, and invisible on a fast one.
+     */
+    assert.match(homePage(), /aspect-ratio:1910\/1040/);
+  });
+
+  test("it is announced as something, not as an unlabelled video", () => {
+    const html = homePage();
+    const id = html.match(/aria-labelledby="([^"]+)"/)?.[1];
+    assert.ok(id, "the video has no accessible name");
+    assert.match(html, new RegExp(`id="${id}"`), "the caption it names is not on the page");
+  });
+
+  test("the media column is the wider of the two", () => {
+    /**
+     * The one number that is a judgement rather than a mechanism, so it is
+     * written down. The reference puts a paragraph in the narrow right-hand
+     * column and a third is plenty for a paragraph. What sits here is a
+     * recording of a report, whose own body text is a fraction of the frame —
+     * at a third of the viewport it is texture, and the viewer sees that
+     * something is scrolling without ever seeing what was found.
+     */
+    const css = homePage();
+    const cols = css.match(/grid-template-columns:minmax\(0,([\d.]+)fr\) minmax\(0,([\d.]+)fr\)/);
+    assert.ok(cols, "the hero is not two columns any more");
+    assert.ok(
+      Number(cols[2]) > Number(cols[1]),
+      `copy ${cols[1]}fr vs media ${cols[2]}fr — the demo is the narrower column`,
+    );
+  });
+
+  test("the hero stacks before the copy column gets too narrow", () => {
+    const css = homePage();
+    assert.match(css, /@media \(max-width:980px\)/);
+    const stack = css.slice(css.indexOf("@media (max-width:980px)"));
+    assert.match(stack, /grid-template-columns:minmax\(0,1fr\)/, "it never becomes one column");
+  });
+
+  test("a short screen keeps two columns, and that rule comes last", () => {
+    /**
+     * A landscape phone matches the stacking rule above and the short-screen
+     * rule, and they want opposite things. Stacked at 844x390 the video's top
+     * edge measured 315 of 390 — a 75px sliver of the thing the hero exists to
+     * show. Sideways there is room across but none down, so both go side by
+     * side. Ordering is the whole fix: at equal specificity the later rule wins.
+     */
+    const css = homePage();
+    const short = css.indexOf("@media (max-height:520px)");
+    assert.ok(short > css.indexOf("@media (max-width:980px)"), "the stack rule would win on a phone");
+    assert.match(
+      css.slice(short),
+      /grid-template-columns:minmax\(0,[\d.]+fr\) minmax\(0,[\d.]+fr\)/,
+      "a landscape phone stacks, and the video falls off the bottom",
+    );
+  });
+
+  test("the dot field is gone, and nothing left behind draws it", () => {
+    // Two moving things in one viewport compete. Kelly's call: the one that
+    // shows the product wins.
+    const html = homePage();
+    assert.doesNotMatch(html, /<canvas/);
+    assert.doesNotMatch(html, /class="veil"/);
+    assert.doesNotMatch(html, /\.dots \{/, "the canvas is gone but its stylesheet is still shipped");
+  });
+});
+
+/**
  * The six reviewers, added to the homepage 2026-09-07.
  *
  * The count and the labels are read from the modules that spawn and cap them,

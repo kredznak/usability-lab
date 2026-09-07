@@ -560,9 +560,9 @@ ${HERO_MARK_CSS}
    * long unbroken headline word would otherwise widen the column rather than
    * wrap inside it. (No backticks in here: template literal.)
    */
-  .hero-in { position:relative; z-index:1; width:100%; max-width:1240px; padding:0 48px;
-             display:grid; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
-             gap:64px; align-items:center; text-align:left; }
+  .hero-in { position:relative; z-index:1; width:100%; max-width:1360px; padding:0 48px;
+             display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+             gap:56px; align-items:center; text-align:left; }
   .hero-copy { min-width:0; }
   /*
    * Fluid, because a fixed size split the first phrase at ordinary widths.
@@ -572,18 +572,25 @@ ${HERO_MARK_CSS}
    * critique" across two of them, which is the one phrase in the sentence that
    * has to stay whole.
    *
-   * The column is 0.82 of two tracks inside a 1240px measure, so between 980px
-   * and 1240px of viewport it is 0.41*(vw-160). "A design critique" set in this
+   * The column is 0.9 of two tracks inside a 1360px measure, so between 980px
+   * and 1360px of viewport it is 0.45*(vw-152). "A design critique" set in this
    * face needs about 7.13px of width per pixel of font-size, so the largest
-   * size that keeps it on one line is 0.41*(vw-160)/7.13, or 0.0575vw - 9.2px.
+   * size that keeps it on one line is 0.45*(vw-152)/7.13, or 0.0631vw - 9.6px.
    * The clamp below is that line with a little taken off, floored at 46px and
    * capped at the 60px the design was drawn at.
+   *
+   * **Both numbers moved on 2026-09-07** when the copy column was widened from
+   * 0.82 to 0.9 of a 1240px measure to 1360px, because the headline still read
+   * narrow. The clamp is fitted to the column, so it could not stay as it was —
+   * the old ceiling was 0.0575vw - 9.2px against a column that is now 100px
+   * wider, which would have left the type smaller than it needs to be at every
+   * width between the floor and the cap.
    *
    * The 7.13 is a property of this string in this face. Change either and it
    * has to be re-measured — marketing.test.ts asserts the phrase still fits at
    * the widths where it used to break, so it will say so.
    */
-  .hero-in h1 { font-size:clamp(46px, calc(5.6vw - 9px), 60px);
+  .hero-in h1 { font-size:clamp(46px, calc(6.1vw - 9.5px), 60px);
                 font-weight:300; line-height:1.06; letter-spacing:-.026em;
                 margin:0 0 24px; text-wrap:balance; }
   .hero-in .sub { font-size:16px; color:var(--ink-soft); margin:0 0 34px; letter-spacing:.005em;
